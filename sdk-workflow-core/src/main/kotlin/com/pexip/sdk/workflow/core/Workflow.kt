@@ -15,7 +15,8 @@ import androidx.compose.runtime.Composable
  * or UI. Use [Unit] if the Workflow doesn't offer any such type. Such a Workflow may be used
  * to de-couple certain parts of the parent Workflow, mimicking Worker API.
  */
-fun interface Workflow<Props, Output, Rendering> {
+@ExperimentalWorkflowApi
+fun interface Workflow<in Props, out Output, out Rendering> {
 
     /**
      * Renders this Workflow with the provided [Props] and [Output] callback.
@@ -24,6 +25,7 @@ fun interface Workflow<Props, Output, Rendering> {
      * @param onOutput a callback to communicate with the parent of this Workflow
      * @return a representation of this Workflow's internal state and/or ways to modify it
      */
+    @ExperimentalWorkflowApi
     @Composable
     fun render(props: Props, onOutput: (Output) -> Unit): Rendering
 }
@@ -33,6 +35,7 @@ fun interface Workflow<Props, Output, Rendering> {
  *
  * @see Workflow.render
  */
+@ExperimentalWorkflowApi
 @Composable
 fun <Rendering> Workflow<Unit, Nothing, Rendering>.render(): Rendering = render(Unit)
 
@@ -41,6 +44,7 @@ fun <Rendering> Workflow<Unit, Nothing, Rendering>.render(): Rendering = render(
  *
  * @see Workflow.render
  */
+@ExperimentalWorkflowApi
 @Composable
 fun <Props, Rendering> Workflow<Props, Nothing, Rendering>.render(props: Props): Rendering =
     render(props) { }
@@ -50,6 +54,7 @@ fun <Props, Rendering> Workflow<Props, Nothing, Rendering>.render(props: Props):
  *
  * @see Workflow.render
  */
+@ExperimentalWorkflowApi
 @Composable
 fun <Output, Rendering> Workflow<Unit, Output, Rendering>.render(onOutput: (Output) -> Unit): Rendering =
     render(Unit, onOutput)

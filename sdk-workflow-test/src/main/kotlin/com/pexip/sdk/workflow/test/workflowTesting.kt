@@ -4,6 +4,7 @@ import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.withFrameMillis
+import com.pexip.sdk.workflow.core.ExperimentalWorkflowApi
 import com.pexip.sdk.workflow.core.Workflow
 import com.pexip.sdk.workflow.test.internal.launchMolecule
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -27,6 +28,7 @@ import kotlin.coroutines.CoroutineContext
  *
  * @see [Workflow.test]
  */
+@ExperimentalWorkflowApi
 fun <Output, Rendering> Workflow<Unit, Output, Rendering>.test(
     timeoutMs: Long = 1_000L,
     validate: suspend WorkflowTurbine<Output, Rendering>.() -> Unit,
@@ -47,6 +49,7 @@ fun <Output, Rendering> Workflow<Unit, Output, Rendering>.test(
  * @param timeoutMs a timeout in milliseconds
  * @param validate a block that validates this Workflow behavior
  */
+@ExperimentalWorkflowApi
 fun <Props, Output, Rendering> Workflow<Props, Output, Rendering>.test(
     props: Props,
     timeoutMs: Long = 1_000L,
@@ -72,6 +75,7 @@ fun <Props, Output, Rendering> Workflow<Props, Output, Rendering>.test(
  * @param timeoutMs a timeout in milliseconds
  * @param validate a block that validates this Workflow behavior
  */
+@ExperimentalWorkflowApi
 fun <Props, Output, Rendering> Workflow<Props, Output, Rendering>.test(
     props: StateFlow<Props>,
     timeoutMs: Long = 1_000L,
