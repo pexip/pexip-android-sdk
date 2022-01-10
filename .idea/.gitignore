@@ -1,0 +1,14 @@
+/artifacts/
+/caches/
+/libraries/
+/shelf/
+/assetWizardSettings.xml
+/compiler.xml
+/deploymentTargetDropDown.xml
+/gradle.xml
+/jarRepositories.xml
+/misc.xml
+/modules.xml
+/navEditor.xml
+/workspace.xml
+*.iml

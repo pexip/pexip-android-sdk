@@ -1,0 +1,63 @@
+package com.pexip.sdk.sample.pinchallenge
+
+import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.InvalidPinException
+import com.pexip.sdk.api.infinity.RequestTokenRequest
+import com.pexip.sdk.sample.send
+import com.squareup.workflow1.Snapshot
+import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.ui.toParcelable
+import com.squareup.workflow1.ui.toSnapshot
+
+class PinChallengeWorkflow(private val service: InfinityService) :
+    StatefulWorkflow<PinChallengeProps, PinChallengeState, PinChallengeOutput, PinChallengeRendering>() {
+
+    override fun initialState(props: PinChallengeProps, snapshot: Snapshot?): PinChallengeState =
+        snapshot?.toParcelable() ?: PinChallengeState()
+
+    override fun snapshotState(state: PinChallengeState): Snapshot = state.toSnapshot()
+
+    override fun render(
+        renderProps: PinChallengeProps,
+        renderState: PinChallengeState,
+        context: RenderContext,
+    ): PinChallengeRendering {
+        context.verifyPinSideEffect(renderProps, renderState)
+        return PinChallengeRendering(
+            pin = renderState.pin,
+            error = renderState.t != null,
+            submitEnabled = when {
+                renderState.requesting -> false
+                renderProps.required -> renderState.pin.isNotBlank()
+                else -> true
+            },
+            onPinChange = context.send(::OnPinChange),
+            onSubmitClick = context.send(::OnSubmitClick),
+            onBackClick = context.send(::OnBackClick)
+        )
+    }
+
+    private fun RenderContext.verifyPinSideEffect(
+        props: PinChallengeProps,
+        state: PinChallengeState,
+    ) {
+        val pinToSubmit = state.pinToSubmit ?: return
+        runningSideEffect("$props:$pinToSubmit") {
+            actionSink.send(OnRequestToken())
+            val action = try {
+                val request = RequestTokenRequest(displayName = props.displayName)
+                val response = service.newRequest(props.node)
+                    .conference(props.conferenceAlias)
+                    .requestToken(request, pinToSubmit)
+                    .await()
+                OnResponse(response)
+            } catch (e: InvalidPinException) {
+                OnInvalidPin(e)
+            } catch (t: Throwable) {
+                OnError(t)
+            }
+            actionSink.send(action)
+        }
+    }
+}
