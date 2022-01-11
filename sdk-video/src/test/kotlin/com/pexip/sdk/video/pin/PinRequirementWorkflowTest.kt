@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.pin
 
-import com.pexip.sdk.video.api.InfinityService
 import com.pexip.sdk.video.api.PinRequirement
+import com.pexip.sdk.video.api.TestInfinityService
 import com.pexip.sdk.workflow.core.ExperimentalWorkflowApi
 import com.pexip.sdk.workflow.test.test
 import org.junit.Test
@@ -37,7 +37,7 @@ class PinRequirementWorkflowTest {
             )
         )
         pinRequirements.forEach {
-            val service = object : InfinityService {
+            val service = object : TestInfinityService() {
 
                 override suspend fun getPinRequirement(
                     nodeAddress: String,
@@ -63,7 +63,7 @@ class PinRequirementWorkflowTest {
     @Test
     fun `outputs Back`() {
         val t = Throwable()
-        val service = object : InfinityService {
+        val service = object : TestInfinityService() {
 
             override suspend fun getPinRequirement(
                 nodeAddress: String,

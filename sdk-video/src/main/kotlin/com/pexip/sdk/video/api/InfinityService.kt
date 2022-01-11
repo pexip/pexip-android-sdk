@@ -1,7 +1,6 @@
 package com.pexip.sdk.video.api
 
 import com.pexip.sdk.video.api.internal.OkHttpInfinityService
-import okhttp3.OkHttpClient
 
 interface InfinityService {
 
@@ -11,5 +10,12 @@ interface InfinityService {
         displayName: String,
     ): PinRequirement
 
-    companion object : InfinityService by OkHttpInfinityService(OkHttpClient())
+    suspend fun requestToken(
+        nodeAddress: String,
+        conferenceAlias: String,
+        displayName: String,
+        pin: String,
+    ): Token
+
+    companion object : InfinityService by OkHttpInfinityService()
 }

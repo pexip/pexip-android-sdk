@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -19,11 +20,14 @@ import java.io.IOException
 import kotlin.coroutines.resumeWithException
 
 internal suspend inline fun <reified T> Json.encodeToRequestBody(value: T) =
-    withContext(Dispatchers.IO) { encodeToString(value).toRequestBody(OkHttpInfinityService.ApplicationJson) }
+    withContext(Dispatchers.IO) { encodeToString(value).toRequestBody(ApplicationJson) }
 
 @OptIn(ExperimentalSerializationApi::class)
 internal suspend inline fun <reified T> Json.decodeFromResponseBody(body: ResponseBody) =
     withContext(Dispatchers.IO) { decodeFromStream<T>(body.byteStream()) }
+
+internal inline fun OkHttpClient(block: OkHttpClient.Builder.() -> Unit): OkHttpClient =
+    OkHttpClient.Builder().apply(block).build()
 
 internal suspend inline fun OkHttpClient.await(block: Request.Builder.() -> Unit): Response =
     newCall(Request(block)).await()
@@ -46,3 +50,5 @@ internal suspend fun Call.await(): Response = suspendCancellableCoroutine { cont
 
 private inline fun Request(block: Request.Builder.() -> Unit): Request =
     Request.Builder().apply(block).build()
+
+private val ApplicationJson by lazy { "application/json; charset=utf-8".toMediaType() }

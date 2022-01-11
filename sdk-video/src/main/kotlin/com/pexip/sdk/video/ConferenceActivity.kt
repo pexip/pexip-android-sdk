@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.google.accompanist.appcompattheme.AppCompatTheme
 import com.pexip.sdk.video.node.internal.NodeRenderer
+import com.pexip.sdk.video.pin.internal.PinChallengeRenderer
 import com.pexip.sdk.video.pin.internal.PinRequirementRenderer
 import com.pexip.sdk.workflow.core.ExperimentalWorkflowApi
 import com.pexip.sdk.workflow.ui.ExperimentalWorkflowUiApi
@@ -45,6 +46,7 @@ class ConferenceActivity : AppCompatActivity() {
             NodeRenderer.FailureRenderer,
             PinRequirementRenderer.ResolvingPinRequirementRenderer,
             PinRequirementRenderer.FailureRenderer,
+            PinChallengeRenderer
         )
 
         @JvmSynthetic

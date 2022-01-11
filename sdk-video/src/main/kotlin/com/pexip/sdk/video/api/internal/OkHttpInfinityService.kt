@@ -1,13 +1,17 @@
 package com.pexip.sdk.video.api.internal
 
+import android.util.Log
 import com.pexip.sdk.video.api.InfinityService
 import com.pexip.sdk.video.api.PinRequirement
+import com.pexip.sdk.video.api.Token
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
 internal class OkHttpInfinityService(private val client: OkHttpClient) : InfinityService {
+
+    constructor() : this(OkHttpClient)
 
     override suspend fun getPinRequirement(
         nodeAddress: String,
@@ -18,7 +22,7 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
         require(conferenceAlias.isNotBlank()) { "conferenceAlias is blank." }
         require(displayName.isNotBlank()) { "displayName is blank." }
         val response = client.await {
-            val request = PinRequirementRequest(displayName)
+            val request = RequestTokenRequest(displayName)
             val requestBody = Json.encodeToRequestBody(request)
             post(requestBody)
             val url = nodeAddress
@@ -43,9 +47,48 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
         }
     }
 
-    internal companion object {
+    override suspend fun requestToken(
+        nodeAddress: String,
+        conferenceAlias: String,
+        displayName: String,
+        pin: String,
+    ): Token {
+        require(nodeAddress.isNotBlank()) { "nodeAddress is blank." }
+        require(conferenceAlias.isNotBlank()) { "conferenceAlias is blank." }
+        require(displayName.isNotBlank()) { "displayName is blank." }
+        val response = client.await {
+            val request = RequestTokenRequest(displayName)
+            val requestBody = Json.encodeToRequestBody(request)
+            post(requestBody)
+            val url = nodeAddress
+                .toHttpUrl()
+                .resolve("api/client/v2/conferences/$conferenceAlias/request_token")!!
+            url(url)
+            header("pin", pin)
+        }
+        val (result) = response.use {
+            when (it.code) {
+                200 -> Json.decodeFromResponseBody<Box<RequestToken200Response>>(it.body!!)
+                403 -> throw InvalidPinException()
+                404 -> throw NoSuchConferenceException()
+                else -> throw IllegalStateException()
+            }
+        }
+        return Token(
+            token = result.token,
+            expires = result.expires
+        )
+    }
 
+    companion object {
+
+        val OkHttpClient by lazy {
+            OkHttpClient {
+                val interceptor = HttpLoggingInterceptor { Log.d("OkHttpInfinityService", it) }
+                interceptor.level = HttpLoggingInterceptor.Level.BODY
+                addInterceptor(interceptor)
+            }
+        }
         val Json by lazy { Json { ignoreUnknownKeys = true } }
-        val ApplicationJson by lazy { "application/json; charset=utf-8".toMediaType() }
     }
 }

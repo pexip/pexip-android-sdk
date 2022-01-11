@@ -6,6 +6,9 @@ import androidx.compose.runtime.remember
 import com.pexip.sdk.video.node.NodeOutput
 import com.pexip.sdk.video.node.NodeProps
 import com.pexip.sdk.video.node.NodeWorkflow
+import com.pexip.sdk.video.pin.PinChallengeProps
+import com.pexip.sdk.video.pin.PinChallengeWorkflow
+import com.pexip.sdk.video.pin.PinRequirementOutput
 import com.pexip.sdk.video.pin.PinRequirementProps
 import com.pexip.sdk.video.pin.PinRequirementWorkflow
 import com.pexip.sdk.workflow.core.ExperimentalWorkflowApi
@@ -16,16 +19,15 @@ class ConferenceWorkflow : Workflow<ConferenceProps, ConferenceOutput, Any> {
 
     private val nodeWorkflow = NodeWorkflow()
     private val pinRequirementWorkflow = PinRequirementWorkflow()
+    private val pinChallengeWorkflow = PinChallengeWorkflow()
 
     private sealed class State {
 
         object Node : State()
 
-        data class PinRequirement(
-            val nodeAddress: String,
-            val conferenceAlias: String,
-            val displayName: String,
-        ) : State()
+        data class PinRequirement(val nodeAddress: String) : State()
+
+        data class PinChallenge(val nodeAddress: String, val required: Boolean) : State()
     }
 
     @Composable
@@ -34,22 +36,32 @@ class ConferenceWorkflow : Workflow<ConferenceProps, ConferenceOutput, Any> {
         return when (state) {
             is State.Node -> nodeWorkflow.render(NodeProps(props.uri)) {
                 when (it) {
-                    is NodeOutput.Node -> {
-                        val s = State.PinRequirement(
-                            nodeAddress = it.address,
-                            conferenceAlias = props.uri,
-                            displayName = props.displayName
-                        )
-                        onStateChange(s)
-                    }
+                    is NodeOutput.Node -> onStateChange(State.PinRequirement(it.address))
                     is NodeOutput.Back -> onOutput(ConferenceOutput.Finish)
                 }
             }
             is State.PinRequirement -> pinRequirementWorkflow.render(
                 props = PinRequirementProps(
                     nodeAddress = state.nodeAddress,
-                    conferenceAlias = state.conferenceAlias,
-                    displayName = state.displayName
+                    conferenceAlias = props.uri,
+                    displayName = props.displayName
+                ),
+                onOutput = {
+                    when (it) {
+                        is PinRequirementOutput.Some -> {
+                            onStateChange(State.PinChallenge(state.nodeAddress, it.required))
+                        }
+                        is PinRequirementOutput.None -> onOutput(ConferenceOutput.Finish)
+                        is PinRequirementOutput.Back -> onOutput(ConferenceOutput.Finish)
+                    }
+                }
+            )
+            is State.PinChallenge -> pinChallengeWorkflow.render(
+                props = PinChallengeProps(
+                    nodeAddress = state.nodeAddress,
+                    conferenceAlias = props.uri,
+                    displayName = props.displayName,
+                    required = state.required
                 ),
                 onOutput = {
                     onOutput(ConferenceOutput.Finish)

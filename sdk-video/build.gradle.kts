@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.minidns.hla)
     implementation(libs.minidns.android21)
     implementation(libs.okhttp)
+    implementation(libs.okhttp.logginginterceptor)
 
     testImplementation(projects.sdkWorkflowTest)
     testImplementation(libs.androidx.test.core.ktx)
