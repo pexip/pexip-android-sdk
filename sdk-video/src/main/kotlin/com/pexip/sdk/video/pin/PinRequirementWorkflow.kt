@@ -35,7 +35,7 @@ class PinRequirementWorkflow(private val service: InfinityService) :
         LaunchedEffect(props) {
             try {
                 val pinRequirement = service.getPinRequirement(
-                    nodeAddress = "https://${props.nodeAddress}",
+                    nodeAddress = props.nodeAddress,
                     conferenceAlias = props.conferenceAlias,
                     displayName = props.displayName
                 )

@@ -42,7 +42,7 @@ class PinChallengeWorkflow(private val service: InfinityService) :
                 try {
                     state = state.copy(requesting = true)
                     val token = service.requestToken(
-                        nodeAddress = "https://${props.nodeAddress}",
+                        nodeAddress = props.nodeAddress,
                         conferenceAlias = props.conferenceAlias,
                         displayName = props.displayName,
                         pin = it.trim()

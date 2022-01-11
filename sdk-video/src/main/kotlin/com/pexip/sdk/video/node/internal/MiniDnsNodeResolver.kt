@@ -12,8 +12,8 @@ internal class MiniDnsNodeResolver(private val api: ResolverApi) : NodeResolver 
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun resolve(uri: String): String = withContext(Dispatchers.IO) {
         val (_, domain) = uri.split("@")
-        val srvResult = api.resolveSrv("_pexapp._tcp.$domain")
-        if (srvResult.wasSuccessful()) {
+        val srvResult = api.resolveSrv(SERVICE, PROTO, domain)
+        val host = if (srvResult.wasSuccessful()) {
             srvResult.sortedSrvResolvedAddresses.first()
                 .srv
                 .target
@@ -26,5 +26,16 @@ internal class MiniDnsNodeResolver(private val api: ResolverApi) : NodeResolver 
                 throw NoSuchElementException()
             }
         }
+        "$SCHEME://$host"
+    }
+
+    private fun ResolverApi.resolveSrv(service: String, proto: String, name: String) =
+        resolveSrv("_$service._$proto.$name")
+
+    private companion object {
+
+        const val SERVICE = "pexapp"
+        const val PROTO = "tcp"
+        const val SCHEME = "https"
     }
 }

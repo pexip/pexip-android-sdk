@@ -20,12 +20,18 @@ class MiniDnsNodeResolverTest {
 
     @Test
     fun `returns DNS SRV record`() = runBlocking {
-        assertEquals("pexipdemo.com", resolver.resolve("dzmitry.rymarau@pexip.com"))
+        assertEquals(
+            expected = "https://pexipdemo.com",
+            actual = resolver.resolve("dzmitry.rymarau@pexip.com")
+        )
     }
 
     @Test
     fun `returns A record`() = runBlocking {
-        assertEquals("93.184.216.34", resolver.resolve("me@example.com"))
+        assertEquals(
+            expected = "https://93.184.216.34",
+            actual = resolver.resolve("me@example.com")
+        )
     }
 
     @Test
