@@ -27,6 +27,3 @@ dependencyResolutionManagement {
 rootProject.name = "sdk"
 include(":sdk-video")
 include(":sdk-video-sample")
-include(":sdk-workflow-core")
-include(":sdk-workflow-test")
-include(":sdk-workflow-ui")

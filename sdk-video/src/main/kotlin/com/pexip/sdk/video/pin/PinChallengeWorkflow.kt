@@ -1,88 +1,106 @@
 package com.pexip.sdk.video.pin
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
+import android.os.Parcelable
 import com.pexip.sdk.video.api.InfinityService
 import com.pexip.sdk.video.api.Token
 import com.pexip.sdk.video.api.internal.InvalidPinException
-import com.pexip.sdk.workflow.core.ExperimentalWorkflowApi
-import com.pexip.sdk.workflow.core.Workflow
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collectLatest
+import com.squareup.workflow1.Snapshot
+import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
+import com.squareup.workflow1.ui.toParcelable
+import com.squareup.workflow1.ui.toSnapshot
+import kotlinx.parcelize.Parcelize
 
-@ExperimentalWorkflowApi
 class PinChallengeWorkflow(private val service: InfinityService) :
-    Workflow<PinChallengeProps, PinChallengeOutput, PinChallengeRendering> {
+    StatefulWorkflow<PinChallengeProps, PinChallengeState, PinChallengeOutput, PinChallengeRendering>() {
 
     constructor() : this(InfinityService)
 
-    private data class State(
-        val pin: String = "",
-        val t: Throwable? = null,
-        val requesting: Boolean = false,
-    )
+    override fun initialState(props: PinChallengeProps, snapshot: Snapshot?): PinChallengeState =
+        snapshot?.toParcelable() ?: PinChallengeState()
 
-    @Composable
+    override fun snapshotState(state: PinChallengeState): Snapshot = state.toSnapshot()
+
     override fun render(
-        props: PinChallengeProps,
-        onOutput: (PinChallengeOutput) -> Unit,
+        renderProps: PinChallengeProps,
+        renderState: PinChallengeState,
+        context: RenderContext,
     ): PinChallengeRendering {
-        var state by remember { mutableStateOf(State()) }
-        val submitFlow = rememberSubmitFlow()
-        val currentOnOutput by rememberUpdatedState(onOutput)
-        LaunchedEffect(props, submitFlow) {
-            submitFlow.collectLatest {
-                try {
-                    state = state.copy(requesting = true)
-                    val token = service.requestToken(
-                        nodeAddress = props.nodeAddress,
-                        conferenceAlias = props.conferenceAlias,
-                        displayName = props.displayName,
-                        pin = it.trim()
-                    )
-                    val output = PinChallengeOutput.Token(
-                        token = token.token,
-                        expires = token.expires
-                    )
-                    currentOnOutput(output)
-                } catch (e: InvalidPinException) {
-                    state = state.copy(pin = "", t = e, requesting = false)
-                } catch (t: Throwable) {
-                    state = state.copy(t = t, requesting = false)
-                }
-            }
-        }
+        context.verifyPinSideEffect(renderProps, renderState)
         return PinChallengeRendering(
-            pin = state.pin,
-            error = state.t != null,
+            pin = renderState.pin,
+            error = renderState.t != null,
             submitEnabled = when {
-                state.requesting -> false
-                props.required -> state.pin.isNotBlank()
+                renderState.requesting -> false
+                renderProps.required -> renderState.pin.isNotBlank()
                 else -> false
             },
-            onPinChange = { state = state.copy(pin = it, t = null) },
-            onSubmitClick = { submitFlow.tryEmit(state.pin) },
-            onBackClick = { onOutput(PinChallengeOutput.Back) }
+            onPinChange = context.eventHandler<String>({ "OnPinChange" }) {
+                state = state.copy(pin = it.trim(), t = null)
+            },
+            onSubmitClick = context.eventHandler({ "OnSubmitClick" }) {
+                state = state.copy(pinToSubmit = state.pin)
+            },
+            onBackClick = context.eventHandler({ "OnBackClick" }) {
+                setOutput(PinChallengeOutput.Back)
+            }
         )
     }
 
-    @Composable
-    private fun rememberSubmitFlow() = remember {
-        MutableSharedFlow<String>(
-            extraBufferCapacity = 1,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST
+    private fun RenderContext.verifyPinSideEffect(
+        props: PinChallengeProps,
+        state: PinChallengeState,
+    ) {
+        val pinToSubmit = state.pinToSubmit ?: return
+        runningSideEffect("$props:$pinToSubmit") {
+            actionSink.send(onRequestToken())
+            val action = try {
+                val token = service.requestToken(
+                    nodeAddress = props.nodeAddress,
+                    conferenceAlias = props.conferenceAlias,
+                    displayName = props.displayName,
+                    pin = pinToSubmit
+                )
+                onToken(token)
+            } catch (e: InvalidPinException) {
+                onInvalidPin(e)
+            } catch (t: Throwable) {
+                onError(t)
+            }
+            actionSink.send(action)
+        }
+    }
+
+    private fun onRequestToken() = action({ "OnRequestToken" }) {
+        state = state.copy(requesting = true)
+    }
+
+    private fun onToken(token: Token) = action({ "OnToken($token)" }) {
+        val output = PinChallengeOutput.Token(
+            token = token.token,
+            expires = token.expires
+        )
+        setOutput(output)
+    }
+
+    private fun onInvalidPin(e: InvalidPinException) = action({ "OnInvalidPin($e)" }) {
+        state = state.copy(
+            pin = "",
+            t = e,
+            requesting = false,
+            pinToSubmit = null
+        )
+    }
+
+    private fun onError(t: Throwable) = action({ "OnError($t)" }) {
+        state = state.copy(
+            t = t,
+            requesting = false,
+            pinToSubmit = null
         )
     }
 }
 
-@Immutable
 class PinChallengeProps(
     val nodeAddress: String,
     val conferenceAlias: String,
@@ -112,10 +130,16 @@ class PinChallengeProps(
         "PinChallengeProps(nodeAddress=$nodeAddress, conferenceAlias=$conferenceAlias, displayName=$displayName, required=$required)"
 }
 
-@Immutable
+@Parcelize
+data class PinChallengeState(
+    val pin: String = "",
+    val t: Throwable? = null,
+    val requesting: Boolean = false,
+    val pinToSubmit: String? = null,
+) : Parcelable
+
 sealed class PinChallengeOutput {
 
-    @Immutable
     class Token(val token: String, val expires: Long) : PinChallengeOutput() {
 
         override fun equals(other: Any?): Boolean {
@@ -135,14 +159,12 @@ sealed class PinChallengeOutput {
         override fun toString(): String = "Token(token=$token, expires=$expires)"
     }
 
-    @Immutable
     object Back : PinChallengeOutput() {
 
         override fun toString(): String = "Back"
     }
 }
 
-@Immutable
 class PinChallengeRendering(
     val pin: String,
     val error: Boolean,

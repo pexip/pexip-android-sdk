@@ -1,67 +1,76 @@
 package com.pexip.sdk.video.pin
 
-import android.annotation.SuppressLint
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
+import android.os.Parcelable
 import com.pexip.sdk.video.api.InfinityService
 import com.pexip.sdk.video.api.PinRequirement
-import com.pexip.sdk.workflow.core.ExperimentalWorkflowApi
-import com.pexip.sdk.workflow.core.Workflow
+import com.squareup.workflow1.Snapshot
+import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
+import com.squareup.workflow1.ui.toParcelable
+import com.squareup.workflow1.ui.toSnapshot
+import kotlinx.parcelize.Parcelize
 
-@ExperimentalWorkflowApi
 class PinRequirementWorkflow(private val service: InfinityService) :
-    Workflow<PinRequirementProps, PinRequirementOutput, PinRequirementRendering> {
+    StatefulWorkflow<PinRequirementProps, PinRequirementState, PinRequirementOutput, PinRequirementRendering>() {
 
     constructor() : this(InfinityService)
 
-    private sealed class State {
-        object ResolvingPinRequirement : State()
-        data class Failure(val t: Throwable) : State()
+    override fun initialState(
+        props: PinRequirementProps,
+        snapshot: Snapshot?,
+    ): PinRequirementState = snapshot?.toParcelable() ?: PinRequirementState.ResolvingPinRequirement
+
+    override fun snapshotState(state: PinRequirementState): Snapshot = state.toSnapshot()
+
+    override fun render(
+        renderProps: PinRequirementProps,
+        renderState: PinRequirementState,
+        context: RenderContext,
+    ): PinRequirementRendering {
+        context.getPinRequirementSideEffect(renderProps)
+        return when (renderState) {
+            is PinRequirementState.ResolvingPinRequirement -> PinRequirementRendering.ResolvingPinRequirement
+            is PinRequirementState.Failure -> PinRequirementRendering.Failure(
+                t = renderState.t,
+                onBackClick = context.eventHandler({ "OnBackClick" }) {
+                    setOutput(PinRequirementOutput.Back)
+                }
+            )
+        }
     }
 
-    @SuppressLint("ComposableNaming")
-    @Composable
-    override fun render(
-        props: PinRequirementProps,
-        onOutput: (PinRequirementOutput) -> Unit,
-    ): PinRequirementRendering {
-        val (state, onStateChange) = remember { mutableStateOf<State>(State.ResolvingPinRequirement) }
-        val currentOnOutput by rememberUpdatedState(onOutput)
-        LaunchedEffect(props) {
-            try {
+    private fun RenderContext.getPinRequirementSideEffect(props: PinRequirementProps) =
+        runningSideEffect(props.toString()) {
+            val action = try {
                 val pinRequirement = service.getPinRequirement(
                     nodeAddress = props.nodeAddress,
                     conferenceAlias = props.conferenceAlias,
                     displayName = props.displayName
                 )
-                val output = when (pinRequirement) {
-                    is PinRequirement.None -> PinRequirementOutput.None(
-                        token = pinRequirement.token,
-                        expires = pinRequirement.expires
-                    )
-                    is PinRequirement.Some -> PinRequirementOutput.Some(pinRequirement.required)
-                }
-                currentOnOutput(output)
+                onPinRequirement(pinRequirement)
             } catch (t: Throwable) {
-                onStateChange(State.Failure(t))
+                onError(t)
             }
+            actionSink.send(action)
         }
-        return when (state) {
-            is State.ResolvingPinRequirement -> PinRequirementRendering.ResolvingPinRequirement
-            is State.Failure -> PinRequirementRendering.Failure(
-                t = state.t,
-                onBackClick = { onOutput(PinRequirementOutput.Back) }
-            )
+
+    private fun onPinRequirement(pinRequirement: PinRequirement) =
+        action({ "OnPinRequirement($pinRequirement)" }) {
+            val output = when (pinRequirement) {
+                is PinRequirement.None -> PinRequirementOutput.None(
+                    token = pinRequirement.token,
+                    expires = pinRequirement.expires
+                )
+                is PinRequirement.Some -> PinRequirementOutput.Some(pinRequirement.required)
+            }
+            setOutput(output)
         }
+
+    private fun onError(t: Throwable) = action({ "OnError($t)" }) {
+        state = PinRequirementState.Failure(t)
     }
 }
 
-@Immutable
 class PinRequirementProps(
     val nodeAddress: String,
     val conferenceAlias: String,
@@ -88,10 +97,17 @@ class PinRequirementProps(
         "PinRequirementProps(nodeAddress=$nodeAddress, conferenceAlias=$conferenceAlias, displayName=$displayName)"
 }
 
-@Immutable
+sealed class PinRequirementState : Parcelable {
+
+    @Parcelize
+    object ResolvingPinRequirement : PinRequirementState()
+
+    @Parcelize
+    data class Failure(val t: Throwable) : PinRequirementState()
+}
+
 sealed class PinRequirementOutput {
 
-    @Immutable
     class Some(val required: Boolean) : PinRequirementOutput() {
 
         override fun equals(other: Any?): Boolean {
@@ -106,7 +122,6 @@ sealed class PinRequirementOutput {
         override fun toString(): String = "Some(required=$required)"
     }
 
-    @Immutable
     class None(val token: String, val expires: Long) : PinRequirementOutput() {
 
         override fun equals(other: Any?): Boolean {
@@ -126,23 +141,19 @@ sealed class PinRequirementOutput {
         override fun toString(): String = "None(token=$token, expires=$expires)"
     }
 
-    @Immutable
     object Back : PinRequirementOutput() {
 
         override fun toString(): String = "Back"
     }
 }
 
-@Immutable
 sealed class PinRequirementRendering {
 
-    @Immutable
     object ResolvingPinRequirement : PinRequirementRendering() {
 
         override fun toString(): String = "ResolvingPinRequirement"
     }
 
-    @Immutable
     class Failure(val t: Throwable, val onBackClick: () -> Unit) : PinRequirementRendering() {
 
         override fun equals(other: Any?): Boolean {

@@ -9,12 +9,12 @@ plugins {
 android {
     buildFeatures.compose = true
     composeOptions.kotlinCompilerExtensionVersion = libs.versions.androidx.compose.get()
+    kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=com.squareup.workflow1.ui.WorkflowUiExperimentalApi"
+    }
 }
 
 dependencies {
-    api(projects.sdkWorkflowCore)
-    api(projects.sdkWorkflowUi)
-
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.material)
@@ -25,9 +25,12 @@ dependencies {
     implementation(libs.minidns.android21)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logginginterceptor)
+    implementation(libs.workflow.core.jvm)
+    implementation(libs.workflow.ui.compose)
 
-    testImplementation(projects.sdkWorkflowTest)
     testImplementation(libs.androidx.test.core.ktx)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
+    testImplementation(libs.workflow.testing.jvm)
 }

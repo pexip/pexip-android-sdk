@@ -1,35 +1,45 @@
 package com.pexip.sdk.video.sample
 
+import android.os.Parcelable
 import android.util.Patterns
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import com.pexip.sdk.workflow.core.Workflow
+import com.squareup.workflow1.Snapshot
+import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.ui.toParcelable
+import com.squareup.workflow1.ui.toSnapshot
+import kotlinx.parcelize.Parcelize
 
-object SampleWorkflow : Workflow<Unit, SampleOutput, SampleRendering> {
+object SampleWorkflow : StatefulWorkflow<Unit, SampleState, SampleOutput, SampleRendering>() {
 
-    @Composable
-    override fun render(props: Unit, onOutput: (SampleOutput) -> Unit): SampleRendering {
-        val regex = remember { Patterns.EMAIL_ADDRESS.toRegex() }
-        var value by rememberSaveable { mutableStateOf("") }
-        return SampleRendering(
-            value = value,
-            onValueChange = { value = it.trim() },
-            resolveEnabled = regex.matches(value),
-            onResolveClick = { onOutput(SampleOutput(value)) }
-        )
-    }
+    private val regex = Patterns.EMAIL_ADDRESS.toRegex()
+
+    override fun initialState(props: Unit, snapshot: Snapshot?): SampleState =
+        snapshot?.toParcelable() ?: SampleState()
+
+    override fun snapshotState(state: SampleState): Snapshot = state.toSnapshot()
+
+    override fun render(
+        renderProps: Unit,
+        renderState: SampleState,
+        context: RenderContext,
+    ): SampleRendering = SampleRendering(
+        value = renderState.value,
+        onValueChange = context.eventHandler<String> {
+            state = SampleState(it.trim())
+        },
+        resolveEnabled = regex.matches(renderState.value),
+        onResolveClick = context.eventHandler {
+            setOutput(SampleOutput(state.value))
+        }
+    )
 }
 
-@Immutable
 @JvmInline
 value class SampleOutput(val uri: String)
 
-@Immutable
+@Parcelize
+@JvmInline
+value class SampleState(val value: String = "") : Parcelable
+
 data class SampleRendering(
     val value: String,
     val onValueChange: (String) -> Unit,

@@ -5,10 +5,7 @@ import com.pexip.sdk.video.api.Token
 import com.pexip.sdk.video.api.internal.InvalidPinException
 import com.pexip.sdk.video.nextConferenceAlias
 import com.pexip.sdk.video.nextPin
-import com.pexip.sdk.workflow.core.ExperimentalWorkflowApi
-import com.pexip.sdk.workflow.test.test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import com.squareup.workflow1.testing.launchForTestingFromStartWith
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -16,8 +13,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalWorkflowApi::class)
-@RunWith(RobolectricTestRunner::class)
 class PinChallengeWorkflowTest {
 
     private lateinit var props: PinChallengeProps
@@ -36,10 +31,10 @@ class PinChallengeWorkflowTest {
     fun `outputs Back`() {
         val service = TestInfinityService()
         val workflow = PinChallengeWorkflow(service)
-        workflow.test(props) {
-            val rendering = awaitRendering()
+        workflow.launchForTestingFromStartWith(props) {
+            val rendering = awaitNextRendering()
             rendering.onBackClick()
-            assertEquals(PinChallengeOutput.Back, awaitOutput())
+            assertEquals(PinChallengeOutput.Back, awaitNextOutput())
         }
     }
 
@@ -59,14 +54,14 @@ class PinChallengeWorkflowTest {
             ): Token = token
         }
         val workflow = PinChallengeWorkflow(service)
-        workflow.test(props) {
-            var rendering = awaitRendering()
+        workflow.launchForTestingFromStartWith(props) {
+            var rendering = awaitNextRendering()
             assertEquals("", rendering.pin)
             assertFalse(rendering.error)
             assertFalse(rendering.submitEnabled)
             val pin = Random.nextPin()
             rendering.onPinChange(pin)
-            rendering = awaitRendering()
+            rendering = awaitNextRendering()
             assertEquals(pin, rendering.pin)
             assertFalse(rendering.error)
             assertTrue(rendering.submitEnabled)
@@ -76,9 +71,9 @@ class PinChallengeWorkflowTest {
                     token = token.token,
                     expires = token.expires
                 ),
-                actual = awaitOutput()
+                actual = awaitNextOutput()
             )
-            rendering = awaitRendering()
+            rendering = awaitNextRendering()
             assertEquals(pin, rendering.pin)
             assertFalse(rendering.error)
             assertFalse(rendering.submitEnabled)
@@ -97,12 +92,12 @@ class PinChallengeWorkflowTest {
             ): Token = throw InvalidPinException()
         }
         val workflow = PinChallengeWorkflow(service)
-        workflow.test(props) {
-            var rendering = awaitRendering()
+        workflow.launchForTestingFromStartWith(props) {
+            var rendering = awaitNextRendering()
             rendering.onPinChange(Random.nextPin())
-            rendering = awaitRendering()
+            rendering = awaitNextRendering()
             rendering.onSubmitClick()
-            rendering = awaitRendering()
+            rendering = awaitNextRendering()
             assertEquals("", rendering.pin)
             assertTrue(rendering.error)
             assertFalse(rendering.submitEnabled)
@@ -121,13 +116,13 @@ class PinChallengeWorkflowTest {
             ): Token = throw Throwable()
         }
         val workflow = PinChallengeWorkflow(service)
-        workflow.test(props) {
-            var rendering = awaitRendering()
+        workflow.launchForTestingFromStartWith(props) {
+            var rendering = awaitNextRendering()
             val pin = Random.nextPin()
             rendering.onPinChange(pin)
-            rendering = awaitRendering()
+            rendering = awaitNextRendering()
             rendering.onSubmitClick()
-            rendering = awaitRendering()
+            rendering = awaitNextRendering()
             assertEquals(pin, rendering.pin)
             assertTrue(rendering.error)
             assertTrue(rendering.submitEnabled)

@@ -2,29 +2,36 @@ package com.pexip.sdk.video.pin
 
 import com.pexip.sdk.video.api.PinRequirement
 import com.pexip.sdk.video.api.TestInfinityService
-import com.pexip.sdk.workflow.core.ExperimentalWorkflowApi
-import com.pexip.sdk.workflow.test.test
+import com.squareup.workflow1.testing.launchForTestingFromStartWith
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import kotlin.random.Random
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
-@OptIn(ExperimentalWorkflowApi::class)
-@RunWith(RobolectricTestRunner::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class PinRequirementWorkflowTest {
 
+    private lateinit var dispatcher: TestCoroutineDispatcher
     private lateinit var props: PinRequirementProps
 
     @BeforeTest
     fun setUp() {
+        dispatcher = TestCoroutineDispatcher()
         props = PinRequirementProps(
             nodeAddress = "localhost",
             conferenceAlias = "${Random.nextInt(1000, 9999)}",
             displayName = "John"
         )
+    }
+
+    @AfterTest
+    fun tearDown() {
+        dispatcher.cleanupTestCoroutines()
     }
 
     @Test
@@ -46,8 +53,8 @@ class PinRequirementWorkflowTest {
                 ): PinRequirement = it
             }
             val workflow = PinRequirementWorkflow(service)
-            workflow.test(props) {
-                assertEquals(PinRequirementRendering.ResolvingPinRequirement, awaitRendering())
+            workflow.launchForTestingFromStartWith(props, context = dispatcher) {
+                assertEquals(PinRequirementRendering.ResolvingPinRequirement, awaitNextRendering())
                 val output = when (it) {
                     is PinRequirement.Some -> PinRequirementOutput.Some(it.required)
                     is PinRequirement.None -> PinRequirementOutput.None(
@@ -55,7 +62,7 @@ class PinRequirementWorkflowTest {
                         expires = it.expires
                     )
                 }
-                assertEquals(output, awaitOutput())
+                assertEquals(output, awaitNextOutput())
             }
         }
     }
@@ -69,15 +76,19 @@ class PinRequirementWorkflowTest {
                 nodeAddress: String,
                 conferenceAlias: String,
                 displayName: String,
-            ): PinRequirement = throw t
+            ): PinRequirement {
+                delay(100)
+                throw t
+            }
         }
         val workflow = PinRequirementWorkflow(service)
-        workflow.test(props) {
-            assertEquals(PinRequirementRendering.ResolvingPinRequirement, awaitRendering())
-            val rendering = assertIs<PinRequirementRendering.Failure>(awaitRendering())
+        workflow.launchForTestingFromStartWith(props, context = dispatcher) {
+            assertEquals(PinRequirementRendering.ResolvingPinRequirement, awaitNextRendering())
+            dispatcher.advanceTimeBy(100)
+            val rendering = assertIs<PinRequirementRendering.Failure>(awaitNextRendering())
             assertEquals(t, rendering.t)
             rendering.onBackClick()
-            assertEquals(PinRequirementOutput.Back, awaitOutput())
+            assertEquals(PinRequirementOutput.Back, awaitNextOutput())
         }
     }
 }

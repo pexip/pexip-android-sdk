@@ -2,6 +2,7 @@
 
 plugins {
     id("com.pexip.paddock.kotlin.android.application")
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -18,8 +19,7 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.androidx.compose.get()
     }
     kotlinOptions {
-        freeCompilerArgs += "-Xopt-in=com.pexip.sdk.workflow.core.ExperimentalWorkflowApi"
-        freeCompilerArgs += "-Xopt-in=com.pexip.sdk.workflow.ui.ExperimentalWorkflowUiApi"
+        freeCompilerArgs += "-Xopt-in=com.squareup.workflow1.ui.WorkflowUiExperimentalApi"
     }
 }
 
@@ -29,4 +29,8 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.material)
     implementation(libs.accompanist.appcompattheme)
+    implementation(libs.workflow.core.jvm)
+    implementation(libs.workflow.ui.compose)
+
+    testImplementation(libs.workflow.testing.jvm)
 }

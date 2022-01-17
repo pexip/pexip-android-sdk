@@ -1,60 +1,71 @@
 package com.pexip.sdk.video.node
 
-import android.annotation.SuppressLint
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
+import android.os.Parcelable
 import com.pexip.sdk.video.node.internal.MiniDnsNodeResolver
 import com.pexip.sdk.video.node.internal.NodeResolver
-import com.pexip.sdk.workflow.core.ExperimentalWorkflowApi
-import com.pexip.sdk.workflow.core.Workflow
+import com.squareup.workflow1.Snapshot
+import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
+import com.squareup.workflow1.ui.toParcelable
+import com.squareup.workflow1.ui.toSnapshot
+import kotlinx.parcelize.Parcelize
 
-@ExperimentalWorkflowApi
 class NodeWorkflow internal constructor(private val resolver: NodeResolver) :
-    Workflow<NodeProps, NodeOutput, NodeRendering> {
+    StatefulWorkflow<NodeProps, NodeState, NodeOutput, NodeRendering>() {
 
     constructor() : this(MiniDnsNodeResolver())
 
-    private sealed class State {
-        object ResolvingNode : State()
-        data class Failure(val t: Throwable) : State()
-    }
+    override fun initialState(props: NodeProps, snapshot: Snapshot?): NodeState =
+        snapshot?.toParcelable() ?: NodeState.ResolvingNode
 
-    @SuppressLint("ComposableNaming")
-    @Composable
-    override fun render(props: NodeProps, onOutput: (NodeOutput) -> Unit): NodeRendering {
-        val (state, onStateChange) = remember { mutableStateOf<State>(State.ResolvingNode) }
-        val currentOnOutput by rememberUpdatedState(onOutput)
-        LaunchedEffect(props) {
-            try {
-                val address = resolver.resolve(props.uri)
-                currentOnOutput(NodeOutput.Node(address))
-            } catch (t: Throwable) {
-                onStateChange(State.Failure(t))
-            }
-        }
-        return when (state) {
-            is State.ResolvingNode -> NodeRendering.ResolvingNode
-            is State.Failure -> NodeRendering.Failure(
-                t = state.t,
-                onBackClick = { onOutput(NodeOutput.Back) }
+    override fun snapshotState(state: NodeState): Snapshot = state.toSnapshot()
+
+    override fun render(
+        renderProps: NodeProps,
+        renderState: NodeState,
+        context: RenderContext,
+    ): NodeRendering {
+        context.resolveSideEffect(renderProps)
+        return when (renderState) {
+            is NodeState.ResolvingNode -> NodeRendering.ResolvingNode
+            is NodeState.Failure -> NodeRendering.Failure(
+                t = renderState.t,
+                onBackClick = context.eventHandler({ "OnBackClick" }) { setOutput(NodeOutput.Back) }
             )
         }
     }
+
+    private fun RenderContext.resolveSideEffect(props: NodeProps) =
+        runningSideEffect(props.toString()) {
+            val action = try {
+                onNode(resolver.resolve(props.uri))
+            } catch (t: Throwable) {
+                onError(t)
+            }
+            actionSink.send(action)
+        }
+
+    private fun onNode(address: String) = action({ "OnNode($address)" }) {
+        setOutput(NodeOutput.Node(address))
+    }
+
+    private fun onError(t: Throwable) = action({ "OnError($t)" }) { state = NodeState.Failure(t) }
 }
 
-@Immutable
 @JvmInline
 value class NodeProps(val uri: String)
 
-@Immutable
+sealed class NodeState : Parcelable {
+
+    @Parcelize
+    object ResolvingNode : NodeState()
+
+    @Parcelize
+    data class Failure(val t: Throwable) : NodeState()
+}
+
 sealed class NodeOutput {
 
-    @Immutable
     class Node(val address: String) : NodeOutput() {
 
         override fun equals(other: Any?): Boolean {
@@ -69,23 +80,19 @@ sealed class NodeOutput {
         override fun toString(): String = "Node(address=$address)"
     }
 
-    @Immutable
     object Back : NodeOutput() {
 
         override fun toString(): String = "Back"
     }
 }
 
-@Immutable
 sealed class NodeRendering {
 
-    @Immutable
     object ResolvingNode : NodeRendering() {
 
         override fun toString(): String = "ResolvingNode"
     }
 
-    @Immutable
     class Failure(val t: Throwable, val onBackClick: () -> Unit) : NodeRendering() {
 
         override fun equals(other: Any?): Boolean {

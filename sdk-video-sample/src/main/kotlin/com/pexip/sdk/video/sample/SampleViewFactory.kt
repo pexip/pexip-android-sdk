@@ -16,15 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.pexip.sdk.workflow.ui.renderer
+import com.squareup.workflow1.ui.compose.composeViewFactory
 
-val SampleRenderer = renderer<SampleRendering> {
+val SampleViewFactory = composeViewFactory<SampleRendering> { rendering, _ ->
     SampleScreen(
-        value = value,
-        onValueChange = onValueChange,
-        resolveEnabled = resolveEnabled,
-        onResolveClick = onResolveClick,
-        modifier = it
+        value = rendering.value,
+        onValueChange = rendering.onValueChange,
+        resolveEnabled = rendering.resolveEnabled,
+        onResolveClick = rendering.onResolveClick
     )
 }
 
