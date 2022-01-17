@@ -34,11 +34,11 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
 
     override suspend fun getPinRequirement(
         nodeAddress: String,
-        conferenceAlias: String,
+        alias: String,
         displayName: String,
     ): PinRequirement {
         require(nodeAddress.isNotBlank()) { "nodeAddress is blank." }
-        require(conferenceAlias.isNotBlank()) { "conferenceAlias is blank." }
+        require(alias.isNotBlank()) { "alias is blank." }
         require(displayName.isNotBlank()) { "displayName is blank." }
         val response = client.await {
             val request = RequestTokenRequest(displayName)
@@ -46,7 +46,7 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
             post(requestBody)
             val url = nodeAddress
                 .toHttpUrl()
-                .resolve("api/client/v2/conferences/$conferenceAlias/request_token")!!
+                .resolve("api/client/v2/conferences/$alias/request_token")!!
             url(url)
         }
         val (result) = response.use {
@@ -68,12 +68,12 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
 
     override suspend fun requestToken(
         nodeAddress: String,
-        conferenceAlias: String,
+        alias: String,
         displayName: String,
         pin: String,
     ): Token {
         require(nodeAddress.isNotBlank()) { "nodeAddress is blank." }
-        require(conferenceAlias.isNotBlank()) { "conferenceAlias is blank." }
+        require(alias.isNotBlank()) { "alias is blank." }
         require(displayName.isNotBlank()) { "displayName is blank." }
         val response = client.await {
             val request = RequestTokenRequest(displayName)
@@ -81,7 +81,7 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
             post(requestBody)
             val url = nodeAddress
                 .toHttpUrl()
-                .resolve("api/client/v2/conferences/$conferenceAlias/request_token")!!
+                .resolve("api/client/v2/conferences/$alias/request_token")!!
             url(url)
             header("pin", pin)
         }

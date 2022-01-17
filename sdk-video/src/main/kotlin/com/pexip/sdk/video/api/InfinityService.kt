@@ -8,13 +8,13 @@ interface InfinityService {
 
     suspend fun getPinRequirement(
         nodeAddress: String,
-        conferenceAlias: String,
+        alias: String,
         displayName: String,
     ): PinRequirement
 
     suspend fun requestToken(
         nodeAddress: String,
-        conferenceAlias: String,
+        alias: String,
         displayName: String,
         pin: String,
     ): Token

@@ -44,7 +44,7 @@ class PinRequirementWorkflow(private val service: InfinityService) :
             val action = try {
                 val pinRequirement = service.getPinRequirement(
                     nodeAddress = props.nodeAddress,
-                    conferenceAlias = props.conferenceAlias,
+                    alias = props.alias,
                     displayName = props.displayName
                 )
                 onPinRequirement(pinRequirement)
@@ -73,7 +73,7 @@ class PinRequirementWorkflow(private val service: InfinityService) :
 
 class PinRequirementProps(
     val nodeAddress: String,
-    val conferenceAlias: String,
+    val alias: String,
     val displayName: String,
 ) {
 
@@ -81,20 +81,20 @@ class PinRequirementProps(
         if (this === other) return true
         if (other !is PinRequirementProps) return false
         if (nodeAddress != other.nodeAddress) return false
-        if (conferenceAlias != other.conferenceAlias) return false
+        if (alias != other.alias) return false
         if (displayName != other.displayName) return false
         return true
     }
 
     override fun hashCode(): Int {
         var result = nodeAddress.hashCode()
-        result = 31 * result + conferenceAlias.hashCode()
+        result = 31 * result + alias.hashCode()
         result = 31 * result + displayName.hashCode()
         return result
     }
 
     override fun toString(): String =
-        "PinRequirementProps(nodeAddress=$nodeAddress, conferenceAlias=$conferenceAlias, displayName=$displayName)"
+        "PinRequirementProps(nodeAddress=$nodeAddress, alias=$alias, displayName=$displayName)"
 }
 
 sealed class PinRequirementState : Parcelable {

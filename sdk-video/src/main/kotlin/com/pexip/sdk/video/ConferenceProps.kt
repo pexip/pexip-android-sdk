@@ -6,18 +6,21 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class ConferenceProps private constructor(
-    internal val uri: String,
+    internal val alias: String,
+    internal val host: String,
     internal val displayName: String,
 ) : Parcelable {
 
     class Builder {
 
-        private var uri: String? = null
+        private var alias: String? = null
         private var displayName: String = "Guest"
 
-        fun uri(uri: String): Builder = apply {
-            require(Patterns.EMAIL_ADDRESS.matcher(uri).matches()) { "'$uri' is not a valid URI." }
-            this.uri = uri.trim()
+        fun alias(alias: String): Builder = apply {
+            require(Patterns.EMAIL_ADDRESS.matcher(alias).matches()) {
+                "'$alias' is not a valid URI."
+            }
+            this.alias = alias.trim()
         }
 
         fun displayName(displayName: String): Builder = apply {
@@ -25,27 +28,35 @@ class ConferenceProps private constructor(
             this.displayName = displayName.trim()
         }
 
-        fun build(): ConferenceProps = ConferenceProps(
-            uri = checkNotNull(uri) { "uri is not set." },
-            displayName = displayName
-        )
+        fun build(): ConferenceProps {
+            val alias = checkNotNull(alias) { "alias is not set." }
+            val (_, host) = alias.split("@")
+            return ConferenceProps(
+                alias = alias,
+                host = host,
+                displayName = displayName
+            )
+        }
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ConferenceProps) return false
-        if (uri != other.uri) return false
+        if (alias != other.alias) return false
+        if (host != other.host) return false
         if (displayName != other.displayName) return false
         return true
     }
 
     override fun hashCode(): Int {
-        var result = uri.hashCode()
+        var result = alias.hashCode()
+        result = 31 * result + host.hashCode()
         result = 31 * result + displayName.hashCode()
         return result
     }
 
-    override fun toString(): String = "ConferenceProps(uri=$uri, displayName=$displayName)"
+    override fun toString(): String =
+        "ConferenceProps(alias=$alias, host=$host, displayName=$displayName)"
 }
 
 @JvmSynthetic

@@ -3,7 +3,7 @@ package com.pexip.sdk.video.pin
 import com.pexip.sdk.video.api.TestInfinityService
 import com.pexip.sdk.video.api.Token
 import com.pexip.sdk.video.api.internal.InvalidPinException
-import com.pexip.sdk.video.nextConferenceAlias
+import com.pexip.sdk.video.nextAlias
 import com.pexip.sdk.video.nextPin
 import com.squareup.workflow1.testing.launchForTestingFromStartWith
 import kotlin.random.Random
@@ -21,7 +21,7 @@ class PinChallengeWorkflowTest {
     fun setUp() {
         props = PinChallengeProps(
             nodeAddress = "localhost",
-            conferenceAlias = Random.nextConferenceAlias(),
+            alias = Random.nextAlias(),
             displayName = "John",
             required = true
         )
@@ -48,7 +48,7 @@ class PinChallengeWorkflowTest {
 
             override suspend fun requestToken(
                 nodeAddress: String,
-                conferenceAlias: String,
+                alias: String,
                 displayName: String,
                 pin: String,
             ): Token = token
@@ -86,7 +86,7 @@ class PinChallengeWorkflowTest {
 
             override suspend fun requestToken(
                 nodeAddress: String,
-                conferenceAlias: String,
+                alias: String,
                 displayName: String,
                 pin: String,
             ): Token = throw InvalidPinException()
@@ -110,7 +110,7 @@ class PinChallengeWorkflowTest {
 
             override suspend fun requestToken(
                 nodeAddress: String,
-                conferenceAlias: String,
+                alias: String,
                 displayName: String,
                 pin: String,
             ): Token = throw Throwable()

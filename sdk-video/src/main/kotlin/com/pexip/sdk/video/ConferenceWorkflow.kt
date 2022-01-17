@@ -36,14 +36,14 @@ class ConferenceWorkflow :
     ): Any = when (renderState) {
         is ConferenceState.Node -> context.renderChild(
             child = nodeWorkflow,
-            props = NodeProps(renderProps.uri),
+            props = NodeProps(renderProps.host),
             handler = ::onNodeOutput
         )
         is ConferenceState.PinRequirement -> context.renderChild(
             child = pinRequirementWorkflow,
             props = PinRequirementProps(
                 nodeAddress = renderState.nodeAddress,
-                conferenceAlias = renderProps.uri,
+                alias = renderProps.alias,
                 displayName = renderProps.displayName
             ),
             handler = ::onPinRequirementOutput
@@ -52,7 +52,7 @@ class ConferenceWorkflow :
             child = pinChallengeWorkflow,
             props = PinChallengeProps(
                 nodeAddress = renderState.nodeAddress,
-                conferenceAlias = renderProps.uri,
+                alias = renderProps.alias,
                 displayName = renderProps.displayName,
                 required = renderState.required
             ),

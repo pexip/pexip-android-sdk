@@ -14,16 +14,15 @@ internal class MiniDnsNodeResolver(
     constructor() : this(ResolverApi.INSTANCE, InfinityService)
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    override suspend fun resolve(uri: String): String = withContext(Dispatchers.IO) {
-        val (_, domain) = uri.split("@")
-        val srvResult = api.resolveSrv(SERVICE, PROTO, domain)
+    override suspend fun resolve(host: String): String = withContext(Dispatchers.IO) {
+        val srvResult = api.resolveSrv(SERVICE, PROTO, host)
         if (srvResult.wasSuccessful()) {
             srvResult.sortedSrvResolvedAddresses
                 .asSequence()
                 .map { "$SCHEME://${it.srv.target}" }
                 .first { !service.isInMaintenanceMode(it) }
         } else {
-            val aResult = api.resolve(domain, A::class.java)
+            val aResult = api.resolve(host, A::class.java)
             if (aResult.wasSuccessful()) {
                 "$SCHEME://${aResult.answers.first()}"
             } else {

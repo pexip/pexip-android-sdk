@@ -22,7 +22,7 @@ class MiniDnsNodeResolverTest {
     fun `returns DNS SRV record`() = runBlocking {
         assertEquals(
             expected = "https://pexipdemo.com",
-            actual = resolver.resolve("dzmitry.rymarau@pexip.com")
+            actual = resolver.resolve("pexip.com")
         )
     }
 
@@ -30,12 +30,12 @@ class MiniDnsNodeResolverTest {
     fun `returns A record`() = runBlocking {
         assertEquals(
             expected = "https://93.184.216.34",
-            actual = resolver.resolve("me@example.com")
+            actual = resolver.resolve("example.com")
         )
     }
 
     @Test
     fun `throws NoSuchElementException`() = runBlocking<Unit> {
-        assertFailsWith<NoSuchElementException> { resolver.resolve("a@b.c") }
+        assertFailsWith<NoSuchElementException> { resolver.resolve("b.c") }
     }
 }

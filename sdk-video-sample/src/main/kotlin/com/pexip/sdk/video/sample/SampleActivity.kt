@@ -39,7 +39,7 @@ class SampleActivity : AppCompatActivity() {
     }
 
     private fun onSampleOutput(output: SampleOutput) = ConferenceActivity.start(this) {
-        uri(output.uri)
+        alias(output.uri)
         displayName("Pexip Video SDK")
     }
 }

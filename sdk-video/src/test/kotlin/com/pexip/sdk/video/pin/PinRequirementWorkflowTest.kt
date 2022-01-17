@@ -24,7 +24,7 @@ class PinRequirementWorkflowTest {
         dispatcher = TestCoroutineDispatcher()
         props = PinRequirementProps(
             nodeAddress = "localhost",
-            conferenceAlias = "${Random.nextInt(1000, 9999)}",
+            alias = "${Random.nextInt(1000, 9999)}",
             displayName = "John"
         )
     }
@@ -48,7 +48,7 @@ class PinRequirementWorkflowTest {
 
                 override suspend fun getPinRequirement(
                     nodeAddress: String,
-                    conferenceAlias: String,
+                    alias: String,
                     displayName: String,
                 ): PinRequirement = it
             }
@@ -74,7 +74,7 @@ class PinRequirementWorkflowTest {
 
             override suspend fun getPinRequirement(
                 nodeAddress: String,
-                conferenceAlias: String,
+                alias: String,
                 displayName: String,
             ): PinRequirement {
                 delay(100)

@@ -57,7 +57,7 @@ class PinChallengeWorkflow(private val service: InfinityService) :
             val action = try {
                 val token = service.requestToken(
                     nodeAddress = props.nodeAddress,
-                    conferenceAlias = props.conferenceAlias,
+                    alias = props.alias,
                     displayName = props.displayName,
                     pin = pinToSubmit
                 )
@@ -103,7 +103,7 @@ class PinChallengeWorkflow(private val service: InfinityService) :
 
 class PinChallengeProps(
     val nodeAddress: String,
-    val conferenceAlias: String,
+    val alias: String,
     val displayName: String,
     val required: Boolean,
 ) {
@@ -112,7 +112,7 @@ class PinChallengeProps(
         if (this === other) return true
         if (other !is PinChallengeProps) return false
         if (nodeAddress != other.nodeAddress) return false
-        if (conferenceAlias != other.conferenceAlias) return false
+        if (alias != other.alias) return false
         if (displayName != other.displayName) return false
         if (required != other.required) return false
         return true
@@ -120,14 +120,14 @@ class PinChallengeProps(
 
     override fun hashCode(): Int {
         var result = nodeAddress.hashCode()
-        result = 31 * result + conferenceAlias.hashCode()
+        result = 31 * result + alias.hashCode()
         result = 31 * result + displayName.hashCode()
         result = 31 * result + required.hashCode()
         return result
     }
 
     override fun toString(): String =
-        "PinChallengeProps(nodeAddress=$nodeAddress, conferenceAlias=$conferenceAlias, displayName=$displayName, required=$required)"
+        "PinChallengeProps(nodeAddress=$nodeAddress, alias=$alias, displayName=$displayName, required=$required)"
 }
 
 @Parcelize

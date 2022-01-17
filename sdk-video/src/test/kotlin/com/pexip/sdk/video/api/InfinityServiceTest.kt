@@ -8,7 +8,7 @@ import com.pexip.sdk.video.api.internal.OkHttpInfinityService
 import com.pexip.sdk.video.api.internal.RequestToken200Response
 import com.pexip.sdk.video.api.internal.RequestToken403Response
 import com.pexip.sdk.video.api.internal.RequestTokenRequest
-import com.pexip.sdk.video.nextConferenceAlias
+import com.pexip.sdk.video.nextAlias
 import com.pexip.sdk.video.nextPin
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -39,7 +39,7 @@ class InfinityServiceTest {
     private lateinit var service: InfinityService
     private lateinit var baseUrl: HttpUrl
     private lateinit var nodeAddress: String
-    private lateinit var conferenceAlias: String
+    private lateinit var alias: String
     private lateinit var displayName: String
     private lateinit var pin: String
 
@@ -49,7 +49,7 @@ class InfinityServiceTest {
         service = OkHttpInfinityService(OkHttpClient())
         baseUrl = server.url("/")
         nodeAddress = with(baseUrl) { "$scheme://$host:$port" }
-        conferenceAlias = Random.nextConferenceAlias()
+        alias = Random.nextAlias()
         displayName = "John"
         pin = Random.nextPin()
     }
@@ -92,21 +92,21 @@ class InfinityServiceTest {
         assertFailsWith<IllegalArgumentException> {
             service.getPinRequirement(
                 nodeAddress = "   ",
-                conferenceAlias = conferenceAlias,
+                alias = alias,
                 displayName = displayName
             )
         }
         assertFailsWith<IllegalArgumentException> {
             service.getPinRequirement(
                 nodeAddress = nodeAddress,
-                conferenceAlias = "   ",
+                alias = "   ",
                 displayName = displayName
             )
         }
         assertFailsWith<IllegalArgumentException> {
             service.getPinRequirement(
                 nodeAddress = nodeAddress,
-                conferenceAlias = conferenceAlias,
+                alias = alias,
                 displayName = "   "
             )
         }
@@ -118,7 +118,7 @@ class InfinityServiceTest {
         assertFailsWith<NoSuchConferenceException> {
             service.getPinRequirement(
                 nodeAddress = nodeAddress,
-                conferenceAlias = conferenceAlias,
+                alias = alias,
                 displayName = displayName
             )
         }
@@ -142,7 +142,7 @@ class InfinityServiceTest {
             ),
             actual = service.getPinRequirement(
                 nodeAddress = nodeAddress,
-                conferenceAlias = conferenceAlias,
+                alias = alias,
                 displayName = displayName
             )
         )
@@ -164,7 +164,7 @@ class InfinityServiceTest {
                 expected = PinRequirement.Some(response.guest_pin == "required"),
                 actual = service.getPinRequirement(
                     nodeAddress = nodeAddress,
-                    conferenceAlias = conferenceAlias,
+                    alias = alias,
                     displayName = displayName
                 )
             )
@@ -177,7 +177,7 @@ class InfinityServiceTest {
         assertFailsWith<IllegalArgumentException> {
             service.requestToken(
                 nodeAddress = "   ",
-                conferenceAlias = conferenceAlias,
+                alias = alias,
                 displayName = displayName,
                 pin = pin
             )
@@ -185,7 +185,7 @@ class InfinityServiceTest {
         assertFailsWith<IllegalArgumentException> {
             service.requestToken(
                 nodeAddress = nodeAddress,
-                conferenceAlias = "   ",
+                alias = "   ",
                 displayName = displayName,
                 pin = pin
             )
@@ -193,7 +193,7 @@ class InfinityServiceTest {
         assertFailsWith<IllegalArgumentException> {
             service.requestToken(
                 nodeAddress = nodeAddress,
-                conferenceAlias = conferenceAlias,
+                alias = alias,
                 displayName = "   ",
                 pin = pin
             )
@@ -206,7 +206,7 @@ class InfinityServiceTest {
         assertFailsWith<NoSuchConferenceException> {
             service.requestToken(
                 nodeAddress = nodeAddress,
-                conferenceAlias = conferenceAlias,
+                alias = alias,
                 displayName = displayName,
                 pin = pin
             )
@@ -222,7 +222,7 @@ class InfinityServiceTest {
         assertFailsWith<InvalidPinException> {
             service.requestToken(
                 nodeAddress = nodeAddress,
-                conferenceAlias = conferenceAlias,
+                alias = alias,
                 displayName = displayName,
                 pin = pin
             )
@@ -247,7 +247,7 @@ class InfinityServiceTest {
             ),
             actual = service.requestToken(
                 nodeAddress = nodeAddress,
-                conferenceAlias = conferenceAlias,
+                alias = alias,
                 displayName = displayName,
                 pin = pin
             )
@@ -268,7 +268,7 @@ class InfinityServiceTest {
         assertEquals(baseUrl.scheme, requestUrl?.scheme)
         assertEquals(baseUrl.host, requestUrl?.host)
         assertEquals(baseUrl.port, requestUrl?.port)
-        assertEquals("/api/client/v2/conferences/$conferenceAlias/request_token", path)
+        assertEquals("/api/client/v2/conferences/$alias/request_token", path)
         assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
         assertEquals(RequestTokenRequest(displayName), json.decodeFromBuffer(body))
     }
@@ -278,7 +278,7 @@ class InfinityServiceTest {
         assertEquals(baseUrl.scheme, requestUrl?.scheme)
         assertEquals(baseUrl.host, requestUrl?.host)
         assertEquals(baseUrl.port, requestUrl?.port)
-        assertEquals("/api/client/v2/conferences/$conferenceAlias/request_token", path)
+        assertEquals("/api/client/v2/conferences/$alias/request_token", path)
         assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
         assertEquals(pin.trim(), getHeader("pin"))
         assertEquals(RequestTokenRequest(displayName), json.decodeFromBuffer(body))

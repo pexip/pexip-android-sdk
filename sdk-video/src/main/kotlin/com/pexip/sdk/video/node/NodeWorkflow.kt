@@ -38,7 +38,7 @@ class NodeWorkflow internal constructor(private val resolver: NodeResolver) :
     private fun RenderContext.resolveSideEffect(props: NodeProps) =
         runningSideEffect(props.toString()) {
             val action = try {
-                onNode(resolver.resolve(props.uri))
+                onNode(resolver.resolve(props.host))
             } catch (t: Throwable) {
                 onError(t)
             }
@@ -53,7 +53,7 @@ class NodeWorkflow internal constructor(private val resolver: NodeResolver) :
 }
 
 @JvmInline
-value class NodeProps(val uri: String)
+value class NodeProps(val host: String)
 
 sealed class NodeState : Parcelable {
 

@@ -6,13 +6,13 @@ open class TestInfinityService : InfinityService {
 
     override suspend fun getPinRequirement(
         nodeAddress: String,
-        conferenceAlias: String,
+        alias: String,
         displayName: String,
     ): PinRequirement = notImplemented()
 
     override suspend fun requestToken(
         nodeAddress: String,
-        conferenceAlias: String,
+        alias: String,
         displayName: String,
         pin: String,
     ): Token = notImplemented()
