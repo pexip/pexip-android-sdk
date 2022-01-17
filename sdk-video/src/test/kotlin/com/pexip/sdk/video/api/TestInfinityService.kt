@@ -2,6 +2,8 @@ package com.pexip.sdk.video.api
 
 open class TestInfinityService : InfinityService {
 
+    override suspend fun isInMaintenanceMode(nodeAddress: String): Boolean = notImplemented()
+
     override suspend fun getPinRequirement(
         nodeAddress: String,
         conferenceAlias: String,

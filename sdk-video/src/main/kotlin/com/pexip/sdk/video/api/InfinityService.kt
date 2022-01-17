@@ -4,6 +4,8 @@ import com.pexip.sdk.video.api.internal.OkHttpInfinityService
 
 interface InfinityService {
 
+    suspend fun isInMaintenanceMode(nodeAddress: String): Boolean
+
     suspend fun getPinRequirement(
         nodeAddress: String,
         conferenceAlias: String,

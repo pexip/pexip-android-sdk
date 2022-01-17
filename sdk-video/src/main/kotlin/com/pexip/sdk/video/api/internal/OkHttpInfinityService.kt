@@ -13,6 +13,25 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
 
     constructor() : this(OkHttpClient)
 
+    override suspend fun isInMaintenanceMode(nodeAddress: String): Boolean {
+        require(nodeAddress.isNotBlank()) { "nodeAddress is blank." }
+        val response = client.await {
+            get()
+            val url = nodeAddress
+                .toHttpUrl()
+                .resolve("api/client/v2/status")!!
+            url(url)
+        }
+        return response.use {
+            when (it.code) {
+                200 -> false
+                404 -> throw NoSuchNodeException()
+                503 -> true
+                else -> throw IllegalStateException()
+            }
+        }
+    }
+
     override suspend fun getPinRequirement(
         nodeAddress: String,
         conferenceAlias: String,

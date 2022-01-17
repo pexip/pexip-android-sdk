@@ -1,32 +1,35 @@
 package com.pexip.sdk.video.node.internal
 
+import com.pexip.sdk.video.api.InfinityService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.minidns.hla.ResolverApi
 import org.minidns.record.A
 
-internal class MiniDnsNodeResolver(private val api: ResolverApi) : NodeResolver {
+internal class MiniDnsNodeResolver(
+    private val api: ResolverApi,
+    private val service: InfinityService,
+) : NodeResolver {
 
-    constructor() : this(ResolverApi.INSTANCE)
+    constructor() : this(ResolverApi.INSTANCE, InfinityService)
 
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun resolve(uri: String): String = withContext(Dispatchers.IO) {
         val (_, domain) = uri.split("@")
         val srvResult = api.resolveSrv(SERVICE, PROTO, domain)
-        val host = if (srvResult.wasSuccessful()) {
-            srvResult.sortedSrvResolvedAddresses.first()
-                .srv
-                .target
-                .toString()
+        if (srvResult.wasSuccessful()) {
+            srvResult.sortedSrvResolvedAddresses
+                .asSequence()
+                .map { "$SCHEME://${it.srv.target}" }
+                .first { !service.isInMaintenanceMode(it) }
         } else {
             val aResult = api.resolve(domain, A::class.java)
             if (aResult.wasSuccessful()) {
-                aResult.answers.first().toString()
+                "$SCHEME://${aResult.answers.first()}"
             } else {
                 throw NoSuchElementException()
             }
         }
-        "$SCHEME://$host"
     }
 
     private fun ResolverApi.resolveSrv(service: String, proto: String, name: String) =

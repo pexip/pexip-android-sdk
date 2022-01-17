@@ -3,6 +3,7 @@ package com.pexip.sdk.video.api
 import com.pexip.sdk.video.api.internal.Box
 import com.pexip.sdk.video.api.internal.InvalidPinException
 import com.pexip.sdk.video.api.internal.NoSuchConferenceException
+import com.pexip.sdk.video.api.internal.NoSuchNodeException
 import com.pexip.sdk.video.api.internal.OkHttpInfinityService
 import com.pexip.sdk.video.api.internal.RequestToken200Response
 import com.pexip.sdk.video.api.internal.RequestToken403Response
@@ -26,6 +27,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class InfinityServiceTest {
 
@@ -49,6 +52,39 @@ class InfinityServiceTest {
         conferenceAlias = Random.nextConferenceAlias()
         displayName = "John"
         pin = Random.nextPin()
+    }
+
+    @Test
+    fun `isInMaintenanceMode throws when nodeAddress is blank`() = runBlocking<Unit> {
+        assertFailsWith<IllegalArgumentException> { service.isInMaintenanceMode("   ") }
+    }
+
+    @Test
+    fun `isInMaintenanceMode throws NoSuchNodeException`() = runBlocking {
+        server.enqueue { setResponseCode(404) }
+        assertFailsWith<NoSuchNodeException> { service.isInMaintenanceMode(nodeAddress) }
+        server.verifyIsInMaintenanceMode()
+    }
+
+    @Test
+    fun `isInMaintenanceMode throws IllegalStateException`() = runBlocking {
+        server.enqueue { setResponseCode(500) }
+        assertFailsWith<IllegalStateException> { service.isInMaintenanceMode(nodeAddress) }
+        server.verifyIsInMaintenanceMode()
+    }
+
+    @Test
+    fun `isInMaintenanceMode returns true`() = runBlocking {
+        server.enqueue { setResponseCode(503) }
+        assertTrue(service.isInMaintenanceMode(nodeAddress))
+        server.verifyIsInMaintenanceMode()
+    }
+
+    @Test
+    fun `isInMaintenanceMode returns false`() = runBlocking {
+        server.enqueue { setResponseCode(200) }
+        assertFalse(service.isInMaintenanceMode(nodeAddress))
+        server.verifyIsInMaintenanceMode()
     }
 
     @Test
@@ -217,6 +253,14 @@ class InfinityServiceTest {
             )
         )
         server.verifyRequestToken()
+    }
+
+    private fun MockWebServer.verifyIsInMaintenanceMode() = takeRequest {
+        assertEquals("GET", method)
+        assertEquals(baseUrl.scheme, requestUrl?.scheme)
+        assertEquals(baseUrl.host, requestUrl?.host)
+        assertEquals(baseUrl.port, requestUrl?.port)
+        assertEquals("/api/client/v2/status", path)
     }
 
     private fun MockWebServer.verifyGetPinRequirement() = takeRequest {
