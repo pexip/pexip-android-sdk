@@ -8,7 +8,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.appcompattheme.AppCompatTheme
-import com.pexip.sdk.video.ConferenceActivity
+import com.pexip.sdk.video.sample.alias.AliasViewFactory
+import com.pexip.sdk.video.sample.node.NodeViewFactory
+import com.pexip.sdk.video.sample.pin.PinChallengeViewFactory
+import com.pexip.sdk.video.sample.pin.PinRequirementViewFactory
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.ViewRegistry
 import com.squareup.workflow1.ui.compose.WorkflowRendering
@@ -19,7 +22,14 @@ class SampleActivity : AppCompatActivity() {
 
     private val sampleViewModel by viewModels<SampleViewModel>()
 
-    private val viewRegistry = ViewRegistry(SampleViewFactory)
+    private val viewRegistry = ViewRegistry(
+        AliasViewFactory,
+        NodeViewFactory.ResolvingNodeViewFactory,
+        NodeViewFactory.FailureViewFactory,
+        PinChallengeViewFactory,
+        PinRequirementViewFactory.ResolvingPinRequirementViewFactory,
+        PinRequirementViewFactory.FailureViewFactory,
+    )
     private val viewEnvironment = ViewEnvironment(mapOf(ViewRegistry to viewRegistry))
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,8 +48,7 @@ class SampleActivity : AppCompatActivity() {
             .launchIn(lifecycleScope)
     }
 
-    private fun onSampleOutput(output: SampleOutput) = ConferenceActivity.start(this) {
-        alias(output.uri)
-        displayName("Pexip Video SDK")
+    private fun onSampleOutput(output: SampleOutput) = when (output) {
+        is SampleOutput.Finish -> finish()
     }
 }

@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.node.internal
+package com.pexip.sdk.video.sample.pin
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-internal fun ResolvingNodeScreen(modifier: Modifier = Modifier) {
+fun ResolvingPinRequirementScreen(modifier: Modifier = Modifier) {
     BackHandler(onBack = { })
     Box(contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()) {
         CircularProgressIndicator()

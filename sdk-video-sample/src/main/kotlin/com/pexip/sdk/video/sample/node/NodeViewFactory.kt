@@ -1,10 +1,10 @@
-package com.pexip.sdk.video.node.internal
+package com.pexip.sdk.video.sample.node
 
 import com.pexip.sdk.video.node.NodeRendering.Failure
 import com.pexip.sdk.video.node.NodeRendering.ResolvingNode
 import com.squareup.workflow1.ui.compose.composeViewFactory
 
-internal object NodeViewFactory {
+object NodeViewFactory {
 
     val ResolvingNodeViewFactory = composeViewFactory<ResolvingNode> { _, _ ->
         ResolvingNodeScreen()

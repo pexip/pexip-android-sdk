@@ -1,5 +1,6 @@
-package com.pexip.sdk.video.sample
+package com.pexip.sdk.video.sample.alias
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,23 +19,26 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.squareup.workflow1.ui.compose.composeViewFactory
 
-val SampleViewFactory = composeViewFactory<SampleRendering> { rendering, _ ->
-    SampleScreen(
-        value = rendering.value,
-        onValueChange = rendering.onValueChange,
+val AliasViewFactory = composeViewFactory<AliasRendering> { rendering, _ ->
+    AliasScreen(
+        alias = rendering.alias,
+        onAliasChange = rendering.onAliasChange,
         resolveEnabled = rendering.resolveEnabled,
-        onResolveClick = rendering.onResolveClick
+        onResolveClick = rendering.onResolveClick,
+        onBackClick = rendering.onBackClick
     )
 }
 
 @Composable
-private fun SampleScreen(
-    value: String,
-    onValueChange: (String) -> Unit,
+private fun AliasScreen(
+    alias: String,
+    onAliasChange: (String) -> Unit,
     resolveEnabled: Boolean,
     onResolveClick: () -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    BackHandler(onBack = onBackClick)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -58,8 +62,8 @@ private fun SampleScreen(
                 )
             }
             OutlinedTextField(
-                value = value,
-                onValueChange = onValueChange,
+                value = alias,
+                onValueChange = onAliasChange,
                 label = {
                     Text(text = "URI")
                 },

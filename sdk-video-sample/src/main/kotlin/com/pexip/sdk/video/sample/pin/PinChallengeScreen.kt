@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.pin.internal
+package com.pexip.sdk.video.sample.pin
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.pexip.sdk.video.pin.PinChallengeRendering
 
 @Composable
-internal fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Modifier) {
+fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Modifier) {
     BackHandler(onBack = rendering.onBackClick)
     Box(
         contentAlignment = Alignment.Center,

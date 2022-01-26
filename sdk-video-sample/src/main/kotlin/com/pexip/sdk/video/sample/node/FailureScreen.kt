@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.node.internal
+package com.pexip.sdk.video.sample.node
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.pexip.sdk.video.node.NodeRendering
 
 @Composable
-internal fun FailureScreen(rendering: NodeRendering.Failure, modifier: Modifier = Modifier) {
+fun FailureScreen(rendering: NodeRendering.Failure, modifier: Modifier = Modifier) {
     BackHandler(onBack = rendering.onBackClick)
     Box(
         contentAlignment = Alignment.Center,

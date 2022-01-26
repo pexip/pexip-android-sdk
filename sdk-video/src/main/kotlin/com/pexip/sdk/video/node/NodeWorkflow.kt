@@ -1,8 +1,6 @@
 package com.pexip.sdk.video.node
 
 import android.os.Parcelable
-import com.pexip.sdk.video.node.internal.MiniDnsNodeResolver
-import com.pexip.sdk.video.node.internal.NodeResolver
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
@@ -13,7 +11,7 @@ import kotlinx.parcelize.Parcelize
 class NodeWorkflow internal constructor(private val resolver: NodeResolver) :
     StatefulWorkflow<NodeProps, NodeState, NodeOutput, NodeRendering>() {
 
-    constructor() : this(MiniDnsNodeResolver())
+    constructor() : this(NodeResolver)
 
     override fun initialState(props: NodeProps, snapshot: Snapshot?): NodeState =
         snapshot?.toParcelable() ?: NodeState.ResolvingNode

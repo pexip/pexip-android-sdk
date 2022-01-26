@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.node.internal
+package com.pexip.sdk.video.node
 
 import kotlinx.coroutines.runBlocking
 import org.junit.runner.RunWith
@@ -9,13 +9,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 @RunWith(RobolectricTestRunner::class)
-class MiniDnsNodeResolverTest {
+class NodeResolverTest {
 
     private lateinit var resolver: NodeResolver
 
     @BeforeTest
     fun setUp() {
-        resolver = MiniDnsNodeResolver()
+        resolver = NodeResolver
     }
 
     @Test

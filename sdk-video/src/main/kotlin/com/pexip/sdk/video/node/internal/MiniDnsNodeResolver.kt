@@ -1,6 +1,7 @@
 package com.pexip.sdk.video.node.internal
 
 import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.node.NodeResolver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.minidns.hla.ResolverApi
