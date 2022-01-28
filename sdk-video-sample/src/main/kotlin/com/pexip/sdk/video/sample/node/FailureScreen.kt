@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.pexip.sdk.video.node.NodeRendering
 
 @Composable
 fun FailureScreen(rendering: NodeRendering.Failure, modifier: Modifier = Modifier) {

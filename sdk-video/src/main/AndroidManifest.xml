@@ -13,7 +13,7 @@
             tools:node="merge">
 
             <meta-data
-                android:name="com.pexip.sdk.video.node.internal.MiniDnsInitializer"
+                android:name="com.pexip.sdk.video.internal.MiniDnsInitializer"
                 android:value="androidx.startup" />
         </provider>
     </application>

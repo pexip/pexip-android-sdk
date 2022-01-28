@@ -1,9 +1,6 @@
 package com.pexip.sdk.video
 
 import android.os.Parcelable
-import com.pexip.sdk.video.node.NodeOutput
-import com.pexip.sdk.video.node.NodeProps
-import com.pexip.sdk.video.node.NodeWorkflow
 import com.pexip.sdk.video.pin.PinChallengeOutput
 import com.pexip.sdk.video.pin.PinChallengeProps
 import com.pexip.sdk.video.pin.PinChallengeWorkflow
@@ -20,12 +17,11 @@ import kotlinx.parcelize.Parcelize
 class ConferenceWorkflow :
     StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, Any>() {
 
-    private val nodeWorkflow = NodeWorkflow()
     private val pinRequirementWorkflow = PinRequirementWorkflow()
     private val pinChallengeWorkflow = PinChallengeWorkflow()
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState =
-        snapshot?.toParcelable() ?: ConferenceState.Node
+        snapshot?.toParcelable() ?: ConferenceState.PinRequirement(props.nodeAddress)
 
     override fun snapshotState(state: ConferenceState): Snapshot = state.toSnapshot()
 
@@ -34,11 +30,6 @@ class ConferenceWorkflow :
         renderState: ConferenceState,
         context: RenderContext,
     ): Any = when (renderState) {
-        is ConferenceState.Node -> context.renderChild(
-            child = nodeWorkflow,
-            props = NodeProps(renderProps.host),
-            handler = ::onNodeOutput
-        )
         is ConferenceState.PinRequirement -> context.renderChild(
             child = pinRequirementWorkflow,
             props = PinRequirementProps(
@@ -58,13 +49,6 @@ class ConferenceWorkflow :
             ),
             handler = ::onPinChallengeOutput
         )
-    }
-
-    private fun onNodeOutput(output: NodeOutput) = action({ "OnNodeOutput($output)" }) {
-        when (output) {
-            is NodeOutput.Node -> state = ConferenceState.PinRequirement(output.address)
-            is NodeOutput.Back -> setOutput(ConferenceOutput.Finish)
-        }
     }
 
     private fun onPinRequirementOutput(output: PinRequirementOutput) =
@@ -88,9 +72,6 @@ class ConferenceWorkflow :
 }
 
 sealed class ConferenceState : Parcelable {
-
-    @Parcelize
-    object Node : ConferenceState()
 
     @Parcelize
     data class PinRequirement(val nodeAddress: String) : ConferenceState()

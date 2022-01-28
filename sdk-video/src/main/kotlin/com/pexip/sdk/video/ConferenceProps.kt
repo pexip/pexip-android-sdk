@@ -7,13 +7,14 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 class ConferenceProps private constructor(
     internal val alias: String,
-    internal val host: String,
+    internal val nodeAddress: String,
     internal val displayName: String,
 ) : Parcelable {
 
     class Builder {
 
         private var alias: String? = null
+        private var nodeAddress: String? = null
         private var displayName: String = "Guest"
 
         fun alias(alias: String): Builder = apply {
@@ -23,40 +24,43 @@ class ConferenceProps private constructor(
             this.alias = alias.trim()
         }
 
+        fun nodeAddress(nodeAddress: String): Builder = apply {
+            require(Patterns.WEB_URL.matcher(nodeAddress).matches()) {
+                "'$nodeAddress' is not a valid URL."
+            }
+            this.nodeAddress = nodeAddress
+        }
+
         fun displayName(displayName: String): Builder = apply {
             require(displayName.isNotBlank()) { "displayName must not be blank." }
             this.displayName = displayName.trim()
         }
 
-        fun build(): ConferenceProps {
-            val alias = checkNotNull(alias) { "alias is not set." }
-            val (_, host) = alias.split("@")
-            return ConferenceProps(
-                alias = alias,
-                host = host,
-                displayName = displayName
-            )
-        }
+        fun build(): ConferenceProps = ConferenceProps(
+            alias = checkNotNull(alias) { "alias is not set." },
+            nodeAddress = checkNotNull(nodeAddress) { "nodeAddress is not set." },
+            displayName = displayName
+        )
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ConferenceProps) return false
         if (alias != other.alias) return false
-        if (host != other.host) return false
+        if (nodeAddress != other.nodeAddress) return false
         if (displayName != other.displayName) return false
         return true
     }
 
     override fun hashCode(): Int {
         var result = alias.hashCode()
-        result = 31 * result + host.hashCode()
+        result = 31 * result + nodeAddress.hashCode()
         result = 31 * result + displayName.hashCode()
         return result
     }
 
     override fun toString(): String =
-        "ConferenceProps(alias=$alias, host=$host, displayName=$displayName)"
+        "ConferenceProps(alias=$alias, nodeAddress=$nodeAddress, displayName=$displayName)"
 }
 
 @JvmSynthetic

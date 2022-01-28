@@ -1,12 +1,13 @@
 package com.pexip.sdk.video.node
 
+import com.pexip.sdk.video.NodeResolver
 import kotlinx.coroutines.runBlocking
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class NodeResolverTest {
@@ -15,7 +16,7 @@ class NodeResolverTest {
 
     @BeforeTest
     fun setUp() {
-        resolver = NodeResolver
+        resolver = NodeResolver()
     }
 
     @Test
@@ -35,7 +36,7 @@ class NodeResolverTest {
     }
 
     @Test
-    fun `throws NoSuchElementException`() = runBlocking<Unit> {
-        assertFailsWith<NoSuchElementException> { resolver.resolve("b.c") }
+    fun `returns null`() = runBlocking {
+        assertNull(resolver.resolve("b.c"))
     }
 }

@@ -6,6 +6,9 @@ import com.pexip.sdk.video.ConferenceProps
 import com.pexip.sdk.video.ConferenceWorkflow
 import com.pexip.sdk.video.sample.alias.AliasOutput
 import com.pexip.sdk.video.sample.alias.AliasWorkflow
+import com.pexip.sdk.video.sample.node.NodeOutput
+import com.pexip.sdk.video.sample.node.NodeProps
+import com.pexip.sdk.video.sample.node.NodeWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
@@ -17,6 +20,7 @@ import kotlinx.parcelize.Parcelize
 object SampleWorkflow : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>() {
 
     private val AliasWorkflow = AliasWorkflow()
+    private val NodeWorkflow = NodeWorkflow()
     private val ConferenceWorkflow = ConferenceWorkflow()
 
     override fun initialState(props: Unit, snapshot: Snapshot?): SampleState =
@@ -33,10 +37,16 @@ object SampleWorkflow : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>()
             child = AliasWorkflow,
             handler = ::onAliasOutput
         )
+        is SampleState.Node -> context.renderChild(
+            child = NodeWorkflow,
+            props = NodeProps(renderState.host),
+            handler = ::onNodeOutput
+        )
         is SampleState.Conference -> context.renderChild(
             child = ConferenceWorkflow,
             props = ConferenceProps {
                 alias(renderState.alias)
+                nodeAddress(renderState.nodeAddress)
                 displayName("Pexip Video SDK")
             },
             handler = ::onConferenceOutput
@@ -45,8 +55,19 @@ object SampleWorkflow : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>()
 
     private fun onAliasOutput(output: AliasOutput) = action({ "OnAliasOutput($output)" }) {
         when (output) {
-            is AliasOutput.Alias -> state = SampleState.Conference(output.alias)
+            is AliasOutput.Alias -> state = SampleState.Node(
+                alias = output.alias,
+                host = output.alias.split("@").last()
+            )
             is AliasOutput.Back -> setOutput(SampleOutput.Finish)
+        }
+    }
+
+    private fun onNodeOutput(output: NodeOutput) = action({ "OnNodeOutput($output)" }) {
+        val s = checkNotNull(state as? SampleState.Node) { "Invalid state: $state" }
+        when (output) {
+            is NodeOutput.Node -> state = SampleState.Conference(s.alias, output.address)
+            is NodeOutput.Back -> setOutput(SampleOutput.Finish)
         }
     }
 
@@ -69,5 +90,8 @@ sealed class SampleState : Parcelable {
     object Alias : SampleState()
 
     @Parcelize
-    data class Conference(val alias: String) : SampleState()
+    data class Node(val alias: String, val host: String) : SampleState()
+
+    @Parcelize
+    data class Conference(val alias: String, val nodeAddress: String) : SampleState()
 }

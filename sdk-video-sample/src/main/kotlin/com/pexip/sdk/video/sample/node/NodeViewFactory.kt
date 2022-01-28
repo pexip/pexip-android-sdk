@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.sample.node
 
-import com.pexip.sdk.video.node.NodeRendering.Failure
-import com.pexip.sdk.video.node.NodeRendering.ResolvingNode
+import com.pexip.sdk.video.sample.node.NodeRendering.Failure
+import com.pexip.sdk.video.sample.node.NodeRendering.ResolvingNode
 import com.squareup.workflow1.ui.compose.composeViewFactory
 
 object NodeViewFactory {
