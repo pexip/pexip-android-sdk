@@ -29,10 +29,8 @@ class NodeResolverTest {
 
     @Test
     fun `returns A record`() = runBlocking {
-        assertEquals(
-            expected = "https://93.184.216.34",
-            actual = resolver.resolve("example.com")
-        )
+        // There's an A record, but no Infinity node, hence the null
+        assertNull(resolver.resolve("example.com"))
     }
 
     @Test

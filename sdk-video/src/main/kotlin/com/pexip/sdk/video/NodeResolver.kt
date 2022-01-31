@@ -11,7 +11,9 @@ import java.io.IOException
 fun interface NodeResolver {
 
     /**
-     * Resolves the node address for the provided [host].
+     * Resolves the node address for the provided [host]. Implementations should consult with
+     * (documentation)[https://docs.pexip.com/clients/configuring_dns_pexip_app.htm#next_gen_mobile]
+     * for the recommended flow.
      *
      * @param host a host to use to resolve the best node address (e.g. example.com)
      * @return a node address in the form of https://example.com or null if node was not found
