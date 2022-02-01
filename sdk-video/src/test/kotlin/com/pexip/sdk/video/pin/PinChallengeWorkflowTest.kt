@@ -1,8 +1,8 @@
 package com.pexip.sdk.video.pin
 
+import com.pexip.sdk.video.api.InvalidPinException
 import com.pexip.sdk.video.api.TestInfinityService
 import com.pexip.sdk.video.api.Token
-import com.pexip.sdk.video.api.internal.InvalidPinException
 import com.pexip.sdk.video.nextAlias
 import com.pexip.sdk.video.nextPin
 import com.squareup.workflow1.testing.launchForTestingFromStartWith
@@ -50,7 +50,7 @@ class PinChallengeWorkflowTest {
                 nodeAddress: String,
                 alias: String,
                 displayName: String,
-                pin: String,
+                pin: String?,
             ): Token = token
         }
         val workflow = PinChallengeWorkflow(service)
@@ -88,7 +88,7 @@ class PinChallengeWorkflowTest {
                 nodeAddress: String,
                 alias: String,
                 displayName: String,
-                pin: String,
+                pin: String?,
             ): Token = throw InvalidPinException()
         }
         val workflow = PinChallengeWorkflow(service)
@@ -112,7 +112,7 @@ class PinChallengeWorkflowTest {
                 nodeAddress: String,
                 alias: String,
                 displayName: String,
-                pin: String,
+                pin: String?,
             ): Token = throw Throwable()
         }
         val workflow = PinChallengeWorkflow(service)

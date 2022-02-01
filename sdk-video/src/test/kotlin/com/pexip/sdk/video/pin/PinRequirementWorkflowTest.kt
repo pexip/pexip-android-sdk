@@ -1,7 +1,8 @@
 package com.pexip.sdk.video.pin
 
-import com.pexip.sdk.video.api.PinRequirement
+import com.pexip.sdk.video.api.RequiredPinException
 import com.pexip.sdk.video.api.TestInfinityService
+import com.pexip.sdk.video.api.Token
 import com.squareup.workflow1.testing.launchForTestingFromStartWith
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -35,35 +36,43 @@ class PinRequirementWorkflowTest {
     }
 
     @Test
-    fun `outputs Some or None`() {
-        val pinRequirements = setOf(
-            PinRequirement.Some(Random.nextBoolean()),
-            PinRequirement.None(
-                token = "${Random.nextInt()}",
-                expires = 120
+    fun `outputs None`() {
+        val token = Token(token = "${Random.nextInt()}", expires = 120)
+        val service = object : TestInfinityService() {
+            override suspend fun requestToken(
+                nodeAddress: String,
+                alias: String,
+                displayName: String,
+                pin: String?,
+            ): Token = token
+        }
+        val workflow = PinRequirementWorkflow(service)
+        workflow.launchForTestingFromStartWith(props, context = dispatcher) {
+            assertEquals(PinRequirementRendering.ResolvingPinRequirement, awaitNextRendering())
+            val output = PinRequirementOutput.None(
+                token = token.token,
+                expires = token.expires
             )
-        )
-        pinRequirements.forEach {
-            val service = object : TestInfinityService() {
+            assertEquals(output, awaitNextOutput())
+        }
+    }
 
-                override suspend fun getPinRequirement(
-                    nodeAddress: String,
-                    alias: String,
-                    displayName: String,
-                ): PinRequirement = it
-            }
-            val workflow = PinRequirementWorkflow(service)
-            workflow.launchForTestingFromStartWith(props, context = dispatcher) {
-                assertEquals(PinRequirementRendering.ResolvingPinRequirement, awaitNextRendering())
-                val output = when (it) {
-                    is PinRequirement.Some -> PinRequirementOutput.Some(it.required)
-                    is PinRequirement.None -> PinRequirementOutput.None(
-                        token = it.token,
-                        expires = it.expires
-                    )
-                }
-                assertEquals(output, awaitNextOutput())
-            }
+    @Test
+    fun `outputs Some`() {
+        val required = Random.nextBoolean()
+        val service = object : TestInfinityService() {
+            override suspend fun requestToken(
+                nodeAddress: String,
+                alias: String,
+                displayName: String,
+                pin: String?,
+            ): Token = throw RequiredPinException(required)
+        }
+        val workflow = PinRequirementWorkflow(service)
+        workflow.launchForTestingFromStartWith(props, context = dispatcher) {
+            assertEquals(PinRequirementRendering.ResolvingPinRequirement, awaitNextRendering())
+            val output = PinRequirementOutput.Some(required)
+            assertEquals(output, awaitNextOutput())
         }
     }
 
@@ -71,12 +80,12 @@ class PinRequirementWorkflowTest {
     fun `outputs Back`() {
         val t = Throwable()
         val service = object : TestInfinityService() {
-
-            override suspend fun getPinRequirement(
+            override suspend fun requestToken(
                 nodeAddress: String,
                 alias: String,
                 displayName: String,
-            ): PinRequirement {
+                pin: String?,
+            ): Token {
                 delay(100)
                 throw t
             }

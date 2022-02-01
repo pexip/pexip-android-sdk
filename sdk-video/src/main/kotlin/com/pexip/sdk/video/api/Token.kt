@@ -1,6 +1,14 @@
 package com.pexip.sdk.video.api
 
-class Token(val token: String, val expires: Long) {
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.LongAsStringSerializer
+
+@Serializable
+class Token(
+    val token: String,
+    @Serializable(with = LongAsStringSerializer::class)
+    val expires: Long,
+) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

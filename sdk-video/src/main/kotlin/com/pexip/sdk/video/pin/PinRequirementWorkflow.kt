@@ -2,7 +2,8 @@ package com.pexip.sdk.video.pin
 
 import android.os.Parcelable
 import com.pexip.sdk.video.api.InfinityService
-import com.pexip.sdk.video.api.PinRequirement
+import com.pexip.sdk.video.api.RequiredPinException
+import com.pexip.sdk.video.api.Token
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
@@ -42,32 +43,32 @@ class PinRequirementWorkflow(private val service: InfinityService) :
     private fun RenderContext.getPinRequirementSideEffect(props: PinRequirementProps) =
         runningSideEffect(props.toString()) {
             val action = try {
-                val pinRequirement = service.getPinRequirement(
+                val token = service.requestToken(
                     nodeAddress = props.nodeAddress,
                     alias = props.alias,
-                    displayName = props.displayName
+                    displayName = props.displayName,
+                    pin = null
                 )
-                onPinRequirement(pinRequirement)
+                onToken(token)
             } catch (t: Throwable) {
                 onError(t)
             }
             actionSink.send(action)
         }
 
-    private fun onPinRequirement(pinRequirement: PinRequirement) =
-        action({ "OnPinRequirement($pinRequirement)" }) {
-            val output = when (pinRequirement) {
-                is PinRequirement.None -> PinRequirementOutput.None(
-                    token = pinRequirement.token,
-                    expires = pinRequirement.expires
-                )
-                is PinRequirement.Some -> PinRequirementOutput.Some(pinRequirement.required)
-            }
-            setOutput(output)
-        }
+    private fun onToken(token: Token) = action({ "OnToken($token)" }) {
+        val output = PinRequirementOutput.None(
+            token = token.token,
+            expires = token.expires
+        )
+        setOutput(output)
+    }
 
     private fun onError(t: Throwable) = action({ "OnError($t)" }) {
-        state = PinRequirementState.Failure(t)
+        when (t) {
+            is RequiredPinException -> setOutput(PinRequirementOutput.Some(t.guestPin))
+            else -> state = PinRequirementState.Failure(t)
+        }
     }
 }
 

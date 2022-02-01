@@ -2,8 +2,8 @@ package com.pexip.sdk.video.pin
 
 import android.os.Parcelable
 import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.api.InvalidPinException
 import com.pexip.sdk.video.api.Token
-import com.pexip.sdk.video.api.internal.InvalidPinException
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action

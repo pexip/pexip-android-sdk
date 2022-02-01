@@ -1,11 +1,7 @@
 package com.pexip.sdk.video.api
 
 import com.pexip.sdk.video.api.internal.Box
-import com.pexip.sdk.video.api.internal.InvalidPinException
-import com.pexip.sdk.video.api.internal.NoSuchConferenceException
-import com.pexip.sdk.video.api.internal.NoSuchNodeException
 import com.pexip.sdk.video.api.internal.OkHttpInfinityService
-import com.pexip.sdk.video.api.internal.RequestToken200Response
 import com.pexip.sdk.video.api.internal.RequestToken403Response
 import com.pexip.sdk.video.api.internal.RequestTokenRequest
 import com.pexip.sdk.video.nextAlias
@@ -88,91 +84,6 @@ class InfinityServiceTest {
     }
 
     @Test
-    fun `getPinRequirement throws when any parameter is blank`() = runBlocking<Unit> {
-        assertFailsWith<IllegalArgumentException> {
-            service.getPinRequirement(
-                nodeAddress = "   ",
-                alias = alias,
-                displayName = displayName
-            )
-        }
-        assertFailsWith<IllegalArgumentException> {
-            service.getPinRequirement(
-                nodeAddress = nodeAddress,
-                alias = "   ",
-                displayName = displayName
-            )
-        }
-        assertFailsWith<IllegalArgumentException> {
-            service.getPinRequirement(
-                nodeAddress = nodeAddress,
-                alias = alias,
-                displayName = "   "
-            )
-        }
-    }
-
-    @Test
-    fun `getPinRequirement throws NoSuchConferenceException`() = runBlocking {
-        server.enqueue { setResponseCode(404) }
-        assertFailsWith<NoSuchConferenceException> {
-            service.getPinRequirement(
-                nodeAddress = nodeAddress,
-                alias = alias,
-                displayName = displayName
-            )
-        }
-        server.verifyGetPinRequirement()
-    }
-
-    @Test
-    fun `getPinRequirement returns None`() = runBlocking {
-        val response = RequestToken200Response(
-            token = "${Random.nextInt()}",
-            expires = 120
-        )
-        server.enqueue {
-            setResponseCode(200)
-            setBody(json.encodeToString(Box(response)))
-        }
-        assertEquals(
-            expected = PinRequirement.None(
-                token = response.token,
-                expires = response.expires
-            ),
-            actual = service.getPinRequirement(
-                nodeAddress = nodeAddress,
-                alias = alias,
-                displayName = displayName
-            )
-        )
-        server.verifyGetPinRequirement()
-    }
-
-    @Test
-    fun `getPinRequirement returns Some`() = runBlocking {
-        val responses = listOf(
-            RequestToken403Response("required"),
-            RequestToken403Response("none")
-        )
-        for (response in responses) {
-            server.enqueue {
-                setResponseCode(403)
-                setBody(json.encodeToString(Box(response)))
-            }
-            assertEquals(
-                expected = PinRequirement.Some(response.guest_pin == "required"),
-                actual = service.getPinRequirement(
-                    nodeAddress = nodeAddress,
-                    alias = alias,
-                    displayName = displayName
-                )
-            )
-            server.verifyGetPinRequirement()
-        }
-    }
-
-    @Test
     fun `requestToken throws when any parameter is blank except pin`() = runBlocking<Unit> {
         assertFailsWith<IllegalArgumentException> {
             service.requestToken(
@@ -201,9 +112,11 @@ class InfinityServiceTest {
     }
 
     @Test
-    fun `requestToken throws NoSuchConferenceException`() = runBlocking {
-        server.enqueue { setResponseCode(404) }
-        assertFailsWith<NoSuchConferenceException> {
+    fun `requestToken throws NoSuchNodeException`() = runBlocking {
+        server.enqueue {
+            setResponseCode(404)
+        }
+        assertFailsWith<NoSuchNodeException> {
             service.requestToken(
                 nodeAddress = nodeAddress,
                 alias = alias,
@@ -211,15 +124,60 @@ class InfinityServiceTest {
                 pin = pin
             )
         }
-        server.verifyRequestToken()
+        server.verifyRequestToken(pin)
+    }
+
+    @Test
+    fun `requestToken throws NoSuchConferenceException`() = runBlocking {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val e = assertFailsWith<NoSuchConferenceException> {
+            service.requestToken(
+                nodeAddress = nodeAddress,
+                alias = alias,
+                displayName = displayName,
+                pin = pin
+            )
+        }
+        assertEquals(message, e.message)
+        server.verifyRequestToken(pin)
+    }
+
+    @Test
+    fun `requestToken throws RequiredPinException`() = runBlocking {
+        val responses = listOf(
+            RequestToken403Response("required"),
+            RequestToken403Response("none")
+        )
+        for (response in responses) {
+            server.enqueue {
+                setResponseCode(403)
+                setBody(json.encodeToString(Box(response)))
+            }
+            val e = assertFailsWith<RequiredPinException> {
+                service.requestToken(
+                    nodeAddress = nodeAddress,
+                    alias = alias,
+                    displayName = displayName,
+                    pin = null
+                )
+            }
+            assertEquals(response.guest_pin == "required", e.guestPin)
+            server.verifyRequestToken(null)
+        }
     }
 
     @Test
     fun `requestToken throws InvalidPinException`() = runBlocking {
+        val message = "Invalid PIN"
         server.enqueue {
             setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
         }
-        assertFailsWith<InvalidPinException> {
+        val e = assertFailsWith<InvalidPinException> {
             service.requestToken(
                 nodeAddress = nodeAddress,
                 alias = alias,
@@ -227,24 +185,22 @@ class InfinityServiceTest {
                 pin = pin
             )
         }
-        server.verifyRequestToken()
+        assertEquals(message, e.message)
+        server.verifyRequestToken(pin)
     }
 
     @Test
     fun `requestToken returns Token`() = runBlocking {
-        val response = RequestToken200Response(
+        val token = Token(
             token = "${Random.nextInt()}",
             expires = 120
         )
         server.enqueue {
             setResponseCode(200)
-            setBody(json.encodeToString(Box(response)))
+            setBody(json.encodeToString(Box(token)))
         }
         assertEquals(
-            expected = Token(
-                token = response.token,
-                expires = response.expires
-            ),
+            expected = token,
             actual = service.requestToken(
                 nodeAddress = nodeAddress,
                 alias = alias,
@@ -252,7 +208,7 @@ class InfinityServiceTest {
                 pin = pin
             )
         )
-        server.verifyRequestToken()
+        server.verifyRequestToken(pin)
     }
 
     private fun MockWebServer.verifyIsInMaintenanceMode() = takeRequest {
@@ -263,24 +219,14 @@ class InfinityServiceTest {
         assertEquals("/api/client/v2/status", path)
     }
 
-    private fun MockWebServer.verifyGetPinRequirement() = takeRequest {
+    private fun MockWebServer.verifyRequestToken(pin: String?) = takeRequest {
         assertEquals("POST", method)
         assertEquals(baseUrl.scheme, requestUrl?.scheme)
         assertEquals(baseUrl.host, requestUrl?.host)
         assertEquals(baseUrl.port, requestUrl?.port)
         assertEquals("/api/client/v2/conferences/$alias/request_token", path)
         assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
-        assertEquals(RequestTokenRequest(displayName), json.decodeFromBuffer(body))
-    }
-
-    private fun MockWebServer.verifyRequestToken() = takeRequest {
-        assertEquals("POST", method)
-        assertEquals(baseUrl.scheme, requestUrl?.scheme)
-        assertEquals(baseUrl.host, requestUrl?.host)
-        assertEquals(baseUrl.port, requestUrl?.port)
-        assertEquals("/api/client/v2/conferences/$alias/request_token", path)
-        assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
-        assertEquals(pin.trim(), getHeader("pin"))
+        assertEquals(pin?.trim(), getHeader("pin"))
         assertEquals(RequestTokenRequest(displayName), json.decodeFromBuffer(body))
     }
 
