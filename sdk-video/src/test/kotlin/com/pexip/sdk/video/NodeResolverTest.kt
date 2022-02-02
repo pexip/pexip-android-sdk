@@ -1,6 +1,5 @@
-package com.pexip.sdk.video.node
+package com.pexip.sdk.video
 
-import com.pexip.sdk.video.NodeResolver
 import kotlinx.coroutines.runBlocking
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

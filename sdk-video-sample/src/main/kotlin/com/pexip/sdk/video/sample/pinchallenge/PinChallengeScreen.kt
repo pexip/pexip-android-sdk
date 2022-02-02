@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.sample.pin
+package com.pexip.sdk.video.sample.pinchallenge
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -17,7 +17,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.pexip.sdk.video.pin.PinChallengeRendering
 
 @Composable
 fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Modifier) {

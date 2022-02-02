@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.sample.pin
+package com.pexip.sdk.video.sample.pinrequirement
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.pexip.sdk.video.pin.PinRequirementRendering
 
 @Composable
 fun FailureScreen(

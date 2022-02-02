@@ -1,6 +1,7 @@
 package com.pexip.sdk.video.sample
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -10,8 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.appcompattheme.AppCompatTheme
 import com.pexip.sdk.video.sample.alias.AliasViewFactory
 import com.pexip.sdk.video.sample.node.NodeViewFactory
-import com.pexip.sdk.video.sample.pin.PinChallengeViewFactory
-import com.pexip.sdk.video.sample.pin.PinRequirementViewFactory
+import com.pexip.sdk.video.sample.pinchallenge.PinChallengeViewFactory
+import com.pexip.sdk.video.sample.pinrequirement.PinRequirementViewFactory
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.ViewRegistry
 import com.squareup.workflow1.ui.compose.WorkflowRendering
@@ -49,6 +50,7 @@ class SampleActivity : AppCompatActivity() {
     }
 
     private fun onSampleOutput(output: SampleOutput) = when (output) {
+        is SampleOutput.Toast -> Toast.makeText(this, output.message, Toast.LENGTH_SHORT).show()
         is SampleOutput.Finish -> finish()
     }
 }

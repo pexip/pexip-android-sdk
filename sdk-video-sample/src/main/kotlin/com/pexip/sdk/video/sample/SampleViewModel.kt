@@ -16,6 +16,7 @@ class SampleViewModel(handle: SavedStateHandle) : ViewModel() {
         renderWorkflowIn(
             workflow = SampleWorkflow,
             scope = viewModelScope,
+            prop = SampleProps("Pexip Video SDK"),
             savedStateHandle = handle,
             onOutput = _output::emit
         )

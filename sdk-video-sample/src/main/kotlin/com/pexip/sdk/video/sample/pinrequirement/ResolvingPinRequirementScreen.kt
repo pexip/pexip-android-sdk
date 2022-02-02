@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.sample.pin
+package com.pexip.sdk.video.sample.pinrequirement
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box

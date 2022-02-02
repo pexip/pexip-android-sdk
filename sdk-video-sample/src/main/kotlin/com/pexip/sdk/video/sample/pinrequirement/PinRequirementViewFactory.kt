@@ -1,7 +1,7 @@
-package com.pexip.sdk.video.sample.pin
+package com.pexip.sdk.video.sample.pinrequirement
 
-import com.pexip.sdk.video.pin.PinRequirementRendering.Failure
-import com.pexip.sdk.video.pin.PinRequirementRendering.ResolvingPinRequirement
+import com.pexip.sdk.video.sample.pinrequirement.PinRequirementRendering.Failure
+import com.pexip.sdk.video.sample.pinrequirement.PinRequirementRendering.ResolvingPinRequirement
 import com.squareup.workflow1.ui.compose.composeViewFactory
 
 object PinRequirementViewFactory {

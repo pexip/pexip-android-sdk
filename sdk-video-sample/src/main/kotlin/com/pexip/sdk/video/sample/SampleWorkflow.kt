@@ -1,97 +1,62 @@
 package com.pexip.sdk.video.sample
 
-import android.os.Parcelable
-import com.pexip.sdk.video.ConferenceOutput
-import com.pexip.sdk.video.ConferenceProps
-import com.pexip.sdk.video.ConferenceWorkflow
-import com.pexip.sdk.video.sample.alias.AliasOutput
 import com.pexip.sdk.video.sample.alias.AliasWorkflow
-import com.pexip.sdk.video.sample.node.NodeOutput
 import com.pexip.sdk.video.sample.node.NodeProps
 import com.pexip.sdk.video.sample.node.NodeWorkflow
+import com.pexip.sdk.video.sample.pinchallenge.PinChallengeProps
+import com.pexip.sdk.video.sample.pinchallenge.PinChallengeWorkflow
+import com.pexip.sdk.video.sample.pinrequirement.PinRequirementProps
+import com.pexip.sdk.video.sample.pinrequirement.PinRequirementWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
-import com.squareup.workflow1.action
 import com.squareup.workflow1.renderChild
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
-import kotlinx.parcelize.Parcelize
 
-object SampleWorkflow : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>() {
+object SampleWorkflow : StatefulWorkflow<SampleProps, SampleState, SampleOutput, Any>() {
 
     private val AliasWorkflow = AliasWorkflow()
     private val NodeWorkflow = NodeWorkflow()
-    private val ConferenceWorkflow = ConferenceWorkflow()
+    private val PinRequirementWorkflow = PinRequirementWorkflow()
+    private val PinChallengeWorkflow = PinChallengeWorkflow()
 
-    override fun initialState(props: Unit, snapshot: Snapshot?): SampleState =
+    override fun initialState(props: SampleProps, snapshot: Snapshot?): SampleState =
         snapshot?.toParcelable() ?: SampleState.Alias
 
     override fun snapshotState(state: SampleState): Snapshot = state.toSnapshot()
 
     override fun render(
-        renderProps: Unit,
+        renderProps: SampleProps,
         renderState: SampleState,
         context: RenderContext,
     ): Any = when (renderState) {
         is SampleState.Alias -> context.renderChild(
             child = AliasWorkflow,
-            handler = ::onAliasOutput
+            handler = ::OnAliasOutput
         )
         is SampleState.Node -> context.renderChild(
             child = NodeWorkflow,
             props = NodeProps(renderState.host),
-            handler = ::onNodeOutput
+            handler = ::OnNodeOutput
         )
-        is SampleState.Conference -> context.renderChild(
-            child = ConferenceWorkflow,
-            props = ConferenceProps {
-                alias(renderState.alias)
-                nodeAddress(renderState.nodeAddress)
-                displayName("Pexip Video SDK")
-            },
-            handler = ::onConferenceOutput
+        is SampleState.PinRequirement -> context.renderChild(
+            child = PinRequirementWorkflow,
+            props = PinRequirementProps(
+                nodeAddress = renderState.nodeAddress,
+                alias = renderState.alias,
+                displayName = renderProps.displayName
+            ),
+            handler = ::OnPinRequirementOutput
+        )
+        is SampleState.PinChallenge -> context.renderChild(
+            child = PinChallengeWorkflow,
+            props = PinChallengeProps(
+                nodeAddress = renderState.nodeAddress,
+                alias = renderState.alias,
+                displayName = renderProps.displayName,
+                required = renderState.required
+            ),
+            handler = ::OnPinChallengeOutput
         )
     }
-
-    private fun onAliasOutput(output: AliasOutput) = action({ "OnAliasOutput($output)" }) {
-        when (output) {
-            is AliasOutput.Alias -> state = SampleState.Node(
-                alias = output.alias,
-                host = output.alias.split("@").last()
-            )
-            is AliasOutput.Back -> setOutput(SampleOutput.Finish)
-        }
-    }
-
-    private fun onNodeOutput(output: NodeOutput) = action({ "OnNodeOutput($output)" }) {
-        val s = checkNotNull(state as? SampleState.Node) { "Invalid state: $state" }
-        when (output) {
-            is NodeOutput.Node -> state = SampleState.Conference(s.alias, output.address)
-            is NodeOutput.Back -> setOutput(SampleOutput.Finish)
-        }
-    }
-
-    private fun onConferenceOutput(output: ConferenceOutput) =
-        action({ "OnConferenceOutput($output)" }) {
-            when (output) {
-                is ConferenceOutput.Finish -> setOutput(SampleOutput.Finish)
-            }
-        }
-}
-
-sealed class SampleOutput {
-
-    object Finish : SampleOutput()
-}
-
-sealed class SampleState : Parcelable {
-
-    @Parcelize
-    object Alias : SampleState()
-
-    @Parcelize
-    data class Node(val alias: String, val host: String) : SampleState()
-
-    @Parcelize
-    data class Conference(val alias: String, val nodeAddress: String) : SampleState()
 }

@@ -1,6 +1,5 @@
-package com.pexip.sdk.video.sample.pin
+package com.pexip.sdk.video.sample.pinchallenge
 
-import com.pexip.sdk.video.pin.PinChallengeRendering
 import com.squareup.workflow1.ui.compose.composeViewFactory
 
 val PinChallengeViewFactory = composeViewFactory<PinChallengeRendering> { rendering, _ ->

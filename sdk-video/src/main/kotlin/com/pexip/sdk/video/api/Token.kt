@@ -24,5 +24,5 @@ class Token(
         return result
     }
 
-    override fun toString(): String = "Token(token=$token, expires=$expires)"
+    override fun toString(): String = "Token(token=██, expires=$expires)"
 }
