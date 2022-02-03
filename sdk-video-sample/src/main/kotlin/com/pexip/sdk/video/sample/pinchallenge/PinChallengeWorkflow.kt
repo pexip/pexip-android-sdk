@@ -11,8 +11,6 @@ import com.squareup.workflow1.ui.toSnapshot
 class PinChallengeWorkflow(private val service: InfinityService) :
     StatefulWorkflow<PinChallengeProps, PinChallengeState, PinChallengeOutput, PinChallengeRendering>() {
 
-    constructor() : this(InfinityService)
-
     override fun initialState(props: PinChallengeProps, snapshot: Snapshot?): PinChallengeState =
         snapshot?.toParcelable() ?: PinChallengeState()
 

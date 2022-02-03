@@ -1,6 +1,9 @@
+@file:JvmName("InfinityServiceFactory")
+
 package com.pexip.sdk.video.api
 
 import com.pexip.sdk.video.api.internal.OkHttpInfinityService
+import okhttp3.OkHttpClient
 import java.io.IOException
 
 /**
@@ -39,6 +42,7 @@ interface InfinityService {
         displayName: String,
         pin: String?,
     ): Token
-
-    companion object : InfinityService by OkHttpInfinityService()
 }
+
+@JvmName("create")
+fun InfinityService(client: OkHttpClient): InfinityService = OkHttpInfinityService(client)

@@ -7,10 +7,8 @@ import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
 
-class NodeWorkflow internal constructor(private val resolver: NodeResolver) :
+class NodeWorkflow(private val resolver: NodeResolver) :
     StatefulWorkflow<NodeProps, NodeState, NodeOutput, NodeRendering>() {
-
-    constructor() : this(NodeResolver())
 
     override fun initialState(props: NodeProps, snapshot: Snapshot?): NodeState =
         snapshot?.toParcelable() ?: NodeState.ResolvingNode

@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.api.internal
 
-import android.util.Log
 import com.pexip.sdk.video.api.InfinityService
 import com.pexip.sdk.video.api.InvalidPinException
 import com.pexip.sdk.video.api.NoSuchConferenceException
@@ -11,11 +10,8 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 
 internal class OkHttpInfinityService(private val client: OkHttpClient) : InfinityService {
-
-    constructor() : this(OkHttpClient)
 
     override suspend fun isInMaintenanceMode(nodeAddress: String): Boolean {
         require(nodeAddress.isNotBlank()) { "nodeAddress is blank." }
@@ -85,13 +81,6 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
 
     companion object {
 
-        val OkHttpClient by lazy {
-            OkHttpClient {
-                val interceptor = HttpLoggingInterceptor { Log.d("OkHttpInfinityService", it) }
-                interceptor.level = HttpLoggingInterceptor.Level.BODY
-                addInterceptor(interceptor)
-            }
-        }
         val Json by lazy { Json { ignoreUnknownKeys = true } }
     }
 }

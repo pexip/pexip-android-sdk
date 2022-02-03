@@ -2,7 +2,9 @@
 
 package com.pexip.sdk.video
 
+import com.pexip.sdk.video.api.InfinityService
 import com.pexip.sdk.video.internal.MiniDnsNodeResolver
+import org.minidns.hla.ResolverApi
 import java.io.IOException
 
 /**
@@ -26,4 +28,7 @@ fun interface NodeResolver {
  * Creates an instance of [NodeResolver] with default implementation.
  */
 @JvmName("create")
-fun NodeResolver(): NodeResolver = MiniDnsNodeResolver()
+fun NodeResolver(service: InfinityService): NodeResolver = MiniDnsNodeResolver(
+    api = ResolverApi.INSTANCE,
+    service = service
+)

@@ -15,8 +15,6 @@ internal class MiniDnsNodeResolver(
     private val service: InfinityService,
 ) : NodeResolver {
 
-    constructor() : this(ResolverApi.INSTANCE, InfinityService)
-
     override suspend fun resolve(host: String): String? =
         resolveSrvRecord(host) ?: resolveARecord(host)
 

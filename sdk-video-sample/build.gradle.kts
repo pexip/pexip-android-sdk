@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.material)
     implementation(libs.accompanist.appcompattheme)
+    implementation(libs.okhttp.logginginterceptor)
     implementation(libs.workflow.core.jvm)
     implementation(libs.workflow.ui.compose)
 

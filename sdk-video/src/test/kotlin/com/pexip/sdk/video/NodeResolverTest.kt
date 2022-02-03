@@ -1,6 +1,8 @@
 package com.pexip.sdk.video
 
+import com.pexip.sdk.video.api.InfinityService
 import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.BeforeTest
@@ -15,7 +17,8 @@ class NodeResolverTest {
 
     @BeforeTest
     fun setUp() {
-        resolver = NodeResolver()
+        val service = InfinityService(OkHttpClient())
+        resolver = NodeResolver(service)
     }
 
     @Test

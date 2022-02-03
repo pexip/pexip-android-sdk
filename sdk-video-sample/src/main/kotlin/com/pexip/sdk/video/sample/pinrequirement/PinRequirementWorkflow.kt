@@ -10,8 +10,6 @@ import com.squareup.workflow1.ui.toSnapshot
 class PinRequirementWorkflow(private val service: InfinityService) :
     StatefulWorkflow<PinRequirementProps, PinRequirementState, PinRequirementOutput, PinRequirementRendering>() {
 
-    constructor() : this(InfinityService)
-
     override fun initialState(
         props: PinRequirementProps,
         snapshot: Snapshot?,

@@ -42,7 +42,7 @@ class InfinityServiceTest {
     @BeforeTest
     fun setUp() {
         json = OkHttpInfinityService.Json
-        service = OkHttpInfinityService(OkHttpClient())
+        service = InfinityService(OkHttpClient())
         baseUrl = server.url("/")
         nodeAddress = with(baseUrl) { "$scheme://$host:$port" }
         alias = Random.nextAlias()
