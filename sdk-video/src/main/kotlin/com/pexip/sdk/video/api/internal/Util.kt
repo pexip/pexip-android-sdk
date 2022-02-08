@@ -26,9 +26,6 @@ internal suspend inline fun <reified T> Json.encodeToRequestBody(value: T) =
 internal suspend inline fun <reified T> Json.decodeFromResponseBody(body: ResponseBody) =
     withContext(Dispatchers.IO) { decodeFromStream<T>(body.byteStream()) }
 
-internal inline fun OkHttpClient(block: OkHttpClient.Builder.() -> Unit): OkHttpClient =
-    OkHttpClient.Builder().apply(block).build()
-
 internal suspend inline fun OkHttpClient.await(block: Request.Builder.() -> Unit): Response =
     newCall(Request(block)).await()
 

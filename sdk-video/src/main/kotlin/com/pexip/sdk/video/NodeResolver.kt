@@ -4,6 +4,7 @@ package com.pexip.sdk.video
 
 import com.pexip.sdk.video.api.InfinityService
 import com.pexip.sdk.video.internal.MiniDnsNodeResolver
+import okhttp3.HttpUrl
 import org.minidns.hla.ResolverApi
 import java.io.IOException
 
@@ -21,7 +22,7 @@ fun interface NodeResolver {
      * @return a node address in the form of https://example.com or null if node was not found
      * @throws IOException if a network error was encountered during operation
      */
-    suspend fun resolve(host: String): String?
+    suspend fun resolve(host: String): HttpUrl?
 }
 
 /**

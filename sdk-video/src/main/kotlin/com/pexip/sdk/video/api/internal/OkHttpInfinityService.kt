@@ -8,19 +8,15 @@ import com.pexip.sdk.video.api.RequiredPinException
 import com.pexip.sdk.video.api.Token
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 
 internal class OkHttpInfinityService(private val client: OkHttpClient) : InfinityService {
 
-    override suspend fun isInMaintenanceMode(nodeAddress: String): Boolean {
-        require(nodeAddress.isNotBlank()) { "nodeAddress is blank." }
+    override suspend fun isInMaintenanceMode(nodeAddress: HttpUrl): Boolean {
         val response = client.await {
             get()
-            val url = nodeAddress
-                .toHttpUrl()
-                .resolve("api/client/v2/status")!!
-            url(url)
+            url(nodeAddress.resolve("api/client/v2/status")!!)
         }
         return response.use {
             when (it.code) {
@@ -33,25 +29,21 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
     }
 
     override suspend fun requestToken(
-        nodeAddress: String,
+        nodeAddress: HttpUrl,
         alias: String,
         displayName: String,
         pin: String?,
     ): Token {
-        require(nodeAddress.isNotBlank()) { "nodeAddress is blank." }
         require(alias.isNotBlank()) { "alias is blank." }
         require(displayName.isNotBlank()) { "displayName is blank." }
         val response = client.await {
             val request = RequestTokenRequest(displayName)
             val requestBody = Json.encodeToRequestBody(request)
             post(requestBody)
-            val url = nodeAddress
-                .toHttpUrl()
-                .resolve("api/client/v2/conferences/$alias/request_token")!!
-            url(url)
+            url(nodeAddress.resolve("api/client/v2/conferences/$alias/request_token")!!)
             pin?.let { header("pin", it.trim()) }
         }
-        val (result) = response.use {
+        val (token) = response.use {
             when (it.code) {
                 200 -> Json.decodeFromResponseBody<Box<Token>>(it.body!!)
                 403 -> when (it.request.header("pin")) {
@@ -73,10 +65,7 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
                 else -> throw IllegalStateException()
             }
         }
-        return Token(
-            token = result.token,
-            expires = result.expires
-        )
+        return token
     }
 
     companion object {

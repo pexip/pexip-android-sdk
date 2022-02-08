@@ -2,6 +2,7 @@ package com.pexip.sdk.video
 
 import com.pexip.sdk.video.api.InfinityService
 import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -24,7 +25,10 @@ class NodeResolverTest {
     @Test
     fun `returns DNS SRV record`() = runBlocking {
         assertEquals(
-            expected = "https://pexipdemo.com",
+            expected = HttpUrl.Builder()
+                .scheme("https")
+                .host("pexipdemo.com")
+                .build(),
             actual = resolver.resolve("pexip.com")
         )
     }

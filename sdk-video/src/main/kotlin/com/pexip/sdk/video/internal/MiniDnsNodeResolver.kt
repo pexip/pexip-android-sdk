@@ -4,6 +4,7 @@ import com.pexip.sdk.video.NodeResolver
 import com.pexip.sdk.video.api.InfinityService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl
 import org.minidns.hla.ResolverApi
 import org.minidns.hla.SrvResolverResult
 import org.minidns.record.A
@@ -15,10 +16,10 @@ internal class MiniDnsNodeResolver(
     private val service: InfinityService,
 ) : NodeResolver {
 
-    override suspend fun resolve(host: String): String? =
+    override suspend fun resolve(host: String): HttpUrl? =
         resolveSrvRecord(host) ?: resolveARecord(host)
 
-    private suspend fun resolveSrvRecord(host: String): String? {
+    private suspend fun resolveSrvRecord(host: String): HttpUrl? {
         val addresses = api.awaitSortedSrvResolvedAddresses(SERVICE, PROTO, host)
         for (address in addresses) {
             val nodeAddress = address.toNodeAddress()
@@ -35,23 +36,18 @@ internal class MiniDnsNodeResolver(
         return null
     }
 
-    private fun SrvResolverResult.ResolvedSrvRecord.toNodeAddress() = buildString {
-        val port = srv.port
-        append(if (port == PORT_HTTPS) SCHEME_HTTPS else SCHEME_HTTP)
-        append("://")
-        append(srv.target.ace)
-        if (port == PORT_HTTP || port == PORT_HTTPS) return@buildString
-        append(":")
-        append(port)
-    }
+    private fun SrvResolverResult.ResolvedSrvRecord.toNodeAddress() = HttpUrl.Builder()
+        .scheme(if (srv.port == PORT_HTTPS) SCHEME_HTTPS else SCHEME_HTTP)
+        .host(srv.target.ace)
+        .port(srv.port)
+        .build()
 
-    private suspend fun resolveARecord(host: String): String? {
+    private suspend fun resolveARecord(host: String): HttpUrl? {
         val result = api.awaitA(host) ?: return null
-        val nodeAddress = buildString {
-            append(SCHEME_HTTPS)
-            append("://")
-            append(result.question.name.ace)
-        }
+        val nodeAddress = HttpUrl.Builder()
+            .scheme(SCHEME_HTTPS)
+            .host(result.question.name.ace)
+            .build()
         return try {
             nodeAddress.takeUnless { service.isInMaintenanceMode(it) }
         } catch (e: UnknownHostException) {
@@ -84,7 +80,6 @@ internal class MiniDnsNodeResolver(
 
         const val SERVICE = "pexapp"
         const val PROTO = "tcp"
-        const val PORT_HTTP = 80
         const val PORT_HTTPS = 443
         const val SCHEME_HTTP = "http"
         const val SCHEME_HTTPS = "https"

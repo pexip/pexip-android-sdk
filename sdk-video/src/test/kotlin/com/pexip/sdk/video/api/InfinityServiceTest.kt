@@ -33,8 +33,7 @@ class InfinityServiceTest {
 
     private lateinit var json: Json
     private lateinit var service: InfinityService
-    private lateinit var baseUrl: HttpUrl
-    private lateinit var nodeAddress: String
+    private lateinit var nodeAddress: HttpUrl
     private lateinit var alias: String
     private lateinit var displayName: String
     private lateinit var pin: String
@@ -43,16 +42,10 @@ class InfinityServiceTest {
     fun setUp() {
         json = OkHttpInfinityService.Json
         service = InfinityService(OkHttpClient())
-        baseUrl = server.url("/")
-        nodeAddress = with(baseUrl) { "$scheme://$host:$port" }
+        nodeAddress = server.url("/")
         alias = Random.nextAlias()
         displayName = "John"
         pin = Random.nextPin()
-    }
-
-    @Test
-    fun `isInMaintenanceMode throws when nodeAddress is blank`() = runBlocking<Unit> {
-        assertFailsWith<IllegalArgumentException> { service.isInMaintenanceMode("   ") }
     }
 
     @Test
@@ -85,14 +78,6 @@ class InfinityServiceTest {
 
     @Test
     fun `requestToken throws when any parameter is blank except pin`() = runBlocking<Unit> {
-        assertFailsWith<IllegalArgumentException> {
-            service.requestToken(
-                nodeAddress = "   ",
-                alias = alias,
-                displayName = displayName,
-                pin = pin
-            )
-        }
         assertFailsWith<IllegalArgumentException> {
             service.requestToken(
                 nodeAddress = nodeAddress,
@@ -213,18 +198,18 @@ class InfinityServiceTest {
 
     private fun MockWebServer.verifyIsInMaintenanceMode() = takeRequest {
         assertEquals("GET", method)
-        assertEquals(baseUrl.scheme, requestUrl?.scheme)
-        assertEquals(baseUrl.host, requestUrl?.host)
-        assertEquals(baseUrl.port, requestUrl?.port)
-        assertEquals("/api/client/v2/status", path)
+        assertEquals(
+            expected = nodeAddress.resolve("api/client/v2/status"),
+            actual = requestUrl
+        )
     }
 
     private fun MockWebServer.verifyRequestToken(pin: String?) = takeRequest {
         assertEquals("POST", method)
-        assertEquals(baseUrl.scheme, requestUrl?.scheme)
-        assertEquals(baseUrl.host, requestUrl?.host)
-        assertEquals(baseUrl.port, requestUrl?.port)
-        assertEquals("/api/client/v2/conferences/$alias/request_token", path)
+        assertEquals(
+            expected = nodeAddress.resolve("api/client/v2/conferences/$alias/request_token"),
+            actual = requestUrl
+        )
         assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
         assertEquals(pin?.trim(), getHeader("pin"))
         assertEquals(RequestTokenRequest(displayName), json.decodeFromBuffer(body))

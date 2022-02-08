@@ -1,6 +1,7 @@
 package com.pexip.sdk.video.sample.node
 
 import com.squareup.workflow1.WorkflowAction
+import okhttp3.HttpUrl
 
 typealias NodeAction = WorkflowAction<NodeProps, NodeState, NodeOutput>
 
@@ -11,7 +12,7 @@ class OnBackClick : NodeAction() {
     }
 }
 
-data class OnNode(val address: String?) : NodeAction() {
+data class OnNode(val address: HttpUrl?) : NodeAction() {
 
     override fun Updater.apply() {
         if (address != null) {

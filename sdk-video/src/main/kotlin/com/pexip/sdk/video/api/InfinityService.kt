@@ -3,6 +3,7 @@
 package com.pexip.sdk.video.api
 
 import com.pexip.sdk.video.api.internal.OkHttpInfinityService
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.io.IOException
 
@@ -19,7 +20,7 @@ interface InfinityService {
      * @throws NoSuchNodeException if supplied [nodeAddress] doesn't have a deployment
      * @throws IOException if a network error was encountered during operation
      */
-    suspend fun isInMaintenanceMode(nodeAddress: String): Boolean
+    suspend fun isInMaintenanceMode(nodeAddress: HttpUrl): Boolean
 
     /**
      * Requests a new token from the conferencing node.
@@ -37,7 +38,7 @@ interface InfinityService {
      * @throws IOException if a network error was encountered during operation
      */
     suspend fun requestToken(
-        nodeAddress: String,
+        nodeAddress: HttpUrl,
         alias: String,
         displayName: String,
         pin: String?,
