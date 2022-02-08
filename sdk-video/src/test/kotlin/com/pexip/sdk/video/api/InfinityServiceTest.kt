@@ -6,6 +6,7 @@ import com.pexip.sdk.video.api.internal.RequestToken403Response
 import com.pexip.sdk.video.api.internal.RequestTokenRequest
 import com.pexip.sdk.video.nextAlias
 import com.pexip.sdk.video.nextPin
+import com.pexip.sdk.video.nextToken
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
@@ -24,6 +25,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class InfinityServiceTest {
@@ -37,6 +39,7 @@ class InfinityServiceTest {
     private lateinit var alias: String
     private lateinit var displayName: String
     private lateinit var pin: String
+    private lateinit var token: String
 
     @BeforeTest
     fun setUp() {
@@ -46,6 +49,7 @@ class InfinityServiceTest {
         alias = Random.nextAlias()
         displayName = "John"
         pin = Random.nextPin()
+        token = Random.nextToken()
     }
 
     @Test
@@ -196,6 +200,175 @@ class InfinityServiceTest {
         server.verifyRequestToken(pin)
     }
 
+    @Test
+    fun `refreshToken throws when any parameter is blank`() = runBlocking<Unit> {
+        assertFailsWith<IllegalArgumentException> {
+            service.refreshToken(
+                nodeAddress = nodeAddress,
+                alias = "   ",
+                token = token
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            service.refreshToken(
+                nodeAddress = nodeAddress,
+                alias = alias,
+                token = "   "
+            )
+        }
+    }
+
+    @Test
+    fun `refreshToken throws NoSuchNodeException`() = runBlocking {
+        server.enqueue {
+            setResponseCode(404)
+        }
+        assertFailsWith<NoSuchNodeException> {
+            service.refreshToken(
+                nodeAddress = nodeAddress,
+                alias = alias,
+                token = token
+            )
+        }
+        server.verifyRefreshToken()
+    }
+
+    @Test
+    fun `refreshToken throws NoSuchConferenceException`() = runBlocking {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val e = assertFailsWith<NoSuchConferenceException> {
+            service.refreshToken(
+                nodeAddress = nodeAddress,
+                alias = alias,
+                token = token
+            )
+        }
+        assertEquals(message, e.message)
+        server.verifyRefreshToken()
+    }
+
+    @Test
+    fun `refreshToken throws InvalidTokenException`() = runBlocking {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val e = assertFailsWith<InvalidTokenException> {
+            service.refreshToken(
+                nodeAddress = nodeAddress,
+                alias = alias,
+                token = token
+            )
+        }
+        assertEquals(message, e.message)
+        server.verifyRefreshToken()
+    }
+
+    @Test
+    fun `refreshToken returns Token`() = runBlocking {
+        val newToken = Token(
+            token = "${Random.nextInt()}",
+            expires = 120
+        )
+        server.enqueue {
+            setResponseCode(200)
+            setBody(json.encodeToString(Box(newToken)))
+        }
+        assertEquals(
+            expected = newToken,
+            actual = service.refreshToken(
+                nodeAddress = nodeAddress,
+                alias = alias,
+                token = token
+            )
+        )
+        server.verifyRefreshToken()
+    }
+
+    @Test
+    fun `releaseToken throws when any parameter is blank`() = runBlocking<Unit> {
+        assertFailsWith<IllegalArgumentException> {
+            service.releaseToken(
+                nodeAddress = nodeAddress,
+                alias = "   ",
+                token = token
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            service.releaseToken(
+                nodeAddress = nodeAddress,
+                alias = alias,
+                token = "   "
+            )
+        }
+    }
+
+    @Test
+    fun `releaseToken throws NoSuchNodeException`() = runBlocking {
+        server.enqueue {
+            setResponseCode(404)
+        }
+        assertFailsWith<NoSuchNodeException> {
+            service.releaseToken(
+                nodeAddress = nodeAddress,
+                alias = alias,
+                token = token
+            )
+        }
+        server.verifyReleaseToken()
+    }
+
+    @Test
+    fun `releaseToken throws NoSuchConferenceException`() = runBlocking {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val e = assertFailsWith<NoSuchConferenceException> {
+            service.releaseToken(
+                nodeAddress = nodeAddress,
+                alias = alias,
+                token = token
+            )
+        }
+        assertEquals(message, e.message)
+        server.verifyReleaseToken()
+    }
+
+    @Test
+    fun `releaseToken returns when token is invalid`() = runBlocking {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        service.releaseToken(
+            nodeAddress = nodeAddress,
+            alias = alias,
+            token = token
+        )
+        server.verifyReleaseToken()
+    }
+
+    @Test
+    fun `releaseToken returns`() = runBlocking {
+        server.enqueue {
+            setResponseCode(200)
+        }
+        service.releaseToken(
+            nodeAddress = nodeAddress,
+            alias = alias,
+            token = token
+        )
+        server.verifyReleaseToken()
+    }
+
     private fun MockWebServer.verifyIsInMaintenanceMode() = takeRequest {
         assertEquals("GET", method)
         assertEquals(
@@ -213,6 +386,28 @@ class InfinityServiceTest {
         assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
         assertEquals(pin?.trim(), getHeader("pin"))
         assertEquals(RequestTokenRequest(displayName), json.decodeFromBuffer(body))
+    }
+
+    private fun MockWebServer.verifyRefreshToken() = takeRequest {
+        assertEquals("POST", method)
+        assertEquals(
+            expected = nodeAddress.resolve("api/client/v2/conferences/$alias/refresh_token"),
+            actual = requestUrl
+        )
+        assertNull(null, getHeader("Content-Type"))
+        assertEquals(token, getHeader("token"))
+        assertEquals(0, body.size)
+    }
+
+    private fun MockWebServer.verifyReleaseToken() = takeRequest {
+        assertEquals("POST", method)
+        assertEquals(
+            expected = nodeAddress.resolve("api/client/v2/conferences/$alias/release_token"),
+            actual = requestUrl
+        )
+        assertNull(null, getHeader("Content-Type"))
+        assertEquals(token, getHeader("token"))
+        assertEquals(0, body.size)
     }
 
     @OptIn(ExperimentalSerializationApi::class)

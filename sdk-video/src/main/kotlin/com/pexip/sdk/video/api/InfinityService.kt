@@ -43,6 +43,36 @@ interface InfinityService {
         displayName: String,
         pin: String?,
     ): Token
+
+    /**
+     * Refreshes a token to get a new one.
+     *
+     * @param nodeAddress a node address in the form of https://example.com
+     * @param alias a conference alias
+     * @param a token to refresh
+     * @return a [Token] for this conference
+     * @throws InvalidTokenException if a token is invalid or has already expired
+     * @throws NoSuchNodeException if supplied [nodeAddress] doesn't have a deployment
+     * @throws NoSuchConferenceException if supplied [alias] did not match any aliases or
+     * call routing rules
+     * @throws IOException if a network error was encountered during operation
+     */
+    suspend fun refreshToken(nodeAddress: HttpUrl, alias: String, token: String): Token
+
+    /**
+     * Releases the token (effectively a disconnect for the participant).
+     *
+     * Does nothing if the token has already expired.
+     *
+     * @param nodeAddress a node address in the form of https://example.com
+     * @param alias a conference alias
+     * @param token a token to release
+     * @throws NoSuchNodeException if supplied [nodeAddress] doesn't have a deployment
+     * @throws NoSuchConferenceException if supplied [alias] did not match any aliases or
+     * call routing rules
+     * @throws IOException if a network error was encountered during operation
+     */
+    suspend fun releaseToken(nodeAddress: HttpUrl, alias: String, token: String)
 }
 
 @JvmName("create")
