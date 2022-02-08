@@ -20,3 +20,11 @@ dependencies {
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
 }
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    if ("Test" !in name) {
+        kotlinOptions {
+            freeCompilerArgs += "-Xexplicit-api=strict"
+        }
+    }
+}

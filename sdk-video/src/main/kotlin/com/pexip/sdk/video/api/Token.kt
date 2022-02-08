@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.LongAsStringSerializer
 
 @Serializable
-class Token(
-    val token: String,
+public class Token(
+    public val token: String,
     @Serializable(with = LongAsStringSerializer::class)
-    val expires: Long,
+    public val expires: Long,
 ) {
 
     override fun equals(other: Any?): Boolean {

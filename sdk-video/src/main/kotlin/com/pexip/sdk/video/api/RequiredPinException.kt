@@ -1,3 +1,3 @@
 package com.pexip.sdk.video.api
 
-class RequiredPinException(val guestPin: Boolean) : RuntimeException()
+public class RequiredPinException(public val guestPin: Boolean) : RuntimeException()

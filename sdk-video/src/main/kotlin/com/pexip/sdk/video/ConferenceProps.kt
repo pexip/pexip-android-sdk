@@ -5,38 +5,38 @@ import android.util.Patterns
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class ConferenceProps private constructor(
+public class ConferenceProps private constructor(
     internal val alias: String,
     internal val nodeAddress: String,
     internal val displayName: String,
 ) : Parcelable {
 
-    class Builder {
+    public class Builder {
 
         private var alias: String? = null
         private var nodeAddress: String? = null
         private var displayName: String = "Guest"
 
-        fun alias(alias: String): Builder = apply {
+        public fun alias(alias: String): Builder = apply {
             require(Patterns.EMAIL_ADDRESS.matcher(alias).matches()) {
                 "'$alias' is not a valid URI."
             }
             this.alias = alias.trim()
         }
 
-        fun nodeAddress(nodeAddress: String): Builder = apply {
+        public fun nodeAddress(nodeAddress: String): Builder = apply {
             require(Patterns.WEB_URL.matcher(nodeAddress).matches()) {
                 "'$nodeAddress' is not a valid URL."
             }
             this.nodeAddress = nodeAddress
         }
 
-        fun displayName(displayName: String): Builder = apply {
+        public fun displayName(displayName: String): Builder = apply {
             require(displayName.isNotBlank()) { "displayName must not be blank." }
             this.displayName = displayName.trim()
         }
 
-        fun build(): ConferenceProps = ConferenceProps(
+        public fun build(): ConferenceProps = ConferenceProps(
             alias = checkNotNull(alias) { "alias is not set." },
             nodeAddress = checkNotNull(nodeAddress) { "nodeAddress is not set." },
             displayName = displayName
@@ -64,5 +64,5 @@ class ConferenceProps private constructor(
 }
 
 @JvmSynthetic
-inline fun ConferenceProps(block: ConferenceProps.Builder.() -> Unit): ConferenceProps =
+public inline fun ConferenceProps(block: ConferenceProps.Builder.() -> Unit): ConferenceProps =
     ConferenceProps.Builder().apply(block).build()

@@ -31,7 +31,7 @@ import kotlin.test.assertTrue
 class InfinityServiceTest {
 
     @get:Rule
-    val server = MockWebServer()
+    val server: MockWebServer = MockWebServer()
 
     private lateinit var json: Json
     private lateinit var service: InfinityService
@@ -60,28 +60,28 @@ class InfinityServiceTest {
     }
 
     @Test
-    fun `isInMaintenanceMode throws IllegalStateException`() = runBlocking {
+    fun `isInMaintenanceMode throws IllegalStateException`(): Unit = runBlocking {
         server.enqueue { setResponseCode(500) }
         assertFailsWith<IllegalStateException> { service.isInMaintenanceMode(nodeAddress) }
         server.verifyIsInMaintenanceMode()
     }
 
     @Test
-    fun `isInMaintenanceMode returns true`() = runBlocking {
+    fun `isInMaintenanceMode returns true`(): Unit = runBlocking {
         server.enqueue { setResponseCode(503) }
         assertTrue(service.isInMaintenanceMode(nodeAddress))
         server.verifyIsInMaintenanceMode()
     }
 
     @Test
-    fun `isInMaintenanceMode returns false`() = runBlocking {
+    fun `isInMaintenanceMode returns false`(): Unit = runBlocking {
         server.enqueue { setResponseCode(200) }
         assertFalse(service.isInMaintenanceMode(nodeAddress))
         server.verifyIsInMaintenanceMode()
     }
 
     @Test
-    fun `requestToken throws when any parameter is blank except pin`() = runBlocking<Unit> {
+    fun `requestToken throws when any parameter is blank except pin`(): Unit = runBlocking<Unit> {
         assertFailsWith<IllegalArgumentException> {
             service.requestToken(
                 nodeAddress = nodeAddress,
@@ -101,7 +101,7 @@ class InfinityServiceTest {
     }
 
     @Test
-    fun `requestToken throws NoSuchNodeException`() = runBlocking {
+    fun `requestToken throws NoSuchNodeException`(): Unit = runBlocking {
         server.enqueue {
             setResponseCode(404)
         }
@@ -117,7 +117,7 @@ class InfinityServiceTest {
     }
 
     @Test
-    fun `requestToken throws NoSuchConferenceException`() = runBlocking {
+    fun `requestToken throws NoSuchConferenceException`(): Unit = runBlocking {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -136,7 +136,7 @@ class InfinityServiceTest {
     }
 
     @Test
-    fun `requestToken throws RequiredPinException`() = runBlocking {
+    fun `requestToken throws RequiredPinException`(): Unit = runBlocking {
         val responses = listOf(
             RequestToken403Response("required"),
             RequestToken403Response("none")
@@ -160,7 +160,7 @@ class InfinityServiceTest {
     }
 
     @Test
-    fun `requestToken throws InvalidPinException`() = runBlocking {
+    fun `requestToken throws InvalidPinException`(): Unit = runBlocking {
         val message = "Invalid PIN"
         server.enqueue {
             setResponseCode(403)
@@ -179,7 +179,7 @@ class InfinityServiceTest {
     }
 
     @Test
-    fun `requestToken returns Token`() = runBlocking {
+    fun `requestToken returns Token`(): Unit = runBlocking {
         val token = Token(
             token = "${Random.nextInt()}",
             expires = 120

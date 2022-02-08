@@ -11,7 +11,7 @@ import java.io.IOException
 /**
  * A class that can resolve node addresses.
  */
-fun interface NodeResolver {
+public fun interface NodeResolver {
 
     /**
      * Resolves the node address for the provided [host]. Implementations should consult with
@@ -22,14 +22,14 @@ fun interface NodeResolver {
      * @return a node address in the form of https://example.com or null if node was not found
      * @throws IOException if a network error was encountered during operation
      */
-    suspend fun resolve(host: String): HttpUrl?
+    public suspend fun resolve(host: String): HttpUrl?
 }
 
 /**
  * Creates an instance of [NodeResolver] with default implementation.
  */
 @JvmName("create")
-fun NodeResolver(service: InfinityService): NodeResolver = MiniDnsNodeResolver(
+public fun NodeResolver(service: InfinityService): NodeResolver = MiniDnsNodeResolver(
     api = ResolverApi.INSTANCE,
     service = service
 )

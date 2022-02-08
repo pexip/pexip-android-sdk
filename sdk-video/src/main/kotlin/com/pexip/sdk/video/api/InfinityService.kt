@@ -10,7 +10,7 @@ import java.io.IOException
 /**
  * Pexip client REST API v2.
  */
-interface InfinityService {
+public interface InfinityService {
 
     /**
      * Checks whether a conferencing node is in maintenance mode.
@@ -20,7 +20,7 @@ interface InfinityService {
      * @throws NoSuchNodeException if supplied [nodeAddress] doesn't have a deployment
      * @throws IOException if a network error was encountered during operation
      */
-    suspend fun isInMaintenanceMode(nodeAddress: HttpUrl): Boolean
+    public suspend fun isInMaintenanceMode(nodeAddress: HttpUrl): Boolean
 
     /**
      * Requests a new token from the conferencing node.
@@ -37,7 +37,7 @@ interface InfinityService {
      * call routing rules
      * @throws IOException if a network error was encountered during operation
      */
-    suspend fun requestToken(
+    public suspend fun requestToken(
         nodeAddress: HttpUrl,
         alias: String,
         displayName: String,
@@ -57,7 +57,7 @@ interface InfinityService {
      * call routing rules
      * @throws IOException if a network error was encountered during operation
      */
-    suspend fun refreshToken(nodeAddress: HttpUrl, alias: String, token: String): Token
+    public suspend fun refreshToken(nodeAddress: HttpUrl, alias: String, token: String): Token
 
     /**
      * Releases the token (effectively a disconnect for the participant).
@@ -72,8 +72,8 @@ interface InfinityService {
      * call routing rules
      * @throws IOException if a network error was encountered during operation
      */
-    suspend fun releaseToken(nodeAddress: HttpUrl, alias: String, token: String)
+    public suspend fun releaseToken(nodeAddress: HttpUrl, alias: String, token: String)
 }
 
 @JvmName("create")
-fun InfinityService(client: OkHttpClient): InfinityService = OkHttpInfinityService(client)
+public fun InfinityService(client: OkHttpClient): InfinityService = OkHttpInfinityService(client)
