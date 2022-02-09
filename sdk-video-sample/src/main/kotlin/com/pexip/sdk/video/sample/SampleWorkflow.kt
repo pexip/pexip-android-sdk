@@ -16,9 +16,9 @@ import com.squareup.workflow1.ui.toSnapshot
 object SampleWorkflow : StatefulWorkflow<SampleProps, SampleState, SampleOutput, Any>() {
 
     private val AliasWorkflow = AliasWorkflow()
-    private val NodeWorkflow = NodeWorkflow(NetworkComponent.NodeResolver)
-    private val PinRequirementWorkflow = PinRequirementWorkflow(NetworkComponent.InfinityService)
-    private val PinChallengeWorkflow = PinChallengeWorkflow(NetworkComponent.InfinityService)
+    private val NodeWorkflow = NodeWorkflow(NetworkComponent.nodeResolver)
+    private val PinRequirementWorkflow = PinRequirementWorkflow(NetworkComponent.infinityService)
+    private val PinChallengeWorkflow = PinChallengeWorkflow(NetworkComponent.infinityService)
 
     override fun initialState(props: SampleProps, snapshot: Snapshot?): SampleState =
         snapshot?.toParcelable() ?: SampleState.Alias

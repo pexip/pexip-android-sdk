@@ -24,9 +24,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class InfinityServiceTest {
 
@@ -53,35 +51,7 @@ class InfinityServiceTest {
     }
 
     @Test
-    fun `isInMaintenanceMode throws NoSuchNodeException`() = runBlocking {
-        server.enqueue { setResponseCode(404) }
-        assertFailsWith<NoSuchNodeException> { service.isInMaintenanceMode(nodeAddress) }
-        server.verifyIsInMaintenanceMode()
-    }
-
-    @Test
-    fun `isInMaintenanceMode throws IllegalStateException`(): Unit = runBlocking {
-        server.enqueue { setResponseCode(500) }
-        assertFailsWith<IllegalStateException> { service.isInMaintenanceMode(nodeAddress) }
-        server.verifyIsInMaintenanceMode()
-    }
-
-    @Test
-    fun `isInMaintenanceMode returns true`(): Unit = runBlocking {
-        server.enqueue { setResponseCode(503) }
-        assertTrue(service.isInMaintenanceMode(nodeAddress))
-        server.verifyIsInMaintenanceMode()
-    }
-
-    @Test
-    fun `isInMaintenanceMode returns false`(): Unit = runBlocking {
-        server.enqueue { setResponseCode(200) }
-        assertFalse(service.isInMaintenanceMode(nodeAddress))
-        server.verifyIsInMaintenanceMode()
-    }
-
-    @Test
-    fun `requestToken throws when any parameter is blank except pin`(): Unit = runBlocking<Unit> {
+    fun `requestToken throws when any parameter is blank except pin`() = runBlocking<Unit> {
         assertFailsWith<IllegalArgumentException> {
             service.requestToken(
                 nodeAddress = nodeAddress,
@@ -367,14 +337,6 @@ class InfinityServiceTest {
             token = token
         )
         server.verifyReleaseToken()
-    }
-
-    private fun MockWebServer.verifyIsInMaintenanceMode() = takeRequest {
-        assertEquals("GET", method)
-        assertEquals(
-            expected = nodeAddress.resolve("api/client/v2/status"),
-            actual = requestUrl
-        )
     }
 
     private fun MockWebServer.verifyRequestToken(pin: String?) = takeRequest {

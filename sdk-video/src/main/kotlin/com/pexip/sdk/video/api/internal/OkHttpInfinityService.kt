@@ -15,21 +15,6 @@ import okhttp3.internal.EMPTY_REQUEST
 
 internal class OkHttpInfinityService(private val client: OkHttpClient) : InfinityService {
 
-    override suspend fun isInMaintenanceMode(nodeAddress: HttpUrl): Boolean {
-        val response = client.await {
-            get()
-            url(nodeAddress.resolve("api/client/v2/status")!!)
-        }
-        return response.use {
-            when (it.code) {
-                200 -> false
-                404 -> throw NoSuchNodeException()
-                503 -> true
-                else -> throw IllegalStateException()
-            }
-        }
-    }
-
     override suspend fun requestToken(
         nodeAddress: HttpUrl,
         alias: String,

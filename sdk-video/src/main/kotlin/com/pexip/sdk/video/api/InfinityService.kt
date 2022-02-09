@@ -13,16 +13,6 @@ import java.io.IOException
 public interface InfinityService {
 
     /**
-     * Checks whether a conferencing node is in maintenance mode.
-     *
-     * @param nodeAddress a node address in the form of https://example.com
-     * @return true if the node is in maintenance mode, false otherwise
-     * @throws NoSuchNodeException if supplied [nodeAddress] doesn't have a deployment
-     * @throws IOException if a network error was encountered during operation
-     */
-    public suspend fun isInMaintenanceMode(nodeAddress: HttpUrl): Boolean
-
-    /**
      * Requests a new token from the conferencing node.
      *
      * @param nodeAddress a node address in the form of https://example.com

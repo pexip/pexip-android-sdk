@@ -10,7 +10,7 @@ object NetworkComponent {
 
     private val Client by lazy {
         val httpLoggingInterceptor = HttpLoggingInterceptor {
-            Log.d("InfinityService", it)
+            Log.d("OkHttpClient", it)
         }
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         OkHttpClient.Builder()
@@ -18,6 +18,10 @@ object NetworkComponent {
             .build()
     }
 
-    val InfinityService by lazy { InfinityService(Client) }
-    val NodeResolver by lazy { NodeResolver(InfinityService) }
+    val infinityService by lazy { InfinityService(Client) }
+    val nodeResolver by lazy {
+        NodeResolver.Builder()
+            .client(Client)
+            .build()
+    }
 }

@@ -1,6 +1,5 @@
 package com.pexip.sdk.video
 
-import com.pexip.sdk.video.api.InfinityService
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -18,8 +17,10 @@ class NodeResolverTest {
 
     @BeforeTest
     fun setUp() {
-        val service = InfinityService(OkHttpClient())
-        resolver = NodeResolver(service)
+        resolver = NodeResolver.Builder()
+            .dnssec(false)
+            .client(OkHttpClient())
+            .build()
     }
 
     @Test
