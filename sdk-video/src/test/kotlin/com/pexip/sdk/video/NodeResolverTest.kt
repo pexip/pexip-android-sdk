@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
-class NodeResolverTest {
+internal class NodeResolverTest {
 
     private lateinit var resolver: NodeResolver
 

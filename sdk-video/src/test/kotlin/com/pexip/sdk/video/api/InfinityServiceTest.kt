@@ -26,7 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
-class InfinityServiceTest {
+internal class InfinityServiceTest {
 
     @get:Rule
     val server: MockWebServer = MockWebServer()

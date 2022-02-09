@@ -6,6 +6,12 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+android {
+    kotlinOptions {
+        freeCompilerArgs += "-Xexplicit-api=strict"
+    }
+}
+
 dependencies {
     api(libs.okhttp)
 
@@ -19,12 +25,4 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    if ("Test" !in name) {
-        kotlinOptions {
-            freeCompilerArgs += "-Xexplicit-api=strict"
-        }
-    }
 }
