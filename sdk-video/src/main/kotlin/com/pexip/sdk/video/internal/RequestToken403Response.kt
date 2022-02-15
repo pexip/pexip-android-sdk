@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.api.internal
+package com.pexip.sdk.video.internal
 
 import kotlinx.serialization.Serializable
 

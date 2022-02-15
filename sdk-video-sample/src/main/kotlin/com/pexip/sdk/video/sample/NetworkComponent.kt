@@ -2,13 +2,13 @@ package com.pexip.sdk.video.sample
 
 import android.util.Log
 import com.pexip.sdk.video.NodeResolver
-import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.TokenRequester
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 object NetworkComponent {
 
-    private val Client by lazy {
+    private val client by lazy {
         val httpLoggingInterceptor = HttpLoggingInterceptor {
             Log.d("OkHttpClient", it)
         }
@@ -18,10 +18,14 @@ object NetworkComponent {
             .build()
     }
 
-    val infinityService by lazy { InfinityService(Client) }
     val nodeResolver by lazy {
         NodeResolver.Builder()
-            .client(Client)
+            .client(client)
+            .build()
+    }
+    val tokenRequester by lazy {
+        TokenRequester.Builder()
+            .client(client)
             .build()
     }
 }

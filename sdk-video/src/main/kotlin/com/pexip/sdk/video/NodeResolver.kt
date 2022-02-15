@@ -1,7 +1,7 @@
 package com.pexip.sdk.video
 
-import com.pexip.sdk.video.api.NoSuchNodeException
-import com.pexip.sdk.video.api.internal.await
+import com.pexip.sdk.video.internal.OkHttpClient
+import com.pexip.sdk.video.internal.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
@@ -17,8 +17,8 @@ import java.net.UnknownHostException
  * A class that can resolve node addresses.
  */
 public class NodeResolver private constructor(
-    private val client: OkHttpClient,
     private val api: ResolverApi,
+    private val client: OkHttpClient,
 ) {
 
     /**
@@ -127,8 +127,8 @@ public class NodeResolver private constructor(
         }
 
         public fun build(): NodeResolver = NodeResolver(
-            client = client ?: OkHttpClient(),
-            api = if (dnssec) DnssecResolverApi.INSTANCE else ResolverApi.INSTANCE
+            api = if (dnssec) DnssecResolverApi.INSTANCE else ResolverApi.INSTANCE,
+            client = client ?: OkHttpClient
         )
     }
 }

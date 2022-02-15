@@ -1,59 +1,20 @@
 package com.pexip.sdk.video.api.internal
 
+import com.pexip.sdk.video.InvalidTokenException
+import com.pexip.sdk.video.NoSuchConferenceException
+import com.pexip.sdk.video.NoSuchNodeException
+import com.pexip.sdk.video.Token
 import com.pexip.sdk.video.api.InfinityService
-import com.pexip.sdk.video.api.InvalidPinException
-import com.pexip.sdk.video.api.InvalidTokenException
-import com.pexip.sdk.video.api.NoSuchConferenceException
-import com.pexip.sdk.video.api.NoSuchNodeException
-import com.pexip.sdk.video.api.RequiredPinException
-import com.pexip.sdk.video.api.Token
+import com.pexip.sdk.video.internal.Box
+import com.pexip.sdk.video.internal.Json
+import com.pexip.sdk.video.internal.await
+import com.pexip.sdk.video.internal.decodeFromResponseBody
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.internal.EMPTY_REQUEST
 
 internal class OkHttpInfinityService(private val client: OkHttpClient) : InfinityService {
-
-    override suspend fun requestToken(
-        nodeAddress: HttpUrl,
-        alias: String,
-        displayName: String,
-        pin: String?,
-    ): Token {
-        require(alias.isNotBlank()) { "alias is blank." }
-        require(displayName.isNotBlank()) { "displayName is blank." }
-        val response = client.await {
-            val request = RequestTokenRequest(displayName)
-            val requestBody = Json.encodeToRequestBody(request)
-            post(requestBody)
-            url(nodeAddress.resolve("api/client/v2/conferences/$alias/request_token")!!)
-            pin?.let { header("pin", it.trim()) }
-        }
-        val (result) = response.use {
-            when (it.code) {
-                200 -> Json.decodeFromResponseBody<Box<Token>>(it.body!!)
-                403 -> when (it.request.header("pin")) {
-                    null -> {
-                        val (r) = Json.decodeFromResponseBody<Box<RequestToken403Response>>(it.body!!)
-                        throw RequiredPinException(r.guest_pin == "required")
-                    }
-                    else -> {
-                        val (message) = Json.decodeFromResponseBody<Box<String>>(it.body!!)
-                        throw InvalidPinException(message)
-                    }
-                }
-                404 -> try {
-                    val (message) = Json.decodeFromResponseBody<Box<String>>(it.body!!)
-                    throw NoSuchConferenceException(message)
-                } catch (e: SerializationException) {
-                    throw NoSuchNodeException()
-                }
-                else -> throw IllegalStateException()
-            }
-        }
-        return result
-    }
 
     override suspend fun refreshToken(nodeAddress: HttpUrl, alias: String, token: String): Token {
         require(alias.isNotBlank()) { "alias is blank." }
@@ -102,10 +63,5 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
                 else -> throw IllegalStateException()
             }
         }
-    }
-
-    companion object {
-
-        val Json by lazy { Json { ignoreUnknownKeys = true } }
     }
 }

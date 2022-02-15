@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.api
+package com.pexip.sdk.video
 
 public class InvalidTokenException @JvmOverloads constructor(message: String? = null) :
     RuntimeException(message)

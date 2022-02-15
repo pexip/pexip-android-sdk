@@ -2,6 +2,10 @@
 
 package com.pexip.sdk.video.api
 
+import com.pexip.sdk.video.InvalidTokenException
+import com.pexip.sdk.video.NoSuchConferenceException
+import com.pexip.sdk.video.NoSuchNodeException
+import com.pexip.sdk.video.Token
 import com.pexip.sdk.video.api.internal.OkHttpInfinityService
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -13,33 +17,11 @@ import java.io.IOException
 public interface InfinityService {
 
     /**
-     * Requests a new token from the conferencing node.
-     *
-     * @param nodeAddress a node address in the form of https://example.com
-     * @param alias a conference alias
-     * @param displayName a name for this participant
-     * @param pin an optional PIN
-     * @return a [Token] for this conference
-     * @throws RequiredPinException if either host or guest PIN is required (if [pin] was null)
-     * @throws InvalidPinException if the supplied [pin] is invalid
-     * @throws NoSuchNodeException if supplied [nodeAddress] doesn't have a deployment
-     * @throws NoSuchConferenceException if supplied [alias] did not match any aliases or
-     * call routing rules
-     * @throws IOException if a network error was encountered during operation
-     */
-    public suspend fun requestToken(
-        nodeAddress: HttpUrl,
-        alias: String,
-        displayName: String,
-        pin: String?,
-    ): Token
-
-    /**
      * Refreshes a token to get a new one.
      *
      * @param nodeAddress a node address in the form of https://example.com
      * @param alias a conference alias
-     * @param a token to refresh
+     * @param token a token to refresh
      * @return a [Token] for this conference
      * @throws InvalidTokenException if a token is invalid or has already expired
      * @throws NoSuchNodeException if supplied [nodeAddress] doesn't have a deployment

@@ -1,3 +1,3 @@
-package com.pexip.sdk.video.api
+package com.pexip.sdk.video
 
 public class NoSuchNodeException : RuntimeException()

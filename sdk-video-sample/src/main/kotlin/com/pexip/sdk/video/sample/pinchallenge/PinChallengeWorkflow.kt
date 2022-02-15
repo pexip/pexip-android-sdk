@@ -1,14 +1,14 @@
 package com.pexip.sdk.video.sample.pinchallenge
 
-import com.pexip.sdk.video.api.InfinityService
-import com.pexip.sdk.video.api.InvalidPinException
+import com.pexip.sdk.video.InvalidPinException
+import com.pexip.sdk.video.TokenRequester
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
 
-class PinChallengeWorkflow(private val service: InfinityService) :
+class PinChallengeWorkflow(private val requester: TokenRequester) :
     StatefulWorkflow<PinChallengeProps, PinChallengeState, PinChallengeOutput, PinChallengeRendering>() {
 
     override fun initialState(props: PinChallengeProps, snapshot: Snapshot?): PinChallengeState =
@@ -44,7 +44,7 @@ class PinChallengeWorkflow(private val service: InfinityService) :
         runningSideEffect("$props:$pinToSubmit") {
             actionSink.send(OnRequestToken())
             val action = try {
-                val token = service.requestToken(
+                val token = requester.requestToken(
                     nodeAddress = props.nodeAddress,
                     alias = props.alias,
                     displayName = props.displayName,

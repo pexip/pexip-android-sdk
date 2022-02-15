@@ -14,7 +14,7 @@ class SampleViewModel(handle: SavedStateHandle) : ViewModel() {
     val output = _output.asSharedFlow()
     val rendering by lazy {
         renderWorkflowIn(
-            workflow = SampleWorkflow,
+            workflow = WorkflowComponent.sampleWorkflow,
             scope = viewModelScope,
             prop = SampleProps("Pexip Video SDK"),
             savedStateHandle = handle,

@@ -13,12 +13,12 @@ import com.squareup.workflow1.renderChild
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
 
-object SampleWorkflow : StatefulWorkflow<SampleProps, SampleState, SampleOutput, Any>() {
-
-    private val AliasWorkflow = AliasWorkflow()
-    private val NodeWorkflow = NodeWorkflow(NetworkComponent.nodeResolver)
-    private val PinRequirementWorkflow = PinRequirementWorkflow(NetworkComponent.infinityService)
-    private val PinChallengeWorkflow = PinChallengeWorkflow(NetworkComponent.infinityService)
+class SampleWorkflow(
+    private val aliasWorkflow: AliasWorkflow,
+    private val nodeWorkflow: NodeWorkflow,
+    private val pinRequirementWorkflow: PinRequirementWorkflow,
+    private val pinChallengeWorkflow: PinChallengeWorkflow,
+) : StatefulWorkflow<SampleProps, SampleState, SampleOutput, Any>() {
 
     override fun initialState(props: SampleProps, snapshot: Snapshot?): SampleState =
         snapshot?.toParcelable() ?: SampleState.Alias
@@ -31,16 +31,16 @@ object SampleWorkflow : StatefulWorkflow<SampleProps, SampleState, SampleOutput,
         context: RenderContext,
     ): Any = when (renderState) {
         is SampleState.Alias -> context.renderChild(
-            child = AliasWorkflow,
+            child = aliasWorkflow,
             handler = ::OnAliasOutput
         )
         is SampleState.Node -> context.renderChild(
-            child = NodeWorkflow,
+            child = nodeWorkflow,
             props = NodeProps(renderState.host),
             handler = ::OnNodeOutput
         )
         is SampleState.PinRequirement -> context.renderChild(
-            child = PinRequirementWorkflow,
+            child = pinRequirementWorkflow,
             props = PinRequirementProps(
                 nodeAddress = renderState.nodeAddress,
                 alias = renderState.alias,
@@ -49,7 +49,7 @@ object SampleWorkflow : StatefulWorkflow<SampleProps, SampleState, SampleOutput,
             handler = ::OnPinRequirementOutput
         )
         is SampleState.PinChallenge -> context.renderChild(
-            child = PinChallengeWorkflow,
+            child = pinChallengeWorkflow,
             props = PinChallengeProps(
                 nodeAddress = renderState.nodeAddress,
                 alias = renderState.alias,

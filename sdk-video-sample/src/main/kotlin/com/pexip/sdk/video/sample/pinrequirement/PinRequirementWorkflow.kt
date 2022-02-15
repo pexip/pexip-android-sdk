@@ -1,13 +1,13 @@
 package com.pexip.sdk.video.sample.pinrequirement
 
-import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.TokenRequester
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
 
-class PinRequirementWorkflow(private val service: InfinityService) :
+class PinRequirementWorkflow(private val requester: TokenRequester) :
     StatefulWorkflow<PinRequirementProps, PinRequirementState, PinRequirementOutput, PinRequirementRendering>() {
 
     override fun initialState(
@@ -35,7 +35,7 @@ class PinRequirementWorkflow(private val service: InfinityService) :
     private fun RenderContext.getPinRequirementSideEffect(props: PinRequirementProps) =
         runningSideEffect(props.toString()) {
             val action = try {
-                val token = service.requestToken(
+                val token = requester.requestToken(
                     nodeAddress = props.nodeAddress,
                     alias = props.alias,
                     displayName = props.displayName,

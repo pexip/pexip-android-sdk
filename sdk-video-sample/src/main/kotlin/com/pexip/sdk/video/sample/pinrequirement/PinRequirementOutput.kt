@@ -1,6 +1,6 @@
 package com.pexip.sdk.video.sample.pinrequirement
 
-import com.pexip.sdk.video.api.Token
+import com.pexip.sdk.video.Token
 
 sealed class PinRequirementOutput {
 

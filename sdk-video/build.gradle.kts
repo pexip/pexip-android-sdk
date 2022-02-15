@@ -2,7 +2,6 @@
 
 plugins {
     id("com.pexip.paddock.kotlin.android.library")
-    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
 }
 

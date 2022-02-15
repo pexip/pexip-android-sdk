@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.api
+package com.pexip.sdk.video
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.LongAsStringSerializer
