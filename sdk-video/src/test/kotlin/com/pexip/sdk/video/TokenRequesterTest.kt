@@ -2,122 +2,143 @@ package com.pexip.sdk.video
 
 import com.pexip.sdk.video.internal.Box
 import com.pexip.sdk.video.internal.Json
-import com.pexip.sdk.video.internal.RequestToken403Response
 import com.pexip.sdk.video.internal.RequestTokenRequest
-import kotlinx.coroutines.runBlocking
+import com.pexip.sdk.video.internal.RequiredPinResponse
+import com.pexip.sdk.video.internal.RequiredSsoResponse
+import com.pexip.sdk.video.internal.SsoRedirectResponse
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
+import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class TokenRequesterTest {
 
     @get:Rule
     val server: MockWebServer = MockWebServer()
 
-    private lateinit var nodeAddress: HttpUrl
-    private lateinit var alias: String
-    private lateinit var displayName: String
-    private lateinit var pin: String
+    private lateinit var builder: TokenRequest.Builder
     private lateinit var requester: TokenRequester
 
     @BeforeTest
     fun setUp() {
+        builder = TokenRequest.Builder()
+            .nodeAddress(server.url("/"))
+            .alias(Random.nextAlias())
+            .displayName("John")
         requester = TokenRequester.Builder()
             .client(OkHttpClient())
             .build()
-        nodeAddress = server.url("/")
-        alias = Random.nextAlias()
-        displayName = "John"
-        pin = Random.nextPin()
     }
 
     @Test
-    fun `requestToken throws NoSuchNodeException`(): Unit = runBlocking {
+    fun `requestToken throws NoSuchNodeException`() = runTest {
         server.enqueue {
             setResponseCode(404)
         }
-        assertFailsWith<NoSuchNodeException> {
-            requester.requestToken(
-                nodeAddress = nodeAddress,
-                alias = alias,
-                displayName = displayName,
-                pin = pin
-            )
-        }
-        server.verifyRequestToken(pin)
+        val request = builder.build()
+        assertFailsWith<NoSuchNodeException> { requester.requestToken(request) }
+        server.verify(request)
     }
 
     @Test
-    fun `requestToken throws NoSuchConferenceException`(): Unit = runBlocking {
+    fun `requestToken throws NoSuchConferenceException`() = runTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
             setBody(Json.encodeToString(Box(message)))
         }
-        val e = assertFailsWith<NoSuchConferenceException> {
-            requester.requestToken(
-                nodeAddress = nodeAddress,
-                alias = alias,
-                displayName = displayName,
-                pin = pin
-            )
-        }
+        val request = builder.build()
+        val e = assertFailsWith<NoSuchConferenceException> { requester.requestToken(request) }
         assertEquals(message, e.message)
-        server.verifyRequestToken(pin)
+        server.verify(request)
     }
 
     @Test
-    fun `requestToken throws RequiredPinException`(): Unit = runBlocking {
+    fun `requestToken throws RequiredPinException`() = runTest {
         val responses = listOf(
-            RequestToken403Response("required"),
-            RequestToken403Response("none")
+            RequiredPinResponse("required"),
+            RequiredPinResponse("none")
         )
         for (response in responses) {
             server.enqueue {
                 setResponseCode(403)
                 setBody(Json.encodeToString(Box(response)))
             }
-            val e = assertFailsWith<RequiredPinException> {
-                requester.requestToken(
-                    nodeAddress = nodeAddress,
-                    alias = alias,
-                    displayName = displayName,
-                    pin = null
-                )
-            }
+            val request = builder.build()
+            val e = assertFailsWith<RequiredPinException> { requester.requestToken(request) }
             assertEquals(response.guest_pin == "required", e.guestPin)
-            server.verifyRequestToken(null)
+            server.verify(request)
         }
     }
 
     @Test
-    fun `requestToken throws InvalidPinException`(): Unit = runBlocking {
+    fun `requestToken throws InvalidPinException`() = runTest {
         val message = "Invalid PIN"
         server.enqueue {
             setResponseCode(403)
             setBody(Json.encodeToString(Box(message)))
         }
-        val e = assertFailsWith<InvalidPinException> {
-            requester.requestToken(
-                nodeAddress = nodeAddress,
-                alias = alias,
-                displayName = displayName,
-                pin = pin
-            )
-        }
+        val request = builder
+            .pin(Random.nextPin())
+            .build()
+        val e = assertFailsWith<InvalidPinException> { requester.requestToken(request) }
         assertEquals(message, e.message)
-        server.verifyRequestToken(pin)
+        server.verify(request)
     }
 
     @Test
-    fun `requestToken returns Token`(): Unit = runBlocking {
+    fun `requestToken throws RequiredSsoException`() = runTest {
+        val idps = List(10) {
+            IdentityProvider(
+                name = "IdP #$it",
+                uuid = UUID.randomUUID().toString()
+            )
+        }
+        val response = RequiredSsoResponse(idps)
+        server.enqueue {
+            setResponseCode(403)
+            setBody(Json.encodeToString(Box(response)))
+        }
+        val request = builder.build()
+        val e = assertFailsWith<RequiredSsoException> { requester.requestToken(request) }
+        assertEquals(idps, e.idps)
+        server.verify(request)
+    }
+
+    @Test
+    fun `requestToken throws SsoRedirectException`() = runTest {
+        val idp = IdentityProvider(
+            name = "IdP #0",
+            uuid = UUID.randomUUID().toString()
+        )
+        val response = SsoRedirectResponse(
+            redirect_url = "https://example.com",
+            redirect_idp = idp
+        )
+        server.enqueue {
+            setResponseCode(403)
+            setBody(Json.encodeToString(Box(response)))
+        }
+        val request = builder
+            .idp(idp)
+            .build()
+        val e = assertFailsWith<SsoRedirectException> { requester.requestToken(request) }
+        assertEquals(e.url, response.redirect_url)
+        assertEquals(e.idp, response.redirect_idp)
+        server.verify(request)
+    }
+
+    @Test
+    fun `requestToken returns Token`() = runTest {
         val token = Token(
             token = "${Random.nextInt()}",
             expires = 120
@@ -126,30 +147,24 @@ internal class TokenRequesterTest {
             setResponseCode(200)
             setBody(Json.encodeToString(Box(token)))
         }
-        assertEquals(
-            expected = token,
-            actual = requester.requestToken(
-                nodeAddress = nodeAddress,
-                alias = alias,
-                displayName = displayName,
-                pin = pin
-            )
-        )
-        server.verifyRequestToken(pin)
+        val request = builder
+            .ssoToken(Random.nextSsoToken())
+            .build()
+        assertEquals(token, requester.requestToken(request))
+        server.verify(request)
     }
 
-    private fun MockWebServer.verifyRequestToken(pin: String?) = takeRequest {
+    private fun MockWebServer.verify(request: TokenRequest) = takeRequest {
         assertEquals("POST", method)
-        assertEquals(
-            expected = nodeAddress.resolve("api/client/v2/conferences/$alias/request_token"),
-            actual = requestUrl
-        )
+        assertEquals(request.url, requestUrl)
         assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
-        assertEquals(pin?.trim(), getHeader("pin"))
+        assertEquals(request.pin?.trim(), getHeader("pin"))
         assertEquals(
             expected = RequestTokenRequest(
-                display_name = displayName,
-                conference_extension = alias,
+                display_name = request.displayName,
+                conference_extension = request.alias,
+                chosen_idp = request.idp?.uuid,
+                sso_token = request.ssoToken
             ),
             actual = Json.decodeFromBuffer(body)
         )

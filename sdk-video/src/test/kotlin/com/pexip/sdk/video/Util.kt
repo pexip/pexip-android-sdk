@@ -16,6 +16,8 @@ internal fun Random.nextPin(): String = "${nextInt(1000..9999)}"
 
 internal fun Random.nextToken() = "${nextInt(100000000..999999999)}"
 
+internal fun Random.nextSsoToken() = nextToken()
+
 @OptIn(ExperimentalSerializationApi::class)
 internal inline fun <reified T> Json.decodeFromBuffer(buffer: Buffer) =
     decodeFromStream<T>(buffer.inputStream())
