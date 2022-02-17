@@ -29,7 +29,7 @@ class PinChallengeWorkflow(private val requester: TokenRequester) :
             submitEnabled = when {
                 renderState.requesting -> false
                 renderProps.required -> renderState.pin.isNotBlank()
-                else -> false
+                else -> true
             },
             onPinChange = context.send(::OnPinChange),
             onSubmitClick = context.send(::OnSubmitClick),

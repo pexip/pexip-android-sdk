@@ -1,13 +1,14 @@
 package com.pexip.sdk.video
 
+import com.pexip.sdk.video.internal.DurationSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.LongAsStringSerializer
+import kotlin.time.Duration
 
 @Serializable
 public class Token(
-    public val token: String,
-    @Serializable(with = LongAsStringSerializer::class)
-    public val expires: Long,
+    internal val token: String,
+    @Serializable(with = DurationSerializer::class)
+    internal val expires: Duration,
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -24,5 +25,5 @@ public class Token(
         return result
     }
 
-    override fun toString(): String = "Token(token=██, expires=$expires)"
+    override fun toString(): String = "Token"
 }

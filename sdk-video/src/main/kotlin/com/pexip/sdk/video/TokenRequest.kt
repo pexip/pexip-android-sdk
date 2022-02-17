@@ -68,7 +68,6 @@ public class TokenRequest private constructor(
          * @return this [Builder]
          */
         public fun pin(pin: String): Builder = apply {
-            require(pin.isNotBlank()) { "pin is blank." }
             this.pin = pin.trim()
         }
 

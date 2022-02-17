@@ -5,8 +5,9 @@ import com.pexip.sdk.video.NoSuchConferenceException
 import com.pexip.sdk.video.NoSuchNodeException
 import com.pexip.sdk.video.Token
 import com.pexip.sdk.video.api.InfinityService
-import com.pexip.sdk.video.internal.Box
 import com.pexip.sdk.video.internal.Json
+import com.pexip.sdk.video.internal.StringSerializer
+import com.pexip.sdk.video.internal.TokenSerializer
 import com.pexip.sdk.video.internal.await
 import com.pexip.sdk.video.internal.decodeFromResponseBody
 import kotlinx.serialization.SerializationException
@@ -24,15 +25,15 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
             url(nodeAddress.resolve("api/client/v2/conferences/$alias/refresh_token")!!)
             header("token", token)
         }
-        val (result) = response.use {
+        val result = response.use {
             when (it.code) {
-                200 -> Json.decodeFromResponseBody<Box<Token>>(it.body!!)
+                200 -> Json.decodeFromResponseBody(TokenSerializer, it.body!!)
                 403 -> {
-                    val (message) = Json.decodeFromResponseBody<Box<String>>(it.body!!)
+                    val message = Json.decodeFromResponseBody(StringSerializer, it.body!!)
                     throw InvalidTokenException(message)
                 }
                 404 -> try {
-                    val (message) = Json.decodeFromResponseBody<Box<String>>(it.body!!)
+                    val message = Json.decodeFromResponseBody(StringSerializer, it.body!!)
                     throw NoSuchConferenceException(message)
                 } catch (e: SerializationException) {
                     throw NoSuchNodeException()
@@ -55,7 +56,7 @@ internal class OkHttpInfinityService(private val client: OkHttpClient) : Infinit
             when (it.code) {
                 200, 403 -> Unit
                 404 -> try {
-                    val (message) = Json.decodeFromResponseBody<Box<String>>(it.body!!)
+                    val message = Json.decodeFromResponseBody(StringSerializer, it.body!!)
                     throw NoSuchConferenceException(message)
                 } catch (e: SerializationException) {
                     throw NoSuchNodeException()

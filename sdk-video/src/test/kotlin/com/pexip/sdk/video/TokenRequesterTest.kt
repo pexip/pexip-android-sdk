@@ -1,6 +1,5 @@
 package com.pexip.sdk.video
 
-import com.pexip.sdk.video.internal.Box
 import com.pexip.sdk.video.internal.Json
 import com.pexip.sdk.video.internal.RequestTokenRequest
 import com.pexip.sdk.video.internal.RequiredPinResponse
@@ -18,6 +17,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TokenRequesterTest {
@@ -141,7 +141,7 @@ internal class TokenRequesterTest {
     fun `requestToken returns Token`() = runTest {
         val token = Token(
             token = "${Random.nextInt()}",
-            expires = 120
+            expires = 120.seconds
         )
         server.enqueue {
             setResponseCode(200)

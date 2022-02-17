@@ -2,7 +2,7 @@ package com.pexip.sdk.video.internal
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.Call
@@ -19,8 +19,10 @@ import kotlin.coroutines.resumeWithException
 internal inline fun <reified T> Json.encodeToRequestBody(value: T) =
     encodeToString(value).toRequestBody(ApplicationJson)
 
-internal inline fun <reified T> Json.decodeFromResponseBody(body: ResponseBody) =
-    decodeFromString<T>(body.string())
+internal inline fun <reified T> Json.decodeFromResponseBody(
+    deserializer: DeserializationStrategy<T>,
+    body: ResponseBody,
+) = decodeFromString(deserializer, body.string())
 
 internal suspend inline fun OkHttpClient.await(block: Request.Builder.() -> Unit): Response =
     newCall(Request(block)).await()

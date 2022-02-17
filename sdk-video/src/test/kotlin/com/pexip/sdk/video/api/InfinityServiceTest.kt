@@ -1,11 +1,11 @@
 package com.pexip.sdk.video.api
 
+import com.pexip.sdk.video.Box
 import com.pexip.sdk.video.InvalidTokenException
 import com.pexip.sdk.video.NoSuchConferenceException
 import com.pexip.sdk.video.NoSuchNodeException
 import com.pexip.sdk.video.Token
 import com.pexip.sdk.video.enqueue
-import com.pexip.sdk.video.internal.Box
 import com.pexip.sdk.video.internal.Json
 import com.pexip.sdk.video.nextAlias
 import com.pexip.sdk.video.nextPin
@@ -23,6 +23,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
+import kotlin.time.Duration.Companion.seconds
 
 internal class InfinityServiceTest {
 
@@ -119,7 +120,7 @@ internal class InfinityServiceTest {
     fun `refreshToken returns Token`() = runBlocking {
         val newToken = Token(
             token = "${Random.nextInt()}",
-            expires = 120
+            expires = 120.seconds
         )
         server.enqueue {
             setResponseCode(200)
