@@ -1,10 +1,8 @@
 package com.pexip.sdk.video.sample.node
 
-import okhttp3.HttpUrl
-
 sealed class NodeOutput {
 
-    data class Node(val address: HttpUrl) : NodeOutput()
+    data class Node(val node: com.pexip.sdk.video.Node) : NodeOutput()
 
     object Back : NodeOutput() {
 

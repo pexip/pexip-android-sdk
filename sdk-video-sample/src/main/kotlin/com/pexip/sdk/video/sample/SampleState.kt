@@ -1,9 +1,8 @@
 package com.pexip.sdk.video.sample
 
 import android.os.Parcelable
+import com.pexip.sdk.video.Token
 import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.WriteWith
-import okhttp3.HttpUrl
 
 sealed class SampleState : Parcelable {
 
@@ -11,18 +10,21 @@ sealed class SampleState : Parcelable {
     object Alias : SampleState()
 
     @Parcelize
-    data class Node(val alias: String, val host: String) : SampleState()
+    data class Node(val joinDetails: com.pexip.sdk.video.JoinDetails) : SampleState()
 
     @Parcelize
     data class PinRequirement(
-        val alias: String,
-        val nodeAddress: @WriteWith<HttpUrlParceler> HttpUrl,
+        val joinDetails: com.pexip.sdk.video.JoinDetails,
+        val node: com.pexip.sdk.video.Node,
     ) : SampleState()
 
     @Parcelize
     data class PinChallenge(
-        val alias: String,
-        val nodeAddress: @WriteWith<HttpUrlParceler> HttpUrl,
+        val joinDetails: com.pexip.sdk.video.JoinDetails,
+        val node: com.pexip.sdk.video.Node,
         val required: Boolean,
     ) : SampleState()
+
+    @Parcelize
+    data class Conference(val token: Token) : SampleState()
 }

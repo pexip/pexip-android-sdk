@@ -2,6 +2,7 @@
 
 plugins {
     id("com.pexip.paddock.kotlin.android.library")
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -15,6 +16,7 @@ dependencies {
     api(libs.okhttp)
 
     implementation(libs.androidx.startup.runtime)
+    implementation(libs.okhttp.sse)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.minidns.hla)
@@ -24,4 +26,5 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
+    testImplementation(libs.turbine)
 }

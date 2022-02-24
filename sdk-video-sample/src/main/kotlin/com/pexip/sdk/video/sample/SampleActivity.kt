@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.appcompattheme.AppCompatTheme
 import com.pexip.sdk.video.sample.alias.AliasViewFactory
+import com.pexip.sdk.video.sample.conference.ConferenceViewFactory
 import com.pexip.sdk.video.sample.node.NodeViewFactory
 import com.pexip.sdk.video.sample.pinchallenge.PinChallengeViewFactory
 import com.pexip.sdk.video.sample.pinrequirement.PinRequirementViewFactory
@@ -30,6 +31,7 @@ class SampleActivity : AppCompatActivity() {
         PinChallengeViewFactory,
         PinRequirementViewFactory.ResolvingPinRequirementViewFactory,
         PinRequirementViewFactory.FailureViewFactory,
+        ConferenceViewFactory
     )
     private val viewEnvironment = ViewEnvironment(mapOf(ViewRegistry to viewRegistry))
 

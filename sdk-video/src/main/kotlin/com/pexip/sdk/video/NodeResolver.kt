@@ -26,19 +26,19 @@ public class NodeResolver private constructor(
      * (documentation)[https://docs.pexip.com/clients/configuring_dns_pexip_app.htm#next_gen_mobile]
      * for the recommended flow.
      *
-     * @param host a host to use to resolve the best node address (e.g. example.com)
-     * @return a node address in the form of https://example.com or null if node was not found
+     * @param joinDetails an alias to use to resolve the best node address
+     * @return a node to connect to
      * @throws IOException if a network error was encountered during operation
      */
-    public suspend fun resolve(host: String): HttpUrl? =
-        resolveSrvRecord(host) ?: resolveARecord(host)
+    public suspend fun resolve(joinDetails: JoinDetails): Node? =
+        resolveSrvRecord(joinDetails) ?: resolveARecord(joinDetails)
 
-    private suspend fun resolveSrvRecord(host: String): HttpUrl? {
-        val addresses = api.awaitSortedSrvResolvedAddresses("pexapp", "tcp", host)
+    private suspend fun resolveSrvRecord(joinDetails: JoinDetails): Node? {
+        val addresses = api.awaitSortedSrvResolvedAddresses("pexapp", "tcp", joinDetails.host)
         for (address in addresses) {
             val nodeAddress = address.toNodeAddress()
             try {
-                return nodeAddress.takeUnless { client.isInMaintenanceMode(it) }
+                return nodeAddress.takeUnless { client.isInMaintenanceMode(it) }?.let(::Node)
             } catch (e: UnknownHostException) {
                 continue
             } catch (e: IOException) {
@@ -57,13 +57,13 @@ public class NodeResolver private constructor(
         .build()
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun resolveARecord(host: String) = try {
-        val address = withContext(Dispatchers.IO) { InetAddress.getByName(host) }
+    private suspend fun resolveARecord(joinDetails: JoinDetails) = try {
+        val address = withContext(Dispatchers.IO) { InetAddress.getByName(joinDetails.host) }
         val nodeAddress = HttpUrl.Builder()
             .scheme("https")
             .host(address.hostName)
             .build()
-        nodeAddress.takeUnless { client.isInMaintenanceMode(it) }
+        nodeAddress.takeUnless { client.isInMaintenanceMode(it) }?.let(::Node)
     } catch (e: UnknownHostException) {
         null
     } catch (e: IOException) {

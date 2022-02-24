@@ -8,11 +8,14 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 object NetworkComponent {
 
-    private val client by lazy {
+    val client by lazy {
         val httpLoggingInterceptor = HttpLoggingInterceptor {
             Log.d("OkHttpClient", it)
         }
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        // Don't use `BODY` here as it attempts to read the whole response.
+        // This makes SSE unavailable, rendering app useless
+        // See https://github.com/square/okhttp/issues/4298 for more info
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
         OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
             .build()

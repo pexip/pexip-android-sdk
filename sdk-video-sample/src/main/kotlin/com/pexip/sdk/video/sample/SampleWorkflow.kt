@@ -1,6 +1,8 @@
 package com.pexip.sdk.video.sample
 
 import com.pexip.sdk.video.sample.alias.AliasWorkflow
+import com.pexip.sdk.video.sample.conference.ConferenceProps
+import com.pexip.sdk.video.sample.conference.ConferenceWorkflow
 import com.pexip.sdk.video.sample.node.NodeProps
 import com.pexip.sdk.video.sample.node.NodeWorkflow
 import com.pexip.sdk.video.sample.pinchallenge.PinChallengeProps
@@ -18,6 +20,7 @@ class SampleWorkflow(
     private val nodeWorkflow: NodeWorkflow,
     private val pinRequirementWorkflow: PinRequirementWorkflow,
     private val pinChallengeWorkflow: PinChallengeWorkflow,
+    private val conferenceWorkflow: ConferenceWorkflow,
 ) : StatefulWorkflow<SampleProps, SampleState, SampleOutput, Any>() {
 
     override fun initialState(props: SampleProps, snapshot: Snapshot?): SampleState =
@@ -36,27 +39,27 @@ class SampleWorkflow(
         )
         is SampleState.Node -> context.renderChild(
             child = nodeWorkflow,
-            props = NodeProps(renderState.host),
+            props = NodeProps(renderState.joinDetails),
             handler = ::OnNodeOutput
         )
         is SampleState.PinRequirement -> context.renderChild(
             child = pinRequirementWorkflow,
-            props = PinRequirementProps(
-                nodeAddress = renderState.nodeAddress,
-                alias = renderState.alias,
-                displayName = renderProps.displayName
-            ),
+            props = PinRequirementProps(renderState.node, renderState.joinDetails),
             handler = ::OnPinRequirementOutput
         )
         is SampleState.PinChallenge -> context.renderChild(
             child = pinChallengeWorkflow,
             props = PinChallengeProps(
-                nodeAddress = renderState.nodeAddress,
-                alias = renderState.alias,
-                displayName = renderProps.displayName,
+                node = renderState.node,
+                joinDetails = renderState.joinDetails,
                 required = renderState.required
             ),
             handler = ::OnPinChallengeOutput
+        )
+        is SampleState.Conference -> context.renderChild(
+            child = conferenceWorkflow,
+            props = ConferenceProps(renderState.token),
+            handler = ::OnConferenceOutput
         )
     }
 }

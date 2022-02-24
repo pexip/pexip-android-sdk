@@ -2,13 +2,13 @@ package com.pexip.sdk.video
 
 import com.pexip.sdk.video.internal.Json
 import com.pexip.sdk.video.internal.OkHttpClient
+import com.pexip.sdk.video.internal.RequestToken200Serializer
 import com.pexip.sdk.video.internal.RequestToken403Serializer
 import com.pexip.sdk.video.internal.RequestTokenRequest
 import com.pexip.sdk.video.internal.RequiredPinResponse
 import com.pexip.sdk.video.internal.RequiredSsoResponse
 import com.pexip.sdk.video.internal.SsoRedirectResponse
 import com.pexip.sdk.video.internal.StringSerializer
-import com.pexip.sdk.video.internal.TokenSerializer
 import com.pexip.sdk.video.internal.await
 import com.pexip.sdk.video.internal.decodeFromResponseBody
 import com.pexip.sdk.video.internal.encodeToRequestBody
@@ -36,8 +36,8 @@ public class TokenRequester private constructor(private val client: OkHttpClient
         val response = client.await {
             with(request) {
                 val r = RequestTokenRequest(
-                    display_name = displayName,
-                    conference_extension = alias,
+                    display_name = joinDetails.displayName,
+                    conference_extension = joinDetails.alias,
                     chosen_idp = idp?.uuid,
                     sso_token = ssoToken
                 )
@@ -46,17 +46,24 @@ public class TokenRequester private constructor(private val client: OkHttpClient
                 pin?.let { header("pin", it.trim()) }
             }
         }
-        return response.use { it.parse() }
+        return response.use { it.parse(request) }
     }
 
-    private fun Response.parse() = when (code) {
-        200 -> parse200()
+    private fun Response.parse(request: TokenRequest) = when (code) {
+        200 -> parse200(request)
         403 -> parse403()
         404 -> parse404()
         else -> throw IllegalStateException()
     }
 
-    private fun Response.parse200() = Json.decodeFromResponseBody(TokenSerializer, body!!)
+    private fun Response.parse200(request: TokenRequest): Token {
+        val response = Json.decodeFromResponseBody(RequestToken200Serializer, body!!)
+        return Token(
+            node = request.node,
+            joinDetails = request.joinDetails,
+            value = response.token,
+        )
+    }
 
     private fun Response.parse403(): Nothing {
         throw when (val r = Json.decodeFromResponseBody(RequestToken403Serializer, body!!)) {

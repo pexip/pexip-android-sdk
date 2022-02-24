@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.sample.node
 
+import com.pexip.sdk.video.Node
 import com.squareup.workflow1.WorkflowAction
-import okhttp3.HttpUrl
 
 typealias NodeAction = WorkflowAction<NodeProps, NodeState, NodeOutput>
 
@@ -12,11 +12,11 @@ class OnBackClick : NodeAction() {
     }
 }
 
-data class OnNode(val address: HttpUrl?) : NodeAction() {
+data class OnNode(val node: Node?) : NodeAction() {
 
     override fun Updater.apply() {
-        if (address != null) {
-            setOutput(NodeOutput.Node(address))
+        if (node != null) {
+            setOutput(NodeOutput.Node(node))
         } else {
             val e = NoSuchElementException("No node found.")
             state = NodeState.Failure(e)

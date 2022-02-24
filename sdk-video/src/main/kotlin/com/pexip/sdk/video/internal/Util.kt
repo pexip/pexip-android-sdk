@@ -1,6 +1,9 @@
 package com.pexip.sdk.video.internal
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.encodeToString
@@ -13,6 +16,8 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okhttp3.sse.EventSource
+import okhttp3.sse.EventSourceListener
 import java.io.IOException
 import kotlin.coroutines.resumeWithException
 
@@ -43,7 +48,22 @@ internal suspend fun Call.await(): Response = suspendCancellableCoroutine { cont
     enqueue(callback)
 }
 
-private inline fun Request(block: Request.Builder.() -> Unit): Request =
+internal fun EventSource.Factory.events(request: Request): Flow<Event> = callbackFlow {
+    val listener = object : EventSourceListener() {
+
+        override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
+            trySend(Event(id, type, data))
+        }
+
+        override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
+            close(t)
+        }
+    }
+    val source = newEventSource(request, listener)
+    awaitClose { source.cancel() }
+}
+
+internal inline fun Request(block: Request.Builder.() -> Unit): Request =
     Request.Builder().apply(block).build()
 
 private val ApplicationJson by lazy { "application/json; charset=utf-8".toMediaType() }

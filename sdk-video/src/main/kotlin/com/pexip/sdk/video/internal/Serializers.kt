@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.internal
 
-import com.pexip.sdk.video.Token
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
@@ -19,7 +18,8 @@ import kotlinx.serialization.json.jsonObject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-internal object TokenSerializer : UnboxingSerializer<Token>(Token.serializer())
+internal object RequestToken200Serializer :
+    UnboxingSerializer<RequestToken200Response>(RequestToken200Response.serializer())
 
 internal object RequestToken403Serializer : UnboxingSerializer<Any>(AnySerializer)
 

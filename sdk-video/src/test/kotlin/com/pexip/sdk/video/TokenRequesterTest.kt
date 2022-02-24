@@ -1,6 +1,7 @@
 package com.pexip.sdk.video
 
 import com.pexip.sdk.video.internal.Json
+import com.pexip.sdk.video.internal.RequestToken200Response
 import com.pexip.sdk.video.internal.RequestTokenRequest
 import com.pexip.sdk.video.internal.RequiredPinResponse
 import com.pexip.sdk.video.internal.RequiredSsoResponse
@@ -17,7 +18,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TokenRequesterTest {
@@ -30,10 +31,15 @@ internal class TokenRequesterTest {
 
     @BeforeTest
     fun setUp() {
-        builder = TokenRequest.Builder()
-            .nodeAddress(server.url("/"))
+        val node = Node(server.url("/"))
+        val joinDetails = JoinDetails.Builder()
             .alias(Random.nextAlias())
+            .host("example.com")
             .displayName("John")
+            .build()
+        builder = TokenRequest.Builder()
+            .node(node)
+            .joinDetails(joinDetails)
         requester = TokenRequester.Builder()
             .client(OkHttpClient())
             .build()
@@ -139,9 +145,9 @@ internal class TokenRequesterTest {
 
     @Test
     fun `requestToken returns Token`() = runTest {
-        val token = Token(
-            token = "${Random.nextInt()}",
-            expires = 120.seconds
+        val token = RequestToken200Response(
+            token = Random.nextToken(),
+            expires = 2.minutes
         )
         server.enqueue {
             setResponseCode(200)
@@ -150,7 +156,14 @@ internal class TokenRequesterTest {
         val request = builder
             .ssoToken(Random.nextSsoToken())
             .build()
-        assertEquals(token, requester.requestToken(request))
+        assertEquals(
+            expected = Token(
+                node = request.node,
+                joinDetails = request.joinDetails,
+                value = token.token,
+            ),
+            actual = requester.requestToken(request)
+        )
         server.verify(request)
     }
 
@@ -161,8 +174,8 @@ internal class TokenRequesterTest {
         assertEquals(request.pin?.trim(), getHeader("pin"))
         assertEquals(
             expected = RequestTokenRequest(
-                display_name = request.displayName,
-                conference_extension = request.alias,
+                display_name = request.joinDetails.displayName,
+                conference_extension = request.joinDetails.alias,
                 chosen_idp = request.idp?.uuid,
                 sso_token = request.ssoToken
             ),

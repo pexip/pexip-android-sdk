@@ -1,11 +1,11 @@
-package com.pexip.sdk.video.sample
+package com.pexip.sdk.video.internal
 
 import android.os.Parcel
 import kotlinx.parcelize.Parceler
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
-object HttpUrlParceler : Parceler<HttpUrl> {
+internal object HttpUrlParceler : Parceler<HttpUrl> {
 
     override fun create(parcel: Parcel): HttpUrl = parcel.readString()!!.toHttpUrl()
 
