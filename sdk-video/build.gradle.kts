@@ -17,6 +17,7 @@ dependencies {
 
     implementation(libs.androidx.startup.runtime)
     implementation(libs.okhttp.sse)
+    implementation(libs.okio)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.minidns.hla)

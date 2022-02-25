@@ -5,11 +5,10 @@ import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.NoSuchConferenceException
 import com.pexip.sdk.video.NoSuchNodeException
 import com.pexip.sdk.video.Node
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.serialization.SerializationException
 import okhttp3.OkHttpClient
 import okhttp3.internal.EMPTY_REQUEST
@@ -30,16 +29,21 @@ internal class RealInfinityService(
     private val factory = EventSources.createFactory(sseClient)
     private val token = MutableStateFlow(token)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun events(): Flow<Event> = token
-        .map {
-            Request {
-                get()
-                url(node.address.resolve("api/client/v2/conferences/${joinDetails.alias}/events")!!)
-                header("token", it)
-            }
+    override fun events(): Flow<Event> = factory
+        .events(
+            request = {
+                Request {
+                    get()
+                    url(node.address.resolve("api/client/v2/conferences/${joinDetails.alias}/events")!!)
+                    header("token", token.value)
+                }
+            },
+            handler = Event::from
+        )
+        .retryWhen { _, attempt ->
+            delay(attempt.coerceAtMost(3) * 1000)
+            true
         }
-        .flatMapLatest(factory::events)
 
     override suspend fun refreshToken(): Duration {
         val response = client.await {

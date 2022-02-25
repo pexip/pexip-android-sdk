@@ -48,18 +48,21 @@ internal suspend fun Call.await(): Response = suspendCancellableCoroutine { cont
     enqueue(callback)
 }
 
-internal fun EventSource.Factory.events(request: Request): Flow<Event> = callbackFlow {
+internal fun <T : Any> EventSource.Factory.events(
+    request: () -> Request,
+    handler: (id: String?, type: String?, data: String) -> T,
+): Flow<T> = callbackFlow {
     val listener = object : EventSourceListener() {
 
         override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
-            trySend(Event(id, type, data))
+            trySend(handler(id, type, data))
         }
 
         override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
             close(t)
         }
     }
-    val source = newEventSource(request, listener)
+    val source = newEventSource(request(), listener)
     awaitClose { source.cancel() }
 }
 

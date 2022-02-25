@@ -6,12 +6,10 @@ import okhttp3.OkHttpClient
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@Ignore
 @RunWith(RobolectricTestRunner::class)
 internal class NodeResolverTest {
 
