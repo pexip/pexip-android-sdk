@@ -18,10 +18,11 @@ import kotlinx.serialization.json.jsonObject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-internal object RequestToken200Serializer :
+internal object RequestToken200ResponseSerializer :
     UnboxingSerializer<RequestToken200Response>(RequestToken200Response.serializer())
 
-internal object RequestToken403Serializer : UnboxingSerializer<Any>(AnySerializer)
+internal object RequestToken403ResponseSerializer :
+    UnboxingSerializer<RequestToken403Response>(PolymorphicRequestToken403ResponseSerializer)
 
 internal object StringSerializer : UnboxingSerializer<String>(String.serializer())
 
@@ -49,11 +50,12 @@ internal abstract class UnboxingSerializer<T : Any>(tSerializer: KSerializer<T>)
  * Since the REST API doesn't contain any "type" field to determine which response is it, use
  * available fields to guess.
  */
-private object AnySerializer : JsonContentPolymorphicSerializer<Any>(Any::class) {
+private object PolymorphicRequestToken403ResponseSerializer :
+    JsonContentPolymorphicSerializer<RequestToken403Response>(RequestToken403Response::class) {
 
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out Any> {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out RequestToken403Response> {
         if (element is JsonPrimitive) {
-            if (element.isString) return String.serializer()
+            if (element.isString) return ErrorResponse.serializer()
         } else if (element is JsonObject) {
             if ("redirect_url" in element) return SsoRedirectResponse.serializer()
             if ("guest_pin" in element) return RequiredPinResponse.serializer()

@@ -1,9 +1,10 @@
 package com.pexip.sdk.video
 
+import com.pexip.sdk.video.internal.ErrorResponse
 import com.pexip.sdk.video.internal.Json
 import com.pexip.sdk.video.internal.OkHttpClient
-import com.pexip.sdk.video.internal.RequestToken200Serializer
-import com.pexip.sdk.video.internal.RequestToken403Serializer
+import com.pexip.sdk.video.internal.RequestToken200ResponseSerializer
+import com.pexip.sdk.video.internal.RequestToken403ResponseSerializer
 import com.pexip.sdk.video.internal.RequestTokenRequest
 import com.pexip.sdk.video.internal.RequiredPinResponse
 import com.pexip.sdk.video.internal.RequiredSsoResponse
@@ -57,7 +58,7 @@ public class TokenRequester private constructor(private val client: OkHttpClient
     }
 
     private fun Response.parse200(request: TokenRequest): Token {
-        val response = Json.decodeFromResponseBody(RequestToken200Serializer, body!!)
+        val response = Json.decodeFromResponseBody(RequestToken200ResponseSerializer, body!!)
         return Token(
             node = request.node,
             joinDetails = request.joinDetails,
@@ -66,12 +67,12 @@ public class TokenRequester private constructor(private val client: OkHttpClient
     }
 
     private fun Response.parse403(): Nothing {
-        throw when (val r = Json.decodeFromResponseBody(RequestToken403Serializer, body!!)) {
+        val r = Json.decodeFromResponseBody(RequestToken403ResponseSerializer, body!!)
+        throw when (r) {
             is RequiredPinResponse -> RequiredPinException(r.guest_pin == "required")
             is RequiredSsoResponse -> RequiredSsoException(r.idp)
             is SsoRedirectResponse -> SsoRedirectException(r.redirect_url, r.redirect_idp)
-            is String -> InvalidPinException(r)
-            else -> SerializationException("Failed to deserialize body.")
+            is ErrorResponse -> InvalidPinException(r.message)
         }
     }
 

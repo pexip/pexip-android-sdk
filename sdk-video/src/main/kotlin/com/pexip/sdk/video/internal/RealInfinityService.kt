@@ -53,7 +53,7 @@ internal class RealInfinityService(
         }
         val r = response.use {
             when (it.code) {
-                200 -> Json.decodeFromResponseBody(RequestToken200Serializer, it.body!!)
+                200 -> Json.decodeFromResponseBody(RequestToken200ResponseSerializer, it.body!!)
                 403 -> {
                     val message = Json.decodeFromResponseBody(StringSerializer, it.body!!)
                     throw InvalidTokenException(message)
