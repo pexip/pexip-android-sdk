@@ -2,6 +2,7 @@ package com.pexip.sdk.video.sample.pinrequirement
 
 import com.pexip.sdk.video.TokenRequest
 import com.pexip.sdk.video.TokenRequester
+import com.pexip.sdk.video.coroutines.request
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -40,7 +41,7 @@ class PinRequirementWorkflow(private val requester: TokenRequester) :
                     .node(props.node)
                     .joinDetails(props.joinDetails)
                     .build()
-                val token = requester.requestToken(request)
+                val token = requester.request(request)
                 OnToken(token)
             } catch (t: Throwable) {
                 OnError(t)

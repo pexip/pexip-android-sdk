@@ -51,6 +51,7 @@ public class NodeResolver private constructor(
      *
      * @param details an alias to use to resolve the best node address
      * @param callback a completion handler
+     * @return a [Future] that may be used to cancel the operation
      */
     public fun resolve(details: JoinDetails, callback: Callback): Future<*> {
         val runnable = ResolveRunnable(this, details, callback)

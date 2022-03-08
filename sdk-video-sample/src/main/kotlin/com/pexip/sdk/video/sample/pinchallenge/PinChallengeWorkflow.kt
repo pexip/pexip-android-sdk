@@ -3,6 +3,7 @@ package com.pexip.sdk.video.sample.pinchallenge
 import com.pexip.sdk.video.InvalidPinException
 import com.pexip.sdk.video.TokenRequest
 import com.pexip.sdk.video.TokenRequester
+import com.pexip.sdk.video.coroutines.request
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -50,7 +51,7 @@ class PinChallengeWorkflow(private val requester: TokenRequester) :
                     .joinDetails(props.joinDetails)
                     .pin(pinToSubmit)
                     .build()
-                val token = requester.requestToken(request)
+                val token = requester.request(request)
                 OnToken(token)
             } catch (e: InvalidPinException) {
                 OnInvalidPin(e)

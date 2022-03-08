@@ -1,10 +1,6 @@
 package com.pexip.sdk.video.internal
 
-import kotlinx.coroutines.flow.Flow
-
 internal interface InfinityService {
-
-    val events: Flow<Event>
 
     fun refreshToken(): String
 

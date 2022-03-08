@@ -18,15 +18,12 @@ dependencies {
     implementation(libs.androidx.startup.runtime)
     implementation(libs.okhttp.sse)
     implementation(libs.okio)
-    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.minidns.hla)
     implementation(libs.minidns.android21)
     implementation(libs.pexip.libwebrtc.core)
 
     testImplementation(libs.androidx.test.core.ktx)
-    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
-    testImplementation(libs.turbine)
 }

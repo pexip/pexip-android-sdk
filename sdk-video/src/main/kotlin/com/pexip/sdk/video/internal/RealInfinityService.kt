@@ -5,9 +5,6 @@ import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.NoSuchConferenceException
 import com.pexip.sdk.video.NoSuchNodeException
 import com.pexip.sdk.video.Node
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.retryWhen
 import kotlinx.serialization.SerializationException
 import okhttp3.OkHttpClient
 import okhttp3.internal.EMPTY_REQUEST
@@ -26,26 +23,6 @@ internal class RealInfinityService(
         .readTimeout(0, TimeUnit.SECONDS)
         .build()
     private val factory = EventSources.createFactory(sseClient)
-
-    override val events: Flow<Event> = factory
-        .events(
-            request = {
-                Request {
-                    get()
-                    url(node.address) {
-                        addPathSegments("api/client/v2/conferences")
-                        addPathSegment(joinDetails.alias)
-                        addPathSegment("events")
-                    }
-                    header("token", store.token)
-                }
-            },
-            handler = Event::from
-        )
-        .retryWhen { _, attempt ->
-            delay(attempt.coerceAtMost(3) * 1000)
-            true
-        }
 
     override fun refreshToken(): String {
         val response = client.execute {

@@ -11,8 +11,6 @@ import com.pexip.sdk.video.enqueue
 import com.pexip.sdk.video.nextToken
 import com.pexip.sdk.video.nextUuid
 import com.pexip.sdk.video.takeRequest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
@@ -25,7 +23,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.minutes
 
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class InfinityServiceTest {
 
     @get:Rule
@@ -115,14 +112,14 @@ internal class InfinityServiceTest {
     }
 
     @Test
-    fun `releaseToken returns on non-200`() = runTest {
+    fun `releaseToken returns on non-200`() {
         server.enqueue { setResponseCode(Random.nextInt(300..599)) }
         service.releaseToken()
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `releaseToken returns`() = runTest {
+    fun `releaseToken returns`() {
         server.enqueue { setResponseCode(200) }
         service.releaseToken()
         server.verifyReleaseToken(token)

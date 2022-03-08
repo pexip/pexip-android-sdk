@@ -6,20 +6,20 @@ import com.pexip.sdk.video.internal.RequestTokenRequest
 import com.pexip.sdk.video.internal.RequiredPinResponse
 import com.pexip.sdk.video.internal.RequiredSsoResponse
 import com.pexip.sdk.video.internal.SsoRedirectResponse
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
+import java.util.concurrent.ExecutionException
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
+import kotlin.test.fail
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class TokenRequesterTest {
 
     @get:Rule
@@ -45,30 +45,42 @@ internal class TokenRequesterTest {
     }
 
     @Test
-    fun `requestToken throws NoSuchNodeException`() = runTest {
-        server.enqueue {
-            setResponseCode(404)
-        }
+    fun `requestToken throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
         val request = builder.build()
-        assertFailsWith<NoSuchNodeException> { requester.requestToken(request) }
+        val callback = object : Callback {
+
+            override fun onFailure(requester: TokenRequester, t: Throwable) {
+                throw t
+            }
+        }
+        val e = assertFailsWith<ExecutionException> { requester.request(request, callback).get() }
+        assertIs<NoSuchNodeException>(e.cause)
         server.verify(request)
     }
 
     @Test
-    fun `requestToken throws NoSuchConferenceException`() = runTest {
+    fun `requestToken throws NoSuchConferenceException`() {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
             setBody(Json.encodeToString(Box(message)))
         }
         val request = builder.build()
-        val e = assertFailsWith<NoSuchConferenceException> { requester.requestToken(request) }
-        assertEquals(message, e.message)
+        val callback = object : Callback {
+
+            override fun onFailure(requester: TokenRequester, t: Throwable) {
+                throw t
+            }
+        }
+        val e = assertFailsWith<ExecutionException> { requester.request(request, callback).get() }
+        val cause = assertIs<NoSuchConferenceException>(e.cause)
+        assertEquals(message, cause.message)
         server.verify(request)
     }
 
     @Test
-    fun `requestToken throws RequiredPinException`() = runTest {
+    fun `requestToken throws RequiredPinException`() {
         val responses = listOf(
             RequiredPinResponse("required"),
             RequiredPinResponse("none")
@@ -79,14 +91,23 @@ internal class TokenRequesterTest {
                 setBody(Json.encodeToString(Box(response)))
             }
             val request = builder.build()
-            val e = assertFailsWith<RequiredPinException> { requester.requestToken(request) }
-            assertEquals(response.guest_pin == "required", e.guestPin)
+            val callback = object : Callback {
+
+                override fun onFailure(requester: TokenRequester, t: Throwable) {
+                    throw t
+                }
+            }
+            val e = assertFailsWith<ExecutionException> {
+                requester.request(request, callback).get()
+            }
+            val cause = assertIs<RequiredPinException>(e.cause)
+            assertEquals(response.guest_pin == "required", cause.guestPin)
             server.verify(request)
         }
     }
 
     @Test
-    fun `requestToken throws InvalidPinException`() = runTest {
+    fun `requestToken throws InvalidPinException`() {
         val message = "Invalid PIN"
         server.enqueue {
             setResponseCode(403)
@@ -95,13 +116,20 @@ internal class TokenRequesterTest {
         val request = builder
             .pin(Random.nextPin())
             .build()
-        val e = assertFailsWith<InvalidPinException> { requester.requestToken(request) }
-        assertEquals(message, e.message)
+        val callback = object : Callback {
+
+            override fun onFailure(requester: TokenRequester, t: Throwable) {
+                throw t
+            }
+        }
+        val e = assertFailsWith<ExecutionException> { requester.request(request, callback).get() }
+        val cause = assertIs<InvalidPinException>(e.cause)
+        assertEquals(message, cause.message)
         server.verify(request)
     }
 
     @Test
-    fun `requestToken throws RequiredSsoException`() = runTest {
+    fun `requestToken throws RequiredSsoException`() {
         val idps = List(10) {
             IdentityProvider(
                 name = "IdP #$it",
@@ -114,13 +142,20 @@ internal class TokenRequesterTest {
             setBody(Json.encodeToString(Box(response)))
         }
         val request = builder.build()
-        val e = assertFailsWith<RequiredSsoException> { requester.requestToken(request) }
-        assertEquals(idps, e.idps)
+        val callback = object : Callback {
+
+            override fun onFailure(requester: TokenRequester, t: Throwable) {
+                throw t
+            }
+        }
+        val e = assertFailsWith<ExecutionException> { requester.request(request, callback).get() }
+        val cause = assertIs<RequiredSsoException>(e.cause)
+        assertEquals(idps, cause.idps)
         server.verify(request)
     }
 
     @Test
-    fun `requestToken throws SsoRedirectException`() = runTest {
+    fun `requestToken throws SsoRedirectException`() {
         val idp = IdentityProvider(
             name = "IdP #0",
             uuid = Random.nextUuid()
@@ -136,14 +171,21 @@ internal class TokenRequesterTest {
         val request = builder
             .idp(idp)
             .build()
-        val e = assertFailsWith<SsoRedirectException> { requester.requestToken(request) }
-        assertEquals(e.url, response.redirect_url)
-        assertEquals(e.idp, response.redirect_idp)
+        val callback = object : Callback {
+
+            override fun onFailure(requester: TokenRequester, t: Throwable) {
+                throw t
+            }
+        }
+        val e = assertFailsWith<ExecutionException> { requester.request(request, callback).get() }
+        val cause = assertIs<SsoRedirectException>(e.cause)
+        assertEquals(response.redirect_url, cause.url)
+        assertEquals(response.redirect_idp, cause.idp)
         server.verify(request)
     }
 
     @Test
-    fun `requestToken returns Token`() = runTest {
+    fun `requestToken returns Token`() {
         val token = RequestToken200Response(
             token = Random.nextToken(),
             participant_uuid = Random.nextUuid(),
@@ -156,6 +198,16 @@ internal class TokenRequesterTest {
         val request = builder
             .ssoToken(Random.nextSsoToken())
             .build()
+        val callback = object : Callback {
+
+            @Volatile
+            var token: Token? = null
+
+            override fun onSuccess(requester: TokenRequester, token: Token) {
+                this.token = token
+            }
+        }
+        requester.request(request, callback).get()
         assertEquals(
             expected = Token(
                 node = request.node,
@@ -164,7 +216,7 @@ internal class TokenRequesterTest {
                 token = token.token,
                 expires = token.expires
             ),
-            actual = requester.requestToken(request)
+            actual = callback.token
         )
         server.verify(request)
     }
@@ -183,5 +235,16 @@ internal class TokenRequesterTest {
             ),
             actual = Json.decodeFromBuffer(body)
         )
+    }
+
+    private interface Callback : TokenRequester.Callback {
+
+        override fun onSuccess(requester: TokenRequester, token: Token) {
+            fail()
+        }
+
+        override fun onFailure(requester: TokenRequester, t: Throwable) {
+            fail()
+        }
     }
 }
