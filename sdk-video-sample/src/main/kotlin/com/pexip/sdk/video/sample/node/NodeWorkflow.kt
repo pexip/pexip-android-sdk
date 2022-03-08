@@ -1,6 +1,7 @@
 package com.pexip.sdk.video.sample.node
 
 import com.pexip.sdk.video.NodeResolver
+import com.pexip.sdk.video.coroutines.resolve
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow

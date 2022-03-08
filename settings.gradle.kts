@@ -27,4 +27,5 @@ includeBuild("../libwebrtc")
 
 rootProject.name = "sdk"
 include(":sdk-video")
+include(":sdk-video-coroutines")
 include(":sdk-video-sample")

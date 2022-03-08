@@ -3,11 +3,12 @@ package com.pexip.sdk.video.sample.node
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-sealed class NodeState : Parcelable {
+sealed interface NodeState : Parcelable {
 
     @Parcelize
-    object ResolvingNode : NodeState()
+    object ResolvingNode : NodeState
 
     @Parcelize
-    data class Failure(val t: Throwable) : NodeState()
+    @JvmInline
+    value class Failure(val t: Throwable) : NodeState
 }

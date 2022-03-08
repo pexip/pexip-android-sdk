@@ -24,7 +24,8 @@ android {
 }
 
 dependencies {
-    implementation(projects.sdkVideo)
+    implementation(projects.sdkVideoCoroutines)
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.material)

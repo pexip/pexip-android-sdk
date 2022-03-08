@@ -1,10 +1,9 @@
 package com.pexip.sdk.video
 
+import com.pexip.sdk.video.internal.Dispatcher
 import com.pexip.sdk.video.internal.OkHttpClient
-import com.pexip.sdk.video.internal.await
+import com.pexip.sdk.video.internal.execute
 import com.pexip.sdk.video.internal.url
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import org.minidns.hla.DnssecResolverApi
@@ -13,6 +12,7 @@ import org.minidns.hla.SrvResolverResult
 import java.io.IOException
 import java.net.InetAddress
 import java.net.UnknownHostException
+import java.util.concurrent.Future
 
 /**
  * A class that can resolve node addresses.
@@ -23,19 +23,44 @@ public class NodeResolver private constructor(
 ) {
 
     /**
-     * Resolves the node address for the provided [host]. Implementations should consult with
+     * A callback that will be invoked after call to [resolve].
+     */
+    public interface Callback {
+
+        /**
+         * Invoked when node resolution completed without issues.
+         *
+         * @param resolver a [NodeResolver] used to perform this operation
+         * @param node an instance of [Node], or null
+         */
+        public fun onSuccess(resolver: NodeResolver, node: Node?)
+
+        /**
+         * Invoked when node resolution encountered an error.
+         *
+         * @param resolver a [NodeResolver] used to perform this operation
+         * @param t an error
+         */
+        public fun onFailure(resolver: NodeResolver, t: Throwable)
+    }
+
+    /**
+     * Resolves the node address for the provided [details]. Implementations should consult with
      * (documentation)[https://docs.pexip.com/clients/configuring_dns_pexip_app.htm#next_gen_mobile]
      * for the recommended flow.
      *
-     * @param joinDetails an alias to use to resolve the best node address
-     * @return a node to connect to
-     * @throws IOException if a network error was encountered during operation
+     * @param details an alias to use to resolve the best node address
+     * @param callback a completion handler
      */
-    public suspend fun resolve(joinDetails: JoinDetails): Node? =
-        resolveSrvRecord(joinDetails) ?: resolveARecord(joinDetails)
+    public fun resolve(details: JoinDetails, callback: Callback): Future<*> {
+        val runnable = ResolveRunnable(this, details, callback)
+        return Dispatcher.submit(runnable)
+    }
 
-    private suspend fun resolveSrvRecord(joinDetails: JoinDetails): Node? {
-        val addresses = api.awaitSortedSrvResolvedAddresses("pexapp", "tcp", joinDetails.host)
+    private fun resolveSrvRecord(joinDetails: JoinDetails): Node? {
+        val addresses = api.resolveSrv("pexapp", "tcp", joinDetails.host)
+            ?.sortedSrvResolvedAddresses
+            ?: emptyList()
         for (address in addresses) {
             val nodeAddress = address.toNodeAddress()
             try {
@@ -51,15 +76,8 @@ public class NodeResolver private constructor(
         return null
     }
 
-    private fun SrvResolverResult.ResolvedSrvRecord.toNodeAddress() = HttpUrl.Builder()
-        .scheme(if (srv.port == 443) "https" else "http")
-        .host(srv.target.ace)
-        .port(srv.port)
-        .build()
-
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun resolveARecord(joinDetails: JoinDetails) = try {
-        val address = withContext(Dispatchers.IO) { InetAddress.getByName(joinDetails.host) }
+    private fun resolveARecord(joinDetails: JoinDetails): Node? = try {
+        val address = InetAddress.getByName(joinDetails.host)
         val nodeAddress = HttpUrl.Builder()
             .scheme("https")
             .host(address.hostName)
@@ -73,20 +91,17 @@ public class NodeResolver private constructor(
         null
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun ResolverApi.awaitSortedSrvResolvedAddresses(
-        service: String,
-        proto: String,
-        name: String,
-    ) = withContext(Dispatchers.IO) {
-        resolveSrv("_$service._$proto.$name")
-            .takeIf { it.wasSuccessful() }
-            ?.sortedSrvResolvedAddresses
-            ?: emptyList()
-    }
+    private fun SrvResolverResult.ResolvedSrvRecord.toNodeAddress() = HttpUrl.Builder()
+        .scheme(if (srv.port == 443) "https" else "http")
+        .host(srv.target.ace)
+        .port(srv.port)
+        .build()
 
-    private suspend fun OkHttpClient.isInMaintenanceMode(nodeAddress: HttpUrl): Boolean {
-        val response = await {
+    private fun ResolverApi.resolveSrv(service: String, proto: String, name: String) =
+        resolveSrv("_$service._$proto.$name").takeIf { it.wasSuccessful() }
+
+    private fun OkHttpClient.isInMaintenanceMode(nodeAddress: HttpUrl): Boolean {
+        val response = execute {
             get()
             url(nodeAddress) { addPathSegments("api/client/v2/status") }
         }
@@ -97,6 +112,20 @@ public class NodeResolver private constructor(
                 503 -> true
                 else -> throw IllegalStateException()
             }
+        }
+    }
+
+    private class ResolveRunnable(
+        private val resolver: NodeResolver,
+        private val details: JoinDetails,
+        private val callback: Callback,
+    ) : Runnable {
+
+        override fun run() = try {
+            val node = resolver.resolveSrvRecord(details) ?: resolver.resolveARecord(details)
+            callback.onSuccess(resolver, node)
+        } catch (t: Throwable) {
+            callback.onFailure(resolver, t)
         }
     }
 
