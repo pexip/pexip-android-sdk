@@ -2,6 +2,7 @@ package com.pexip.sdk.video
 
 import com.pexip.sdk.video.internal.OkHttpClient
 import com.pexip.sdk.video.internal.await
+import com.pexip.sdk.video.internal.url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
@@ -87,7 +88,7 @@ public class NodeResolver private constructor(
     private suspend fun OkHttpClient.isInMaintenanceMode(nodeAddress: HttpUrl): Boolean {
         val response = await {
             get()
-            url(nodeAddress.resolve("api/client/v2/status")!!)
+            url(nodeAddress) { addPathSegments("api/client/v2/status") }
         }
         return response.use {
             when (it.code) {

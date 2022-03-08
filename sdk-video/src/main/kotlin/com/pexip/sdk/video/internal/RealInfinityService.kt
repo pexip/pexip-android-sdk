@@ -7,35 +7,37 @@ import com.pexip.sdk.video.NoSuchNodeException
 import com.pexip.sdk.video.Node
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.serialization.SerializationException
 import okhttp3.OkHttpClient
 import okhttp3.internal.EMPTY_REQUEST
 import okhttp3.sse.EventSources
 import java.util.concurrent.TimeUnit
-import kotlin.time.Duration
 
 internal class RealInfinityService(
     private val client: OkHttpClient,
+    private val store: TokenStore,
     private val node: Node,
     private val joinDetails: JoinDetails,
-    token: String,
+    private val participantId: String,
 ) : InfinityService {
 
     private val sseClient = client.newBuilder()
         .readTimeout(0, TimeUnit.SECONDS)
         .build()
     private val factory = EventSources.createFactory(sseClient)
-    private val token = MutableStateFlow(token)
 
-    override fun events(): Flow<Event> = factory
+    override val events: Flow<Event> = factory
         .events(
             request = {
                 Request {
                     get()
-                    url(node.address.resolve("api/client/v2/conferences/${joinDetails.alias}/events")!!)
-                    header("token", token.value)
+                    url(node.address) {
+                        addPathSegments("api/client/v2/conferences")
+                        addPathSegment(joinDetails.alias)
+                        addPathSegment("events")
+                    }
+                    header("token", store.token)
                 }
             },
             handler = Event::from
@@ -45,15 +47,19 @@ internal class RealInfinityService(
             true
         }
 
-    override suspend fun refreshToken(): Duration {
-        val response = client.await {
+    override fun refreshToken(): String {
+        val response = client.execute {
             post(EMPTY_REQUEST)
-            url(node.address.resolve("api/client/v2/conferences/${joinDetails.alias}/refresh_token")!!)
-            header("token", token.value)
+            url(node.address) {
+                addPathSegments("api/client/v2/conferences")
+                addPathSegment(joinDetails.alias)
+                addPathSegment("refresh_token")
+            }
+            header("token", store.token)
         }
         val r = response.use {
             when (it.code) {
-                200 -> Json.decodeFromResponseBody(RequestToken200ResponseSerializer, it.body!!)
+                200 -> Json.decodeFromResponseBody(RefreshToken200ResponseSerializer, it.body!!)
                 403 -> {
                     val message = Json.decodeFromResponseBody(StringSerializer, it.body!!)
                     throw InvalidTokenException(message)
@@ -67,18 +73,75 @@ internal class RealInfinityService(
                 else -> throw IllegalStateException()
             }
         }
-        token.value = r.token
-        return r.expires
+        return r.token
     }
 
-    override suspend fun releaseToken() = try {
-        val response = client.await {
+    override fun releaseToken() = try {
+        val response = client.execute {
             post(EMPTY_REQUEST)
-            url(node.address.resolve("api/client/v2/conferences/${joinDetails.alias}/release_token")!!)
-            header("token", token.value)
+            url(node.address) {
+                addPathSegments("api/client/v2/conferences")
+                addPathSegment(joinDetails.alias)
+                addPathSegment("release_token")
+            }
+            header("token", store.token)
         }
         response.close()
     } catch (e: Exception) {
         // noop
+    }
+
+    override fun calls(request: CallsRequest): CallsResponse {
+        val response = client.execute {
+            post(Json.encodeToRequestBody(request))
+            url(node.address) {
+                addPathSegments("api/client/v2/conferences")
+                addPathSegment(joinDetails.alias)
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("calls")
+            }
+            header("token", store.token)
+        }
+        return response.use {
+            when (it.code) {
+                200 -> Json.decodeFromResponseBody(CallsResponseSerializer, it.body!!)
+                else -> throw IllegalStateException()
+            }
+        }
+    }
+
+    override fun ack(request: AckRequest) {
+        val response = client.execute {
+            post(EMPTY_REQUEST)
+            url(node.address) {
+                addPathSegments("api/client/v2/conferences")
+                addPathSegment(joinDetails.alias)
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("calls")
+                addPathSegment(request.callId)
+                addPathSegment("ack")
+            }
+            header("token", store.token)
+        }
+        response.close()
+    }
+
+    override fun newCandidate(request: CandidateRequest) {
+        val response = client.execute {
+            post(Json.encodeToRequestBody(request))
+            url(node.address) {
+                addPathSegments("api/client/v2/conferences")
+                addPathSegment(joinDetails.alias)
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("calls")
+                addPathSegment(request.callId)
+                addPathSegment("new_candidate")
+            }
+            header("token", store.token)
+        }
+        response.close()
     }
 }

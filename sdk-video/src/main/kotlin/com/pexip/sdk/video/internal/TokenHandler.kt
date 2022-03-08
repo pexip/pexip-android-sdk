@@ -1,24 +1,28 @@
 package com.pexip.sdk.video.internal
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
-internal class TokenHandler(private val service: InfinityService) {
+internal class TokenHandler(
+    private val store: TokenStore,
+    private val service: InfinityService,
+    private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
+) {
 
-    @OptIn(DelicateCoroutinesApi::class)
-    fun launchIn(scope: CoroutineScope): Job = scope.launch {
-        try {
-            while (isActive) {
-                val expires = service.refreshToken()
-                delay(expires / 2)
-            }
-        } finally {
-            GlobalScope.launch { service.releaseToken() }
-        }
+    private val refreshTokenRunnable = Runnable { store.token = service.refreshToken() }
+    private val releaseTokenRunnable = Runnable { service.releaseToken() }
+    private val refreshTokenFuture = executor.scheduleWithFixedDelay(
+        refreshTokenRunnable,
+        0,
+        store.expires.inWholeMilliseconds / 2,
+        TimeUnit.MILLISECONDS,
+    )
+
+    fun dispose() {
+        Logger.log("TokenHandler.dispose()")
+        refreshTokenFuture.cancel(true)
+        executor.submit(releaseTokenRunnable)
+        executor.shutdown()
     }
 }

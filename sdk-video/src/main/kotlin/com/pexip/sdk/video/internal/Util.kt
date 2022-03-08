@@ -10,6 +10,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -19,7 +20,13 @@ import okhttp3.ResponseBody
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 import java.io.IOException
+import java.util.concurrent.ExecutorService
 import kotlin.coroutines.resumeWithException
+
+internal fun ExecutorService.maybeSubmit(task: Runnable) = when (isShutdown) {
+    true -> null
+    else -> submit(task)
+}
 
 internal inline fun <reified T> Json.encodeToRequestBody(value: T) =
     encodeToString(value).toRequestBody(ApplicationJson)
@@ -31,6 +38,14 @@ internal inline fun <reified T> Json.decodeFromResponseBody(
 
 internal suspend inline fun OkHttpClient.await(block: Request.Builder.() -> Unit): Response =
     newCall(Request(block)).await()
+
+internal inline fun Request.Builder.url(
+    url: HttpUrl,
+    block: HttpUrl.Builder.() -> Unit,
+): Request.Builder = url(url.newBuilder().apply(block).build())
+
+internal fun OkHttpClient.execute(block: Request.Builder.() -> Unit): Response =
+    newCall(Request(block)).execute()
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal suspend fun Call.await(): Response = suspendCancellableCoroutine { continuation ->

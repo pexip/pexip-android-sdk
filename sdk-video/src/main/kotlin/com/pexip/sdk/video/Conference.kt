@@ -2,37 +2,28 @@ package com.pexip.sdk.video
 
 import com.pexip.sdk.video.internal.InfinityService
 import com.pexip.sdk.video.internal.OkHttpClient
+import com.pexip.sdk.video.internal.PeerConnectionHandler
 import com.pexip.sdk.video.internal.RealInfinityService
 import com.pexip.sdk.video.internal.TokenHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.shareIn
+import com.pexip.sdk.video.internal.TokenStore
 import okhttp3.OkHttpClient
 
 public class Conference private constructor(client: OkHttpClient, token: Token) {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val dispatcher = Dispatchers.IO.limitedParallelism(1)
-    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
+    private val store = TokenStore(token.token, token.expires)
     private val service: InfinityService = RealInfinityService(
         client = client,
+        store = store,
         node = token.node,
         joinDetails = token.joinDetails,
-        token = token.value
+        participantId = token.participantId,
     )
-    private val tokenHandler = TokenHandler(service)
-    private val events = service.events().shareIn(scope, SharingStarted.Eagerly)
-
-    init {
-        tokenHandler.launchIn(scope)
-    }
+    private val tokenHandler = TokenHandler(store, service)
+    private val peerConnectionHandler = PeerConnectionHandler(service)
 
     public fun leave() {
-        scope.cancel()
+        peerConnectionHandler.dispose()
+        tokenHandler.dispose()
     }
 
     public class Builder {

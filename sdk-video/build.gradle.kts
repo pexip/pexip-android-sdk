@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.minidns.hla)
     implementation(libs.minidns.android21)
+    implementation(libs.pexip.libwebrtc.core)
 
     testImplementation(libs.androidx.test.core.ktx)
     testImplementation(libs.kotlinx.coroutines.test)

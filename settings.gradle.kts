@@ -23,6 +23,7 @@ dependencyResolutionManagement {
         }
     }
 }
+includeBuild("../libwebrtc")
 
 rootProject.name = "sdk"
 include(":sdk-video")

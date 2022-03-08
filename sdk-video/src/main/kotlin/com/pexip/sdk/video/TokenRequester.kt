@@ -62,7 +62,9 @@ public class TokenRequester private constructor(private val client: OkHttpClient
         return Token(
             node = request.node,
             joinDetails = request.joinDetails,
-            value = response.token,
+            participantId = response.participant_uuid,
+            token = response.token,
+            expires = response.expires
         )
     }
 

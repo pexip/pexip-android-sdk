@@ -10,13 +10,13 @@ internal sealed interface RequestToken403Response
 internal value class ErrorResponse(val message: String) : RequestToken403Response
 
 @Serializable
-internal class RequiredPinResponse(val guest_pin: String) : RequestToken403Response
+internal data class RequiredPinResponse(val guest_pin: String) : RequestToken403Response
 
 @Serializable
-internal class RequiredSsoResponse(val idp: List<IdentityProvider>) : RequestToken403Response
+internal data class RequiredSsoResponse(val idp: List<IdentityProvider>) : RequestToken403Response
 
 @Serializable
-internal class SsoRedirectResponse(
+internal data class SsoRedirectResponse(
     val redirect_url: String,
     val redirect_idp: IdentityProvider,
 ) : RequestToken403Response

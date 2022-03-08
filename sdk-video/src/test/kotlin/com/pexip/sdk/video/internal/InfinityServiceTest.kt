@@ -6,8 +6,10 @@ import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.NoSuchConferenceException
 import com.pexip.sdk.video.NoSuchNodeException
 import com.pexip.sdk.video.Node
+import com.pexip.sdk.video.decodeFromBuffer
 import com.pexip.sdk.video.enqueue
 import com.pexip.sdk.video.nextToken
+import com.pexip.sdk.video.nextUuid
 import com.pexip.sdk.video.takeRequest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -31,7 +33,10 @@ internal class InfinityServiceTest {
 
     private lateinit var node: Node
     private lateinit var details: JoinDetails
+    private lateinit var participantId: String
+    private lateinit var callId: String
     private lateinit var token: String
+    private lateinit var store: TokenStore
     private lateinit var service: InfinityService
 
     @BeforeTest
@@ -42,19 +47,28 @@ internal class InfinityServiceTest {
             .host("example.com")
             .displayName("John")
             .build()
+        participantId = Random.nextUuid()
+        callId = Random.nextUuid()
         token = Random.nextToken()
-        service = RealInfinityService(OkHttpClient, node, details, token)
+        store = TokenStore(token, 2.minutes)
+        service = RealInfinityService(
+            client = OkHttpClient,
+            store = store,
+            node = node,
+            joinDetails = details,
+            participantId = participantId
+        )
     }
 
     @Test
-    fun `refreshToken throws IllegalStateException`() = runTest {
+    fun `refreshToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         assertFailsWith<IllegalStateException> { service.refreshToken() }
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken throws InvalidTokenException`() = runTest {
+    fun `refreshToken throws InvalidTokenException`() {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -66,7 +80,7 @@ internal class InfinityServiceTest {
     }
 
     @Test
-    fun `refreshToken throws NoSuchConferenceException`() = runTest {
+    fun `refreshToken throws NoSuchConferenceException`() {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -78,30 +92,26 @@ internal class InfinityServiceTest {
     }
 
     @Test
-    fun `refreshToken throws NoSuchNodeException`() = runTest {
+    fun `refreshToken throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
         assertFailsWith<NoSuchNodeException> { service.refreshToken() }
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken returns expires`() = runTest {
-        val response = RequestToken200Response(Random.nextToken(), 1.minutes)
+    fun `refreshToken returns expires`() {
+        val response = RefreshToken200Response(Random.nextToken())
         server.enqueue { setBody(Json.encodeToString(Box(response))) }
-        assertEquals(response.expires, service.refreshToken())
+        assertEquals(response.token, service.refreshToken())
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken updates token`() = runTest {
-        val response1 = RequestToken200Response(Random.nextToken(), 1.minutes)
-        server.enqueue { setBody(Json.encodeToString(Box(response1))) }
-        assertEquals(response1.expires, service.refreshToken())
+    fun `refreshToken returns token`() {
+        val response = RefreshToken200Response(Random.nextToken())
+        server.enqueue { setBody(Json.encodeToString(Box(response))) }
+        assertEquals(response.token, service.refreshToken())
         server.verifyRefreshToken(token)
-        val response2 = RequestToken200Response(Random.nextToken(), 2.minutes)
-        server.enqueue { setBody(Json.encodeToString(Box(response2))) }
-        assertEquals(response2.expires, service.refreshToken())
-        server.verifyRefreshToken(response1.token)
     }
 
     @Test
@@ -118,10 +128,48 @@ internal class InfinityServiceTest {
         server.verifyReleaseToken(token)
     }
 
+    @Test
+    fun `calls throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val request = CallsRequest(Random.nextUuid())
+        assertFailsWith<IllegalStateException> { service.calls(request) }
+        server.verifyCalls(request)
+    }
+
+    @Test
+    fun `calls returns response`() {
+        val response = CallsResponse(
+            call_uuid = callId,
+            sdp = Random.nextUuid()
+        )
+        server.enqueue { setBody(Json.encodeToString(Box(response))) }
+        val request = CallsRequest(Random.nextUuid())
+        assertEquals(response, service.calls(request))
+        server.verifyCalls(request)
+    }
+
+    @Test
+    fun `ack returns on non-200`() {
+        server.enqueue { setResponseCode(Random.nextInt(300..599)) }
+        service.ack(AckRequest(callId))
+        server.verifyAck()
+    }
+
+    @Test
+    fun `ack returns`() {
+        server.enqueue { setResponseCode(200) }
+        service.ack(AckRequest(callId))
+        server.verifyAck()
+    }
+
     private fun MockWebServer.verifyRefreshToken(token: String) = takeRequest {
         assertEquals("POST", method)
         assertEquals(
-            expected = node.address.resolve("api/client/v2/conferences/${details.alias}/refresh_token"),
+            expected = node.address.newBuilder()
+                .addPathSegments("api/client/v2/conferences")
+                .addPathSegment(details.alias)
+                .addPathSegment("refresh_token")
+                .build(),
             actual = requestUrl
         )
         assertNull(null, getHeader("Content-Type"))
@@ -132,7 +180,47 @@ internal class InfinityServiceTest {
     private fun MockWebServer.verifyReleaseToken(token: String) = takeRequest {
         assertEquals("POST", method)
         assertEquals(
-            expected = node.address.resolve("api/client/v2/conferences/${details.alias}/release_token"),
+            expected = node.address.newBuilder()
+                .addPathSegments("api/client/v2/conferences")
+                .addPathSegment(details.alias)
+                .addPathSegment("release_token")
+                .build(),
+            actual = requestUrl
+        )
+        assertNull(null, getHeader("Content-Type"))
+        assertEquals(token, getHeader("token"))
+        assertEquals(0, body.size)
+    }
+
+    private fun MockWebServer.verifyCalls(request: CallsRequest) = takeRequest {
+        assertEquals("POST", method)
+        assertEquals(
+            expected = node.address.newBuilder()
+                .addPathSegments("api/client/v2/conferences")
+                .addPathSegment(details.alias)
+                .addPathSegment("participants")
+                .addPathSegment(participantId)
+                .addPathSegment("calls")
+                .build(),
+            actual = requestUrl
+        )
+        assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
+        assertEquals(token, getHeader("token"))
+        assertEquals(request, Json.decodeFromBuffer(body))
+    }
+
+    private fun MockWebServer.verifyAck() = takeRequest {
+        assertEquals("POST", method)
+        assertEquals(
+            expected = node.address.newBuilder()
+                .addPathSegments("api/client/v2/conferences")
+                .addPathSegment(details.alias)
+                .addPathSegment("participants")
+                .addPathSegment(participantId)
+                .addPathSegment("calls")
+                .addPathSegment(callId)
+                .addPathSegment("ack")
+                .build(),
             actual = requestUrl
         )
         assertNull(null, getHeader("Content-Type"))

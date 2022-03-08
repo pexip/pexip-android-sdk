@@ -12,13 +12,12 @@ import kotlinx.serialization.encodeToString
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TokenRequesterTest {
@@ -106,7 +105,7 @@ internal class TokenRequesterTest {
         val idps = List(10) {
             IdentityProvider(
                 name = "IdP #$it",
-                uuid = UUID.randomUUID().toString()
+                uuid = Random.nextUuid()
             )
         }
         val response = RequiredSsoResponse(idps)
@@ -124,7 +123,7 @@ internal class TokenRequesterTest {
     fun `requestToken throws SsoRedirectException`() = runTest {
         val idp = IdentityProvider(
             name = "IdP #0",
-            uuid = UUID.randomUUID().toString()
+            uuid = Random.nextUuid()
         )
         val response = SsoRedirectResponse(
             redirect_url = "https://example.com",
@@ -147,7 +146,8 @@ internal class TokenRequesterTest {
     fun `requestToken returns Token`() = runTest {
         val token = RequestToken200Response(
             token = Random.nextToken(),
-            expires = 2.minutes
+            participant_uuid = Random.nextUuid(),
+            expires = 120.seconds
         )
         server.enqueue {
             setResponseCode(200)
@@ -160,7 +160,9 @@ internal class TokenRequesterTest {
             expected = Token(
                 node = request.node,
                 joinDetails = request.joinDetails,
-                value = token.token,
+                participantId = token.participant_uuid,
+                token = token.token,
+                expires = token.expires
             ),
             actual = requester.requestToken(request)
         )

@@ -15,7 +15,7 @@ object NetworkComponent {
         // Don't use `BODY` here as it attempts to read the whole response.
         // This makes SSE unavailable, rendering app useless
         // See https://github.com/square/okhttp/issues/4298 for more info
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BASIC
         OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
             .build()

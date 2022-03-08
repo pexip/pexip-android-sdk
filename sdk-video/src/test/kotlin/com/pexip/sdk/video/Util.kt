@@ -7,6 +7,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import okio.Buffer
+import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.nextInt
 
@@ -17,6 +18,8 @@ internal fun Random.nextPin(): String = "${nextInt(1000..9999)}"
 internal fun Random.nextToken() = "${nextInt(100000000..999999999)}"
 
 internal fun Random.nextSsoToken() = nextToken()
+
+internal fun Random.nextUuid() = "${UUID.randomUUID()}"
 
 @OptIn(ExperimentalSerializationApi::class)
 internal inline fun <reified T> Json.decodeFromBuffer(buffer: Buffer) =

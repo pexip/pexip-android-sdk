@@ -24,6 +24,12 @@ internal object RequestToken200ResponseSerializer :
 internal object RequestToken403ResponseSerializer :
     UnboxingSerializer<RequestToken403Response>(PolymorphicRequestToken403ResponseSerializer)
 
+internal object RefreshToken200ResponseSerializer :
+    UnboxingSerializer<RefreshToken200Response>(RefreshToken200Response.serializer())
+
+internal object CallsResponseSerializer :
+    UnboxingSerializer<CallsResponse>(CallsResponse.serializer())
+
 internal object StringSerializer : UnboxingSerializer<String>(String.serializer())
 
 internal object DurationSerializer : KSerializer<Duration> {

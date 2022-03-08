@@ -1,13 +1,18 @@
 package com.pexip.sdk.video.internal
 
 import kotlinx.coroutines.flow.Flow
-import kotlin.time.Duration
 
 internal interface InfinityService {
 
-    fun events(): Flow<Event>
+    val events: Flow<Event>
 
-    suspend fun refreshToken(): Duration
+    fun refreshToken(): String
 
-    suspend fun releaseToken()
+    fun releaseToken()
+
+    fun calls(request: CallsRequest): CallsResponse
+
+    fun ack(request: AckRequest)
+
+    fun newCandidate(request: CandidateRequest)
 }
