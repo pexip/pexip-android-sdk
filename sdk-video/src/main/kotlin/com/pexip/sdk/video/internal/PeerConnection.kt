@@ -13,13 +13,15 @@ import java.util.concurrent.atomic.AtomicReference
 import org.webrtc.PeerConnection as WebRtcPeerConnection
 import org.webrtc.PeerConnectionFactory as WebRtcPeerConnectionFactory
 
-internal class PeerConnection(
+internal class PeerConnection private constructor(
+    private val factory: WebRtcPeerConnectionFactory,
+    rtcConfiguration: WebRtcPeerConnection.RTCConfiguration,
+    audioDirection: RtpTransceiver.RtpTransceiverDirection,
     service: InfinityService,
-    factory: WebRtcPeerConnectionFactory,
-    rtcConfiguration: WebRtcPeerConnection.RTCConfiguration = RtcConfiguration(),
 ) {
 
-    private var callId = AtomicReference<String>()
+    private val callId = AtomicReference<String>()
+    private val started = AtomicBoolean(false)
     private val disposed = AtomicBoolean(false)
     private val executor = Executors.newSingleThreadExecutor()
 
@@ -27,6 +29,12 @@ internal class PeerConnection(
 
         override fun onConnectionChange(newState: WebRtcPeerConnection.PeerConnectionState) {
             Logger.log("onConnectionChange($newState)")
+            if (newState == WebRtcPeerConnection.PeerConnectionState.CONNECTED) {
+                executor.maybeSubmit {
+                    val request = AckRequest(callId.get())
+                    service.ack(request)
+                }
+            }
         }
 
         override fun onIceCandidate(candidate: IceCandidate) {
@@ -53,12 +61,8 @@ internal class PeerConnection(
             executor.maybeSubmit {
                 val request = CallsRequest(peerConnection.localDescription.description)
                 val response = service.calls(request)
-                service.ack(AckRequest(response.call_uuid))
                 callId.set(response.call_uuid)
-                val description = SessionDescription(
-                    SessionDescription.Type.ANSWER,
-                    response.sdp
-                )
+                val description = SessionDescription(SessionDescription.Type.ANSWER, response.sdp)
                 peerConnection.setRemoteDescription(remoteSdpObserver, description)
             }
         }
@@ -71,70 +75,76 @@ internal class PeerConnection(
     }
 
     private val peerConnection = factory.createPeerConnection(rtcConfiguration, observer)!!
-    private val audioSource: AudioSource
-    private val audioTrack: AudioTrack
+    private val audioSource: AudioSource?
+    private val audioTrack: AudioTrack?
 
     init {
-        val audioConstraints = MediaConstraints()
-        audioSource = factory.createAudioSource(audioConstraints)
-        audioTrack = factory.createAudioTrack("ARDAMSa0", audioSource)
-        peerConnection.maybeAddTransceiver(audioTrack, true)
-        val videoConstraints = MediaConstraints().apply {
-            optional += MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true")
+        when (audioDirection) {
+            RtpTransceiver.RtpTransceiverDirection.SEND_RECV, RtpTransceiver.RtpTransceiverDirection.SEND_ONLY -> {
+                val audioConstrains = MediaConstraints()
+                audioSource = factory.createAudioSource(audioConstrains)
+                audioTrack = factory.createAudioTrack(AUDIO_TRACK_ID, audioSource)
+                val init = RtpTransceiver.RtpTransceiverInit(audioDirection)
+                peerConnection.addTransceiver(audioTrack, init)
+            }
+            RtpTransceiver.RtpTransceiverDirection.RECV_ONLY -> {
+                audioSource = null
+                audioTrack = null
+                val init = RtpTransceiver.RtpTransceiverInit(audioDirection)
+                peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO, init)
+            }
+            RtpTransceiver.RtpTransceiverDirection.INACTIVE -> {
+                audioSource = null
+                audioTrack = null
+            }
         }
-        peerConnection.createOffer(localSdpObserver, videoConstraints)
+    }
+
+    fun createOffer() {
+        if (disposed.get()) return
+        if (started.compareAndSet(false, true)) {
+            val sdpConstraints = MediaConstraints()
+            sdpConstraints.optional += MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true")
+            peerConnection.createOffer(localSdpObserver, sdpConstraints)
+        }
     }
 
     fun dispose() {
         if (disposed.compareAndSet(false, true)) {
             Logger.log("PeerConnection.dispose()")
             executor.shutdownNow()
-            audioTrack.dispose()
-            audioSource.dispose()
+            audioTrack?.dispose()
+            audioSource?.dispose()
             peerConnection.dispose()
         }
     }
 
-    private fun WebRtcPeerConnection.maybeAddTransceiver(track: AudioTrack?, receive: Boolean) =
-        maybeAddTransceiver(
-            track = track,
-            type = MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
-            receive = receive
-        )
+    class Builder(
+        private val factory: WebRtcPeerConnectionFactory,
+        private val service: InfinityService,
+    ) {
 
-    private fun WebRtcPeerConnection.maybeAddTransceiver(
-        track: MediaStreamTrack?,
-        type: MediaStreamTrack.MediaType,
-        receive: Boolean,
-    ): RtpTransceiver? {
-        val direction = when {
-            track != null && receive -> RtpTransceiver.RtpTransceiverDirection.SEND_RECV
-            track != null -> RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
-            receive -> RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
-            else -> return null
+        private var rtcConfiguration: WebRtcPeerConnection.RTCConfiguration? = null
+        private var audioDirection = RtpTransceiver.RtpTransceiverDirection.INACTIVE
+
+        fun rtcConfiguration(rtcConfiguration: WebRtcPeerConnection.RTCConfiguration) = apply {
+            this.rtcConfiguration = rtcConfiguration
         }
-        val init = RtpTransceiver.RtpTransceiverInit(direction)
-        return when (track) {
-            null -> addTransceiver(type, init)
-            else -> addTransceiver(track, init)
+
+        fun audio(direction: RtpTransceiver.RtpTransceiverDirection) = apply {
+            this.audioDirection = direction
         }
+
+        fun build() = PeerConnection(
+            factory = factory,
+            rtcConfiguration = checkNotNull(rtcConfiguration) { "rtcConfiguration is not set." },
+            audioDirection = audioDirection,
+            service = service
+        )
     }
 
-    class RtcConfiguration : WebRtcPeerConnection.RTCConfiguration(emptyList()) {
+    private companion object {
 
-        init {
-            val urls = listOf(
-                "stun:stun.l.google.com:19302",
-                "stun:stun1.l.google.com:19302",
-                "stun:stun2.l.google.com:19302",
-                "stun:stun3.l.google.com:19302",
-                "stun:stun4.l.google.com:19302"
-            )
-            val server = WebRtcPeerConnection.IceServer.builder(urls).createIceServer()
-            iceServers = listOf(server)
-            sdpSemantics = WebRtcPeerConnection.SdpSemantics.UNIFIED_PLAN
-            continualGatheringPolicy =
-                WebRtcPeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
-        }
+        const val AUDIO_TRACK_ID = "ARDAMSa0"
     }
 }
