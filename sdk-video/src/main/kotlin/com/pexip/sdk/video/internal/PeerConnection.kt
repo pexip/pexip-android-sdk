@@ -1,69 +1,44 @@
 package com.pexip.sdk.video.internal
 
-import org.webrtc.AudioSource
-import org.webrtc.AudioTrack
+import android.content.Context
+import com.pexip.sdk.video.VideoTrackListener
+import org.webrtc.CameraEnumerator
+import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
-import org.webrtc.MediaStreamTrack
+import org.webrtc.MediaConstraints.KeyValuePair
 import org.webrtc.RtpTransceiver
+import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
 import org.webrtc.PeerConnection as WebRtcPeerConnection
 import org.webrtc.PeerConnectionFactory as WebRtcPeerConnectionFactory
 
 internal class PeerConnection private constructor(
-    private val factory: WebRtcPeerConnectionFactory,
+    factory: WebRtcPeerConnectionFactory,
     rtcConfiguration: WebRtcPeerConnection.RTCConfiguration,
-    audioDirection: RtpTransceiver.RtpTransceiverDirection,
-    service: InfinityService,
-) {
+    private val signalingModule: SignalingModule,
+    private val audioStrategy: AudioStrategy,
+    private val videoStrategy: VideoStrategy,
+) : Disposable, SimplePeerConnectionObserver {
 
-    private val callId = AtomicReference<String>()
     private val started = AtomicBoolean(false)
     private val disposed = AtomicBoolean(false)
-    private val executor = Executors.newSingleThreadExecutor()
-
-    private val observer = object : SimplePeerConnectionObserver {
-
-        override fun onConnectionChange(newState: WebRtcPeerConnection.PeerConnectionState) {
-            Logger.log("onConnectionChange($newState)")
-            if (newState == WebRtcPeerConnection.PeerConnectionState.CONNECTED) {
-                executor.maybeSubmit {
-                    val request = AckRequest(callId.get())
-                    service.ack(request)
-                }
-            }
-        }
-
-        override fun onIceCandidate(candidate: IceCandidate) {
-            Logger.log("onIceCandidate($candidate)")
-            executor.maybeSubmit {
-                val request = CandidateRequest(
-                    callId = callId.get(),
-                    candidate = candidate.sdp,
-                    mid = candidate.sdpMid
-                )
-                service.newCandidate(request)
-            }
-        }
-    }
+    private val connection = checkNotNull(factory.createPeerConnection(rtcConfiguration, this))
     private val localSdpObserver = object : SimpleSdpObserver {
 
         override fun onCreateSuccess(description: SessionDescription) {
             Logger.log("localSdpObserver.onCreateSuccess(${description.type})")
-            peerConnection.setLocalDescription(this)
+            if (disposed.get()) return
+            connection.setLocalDescription(this)
         }
 
         override fun onSetSuccess() {
             Logger.log("localSdpObserver.onSetSuccess()")
-            executor.maybeSubmit {
-                val request = CallsRequest(peerConnection.localDescription.description)
-                val response = service.calls(request)
-                callId.set(response.call_uuid)
-                val description = SessionDescription(SessionDescription.Type.ANSWER, response.sdp)
-                peerConnection.setRemoteDescription(remoteSdpObserver, description)
+            signalingModule.onOffer(connection.localDescription.description) {
+                if (disposed.get()) return@onOffer
+                val answer = SessionDescription(SessionDescription.Type.ANSWER, it)
+                connection.setRemoteDescription(remoteSdpObserver, answer)
             }
         }
     }
@@ -74,77 +49,112 @@ internal class PeerConnection private constructor(
         }
     }
 
-    private val peerConnection = factory.createPeerConnection(rtcConfiguration, observer)!!
-    private val audioSource: AudioSource?
-    private val audioTrack: AudioTrack?
-
     init {
-        when (audioDirection) {
-            RtpTransceiver.RtpTransceiverDirection.SEND_RECV, RtpTransceiver.RtpTransceiverDirection.SEND_ONLY -> {
-                val audioConstrains = MediaConstraints()
-                audioSource = factory.createAudioSource(audioConstrains)
-                audioTrack = factory.createAudioTrack(AUDIO_TRACK_ID, audioSource)
-                val init = RtpTransceiver.RtpTransceiverInit(audioDirection)
-                peerConnection.addTransceiver(audioTrack, init)
-            }
-            RtpTransceiver.RtpTransceiverDirection.RECV_ONLY -> {
-                audioSource = null
-                audioTrack = null
-                val init = RtpTransceiver.RtpTransceiverInit(audioDirection)
-                peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO, init)
-            }
-            RtpTransceiver.RtpTransceiverDirection.INACTIVE -> {
-                audioSource = null
-                audioTrack = null
-            }
-        }
+        audioStrategy.init(connection)
+        videoStrategy.init(connection)
     }
 
     fun createOffer() {
-        if (disposed.get()) return
-        if (started.compareAndSet(false, true)) {
-            val sdpConstraints = MediaConstraints()
-            sdpConstraints.optional += MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true")
-            peerConnection.createOffer(localSdpObserver, sdpConstraints)
+        unlessDisposed {
+            if (started.compareAndSet(false, true)) {
+                val sdpConstraints = MediaConstraints()
+                sdpConstraints.optional += KeyValuePair("DtlsSrtpKeyAgreement", "true")
+                connection.createOffer(localSdpObserver, sdpConstraints)
+            }
         }
     }
 
-    fun dispose() {
+    fun startCapture() {
+        unlessDisposed(videoStrategy::startCapture)
+    }
+
+    fun stopCapture() {
+        unlessDisposed(videoStrategy::stopCapture)
+    }
+
+    override fun onConnectionChange(newState: WebRtcPeerConnection.PeerConnectionState) {
+        if (newState == WebRtcPeerConnection.PeerConnectionState.CONNECTED) {
+            signalingModule.onConnected()
+        }
+    }
+
+    override fun onIceCandidate(candidate: IceCandidate) {
+        signalingModule.onIceCandidate(candidate.sdp, candidate.sdpMid)
+    }
+
+    override fun onTrack(transceiver: RtpTransceiver) {
+        videoStrategy.onTrack(transceiver)
+    }
+
+    fun registerLocalVideoTrackListener(listener: VideoTrackListener) {
+        unlessDisposed { videoStrategy.registerLocalVideoTrackListener(listener) }
+    }
+
+    fun unregisterLocalVideoTrackListener(listener: VideoTrackListener) {
+        videoStrategy.unregisterLocalVideoTrackListener(listener)
+    }
+
+    fun registerRemoteVideoTrackListener(listener: VideoTrackListener) {
+        unlessDisposed { videoStrategy.registerRemoteVideoTrackListener(listener) }
+    }
+
+    fun unregisterRemoteVideoTrackListener(listener: VideoTrackListener) {
+        videoStrategy.unregisterRemoteVideoTrackListener(listener)
+    }
+
+    override fun dispose() {
         if (disposed.compareAndSet(false, true)) {
             Logger.log("PeerConnection.dispose()")
-            executor.shutdownNow()
-            audioTrack?.dispose()
-            audioSource?.dispose()
-            peerConnection.dispose()
+            signalingModule.dispose()
+            connection.dispose()
+            audioStrategy.dispose()
+            videoStrategy.dispose()
         }
+    }
+
+    private inline fun unlessDisposed(block: () -> Unit) {
+        if (!disposed.get()) block()
     }
 
     class Builder(
         private val factory: WebRtcPeerConnectionFactory,
-        private val service: InfinityService,
+        private val rtcConfiguration: WebRtcPeerConnection.RTCConfiguration,
     ) {
 
-        private var rtcConfiguration: WebRtcPeerConnection.RTCConfiguration? = null
-        private var audioDirection = RtpTransceiver.RtpTransceiverDirection.INACTIVE
+        private var signalingModule: SignalingModule? = null
+        private var audioStrategy: AudioStrategy = InactiveAudioStrategy
+        private var videoStrategy: VideoStrategy = InactiveVideoStrategy
 
-        fun rtcConfiguration(rtcConfiguration: WebRtcPeerConnection.RTCConfiguration) = apply {
-            this.rtcConfiguration = rtcConfiguration
+        fun signaling(service: InfinityService) = apply {
+            this.signalingModule = SignalingModule(service)
         }
 
-        fun audio(direction: RtpTransceiver.RtpTransceiverDirection) = apply {
-            this.audioDirection = direction
+        fun sendReceiveAudio() = apply {
+            this.audioStrategy = factory.createAudioStrategy(RtpTransceiverDirection.SEND_RECV)
         }
 
-        fun build() = PeerConnection(
-            factory = factory,
-            rtcConfiguration = checkNotNull(rtcConfiguration) { "rtcConfiguration is not set." },
-            audioDirection = audioDirection,
-            service = service
-        )
-    }
+        fun sendReceiveVideo(
+            enumerator: CameraEnumerator,
+            sharedContext: EglBase.Context,
+            applicationContext: Context,
+        ) = apply {
+            this.videoStrategy = factory.createVideoStrategy(
+                direction = RtpTransceiverDirection.SEND_RECV,
+                enumerator = enumerator,
+                sharedContext = sharedContext,
+                applicationContext = applicationContext
+            )
+        }
 
-    private companion object {
-
-        const val AUDIO_TRACK_ID = "ARDAMSa0"
+        fun build(): PeerConnection {
+            val signalingModule = checkNotNull(signalingModule) { "signalingModule is not set." }
+            return PeerConnection(
+                factory = factory,
+                rtcConfiguration = rtcConfiguration,
+                signalingModule = signalingModule,
+                audioStrategy = audioStrategy,
+                videoStrategy = videoStrategy
+            )
+        }
     }
 }

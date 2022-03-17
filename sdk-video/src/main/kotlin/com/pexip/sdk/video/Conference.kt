@@ -2,7 +2,6 @@ package com.pexip.sdk.video
 
 import com.pexip.sdk.video.internal.InfinityService
 import com.pexip.sdk.video.internal.OkHttpClient
-import com.pexip.sdk.video.internal.PeerConnectionHandler
 import com.pexip.sdk.video.internal.RealInfinityService
 import com.pexip.sdk.video.internal.TokenHandler
 import com.pexip.sdk.video.internal.TokenStore
@@ -19,10 +18,11 @@ public class Conference private constructor(client: OkHttpClient, token: Token) 
         participantId = token.participantId,
     )
     private val tokenHandler = TokenHandler(store, service)
-    private val peerConnectionHandler = PeerConnectionHandler(service)
+
+    public val callHandler: CallHandler = CallHandler(service)
 
     public fun leave() {
-        peerConnectionHandler.dispose()
+        callHandler.dispose()
         tokenHandler.dispose()
     }
 

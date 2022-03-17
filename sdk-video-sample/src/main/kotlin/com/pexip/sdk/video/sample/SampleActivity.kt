@@ -4,7 +4,7 @@ import android.Manifest
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
@@ -36,8 +36,8 @@ class SampleActivity : AppCompatActivity() {
         ConferenceViewFactory
     )
     private val viewEnvironment = ViewEnvironment(mapOf(ViewRegistry to viewRegistry))
-    private val launcher = registerForActivityResult(RequestPermission()) { granted ->
-        if (!granted) finish()
+    private val launcher = registerForActivityResult(RequestMultiplePermissions()) {
+        if (it.any { (_, granted) -> !granted }) finish()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +54,7 @@ class SampleActivity : AppCompatActivity() {
         sampleViewModel.output
             .onEach(::onSampleOutput)
             .launchIn(lifecycleScope)
-        launcher.launch(Manifest.permission.RECORD_AUDIO)
+        launcher.launch(arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA))
     }
 
     private fun onSampleOutput(output: SampleOutput) = when (output) {

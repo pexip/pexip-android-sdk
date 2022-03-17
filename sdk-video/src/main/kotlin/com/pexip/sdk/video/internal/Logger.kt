@@ -2,7 +2,7 @@ package com.pexip.sdk.video.internal
 
 import android.util.Log
 
-internal interface Logger {
+internal fun interface Logger {
 
     fun log(message: String)
 

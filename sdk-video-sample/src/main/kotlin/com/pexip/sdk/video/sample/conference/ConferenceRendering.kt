@@ -1,4 +1,9 @@
 package com.pexip.sdk.video.sample.conference
 
-@JvmInline
-value class ConferenceRendering(val onBackClick: () -> Unit)
+import com.pexip.sdk.video.VideoTrack
+
+data class ConferenceRendering(
+    val localVideoTrack: VideoTrack?,
+    val remoteVideoTrack: VideoTrack?,
+    val onBackClick: () -> Unit,
+)
