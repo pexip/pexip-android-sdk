@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.node
 
-import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.internal.OkHttpClient
 import com.pexip.sdk.video.node.Node.Companion.toNode
 import org.junit.runner.RunWith
@@ -12,16 +11,10 @@ import kotlin.test.assertEquals
 @RunWith(ParameterizedRobolectricTestRunner::class)
 internal class NodeResolverTest(private val host: String, private val expectedNode: Node?) {
 
-    private lateinit var details: JoinDetails
     private lateinit var resolver: NodeResolver
 
     @BeforeTest
     fun setUp() {
-        details = JoinDetails.Builder()
-            .alias("test")
-            .displayName("John")
-            .host(host)
-            .build()
         resolver = NodeResolver.Builder()
             .dnssec(false)
             .client(OkHttpClient)
@@ -43,7 +36,7 @@ internal class NodeResolverTest(private val host: String, private val expectedNo
                 throw t
             }
         }
-        resolver.resolve(details, callback).get()
+        resolver.resolve(host, callback).get()
         assertEquals(expectedNode, callback.node)
     }
 

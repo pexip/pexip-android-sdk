@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.node
 
 import android.os.Parcelable
-import com.pexip.sdk.video.node.internal.HttpUrlParceler
+import com.pexip.sdk.video.internal.HttpUrlParceler
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 import okhttp3.HttpUrl

@@ -1,9 +1,9 @@
 package com.pexip.sdk.video.token
 
 import com.pexip.sdk.video.Box
-import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.decodeFromBuffer
 import com.pexip.sdk.video.enqueue
+import com.pexip.sdk.video.internal.HttpUrl
 import com.pexip.sdk.video.internal.Json
 import com.pexip.sdk.video.nextAlias
 import com.pexip.sdk.video.nextPin
@@ -42,14 +42,10 @@ internal class TokenRequesterTest {
     @BeforeTest
     fun setUp() {
         val node = Node(server.url("/"))
-        val joinDetails = JoinDetails.Builder()
-            .alias(Random.nextAlias())
-            .host("example.com")
-            .displayName("John")
-            .build()
         builder = TokenRequest.Builder()
+            .alias(Random.nextAlias())
             .node(node)
-            .joinDetails(joinDetails)
+            .displayName("John")
         requester = TokenRequester.Builder()
             .client(OkHttpClient())
             .build()
@@ -221,8 +217,7 @@ internal class TokenRequesterTest {
         requester.request(request, callback).get()
         assertEquals(
             expected = Token(
-                node = request.node,
-                joinDetails = request.joinDetails,
+                address = request.conferenceAddress,
                 participantId = token.participant_uuid,
                 token = token.token,
                 expires = token.expires
@@ -234,13 +229,18 @@ internal class TokenRequesterTest {
 
     private fun MockWebServer.verify(request: TokenRequest) = takeRequest {
         assertEquals("POST", method)
-        assertEquals(request.url, requestUrl)
+        assertEquals(
+            expected = HttpUrl(request.conferenceAddress) {
+                addPathSegment("request_token")
+            },
+            actual = requestUrl
+        )
         assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
         assertEquals(request.pin?.trim(), getHeader("pin"))
         assertEquals(
             expected = RequestTokenRequest(
-                display_name = request.joinDetails.displayName,
-                conference_extension = request.joinDetails.alias,
+                display_name = request.displayName,
+                conference_extension = request.alias,
                 chosen_idp = request.idp?.uuid,
                 sso_token = request.ssoToken
             ),

@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.sample
 
-import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.sample.alias.AliasOutput
 import com.pexip.sdk.video.sample.conference.ConferenceOutput
 import com.pexip.sdk.video.sample.node.NodeOutput
@@ -15,12 +14,10 @@ data class OnAliasOutput(val output: AliasOutput) : SampleAction() {
     override fun Updater.apply() {
         when (output) {
             is AliasOutput.Alias -> {
-                val joinDetails = JoinDetails.Builder()
-                    .alias(output.alias)
-                    .host(output.alias.split("@").last())
-                    .displayName(props.displayName)
-                    .build()
-                state = SampleState.Node(joinDetails)
+                state = SampleState.Node(
+                    alias = output.alias,
+                    host = output.alias.split("@").last()
+                )
             }
             is AliasOutput.Back -> setOutput(SampleOutput.Finish)
         }
@@ -32,7 +29,7 @@ data class OnNodeOutput(val output: NodeOutput) : SampleAction() {
     override fun Updater.apply() {
         val s = checkNotNull(state as? SampleState.Node) { "Invalid state: $state" }
         state = when (output) {
-            is NodeOutput.Node -> SampleState.PinRequirement(s.joinDetails, output.node)
+            is NodeOutput.Node -> SampleState.PinRequirement(s.alias, output.node)
             is NodeOutput.Back -> SampleState.Alias
         }
     }
@@ -44,7 +41,7 @@ data class OnPinRequirementOutput(val output: PinRequirementOutput) : SampleActi
         val s = checkNotNull(state as? SampleState.PinRequirement) { "Invalid state: $state" }
         state = when (output) {
             is PinRequirementOutput.Some -> SampleState.PinChallenge(
-                joinDetails = s.joinDetails,
+                alias = s.alias,
                 node = s.node,
                 required = output.required
             )

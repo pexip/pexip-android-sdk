@@ -1,19 +1,19 @@
 package com.pexip.sdk.video.conference.internal
 
 import com.pexip.sdk.video.Box
-import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.conference.InvalidTokenException
 import com.pexip.sdk.video.decodeFromBuffer
 import com.pexip.sdk.video.enqueue
+import com.pexip.sdk.video.internal.HttpUrl
 import com.pexip.sdk.video.internal.Json
 import com.pexip.sdk.video.internal.OkHttpClient
 import com.pexip.sdk.video.nextToken
 import com.pexip.sdk.video.nextUuid
-import com.pexip.sdk.video.node.Node
 import com.pexip.sdk.video.takeRequest
 import com.pexip.sdk.video.token.NoSuchConferenceException
 import com.pexip.sdk.video.token.NoSuchNodeException
 import kotlinx.serialization.encodeToString
+import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import kotlin.random.Random
@@ -30,8 +30,7 @@ internal class InfinityServiceTest {
     @get:Rule
     val server = MockWebServer()
 
-    private lateinit var node: Node
-    private lateinit var details: JoinDetails
+    private lateinit var address: HttpUrl
     private lateinit var participantId: String
     private lateinit var callId: String
     private lateinit var token: String
@@ -40,12 +39,7 @@ internal class InfinityServiceTest {
 
     @BeforeTest
     fun setUp() {
-        node = Node(server.url("/"))
-        details = JoinDetails.Builder()
-            .alias("john")
-            .host("example.com")
-            .displayName("John")
-            .build()
+        address = server.url("/api/client/v2/conferences/john/")
         participantId = Random.nextUuid()
         callId = Random.nextUuid()
         token = Random.nextToken()
@@ -53,8 +47,7 @@ internal class InfinityServiceTest {
         service = RealInfinityService(
             client = OkHttpClient,
             store = store,
-            node = node,
-            joinDetails = details,
+            address = address,
             participantId = participantId
         )
     }
@@ -164,11 +157,7 @@ internal class InfinityServiceTest {
     private fun MockWebServer.verifyRefreshToken(token: String) = takeRequest {
         assertEquals("POST", method)
         assertEquals(
-            expected = node.address.newBuilder()
-                .addPathSegments("api/client/v2/conferences")
-                .addPathSegment(details.alias)
-                .addPathSegment("refresh_token")
-                .build(),
+            expected = HttpUrl(address) { addPathSegment("refresh_token") },
             actual = requestUrl
         )
         assertNull(null, getHeader("Content-Type"))
@@ -179,11 +168,7 @@ internal class InfinityServiceTest {
     private fun MockWebServer.verifyReleaseToken(token: String) = takeRequest {
         assertEquals("POST", method)
         assertEquals(
-            expected = node.address.newBuilder()
-                .addPathSegments("api/client/v2/conferences")
-                .addPathSegment(details.alias)
-                .addPathSegment("release_token")
-                .build(),
+            expected = HttpUrl(address) { addPathSegment("release_token") },
             actual = requestUrl
         )
         assertNull(null, getHeader("Content-Type"))
@@ -194,13 +179,11 @@ internal class InfinityServiceTest {
     private fun MockWebServer.verifyCalls(request: CallsRequest) = takeRequest {
         assertEquals("POST", method)
         assertEquals(
-            expected = node.address.newBuilder()
-                .addPathSegments("api/client/v2/conferences")
-                .addPathSegment(details.alias)
-                .addPathSegment("participants")
-                .addPathSegment(participantId)
-                .addPathSegment("calls")
-                .build(),
+            expected = HttpUrl(address) {
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("calls")
+            },
             actual = requestUrl
         )
         assertEquals("application/json; charset=utf-8", getHeader("Content-Type"))
@@ -211,15 +194,13 @@ internal class InfinityServiceTest {
     private fun MockWebServer.verifyAck() = takeRequest {
         assertEquals("POST", method)
         assertEquals(
-            expected = node.address.newBuilder()
-                .addPathSegments("api/client/v2/conferences")
-                .addPathSegment(details.alias)
-                .addPathSegment("participants")
-                .addPathSegment(participantId)
-                .addPathSegment("calls")
-                .addPathSegment(callId)
-                .addPathSegment("ack")
-                .build(),
+            expected = HttpUrl(address) {
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("calls")
+                addPathSegment(callId)
+                addPathSegment("ack")
+            },
             actual = requestUrl
         )
         assertNull(null, getHeader("Content-Type"))

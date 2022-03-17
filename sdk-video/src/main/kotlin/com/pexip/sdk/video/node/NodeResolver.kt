@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.node
 
-import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.internal.Dispatcher
 import com.pexip.sdk.video.internal.OkHttpClient
 import com.pexip.sdk.video.internal.execute
@@ -51,17 +50,17 @@ public class NodeResolver private constructor(
      * (documentation)[https://docs.pexip.com/clients/configuring_dns_pexip_app.htm#next_gen_mobile]
      * for the recommended flow.
      *
-     * @param details an alias to use to resolve the best node address
+     * @param host a host to use to resolve the best node address
      * @param callback a completion handler
      * @return a [Future] that may be used to cancel the operation
      */
-    public fun resolve(details: JoinDetails, callback: Callback): Future<*> {
-        val runnable = ResolveRunnable(this, details, callback)
+    public fun resolve(host: String, callback: Callback): Future<*> {
+        val runnable = ResolveRunnable(this, host, callback)
         return Dispatcher.submit(runnable)
     }
 
-    private fun resolveSrvRecord(joinDetails: JoinDetails): Node? {
-        val addresses = api.resolveSrv("pexapp", "tcp", joinDetails.host)
+    private fun resolveSrvRecord(host: String): Node? {
+        val addresses = api.resolveSrv("pexapp", "tcp", host)
             ?.sortedSrvResolvedAddresses
             ?: emptyList()
         for (address in addresses) {
@@ -79,8 +78,8 @@ public class NodeResolver private constructor(
         return null
     }
 
-    private fun resolveARecord(joinDetails: JoinDetails): Node? = try {
-        val address = InetAddress.getByName(joinDetails.host)
+    private fun resolveARecord(host: String): Node? = try {
+        val address = InetAddress.getByName(host)
         val nodeAddress = HttpUrl.Builder()
             .scheme("https")
             .host(address.hostName)
@@ -120,12 +119,12 @@ public class NodeResolver private constructor(
 
     private class ResolveRunnable(
         private val resolver: NodeResolver,
-        private val details: JoinDetails,
+        private val host: String,
         private val callback: Callback,
     ) : Runnable {
 
         override fun run() = try {
-            val node = resolver.resolveSrvRecord(details) ?: resolver.resolveARecord(details)
+            val node = resolver.resolveSrvRecord(host) ?: resolver.resolveARecord(host)
             callback.onSuccess(resolver, node)
         } catch (t: Throwable) {
             callback.onFailure(resolver, t)

@@ -47,8 +47,9 @@ class PinChallengeWorkflow(private val requester: TokenRequester) :
             actionSink.send(OnRequestToken())
             val action = try {
                 val request = TokenRequest.Builder()
+                    .alias(props.alias)
                     .node(props.node)
-                    .joinDetails(props.joinDetails)
+                    .displayName(props.displayName)
                     .pin(pinToSubmit)
                     .build()
                 val token = requester.request(request)

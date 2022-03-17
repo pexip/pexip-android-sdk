@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.conference.internal
 
-import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.conference.InvalidTokenException
 import com.pexip.sdk.video.internal.Json
 import com.pexip.sdk.video.internal.StringSerializer
@@ -8,10 +7,10 @@ import com.pexip.sdk.video.internal.decodeFromResponseBody
 import com.pexip.sdk.video.internal.encodeToRequestBody
 import com.pexip.sdk.video.internal.execute
 import com.pexip.sdk.video.internal.url
-import com.pexip.sdk.video.node.Node
 import com.pexip.sdk.video.token.NoSuchConferenceException
 import com.pexip.sdk.video.token.NoSuchNodeException
 import kotlinx.serialization.SerializationException
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.internal.EMPTY_REQUEST
 import okhttp3.sse.EventSources
@@ -20,8 +19,7 @@ import java.util.concurrent.TimeUnit
 internal class RealInfinityService(
     private val client: OkHttpClient,
     private val store: TokenStore,
-    private val node: Node,
-    private val joinDetails: JoinDetails,
+    private val address: HttpUrl,
     private val participantId: String,
 ) : InfinityService {
 
@@ -33,11 +31,7 @@ internal class RealInfinityService(
     override fun refreshToken(): String {
         val response = client.execute {
             post(EMPTY_REQUEST)
-            url(node.address) {
-                addPathSegments("api/client/v2/conferences")
-                addPathSegment(joinDetails.alias)
-                addPathSegment("refresh_token")
-            }
+            url(address) { addPathSegment("refresh_token") }
             header("token", store.token)
         }
         val r = response.use {
@@ -62,11 +56,7 @@ internal class RealInfinityService(
     override fun releaseToken() = try {
         val response = client.execute {
             post(EMPTY_REQUEST)
-            url(node.address) {
-                addPathSegments("api/client/v2/conferences")
-                addPathSegment(joinDetails.alias)
-                addPathSegment("release_token")
-            }
+            url(address) { addPathSegment("release_token") }
             header("token", store.token)
         }
         response.close()
@@ -77,9 +67,7 @@ internal class RealInfinityService(
     override fun calls(request: CallsRequest): CallsResponse {
         val response = client.execute {
             post(Json.encodeToRequestBody(request))
-            url(node.address) {
-                addPathSegments("api/client/v2/conferences")
-                addPathSegment(joinDetails.alias)
+            url(address) {
                 addPathSegment("participants")
                 addPathSegment(participantId)
                 addPathSegment("calls")
@@ -97,9 +85,7 @@ internal class RealInfinityService(
     override fun ack(request: AckRequest) {
         val response = client.execute {
             post(EMPTY_REQUEST)
-            url(node.address) {
-                addPathSegments("api/client/v2/conferences")
-                addPathSegment(joinDetails.alias)
+            url(address) {
                 addPathSegment("participants")
                 addPathSegment(participantId)
                 addPathSegment("calls")
@@ -114,9 +100,7 @@ internal class RealInfinityService(
     override fun newCandidate(request: CandidateRequest) {
         val response = client.execute {
             post(Json.encodeToRequestBody(request))
-            url(node.address) {
-                addPathSegments("api/client/v2/conferences")
-                addPathSegment(joinDetails.alias)
+            url(address) {
                 addPathSegment("participants")
                 addPathSegment(participantId)
                 addPathSegment("calls")

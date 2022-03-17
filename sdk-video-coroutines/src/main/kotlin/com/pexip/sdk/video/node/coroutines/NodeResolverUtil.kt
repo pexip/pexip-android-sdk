@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.node.coroutines
 
-import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.node.Node
 import com.pexip.sdk.video.node.NodeResolver
 import kotlinx.coroutines.cancelFutureOnCancellation
@@ -8,7 +7,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-public suspend fun NodeResolver.resolve(details: JoinDetails): Node? = suspendCancellableCoroutine {
+public suspend fun NodeResolver.resolve(host: String): Node? = suspendCancellableCoroutine {
     val callback = object : NodeResolver.Callback {
 
         override fun onSuccess(resolver: NodeResolver, node: Node?) {
@@ -19,5 +18,5 @@ public suspend fun NodeResolver.resolve(details: JoinDetails): Node? = suspendCa
             it.resumeWithException(t)
         }
     }
-    it.cancelFutureOnCancellation(resolve(details, callback))
+    it.cancelFutureOnCancellation(resolve(host, callback))
 }

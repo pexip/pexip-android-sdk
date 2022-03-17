@@ -10,17 +10,17 @@ sealed class SampleState : Parcelable {
     object Alias : SampleState()
 
     @Parcelize
-    data class Node(val joinDetails: com.pexip.sdk.video.JoinDetails) : SampleState()
+    data class Node(val alias: String, val host: String) : SampleState()
 
     @Parcelize
     data class PinRequirement(
-        val joinDetails: com.pexip.sdk.video.JoinDetails,
+        val alias: String,
         val node: com.pexip.sdk.video.node.Node,
     ) : SampleState()
 
     @Parcelize
     data class PinChallenge(
-        val joinDetails: com.pexip.sdk.video.JoinDetails,
+        val alias: String,
         val node: com.pexip.sdk.video.node.Node,
         val required: Boolean,
     ) : SampleState()

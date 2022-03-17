@@ -14,8 +14,7 @@ public class Conference private constructor(client: OkHttpClient, token: Token) 
     private val service: InfinityService = RealInfinityService(
         client = client,
         store = store,
-        node = token.node,
-        joinDetails = token.joinDetails,
+        address = token.address,
         participantId = token.participantId,
     )
     private val tokenHandler = TokenHandler(store, service)

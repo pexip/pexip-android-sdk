@@ -38,8 +38,9 @@ class PinRequirementWorkflow(private val requester: TokenRequester) :
         runningSideEffect(props.toString()) {
             val action = try {
                 val request = TokenRequest.Builder()
+                    .alias(props.alias)
                     .node(props.node)
-                    .joinDetails(props.joinDetails)
+                    .displayName(props.displayName)
                     .build()
                 val token = requester.request(request)
                 OnToken(token)

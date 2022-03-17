@@ -34,7 +34,7 @@ class NodeWorkflow(private val resolver: NodeResolver) :
     private fun RenderContext.resolveSideEffect(props: NodeProps) =
         runningSideEffect(props.toString()) {
             val action = try {
-                OnNode(resolver.resolve(props.joinDetails))
+                OnNode(resolver.resolve(props.host))
             } catch (t: Throwable) {
                 OnError(t)
             }

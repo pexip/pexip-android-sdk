@@ -39,19 +39,24 @@ class SampleWorkflow(
         )
         is SampleState.Node -> context.renderChild(
             child = nodeWorkflow,
-            props = NodeProps(renderState.joinDetails),
+            props = NodeProps(renderState.host),
             handler = ::OnNodeOutput
         )
         is SampleState.PinRequirement -> context.renderChild(
             child = pinRequirementWorkflow,
-            props = PinRequirementProps(renderState.node, renderState.joinDetails),
+            props = PinRequirementProps(
+                alias = renderState.alias,
+                node = renderState.node,
+                displayName = renderProps.displayName
+            ),
             handler = ::OnPinRequirementOutput
         )
         is SampleState.PinChallenge -> context.renderChild(
             child = pinChallengeWorkflow,
             props = PinChallengeProps(
+                alias = renderState.alias,
                 node = renderState.node,
-                joinDetails = renderState.joinDetails,
+                displayName = renderProps.displayName,
                 required = renderState.required
             ),
             handler = ::OnPinChallengeOutput

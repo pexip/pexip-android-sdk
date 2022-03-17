@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.token
 
-import com.pexip.sdk.video.JoinDetails
 import com.pexip.sdk.video.internal.HttpUrl
 import com.pexip.sdk.video.node.Node
 import okhttp3.HttpUrl
@@ -10,22 +9,23 @@ import okhttp3.HttpUrl
  */
 public class TokenRequest private constructor(
     internal val node: Node,
-    internal val joinDetails: JoinDetails,
+    internal val alias: String,
+    internal val displayName: String,
     internal val pin: String?,
     internal val idp: IdentityProvider?,
     internal val ssoToken: String?,
 ) {
 
-    internal val url: HttpUrl = HttpUrl(node.address) {
+    internal val conferenceAddress: HttpUrl = HttpUrl(node.address) {
         addPathSegments("api/client/v2/conferences")
-        addPathSegment(joinDetails.alias)
-        addPathSegment("request_token")
+        addPathSegment(alias)
     }
 
     public class Builder {
 
         private var node: Node? = null
-        private var joinDetails: JoinDetails? = null
+        private var alias: String? = null
+        private var displayName: String? = null
         private var pin: String? = null
         private var idp: IdentityProvider? = null
         private var ssoToken: String? = null
@@ -41,13 +41,25 @@ public class TokenRequest private constructor(
         }
 
         /**
-         * Sets the conference alias.
+         * Sets the alias.
          *
-         * @param joinDetails a conference alias
+         * @param alias a conference alias
          * @return this [Builder]
          */
-        public fun joinDetails(joinDetails: JoinDetails): Builder = apply {
-            this.joinDetails = joinDetails
+        public fun alias(alias: String): Builder = apply {
+            check(alias.isNotBlank()) { "alias is blank." }
+            this.alias = alias.trim()
+        }
+
+        /**
+         * Sets the display name.
+         *
+         * @param displayName a display name
+         * @return this [Builder]
+         */
+        public fun displayName(displayName: String): Builder = apply {
+            check(displayName.isNotBlank()) { "displayName is blank." }
+            this.displayName = displayName.trim()
         }
 
         /**
@@ -83,7 +95,8 @@ public class TokenRequest private constructor(
 
         public fun build(): TokenRequest = TokenRequest(
             node = checkNotNull(node) { "node is not set." },
-            joinDetails = checkNotNull(joinDetails) { "alias is not set." },
+            alias = checkNotNull(alias) { "alias is not set." },
+            displayName = checkNotNull(displayName) { "displayName is not set." },
             pin = pin,
             idp = idp,
             ssoToken = ssoToken

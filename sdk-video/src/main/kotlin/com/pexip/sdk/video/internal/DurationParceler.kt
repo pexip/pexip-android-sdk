@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.token.internal
+package com.pexip.sdk.video.internal
 
 import android.os.Parcel
 import kotlinx.parcelize.Parceler

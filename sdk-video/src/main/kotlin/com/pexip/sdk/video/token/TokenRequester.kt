@@ -7,6 +7,7 @@ import com.pexip.sdk.video.internal.StringSerializer
 import com.pexip.sdk.video.internal.decodeFromResponseBody
 import com.pexip.sdk.video.internal.encodeToRequestBody
 import com.pexip.sdk.video.internal.execute
+import com.pexip.sdk.video.internal.url
 import com.pexip.sdk.video.token.internal.ErrorResponse
 import com.pexip.sdk.video.token.internal.RequestToken200ResponseSerializer
 import com.pexip.sdk.video.token.internal.RequestToken403ResponseSerializer
@@ -75,13 +76,13 @@ public class TokenRequester private constructor(private val client: OkHttpClient
             val response = requester.client.execute {
                 with(request) {
                     val r = RequestTokenRequest(
-                        display_name = joinDetails.displayName,
-                        conference_extension = joinDetails.alias,
+                        display_name = displayName,
+                        conference_extension = alias,
                         chosen_idp = idp?.uuid,
                         sso_token = ssoToken
                     )
                     post(Json.encodeToRequestBody(r))
-                    url(url)
+                    url(conferenceAddress) { addPathSegment("request_token") }
                     pin?.let { header("pin", it.trim()) }
                 }
             }
@@ -101,8 +102,7 @@ public class TokenRequester private constructor(private val client: OkHttpClient
         private fun Response.parse200(request: TokenRequest): Token {
             val response = Json.decodeFromResponseBody(RequestToken200ResponseSerializer, body!!)
             return Token(
-                node = request.node,
-                joinDetails = request.joinDetails,
+                address = request.conferenceAddress,
                 participantId = response.participant_uuid,
                 token = response.token,
                 expires = response.expires
