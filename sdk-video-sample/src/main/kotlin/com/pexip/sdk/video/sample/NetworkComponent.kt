@@ -1,8 +1,8 @@
 package com.pexip.sdk.video.sample
 
 import android.util.Log
-import com.pexip.sdk.video.NodeResolver
-import com.pexip.sdk.video.TokenRequester
+import com.pexip.sdk.video.node.NodeResolver
+import com.pexip.sdk.video.token.TokenRequester
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 

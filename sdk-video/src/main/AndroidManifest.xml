@@ -22,11 +22,11 @@
             tools:node="merge">
 
             <meta-data
-                android:name="com.pexip.sdk.video.internal.MiniDnsInitializer"
+                android:name="com.pexip.sdk.video.node.internal.MiniDnsInitializer"
                 android:value="androidx.startup" />
 
             <meta-data
-                android:name="com.pexip.sdk.video.internal.WebRtcInitializer"
+                android:name="com.pexip.sdk.video.conference.internal.WebRtcInitializer"
                 android:value="androidx.startup" />
         </provider>
     </application>

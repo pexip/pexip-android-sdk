@@ -9,8 +9,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import com.pexip.sdk.video.SurfaceTextureRenderer
-import com.pexip.sdk.video.VideoTrack
+import com.pexip.sdk.video.conference.SurfaceTextureRenderer
+import com.pexip.sdk.video.conference.VideoTrack
 
 @Composable
 fun VideoRenderer(

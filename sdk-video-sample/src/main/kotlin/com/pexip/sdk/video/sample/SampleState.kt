@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.sample
 
 import android.os.Parcelable
-import com.pexip.sdk.video.Token
+import com.pexip.sdk.video.token.Token
 import kotlinx.parcelize.Parcelize
 
 sealed class SampleState : Parcelable {
@@ -15,13 +15,13 @@ sealed class SampleState : Parcelable {
     @Parcelize
     data class PinRequirement(
         val joinDetails: com.pexip.sdk.video.JoinDetails,
-        val node: com.pexip.sdk.video.Node,
+        val node: com.pexip.sdk.video.node.Node,
     ) : SampleState()
 
     @Parcelize
     data class PinChallenge(
         val joinDetails: com.pexip.sdk.video.JoinDetails,
-        val node: com.pexip.sdk.video.Node,
+        val node: com.pexip.sdk.video.node.Node,
         val required: Boolean,
     ) : SampleState()
 

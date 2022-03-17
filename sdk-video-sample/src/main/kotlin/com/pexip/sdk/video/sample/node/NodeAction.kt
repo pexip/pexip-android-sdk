@@ -1,6 +1,6 @@
 package com.pexip.sdk.video.sample.node
 
-import com.pexip.sdk.video.Node
+import com.pexip.sdk.video.node.Node
 import com.squareup.workflow1.WorkflowAction
 
 typealias NodeAction = WorkflowAction<NodeProps, NodeState, NodeOutput>

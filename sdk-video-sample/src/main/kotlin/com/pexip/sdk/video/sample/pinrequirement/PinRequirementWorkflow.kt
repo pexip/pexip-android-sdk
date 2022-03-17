@@ -1,9 +1,9 @@
 package com.pexip.sdk.video.sample.pinrequirement
 
-import com.pexip.sdk.video.TokenRequest
-import com.pexip.sdk.video.TokenRequester
-import com.pexip.sdk.video.coroutines.request
 import com.pexip.sdk.video.sample.send
+import com.pexip.sdk.video.token.TokenRequest
+import com.pexip.sdk.video.token.TokenRequester
+import com.pexip.sdk.video.token.coroutines.request
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable

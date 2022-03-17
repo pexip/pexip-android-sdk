@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.sample.pinrequirement
 
-import com.pexip.sdk.video.RequiredPinException
-import com.pexip.sdk.video.Token
+import com.pexip.sdk.video.token.RequiredPinException
+import com.pexip.sdk.video.token.Token
 import com.squareup.workflow1.WorkflowAction
 
 typealias PinRequirementAction = WorkflowAction<PinRequirementProps, PinRequirementState, PinRequirementOutput>
