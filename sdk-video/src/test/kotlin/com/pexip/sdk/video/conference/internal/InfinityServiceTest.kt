@@ -6,7 +6,6 @@ import com.pexip.sdk.video.decodeFromBuffer
 import com.pexip.sdk.video.enqueue
 import com.pexip.sdk.video.internal.HttpUrl
 import com.pexip.sdk.video.internal.Json
-import com.pexip.sdk.video.internal.OkHttpClient
 import com.pexip.sdk.video.nextToken
 import com.pexip.sdk.video.nextUuid
 import com.pexip.sdk.video.takeRequest
@@ -14,6 +13,7 @@ import com.pexip.sdk.video.token.NoSuchConferenceException
 import com.pexip.sdk.video.token.NoSuchNodeException
 import kotlinx.serialization.encodeToString
 import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import kotlin.random.Random
@@ -45,7 +45,7 @@ internal class InfinityServiceTest {
         token = Random.nextToken()
         store = TokenStore(token, 2.minutes)
         service = RealInfinityService(
-            client = OkHttpClient,
+            client = OkHttpClient(),
             store = store,
             address = address,
             participantId = participantId

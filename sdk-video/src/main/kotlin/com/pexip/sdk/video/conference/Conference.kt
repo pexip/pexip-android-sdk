@@ -1,47 +1,26 @@
 package com.pexip.sdk.video.conference
 
-import com.pexip.sdk.video.conference.internal.InfinityService
-import com.pexip.sdk.video.conference.internal.RealInfinityService
-import com.pexip.sdk.video.conference.internal.TokenHandler
-import com.pexip.sdk.video.conference.internal.TokenStore
+import com.pexip.sdk.video.conference.internal.RealConference
 import com.pexip.sdk.video.internal.OkHttpClient
 import com.pexip.sdk.video.token.Token
 import okhttp3.OkHttpClient
 
-public class Conference private constructor(client: OkHttpClient, token: Token) {
+/**
+ * Represents a conference.
+ */
+public interface Conference {
 
-    private val store = TokenStore(token.token, token.expires)
-    private val service: InfinityService = RealInfinityService(
-        client = client,
-        store = store,
-        address = token.address,
-        participantId = token.participantId,
-    )
-    private val tokenHandler = TokenHandler(store, service)
+    public val callHandler: CallHandler
 
-    public val callHandler: CallHandler = CallHandler(service)
+    /**
+     * Leaves the conference. Once left, the [Conference] object is no longer valid.
+     */
+    public fun leave()
 
-    public fun leave() {
-        callHandler.dispose()
-        tokenHandler.dispose()
-    }
+    public companion object {
 
-    public class Builder {
-
-        private var token: Token? = null
-        private var client: OkHttpClient? = null
-
-        public fun token(token: Token): Builder = apply {
-            this.token = token
-        }
-
-        public fun client(client: OkHttpClient): Builder = apply {
-            this.client = client
-        }
-
-        public fun build(): Conference = Conference(
-            token = checkNotNull(token) { "token is not set." },
-            client = client ?: OkHttpClient
-        )
+        @JvmStatic
+        public fun create(token: Token, client: OkHttpClient = OkHttpClient): Conference =
+            RealConference(client, token)
     }
 }

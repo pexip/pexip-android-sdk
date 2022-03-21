@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.node
 
-import com.pexip.sdk.video.internal.OkHttpClient
 import com.pexip.sdk.video.node.Node.Companion.toNode
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
@@ -15,10 +14,7 @@ internal class NodeResolverTest(private val host: String, private val expectedNo
 
     @BeforeTest
     fun setUp() {
-        resolver = NodeResolver.Builder()
-            .dnssec(false)
-            .client(OkHttpClient)
-            .build()
+        resolver = NodeResolver.create()
     }
 
     @Test

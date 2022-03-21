@@ -14,11 +14,7 @@ class ConferenceWorkflow(private val client: OkHttpClient) :
     StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState =
-        Conference.Builder()
-            .token(props.token)
-            .client(client)
-            .build()
-            .let(::ConferenceState)
+        ConferenceState(Conference.create(props.token, client))
 
     override fun snapshotState(state: ConferenceState): Snapshot? = null
 

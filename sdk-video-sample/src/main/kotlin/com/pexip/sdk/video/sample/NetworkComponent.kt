@@ -21,14 +21,6 @@ object NetworkComponent {
             .build()
     }
 
-    val nodeResolver by lazy {
-        NodeResolver.Builder()
-            .client(client)
-            .build()
-    }
-    val tokenRequester by lazy {
-        TokenRequester.Builder()
-            .client(client)
-            .build()
-    }
+    val nodeResolver by lazy { NodeResolver.create(client = client) }
+    val tokenRequester by lazy { TokenRequester.create(client) }
 }

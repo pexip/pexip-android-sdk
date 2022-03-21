@@ -18,7 +18,6 @@ import com.pexip.sdk.video.token.internal.RequiredPinResponse
 import com.pexip.sdk.video.token.internal.RequiredSsoResponse
 import com.pexip.sdk.video.token.internal.SsoRedirectResponse
 import kotlinx.serialization.encodeToString
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import java.util.concurrent.ExecutionException
@@ -46,9 +45,7 @@ internal class TokenRequesterTest {
             .alias(Random.nextAlias())
             .node(node)
             .displayName("John")
-        requester = TokenRequester.Builder()
-            .client(OkHttpClient())
-            .build()
+        requester = TokenRequester.create()
     }
 
     @Test
