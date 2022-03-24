@@ -9,7 +9,9 @@ import com.pexip.sdk.video.sample.pinrequirement.PinRequirementWorkflow
 object WorkflowComponent {
 
     private val aliasWorkflow by lazy { AliasWorkflow() }
-    private val nodeWorkflow by lazy { NodeWorkflow(NetworkComponent.nodeResolver) }
+    private val nodeWorkflow by lazy {
+        NodeWorkflow(NetworkComponent.nodeResolver, NetworkComponent.service)
+    }
     private val pinRequirementWorkflow by lazy { PinRequirementWorkflow(NetworkComponent.service) }
     private val pinChallengeWorkflow by lazy { PinChallengeWorkflow(NetworkComponent.service) }
     private val conferenceWorkflow by lazy { ConferenceWorkflow(NetworkComponent.service) }

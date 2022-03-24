@@ -1,15 +1,18 @@
 package com.pexip.sdk.video.sample.node
 
-import com.pexip.sdk.video.node.NodeResolver
-import com.pexip.sdk.video.node.coroutines.resolve
+import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.api.NodeResolver
+import com.pexip.sdk.video.api.coroutines.await
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
 
-class NodeWorkflow(private val resolver: NodeResolver) :
-    StatefulWorkflow<NodeProps, NodeState, NodeOutput, NodeRendering>() {
+class NodeWorkflow(
+    private val resolver: NodeResolver,
+    private val service: InfinityService,
+) : StatefulWorkflow<NodeProps, NodeState, NodeOutput, NodeRendering>() {
 
     override fun initialState(props: NodeProps, snapshot: Snapshot?): NodeState =
         snapshot?.toParcelable() ?: NodeState.ResolvingNode
@@ -34,7 +37,9 @@ class NodeWorkflow(private val resolver: NodeResolver) :
     private fun RenderContext.resolveSideEffect(props: NodeProps) =
         runningSideEffect(props.toString()) {
             val action = try {
-                OnNode(resolver.resolve(props.host))
+                val nodes = resolver.resolve(props.host).await()
+                val node = nodes.find { !service.newRequest(it).status().await() }
+                OnNode(node)
             } catch (t: Throwable) {
                 OnError(t)
             }

@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.node.internal
+package com.pexip.sdk.video.api.internal
 
 import android.content.Context
 import androidx.startup.Initializer

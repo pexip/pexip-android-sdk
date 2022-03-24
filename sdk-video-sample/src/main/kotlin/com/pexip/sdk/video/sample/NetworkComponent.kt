@@ -2,7 +2,7 @@ package com.pexip.sdk.video.sample
 
 import android.util.Log
 import com.pexip.sdk.video.api.InfinityService
-import com.pexip.sdk.video.node.NodeResolver
+import com.pexip.sdk.video.api.NodeResolver
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
@@ -22,5 +22,5 @@ object NetworkComponent {
     }
 
     val service by lazy { InfinityService.create(client) }
-    val nodeResolver by lazy { NodeResolver.create(service) }
+    val nodeResolver by lazy { NodeResolver.create() }
 }
