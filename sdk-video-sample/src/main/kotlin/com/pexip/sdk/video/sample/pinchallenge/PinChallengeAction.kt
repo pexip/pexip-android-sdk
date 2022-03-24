@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.sample.pinchallenge
 
-import com.pexip.sdk.video.token.InvalidPinException
-import com.pexip.sdk.video.token.Token
+import com.pexip.sdk.video.api.InvalidPinException
+import com.pexip.sdk.video.api.RequestTokenResponse
 import com.squareup.workflow1.WorkflowAction
 
 typealias PinChallengeAction = WorkflowAction<PinChallengeProps, PinChallengeState, PinChallengeOutput>
@@ -34,10 +34,10 @@ class OnBackClick : PinChallengeAction() {
     }
 }
 
-data class OnToken(val token: Token) : PinChallengeAction() {
+data class OnResponse(val response: RequestTokenResponse) : PinChallengeAction() {
 
     override fun Updater.apply() {
-        setOutput(PinChallengeOutput.Token(token))
+        setOutput(PinChallengeOutput.Response(response))
     }
 }
 

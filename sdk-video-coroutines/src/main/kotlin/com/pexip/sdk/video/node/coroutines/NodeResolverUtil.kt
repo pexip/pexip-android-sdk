@@ -1,6 +1,6 @@
 package com.pexip.sdk.video.node.coroutines
 
-import com.pexip.sdk.video.node.Node
+import com.pexip.sdk.video.api.Node
 import com.pexip.sdk.video.node.NodeResolver
 import kotlinx.coroutines.cancelFutureOnCancellation
 import kotlinx.coroutines.suspendCancellableCoroutine

@@ -125,8 +125,8 @@ internal class PeerConnection private constructor(
         private var audioStrategy: AudioStrategy = InactiveAudioStrategy
         private var videoStrategy: VideoStrategy = InactiveVideoStrategy
 
-        fun signaling(service: InfinityService) = apply {
-            this.signalingModule = SignalingModule(service)
+        fun signaling(module: SignalingModule) = apply {
+            this.signalingModule = module
         }
 
         fun sendReceiveAudio() = apply {

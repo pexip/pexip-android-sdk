@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.sample.pinrequirement
 
-import com.pexip.sdk.video.token.RequiredPinException
-import com.pexip.sdk.video.token.Token
+import com.pexip.sdk.video.api.RequestTokenResponse
+import com.pexip.sdk.video.api.RequiredPinException
 import com.squareup.workflow1.WorkflowAction
 
 typealias PinRequirementAction = WorkflowAction<PinRequirementProps, PinRequirementState, PinRequirementOutput>
@@ -13,10 +13,10 @@ class OnBackClick : PinRequirementAction() {
     }
 }
 
-data class OnToken(val token: Token) : PinRequirementAction() {
+data class OnResponse(val response: RequestTokenResponse) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        setOutput(PinRequirementOutput.None(token))
+        setOutput(PinRequirementOutput.None(response))
     }
 }
 

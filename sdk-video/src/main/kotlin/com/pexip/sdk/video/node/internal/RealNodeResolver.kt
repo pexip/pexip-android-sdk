@@ -1,22 +1,20 @@
 package com.pexip.sdk.video.node.internal
 
+import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.api.Node
 import com.pexip.sdk.video.internal.Dispatcher
-import com.pexip.sdk.video.internal.execute
-import com.pexip.sdk.video.internal.url
-import com.pexip.sdk.video.node.Node
 import com.pexip.sdk.video.node.NodeResolver
-import com.pexip.sdk.video.token.NoSuchNodeException
 import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import org.minidns.hla.ResolverApi
-import org.minidns.hla.SrvResolverResult
 import java.io.IOException
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.concurrent.Future
 
-internal class RealNodeResolver(private val api: ResolverApi, private val client: OkHttpClient) :
-    NodeResolver {
+internal class RealNodeResolver(
+    private val service: InfinityService,
+    private val api: ResolverApi,
+) : NodeResolver {
 
     override fun resolve(host: String, callback: NodeResolver.Callback): Future<*> {
         val runnable = ResolveRunnable(this, host, callback)
@@ -28,9 +26,13 @@ internal class RealNodeResolver(private val api: ResolverApi, private val client
             ?.sortedSrvResolvedAddresses
             ?: emptyList()
         for (address in addresses) {
-            val nodeAddress = address.toNodeAddress()
+            val node = Node {
+                scheme(if (address.srv.port == 443) "https" else "http")
+                host(address.srv.target.ace)
+                port(address.srv.port)
+            }
             try {
-                return nodeAddress.takeUnless { client.isInMaintenanceMode(it) }?.let(::Node)
+                return node.takeUnless { service.newRequest(it).status().execute() }
             } catch (e: UnknownHostException) {
                 continue
             } catch (e: IOException) {
@@ -44,11 +46,11 @@ internal class RealNodeResolver(private val api: ResolverApi, private val client
 
     private fun resolveARecord(host: String): Node? = try {
         val address = InetAddress.getByName(host)
-        val nodeAddress = HttpUrl.Builder()
-            .scheme("https")
-            .host(address.hostName)
-            .build()
-        nodeAddress.takeUnless { client.isInMaintenanceMode(it) }?.let(::Node)
+        val node = Node {
+            scheme("https")
+            host(address.hostName)
+        }
+        node.takeUnless { service.newRequest(it).status().execute() }
     } catch (e: UnknownHostException) {
         null
     } catch (e: IOException) {
@@ -57,29 +59,11 @@ internal class RealNodeResolver(private val api: ResolverApi, private val client
         null
     }
 
-    private fun SrvResolverResult.ResolvedSrvRecord.toNodeAddress() = HttpUrl.Builder()
-        .scheme(if (srv.port == 443) "https" else "http")
-        .host(srv.target.ace)
-        .port(srv.port)
-        .build()
-
     private fun ResolverApi.resolveSrv(service: String, proto: String, name: String) =
         resolveSrv("_$service._$proto.$name").takeIf { it.wasSuccessful() }
 
-    private fun OkHttpClient.isInMaintenanceMode(nodeAddress: HttpUrl): Boolean {
-        val response = execute {
-            get()
-            url(nodeAddress) { addPathSegments("api/client/v2/status") }
-        }
-        return response.use {
-            when (it.code) {
-                200 -> false
-                404 -> throw NoSuchNodeException()
-                503 -> true
-                else -> throw IllegalStateException()
-            }
-        }
-    }
+    private inline fun Node(block: HttpUrl.Builder.() -> Unit) =
+        Node(HttpUrl.Builder().apply(block).build())
 
     private class ResolveRunnable(
         private val resolver: RealNodeResolver,

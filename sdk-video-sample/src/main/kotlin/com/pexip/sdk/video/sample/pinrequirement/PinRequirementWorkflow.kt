@@ -1,15 +1,15 @@
 package com.pexip.sdk.video.sample.pinrequirement
 
+import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.api.RequestTokenRequest
+import com.pexip.sdk.video.api.coroutines.await
 import com.pexip.sdk.video.sample.send
-import com.pexip.sdk.video.token.TokenRequest
-import com.pexip.sdk.video.token.TokenRequester
-import com.pexip.sdk.video.token.coroutines.request
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
 
-class PinRequirementWorkflow(private val requester: TokenRequester) :
+class PinRequirementWorkflow(private val service: InfinityService) :
     StatefulWorkflow<PinRequirementProps, PinRequirementState, PinRequirementOutput, PinRequirementRendering>() {
 
     override fun initialState(
@@ -37,13 +37,12 @@ class PinRequirementWorkflow(private val requester: TokenRequester) :
     private fun RenderContext.getPinRequirementSideEffect(props: PinRequirementProps) =
         runningSideEffect(props.toString()) {
             val action = try {
-                val request = TokenRequest.Builder()
-                    .alias(props.alias)
-                    .node(props.node)
-                    .displayName(props.displayName)
-                    .build()
-                val token = requester.request(request)
-                OnToken(token)
+                val request = RequestTokenRequest(displayName = props.displayName)
+                val response = service.newRequest(props.node)
+                    .conference(props.conferenceAlias)
+                    .requestToken(request)
+                    .await()
+                OnResponse(response)
             } catch (t: Throwable) {
                 OnError(t)
             }

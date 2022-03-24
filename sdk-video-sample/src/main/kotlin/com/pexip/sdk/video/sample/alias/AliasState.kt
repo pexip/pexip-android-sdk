@@ -5,4 +5,4 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @JvmInline
-value class AliasState(val alias: String = "") : Parcelable
+value class AliasState(val conferenceAlias: String = "") : Parcelable

@@ -7,19 +7,19 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import okio.Buffer
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-internal fun Random.nextAlias(): String = "${nextInt(100000..999999)}"
+private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+internal fun Random.nextString(length: Int) =
+    CharArray(length) { CHARACTERS.random(this) }.concatToString()
 
 internal fun Random.nextPin(): String = "${nextInt(1000..9999)}"
 
-internal fun Random.nextToken() = "${nextInt(100000000..999999999)}"
+internal fun Random.nextToken() = nextString(16)
 
-internal fun Random.nextSsoToken() = nextToken()
-
-internal fun Random.nextUuid() = "${UUID.randomUUID()}"
+internal fun Random.nextSsoToken() = nextString(16)
 
 @OptIn(ExperimentalSerializationApi::class)
 internal inline fun <reified T> Json.decodeFromBuffer(buffer: Buffer) =

@@ -1,5 +1,6 @@
 package com.pexip.sdk.video.sample.conference
 
+import com.pexip.sdk.video.api.InfinityService
 import com.pexip.sdk.video.conference.Conference
 import com.pexip.sdk.video.conference.coroutines.localVideoTrack
 import com.pexip.sdk.video.conference.coroutines.remoteVideoTrack
@@ -8,13 +9,19 @@ import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.map
-import okhttp3.OkHttpClient
 
-class ConferenceWorkflow(private val client: OkHttpClient) :
+class ConferenceWorkflow(private val service: InfinityService) :
     StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState =
-        ConferenceState(Conference.create(props.token, client))
+        ConferenceState(
+            conference = Conference.create(
+                service,
+                props.node,
+                props.conferenceAlias,
+                props.response
+            )
+        )
 
     override fun snapshotState(state: ConferenceState): Snapshot? = null
 

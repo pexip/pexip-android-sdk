@@ -1,7 +1,12 @@
 package com.pexip.sdk.video.conference
 
-import com.pexip.sdk.video.conference.internal.InfinityService
+import com.pexip.sdk.video.api.ConferenceAlias
+import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.api.Node
+import com.pexip.sdk.video.api.ParticipantId
 import com.pexip.sdk.video.conference.internal.PeerConnection
+import com.pexip.sdk.video.conference.internal.SignalingModule
+import com.pexip.sdk.video.conference.internal.TokenStore
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.ContextUtils
@@ -11,7 +16,13 @@ import org.webrtc.EglBase
 import org.webrtc.PeerConnection as WebRtcPeerConnection
 import org.webrtc.PeerConnectionFactory as WebRtcPeerConnectionFactory
 
-public class CallHandler internal constructor(service: InfinityService) {
+public class CallHandler internal constructor(
+    service: InfinityService,
+    store: TokenStore,
+    node: Node,
+    conferenceAlias: ConferenceAlias,
+    participantId: ParticipantId,
+) {
 
     private val eglBase = EglBase.create()
     private val sharedContext = eglBase.eglBaseContext
@@ -41,9 +52,11 @@ public class CallHandler internal constructor(service: InfinityService) {
                 WebRtcPeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
         }
     }
+    private val signalingModule =
+        SignalingModule(service, store, node, conferenceAlias, participantId)
     private val peerConnection =
         PeerConnection.Builder(peerConnectionFactory, rtcConfiguration)
-            .signaling(service)
+            .signaling(signalingModule)
             .sendReceiveAudio()
             .sendReceiveVideo(
                 enumerator = cameraEnumerator,

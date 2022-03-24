@@ -21,9 +21,9 @@ class AliasWorkflow : StatefulWorkflow<Unit, AliasState, AliasOutput, AliasRende
         renderState: AliasState,
         context: RenderContext,
     ): AliasRendering = AliasRendering(
-        alias = renderState.alias,
+        alias = renderState.conferenceAlias,
         onAliasChange = context.send(::OnAliasChange),
-        resolveEnabled = regex.matches(renderState.alias),
+        resolveEnabled = regex.matches(renderState.conferenceAlias),
         onResolveClick = context.send(::OnResolveClick),
         onBackClick = context.send(::OnBackClick)
     )

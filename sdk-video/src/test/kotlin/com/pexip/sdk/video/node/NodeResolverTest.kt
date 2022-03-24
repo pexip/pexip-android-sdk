@@ -1,6 +1,8 @@
 package com.pexip.sdk.video.node
 
-import com.pexip.sdk.video.node.Node.Companion.toNode
+import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.api.Node
+import com.pexip.sdk.video.api.Node.Companion.toNode
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import kotlin.test.BeforeTest
@@ -8,13 +10,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
-internal class NodeResolverTest(private val host: String, private val expectedNode: Node?) {
+internal class NodeResolverTest(private val host: String, private val url: String?) {
 
     private lateinit var resolver: NodeResolver
 
     @BeforeTest
     fun setUp() {
-        resolver = NodeResolver.create()
+        val service = InfinityService.create()
+        resolver = NodeResolver.create(service)
     }
 
     @Test
@@ -33,7 +36,7 @@ internal class NodeResolverTest(private val host: String, private val expectedNo
             }
         }
         resolver.resolve(host, callback).get()
-        assertEquals(expectedNode, callback.node)
+        assertEquals(url?.toNode(), callback.node)
     }
 
     companion object {
@@ -42,7 +45,7 @@ internal class NodeResolverTest(private val host: String, private val expectedNo
         @get:ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
         val testCases = listOf(
             // SRV record
-            arrayOf("pexip.com", "https://pexipdemo.com".toNode()),
+            arrayOf("pexip.com", "https://pexipdemo.com"),
             // A record, but no Infinity node
             arrayOf("example.com", null),
             // Not a real domain

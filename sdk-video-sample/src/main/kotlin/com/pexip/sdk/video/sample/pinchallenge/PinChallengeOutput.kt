@@ -1,8 +1,10 @@
 package com.pexip.sdk.video.sample.pinchallenge
 
+import com.pexip.sdk.video.api.RequestTokenResponse
+
 sealed class PinChallengeOutput {
 
-    data class Token(val token: com.pexip.sdk.video.token.Token) : PinChallengeOutput()
+    data class Response(val response: RequestTokenResponse) : PinChallengeOutput()
 
     object Back : PinChallengeOutput() {
 

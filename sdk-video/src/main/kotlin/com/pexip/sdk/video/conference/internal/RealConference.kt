@@ -1,22 +1,34 @@
 package com.pexip.sdk.video.conference.internal
 
+import com.pexip.sdk.video.api.ConferenceAlias
+import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.api.Node
+import com.pexip.sdk.video.api.RequestTokenResponse
 import com.pexip.sdk.video.conference.CallHandler
 import com.pexip.sdk.video.conference.Conference
-import com.pexip.sdk.video.token.Token
-import okhttp3.OkHttpClient
 
-internal class RealConference(client: OkHttpClient, token: Token) : Conference {
+internal class RealConference(
+    service: InfinityService,
+    node: Node,
+    conferenceAlias: ConferenceAlias,
+    response: RequestTokenResponse,
+) : Conference {
 
-    private val store = TokenStore(token.token, token.expires)
-    private val service: InfinityService = RealInfinityService(
-        client = client,
+    private val store = TokenStore(response.token, response.expires)
+    private val tokenHandler = TokenHandler(
+        node = node,
+        conferenceAlias = conferenceAlias,
         store = store,
-        address = token.address,
-        participantId = token.participantId,
+        service = service
     )
-    private val tokenHandler = TokenHandler(store, service)
 
-    override val callHandler: CallHandler = CallHandler(service)
+    override val callHandler: CallHandler = CallHandler(
+        service = service,
+        store = store,
+        node = node,
+        conferenceAlias = conferenceAlias,
+        participantId = response.participantId
+    )
 
     override fun leave() {
         callHandler.dispose()

@@ -45,7 +45,7 @@ class SampleWorkflow(
         is SampleState.PinRequirement -> context.renderChild(
             child = pinRequirementWorkflow,
             props = PinRequirementProps(
-                alias = renderState.alias,
+                conferenceAlias = renderState.conferenceAlias,
                 node = renderState.node,
                 displayName = renderProps.displayName
             ),
@@ -54,8 +54,8 @@ class SampleWorkflow(
         is SampleState.PinChallenge -> context.renderChild(
             child = pinChallengeWorkflow,
             props = PinChallengeProps(
-                alias = renderState.alias,
                 node = renderState.node,
+                conferenceAlias = renderState.conferenceAlias,
                 displayName = renderProps.displayName,
                 required = renderState.required
             ),
@@ -63,7 +63,11 @@ class SampleWorkflow(
         )
         is SampleState.Conference -> context.renderChild(
             child = conferenceWorkflow,
-            props = ConferenceProps(renderState.token),
+            props = ConferenceProps(
+                node = renderState.node,
+                conferenceAlias = renderState.conferenceAlias,
+                response = renderState.response
+            ),
             handler = ::OnConferenceOutput
         )
     }

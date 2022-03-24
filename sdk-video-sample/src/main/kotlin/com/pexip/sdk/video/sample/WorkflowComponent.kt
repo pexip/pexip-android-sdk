@@ -10,13 +10,9 @@ object WorkflowComponent {
 
     private val aliasWorkflow by lazy { AliasWorkflow() }
     private val nodeWorkflow by lazy { NodeWorkflow(NetworkComponent.nodeResolver) }
-    private val pinRequirementWorkflow by lazy {
-        PinRequirementWorkflow(NetworkComponent.tokenRequester)
-    }
-    private val pinChallengeWorkflow by lazy {
-        PinChallengeWorkflow(NetworkComponent.tokenRequester)
-    }
-    private val conferenceWorkflow by lazy { ConferenceWorkflow(NetworkComponent.client) }
+    private val pinRequirementWorkflow by lazy { PinRequirementWorkflow(NetworkComponent.service) }
+    private val pinChallengeWorkflow by lazy { PinChallengeWorkflow(NetworkComponent.service) }
+    private val conferenceWorkflow by lazy { ConferenceWorkflow(NetworkComponent.service) }
 
     val sampleWorkflow by lazy {
         SampleWorkflow(

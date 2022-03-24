@@ -1,8 +1,8 @@
 package com.pexip.sdk.video.node
 
-import com.pexip.sdk.video.internal.OkHttpClient
+import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.api.Node
 import com.pexip.sdk.video.node.internal.RealNodeResolver
-import okhttp3.OkHttpClient
 import org.minidns.hla.DnssecResolverApi
 import org.minidns.hla.ResolverApi
 import java.util.concurrent.Future
@@ -50,11 +50,11 @@ public fun interface NodeResolver {
         @JvmStatic
         @JvmOverloads
         public fun create(
+            service: InfinityService,
             dnssec: Boolean = false,
-            client: OkHttpClient = OkHttpClient,
         ): NodeResolver = RealNodeResolver(
+            service = service,
             api = if (dnssec) DnssecResolverApi.INSTANCE else ResolverApi.INSTANCE,
-            client = client
         )
     }
 }

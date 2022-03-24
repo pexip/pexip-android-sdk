@@ -1,51 +1,70 @@
 package com.pexip.sdk.video.conference.internal
 
-import com.pexip.sdk.video.internal.maybeSubmit
+import com.pexip.sdk.video.api.CallId
+import com.pexip.sdk.video.api.CallsRequest
+import com.pexip.sdk.video.api.ConferenceAlias
+import com.pexip.sdk.video.api.InfinityService
+import com.pexip.sdk.video.api.NewCandidateRequest
+import com.pexip.sdk.video.api.Node
+import com.pexip.sdk.video.api.ParticipantId
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 internal class SignalingModule(
-    private val infinityService: InfinityService,
-    private val executorService: ExecutorService = Executors.newSingleThreadExecutor(),
+    private val service: InfinityService,
+    private val store: TokenStore,
+    private val node: Node,
+    private val conferenceAlias: ConferenceAlias,
+    private val participantId: ParticipantId,
+    private val executor: ExecutorService = Executors.newSingleThreadExecutor(),
     private val logger: Logger = Logger,
 ) : Disposable {
 
     @Volatile
-    var callId: String? = null
+    var callId: CallId? = null
 
     fun onConnected() {
         logger.log("onConnected()")
-        executorService.maybeSubmit {
+        executor.maybeSubmit {
             val callId = checkNotNull(callId) { "callId is not set." }
-            val request = AckRequest(callId)
-            infinityService.ack(request)
+            service.newRequest(node)
+                .conference(conferenceAlias)
+                .participant(participantId)
+                .call(callId)
+                .ack(store.token)
+                .execute()
         }
     }
 
     fun onIceCandidate(candidate: String, mid: String) {
         logger.log("onIceCandidate($candidate)")
-        executorService.maybeSubmit {
+        executor.maybeSubmit {
             val callId = checkNotNull(callId) { "callId is not set." }
-            val request = CandidateRequest(
-                callId = callId,
-                candidate = candidate,
-                mid = mid
-            )
-            infinityService.newCandidate(request)
+            val request = NewCandidateRequest(candidate, mid)
+            service.newRequest(node)
+                .conference(conferenceAlias)
+                .participant(participantId)
+                .call(callId)
+                .newCandidate(request, store.token)
+                .execute()
         }
     }
 
     fun onOffer(offer: String, onAnswer: (String) -> Unit) {
         logger.log("onOffer($offer)")
-        executorService.maybeSubmit {
+        executor.maybeSubmit {
             val request = CallsRequest(offer)
-            val response = infinityService.calls(request)
-            callId = response.call_uuid
+            val response = service.newRequest(node)
+                .conference(conferenceAlias)
+                .participant(participantId)
+                .calls(request, store.token)
+                .execute()
+            callId = response.callId
             onAnswer(response.sdp)
         }
     }
 
     override fun dispose() {
-        executorService.shutdownNow()
+        executor.shutdownNow()
     }
 }

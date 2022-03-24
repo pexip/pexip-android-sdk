@@ -1,12 +1,12 @@
 package com.pexip.sdk.video.sample.pinrequirement
 
-import com.pexip.sdk.video.token.Token
+import com.pexip.sdk.video.api.RequestTokenResponse
 
 sealed class PinRequirementOutput {
 
     data class Some(val required: Boolean) : PinRequirementOutput()
 
-    data class None(val token: Token) : PinRequirementOutput()
+    data class None(val response: RequestTokenResponse) : PinRequirementOutput()
 
     object Back : PinRequirementOutput() {
 
