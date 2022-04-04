@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.sample.conference
 
+import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnection
-import com.pexip.sdk.video.conference.Conference
 import org.webrtc.EglBase
 import org.webrtc.VideoTrack
 

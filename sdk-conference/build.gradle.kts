@@ -10,8 +10,4 @@ android {
 
 dependencies {
     api(projects.sdkMedia)
-
-    api(libs.pexip.libwebrtc.core)
-
-    testImplementation(libs.okio)
 }

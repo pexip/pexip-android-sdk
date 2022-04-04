@@ -1,11 +1,11 @@
 package com.pexip.sdk.video.sample.conference
 
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnection
 import com.pexip.sdk.media.webrtc.coroutines.getMainLocalVideoTrack
 import com.pexip.sdk.media.webrtc.coroutines.getMainRemoteVideoTrack
-import com.pexip.sdk.video.conference.Conference
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -18,7 +18,7 @@ class ConferenceWorkflow(private val service: InfinityService) :
     StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState {
-        val conference = Conference.create(
+        val conference = InfinityConference.create(
             service = service,
             node = props.node,
             conferenceAlias = props.conferenceAlias,

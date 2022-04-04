@@ -25,8 +25,8 @@ android {
 
 dependencies {
     implementation(projects.sdkApiCoroutines)
+    implementation(projects.sdkConferenceInfinity)
     implementation(projects.sdkMediaWebrtcCoroutines)
-    implementation(projects.sdkVideo)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
