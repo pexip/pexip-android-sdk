@@ -1,8 +1,8 @@
 package com.pexip.sdk.video.sample.pinrequirement
 
-import com.pexip.sdk.video.api.InfinityService
-import com.pexip.sdk.video.api.RequestTokenRequest
-import com.pexip.sdk.video.api.coroutines.await
+import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow

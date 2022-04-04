@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.sample.pinchallenge
 
-import com.pexip.sdk.video.api.InvalidPinException
-import com.pexip.sdk.video.api.RequestTokenResponse
+import com.pexip.sdk.api.infinity.InvalidPinException
+import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.squareup.workflow1.WorkflowAction
 
 typealias PinChallengeAction = WorkflowAction<PinChallengeProps, PinChallengeState, PinChallengeOutput>

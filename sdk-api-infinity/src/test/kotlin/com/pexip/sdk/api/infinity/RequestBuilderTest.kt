@@ -1,0 +1,61 @@
+package com.pexip.sdk.api.infinity
+
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.Rule
+import java.net.URL
+import kotlin.properties.Delegates
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+internal class RequestBuilderTest {
+
+    @get:Rule
+    val server = MockWebServer()
+
+    private lateinit var builder: InfinityService.RequestBuilder
+
+    private var node: URL by Delegates.notNull()
+
+    @BeforeTest
+    fun setUp() {
+        node = server.url("/").toUrl()
+        val service = InfinityService.create()
+        builder = service.newRequest(node)
+    }
+
+    @Test
+    fun `status throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        assertFailsWith<IllegalStateException> { builder.status().execute() }
+        server.verifyStatus()
+    }
+
+    @Test
+    fun `status throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        assertFailsWith<NoSuchNodeException> { builder.status().execute() }
+        server.verifyStatus()
+    }
+
+    @Test
+    fun `status returns true`() {
+        server.enqueue { setResponseCode(503) }
+        assertTrue(builder.status().execute())
+        server.verifyStatus()
+    }
+
+    @Test
+    fun `status returns false`() {
+        server.enqueue { setResponseCode(200) }
+        assertFalse(builder.status().execute())
+        server.verifyStatus()
+    }
+
+    private fun MockWebServer.verifyStatus() = takeRequest {
+        assertRequestUrl(node) { addPathSegments("api/client/v2/status") }
+        assertGet()
+    }
+}

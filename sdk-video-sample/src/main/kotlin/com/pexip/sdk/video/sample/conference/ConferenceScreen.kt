@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.pexip.sdk.video.sample.VideoRenderer
+import com.pexip.libwebrtc.compose.VideoRenderer
 
 @Composable
 fun ConferenceScreen(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
@@ -26,7 +26,8 @@ fun ConferenceScreen(rendering: ConferenceRendering, modifier: Modifier = Modifi
             .background(MaterialTheme.colors.primary),
     ) {
         VideoRenderer(
-            track = rendering.remoteVideoTrack,
+            videoTrack = rendering.remoteVideoTrack,
+            sharedContext = rendering.sharedContext,
             aspectRatio = ASPECT_RATIO_LANDSCAPE,
             modifier = Modifier.fillMaxSize()
         )
@@ -42,7 +43,8 @@ fun ConferenceScreen(rendering: ConferenceRendering, modifier: Modifier = Modifi
                 if (maxWidth > maxHeight) ASPECT_RATIO_LANDSCAPE else ASPECT_RATIO_PORTRAIT
             }
             VideoRenderer(
-                track = rendering.localVideoTrack,
+                videoTrack = rendering.localVideoTrack,
+                sharedContext = rendering.sharedContext,
                 aspectRatio = aspectRatio
             )
         }

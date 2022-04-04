@@ -1,6 +1,6 @@
 package com.pexip.sdk.video.sample.pinchallenge
 
-import com.pexip.sdk.video.api.RequestTokenResponse
+import com.pexip.sdk.api.infinity.RequestTokenResponse
 
 sealed class PinChallengeOutput {
 

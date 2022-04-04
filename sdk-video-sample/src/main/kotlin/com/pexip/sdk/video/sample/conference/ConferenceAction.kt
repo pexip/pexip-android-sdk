@@ -1,7 +1,7 @@
 package com.pexip.sdk.video.sample.conference
 
-import com.pexip.sdk.video.conference.VideoTrack
 import com.squareup.workflow1.WorkflowAction
+import org.webrtc.VideoTrack
 
 typealias ConferenceAction = WorkflowAction<ConferenceProps, ConferenceState, ConferenceOutput>
 
@@ -12,16 +12,16 @@ class OnBackClick : ConferenceAction() {
     }
 }
 
-class OnLocalVideoTrack(private val track: VideoTrack?) : ConferenceAction() {
+class OnMainLocalVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAction() {
 
     override fun Updater.apply() {
-        state = state.copy(localVideoTrack = track)
+        state = state.copy(localVideoTrack = videoTrack)
     }
 }
 
-class OnRemoteVideoTrack(private val track: VideoTrack?) : ConferenceAction() {
+class OnMainRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAction() {
 
     override fun Updater.apply() {
-        state = state.copy(remoteVideoTrack = track)
+        state = state.copy(remoteVideoTrack = videoTrack)
     }
 }

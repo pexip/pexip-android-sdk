@@ -1,11 +1,10 @@
 package com.pexip.sdk.video.sample.conference
 
-import com.pexip.sdk.video.api.ConferenceAlias
-import com.pexip.sdk.video.api.Node
-import com.pexip.sdk.video.api.RequestTokenResponse
+import com.pexip.sdk.api.infinity.RequestTokenResponse
+import java.net.URL
 
 data class ConferenceProps(
-    val node: Node,
-    val conferenceAlias: ConferenceAlias,
+    val node: URL,
+    val conferenceAlias: String,
     val response: RequestTokenResponse,
 )

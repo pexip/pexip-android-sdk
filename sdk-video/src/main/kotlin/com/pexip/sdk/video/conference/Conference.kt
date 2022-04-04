@@ -1,17 +1,18 @@
 package com.pexip.sdk.video.conference
 
-import com.pexip.sdk.video.api.ConferenceAlias
-import com.pexip.sdk.video.api.InfinityService
-import com.pexip.sdk.video.api.Node
-import com.pexip.sdk.video.api.RequestTokenResponse
+import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.video.conference.internal.RealConference
+import com.pexip.sdk.video.conference.internal.RealMediaConnectionSignaling
+import com.pexip.sdk.video.conference.internal.RealTokenRefresher
+import com.pexip.sdk.video.conference.internal.RealTokenStore
+import java.net.URL
 
 /**
  * Represents a conference.
  */
-public interface Conference {
-
-    public val callHandler: CallHandler
+public interface Conference : MediaConnectionSignaling {
 
     /**
      * Leaves the conference. Once left, the [Conference] object is no longer valid.
@@ -23,9 +24,17 @@ public interface Conference {
         @JvmStatic
         public fun create(
             service: InfinityService,
-            node: Node,
-            conferenceAlias: ConferenceAlias,
+            node: URL,
+            conferenceAlias: String,
             response: RequestTokenResponse,
-        ): Conference = RealConference(service, node, conferenceAlias, response)
+        ): Conference {
+            val store = RealTokenStore(response.token)
+            val conferenceStep = service.newRequest(node).conference(conferenceAlias)
+            val participantStep = conferenceStep.participant(response.participantId)
+            return RealConference(
+                refresher = RealTokenRefresher(response.expires, store, conferenceStep),
+                signaling = RealMediaConnectionSignaling(store, participantStep)
+            )
+        }
     }
 }

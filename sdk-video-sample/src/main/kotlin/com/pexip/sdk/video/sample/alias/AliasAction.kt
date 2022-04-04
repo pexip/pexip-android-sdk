@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.sample.alias
 
-import com.pexip.sdk.video.api.ConferenceAlias
 import com.squareup.workflow1.WorkflowAction
 
 typealias AliasAction = WorkflowAction<Unit, AliasState, AliasOutput>
@@ -16,7 +15,7 @@ class OnResolveClick : AliasAction() {
 
     override fun Updater.apply() {
         val output = AliasOutput.Alias(
-            conferenceAlias = ConferenceAlias(state.conferenceAlias),
+            conferenceAlias = state.conferenceAlias,
             host = state.conferenceAlias.split("@").last()
         )
         setOutput(output)

@@ -1,8 +1,8 @@
 package com.pexip.sdk.video.sample
 
 import android.util.Log
-import com.pexip.sdk.video.api.InfinityService
-import com.pexip.sdk.video.api.NodeResolver
+import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.NodeResolver
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 

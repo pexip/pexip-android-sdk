@@ -1,11 +1,10 @@
 package com.pexip.sdk.video.sample.pinchallenge
 
-import com.pexip.sdk.video.api.ConferenceAlias
-import com.pexip.sdk.video.api.Node
+import java.net.URL
 
 data class PinChallengeProps(
-    val node: Node,
-    val conferenceAlias: ConferenceAlias,
+    val node: URL,
+    val conferenceAlias: String,
     val displayName: String,
     val required: Boolean,
 )

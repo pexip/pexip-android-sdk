@@ -1,9 +1,8 @@
 package com.pexip.sdk.video.conference.internal
 
-import kotlin.time.Duration
+internal interface TokenStore {
 
-internal class TokenStore(
-    @Volatile
-    var token: String,
-    val expires: Duration,
-)
+    fun get(): String
+
+    fun updateAndGet(block: (String) -> String): String
+}

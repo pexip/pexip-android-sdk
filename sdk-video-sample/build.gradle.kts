@@ -24,13 +24,17 @@ android {
 }
 
 dependencies {
-    implementation(projects.sdkVideoCoroutines)
+    implementation(projects.sdkApiCoroutines)
+    implementation(projects.sdkMediaWebrtcCoroutines)
+    implementation(projects.sdkVideo)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.startup.runtime)
     implementation(libs.accompanist.appcompattheme)
     implementation(libs.okhttp.logginginterceptor)
+    implementation(libs.pexip.libwebrtc.compose)
     implementation(libs.workflow.core.jvm)
     implementation(libs.workflow.ui.compose)
 

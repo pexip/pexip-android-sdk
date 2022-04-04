@@ -1,8 +1,10 @@
 package com.pexip.sdk.video.sample.conference
 
-import com.pexip.sdk.video.conference.VideoTrack
+import org.webrtc.EglBase
+import org.webrtc.VideoTrack
 
 data class ConferenceRendering(
+    val sharedContext: EglBase.Context,
     val localVideoTrack: VideoTrack?,
     val remoteVideoTrack: VideoTrack?,
     val onBackClick: () -> Unit,
