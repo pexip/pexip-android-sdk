@@ -13,4 +13,6 @@ android {
 dependencies {
     api(projects.sdkApiInfinity)
     api(projects.sdkMediaWebrtc)
+
+    testImplementation(libs.okio)
 }

@@ -86,10 +86,7 @@ internal class CallStepTest {
     @Test
     fun `newCandidate returns on 200`() {
         server.enqueue { setResponseCode(200) }
-        val request = NewCandidateRequest(
-            candidate = Random.nextString(8),
-            mid = Random.nextString(8)
-        )
+        val request = Random.nextNewCandidateRequest()
         val token = Random.nextString(8)
         step.newCandidate(request, token).execute()
         server.verifyNewCandidate(request, token)
@@ -252,6 +249,8 @@ internal class CallStepTest {
 
     private fun Random.nextNewCandidateRequest() = NewCandidateRequest(
         candidate = nextString(8),
-        mid = nextString(8)
+        mid = nextString(8),
+        ufrag = nextString(8),
+        pwd = nextString(8)
     )
 }

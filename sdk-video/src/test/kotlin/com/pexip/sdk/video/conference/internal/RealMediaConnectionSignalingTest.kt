@@ -8,6 +8,8 @@ import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 import com.pexip.sdk.video.nextString
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
@@ -27,7 +29,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onOffer() returns Answer (first call)`() {
         val callType = Random.nextString(8)
-        val sdp = Random.nextString(8)
+        val sdp = read("session_description_original")
         val presentationInMix = Random.nextBoolean()
         val response = CallsResponse(
             callId = UUID.randomUUID(),
@@ -59,12 +61,13 @@ internal class RealMediaConnectionSignalingTest {
         val signaling = RealMediaConnectionSignaling(store, participantStep)
         assertEquals(signaling.onOffer(callType, sdp, presentationInMix), response.sdp)
         assertEquals(callStep, signaling.callStep)
+        assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
     }
 
     @Test
     fun `onOffer() returns Answer (subsequent calls)`() {
         val callType = Random.nextString(8)
-        val sdp = Random.nextString(8)
+        val sdp = read("session_description_original")
         val presentationInMix = Random.nextBoolean()
         val response = UpdateResponse(Random.nextString(8))
         val signaling = RealMediaConnectionSignaling(store, object : TestParticipantTest {})
@@ -79,13 +82,17 @@ internal class RealMediaConnectionSignalingTest {
                 }
         }
         assertEquals(signaling.onOffer(callType, sdp, presentationInMix), response.sdp)
+        assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
     }
 
     @Test
     fun `onCandidate() returns`() {
         var called = false
-        val candidate = Random.nextString(8)
+        val candidate =
+            "candidate:842163049 1 udp 1686052607 45.83.220.205 49922 typ srflx raddr 10.0.2.16 rport 43359 generation 0 ufrag /GLA network-id 5 network-cost 10"
         val mid = Random.nextString(8)
+        val ufrag = "/GLA"
+        val pwd = Random.nextString(8)
         val signaling = RealMediaConnectionSignaling(store, object : TestParticipantTest {})
         signaling.callStep = object : TestCallStep {
             override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> =
@@ -93,11 +100,14 @@ internal class RealMediaConnectionSignalingTest {
                     override fun execute() {
                         assertEquals(candidate, request.candidate)
                         assertEquals(mid, request.mid)
+                        assertEquals(ufrag, request.ufrag)
+                        assertEquals(pwd, request.pwd)
                         assertEquals(store.get(), token)
                         called = true
                     }
                 }
         }
+        signaling.pwds = mapOf(ufrag to pwd)
         signaling.onCandidate(candidate, mid)
         assertTrue(called)
     }
@@ -117,4 +127,7 @@ internal class RealMediaConnectionSignalingTest {
         signaling.onConnected()
         assertTrue(called)
     }
+
+    @Suppress("SameParameterValue")
+    private fun read(fileName: String) = FileSystem.RESOURCES.read(fileName.toPath()) { readUtf8() }
 }
