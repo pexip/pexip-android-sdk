@@ -5,11 +5,11 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
-import org.junit.Test
 import java.net.URL
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -40,14 +40,46 @@ internal class CallStepTest {
     }
 
     @Test
-    fun `newCandidate returns on non-200`() {
+    fun `newCandidate throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val request = NewCandidateRequest(
-            candidate = Random.nextString(8),
-            mid = Random.nextString(8)
-        )
+        val request = Random.nextNewCandidateRequest()
         val token = Random.nextString(8)
-        step.newCandidate(request, token).execute()
+        assertFailsWith<IllegalStateException> { step.newCandidate(request, token).execute() }
+        server.verifyNewCandidate(request, token)
+    }
+
+    @Test
+    fun `newCandidate throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val request = Random.nextNewCandidateRequest()
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.newCandidate(request, token).execute() }
+        server.verifyNewCandidate(request, token)
+    }
+
+    @Test
+    fun `newCandidate throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = Random.nextNewCandidateRequest()
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.newCandidate(request, token).execute() }
+        server.verifyNewCandidate(request, token)
+    }
+
+    @Test
+    fun `newCandidate throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = Random.nextNewCandidateRequest()
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.newCandidate(request, token).execute() }
         server.verifyNewCandidate(request, token)
     }
 
@@ -64,10 +96,42 @@ internal class CallStepTest {
     }
 
     @Test
-    fun `ack returns on non-200`() {
+    fun `ack throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
-        step.ack(token).execute()
+        assertFailsWith<IllegalStateException> { step.ack(token).execute() }
+        server.verifyAck(token)
+    }
+
+    @Test
+    fun `ack throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.ack(token).execute() }
+        server.verifyAck(token)
+    }
+
+    @Test
+    fun `ack throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.ack(token).execute() }
+        server.verifyAck(token)
+    }
+
+    @Test
+    fun `ack throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.ack(token).execute() }
         server.verifyAck(token)
     }
 
@@ -185,4 +249,9 @@ internal class CallStepTest {
         assertToken(token)
         assertPost(json, request)
     }
+
+    private fun Random.nextNewCandidateRequest() = NewCandidateRequest(
+        candidate = nextString(8),
+        mid = nextString(8)
+    )
 }

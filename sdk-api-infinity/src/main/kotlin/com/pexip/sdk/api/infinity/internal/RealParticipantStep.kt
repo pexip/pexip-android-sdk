@@ -4,6 +4,10 @@ import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.CallsResponse
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.InvalidTokenException
+import com.pexip.sdk.api.infinity.NoSuchConferenceException
+import com.pexip.sdk.api.infinity.NoSuchNodeException
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -34,10 +38,21 @@ internal class RealParticipantStep(
         RealCallStep(client, json, node, conferenceAlias, participantId, callId)
 
     private fun parseCalls(response: Response) = when (response.code) {
-        200 -> response.parseCalls200()
+        200 -> json.decodeFromResponseBody(CallsResponseSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
-    private fun Response.parseCalls200() =
-        json.decodeFromResponseBody(CallsResponseSerializer, body!!)
+    private fun Response.parse403(): Nothing {
+        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        throw InvalidTokenException(message)
+    }
+
+    private fun Response.parse404(): Nothing = try {
+        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        throw NoSuchConferenceException(message)
+    } catch (e: SerializationException) {
+        throw NoSuchNodeException()
+    }
 }

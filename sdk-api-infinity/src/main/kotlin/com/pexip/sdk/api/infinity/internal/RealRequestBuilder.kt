@@ -28,9 +28,9 @@ internal class RealRequestBuilder(
     }
 
     private fun parseStatus(response: Response) = when (response.code) {
-        200 -> false
+        200 -> true
+        503 -> false
         404 -> throw NoSuchNodeException()
-        503 -> true
         else -> throw IllegalStateException()
     }
 }

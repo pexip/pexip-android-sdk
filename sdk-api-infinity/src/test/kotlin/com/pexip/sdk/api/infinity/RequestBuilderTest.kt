@@ -41,16 +41,16 @@ internal class RequestBuilderTest {
     }
 
     @Test
-    fun `status returns true`() {
+    fun `status returns false`() {
         server.enqueue { setResponseCode(503) }
-        assertTrue(builder.status().execute())
+        assertFalse(builder.status().execute())
         server.verifyStatus()
     }
 
     @Test
-    fun `status returns false`() {
+    fun `status returns true`() {
         server.enqueue { setResponseCode(200) }
-        assertFalse(builder.status().execute())
+        assertTrue(builder.status().execute())
         server.verifyStatus()
     }
 

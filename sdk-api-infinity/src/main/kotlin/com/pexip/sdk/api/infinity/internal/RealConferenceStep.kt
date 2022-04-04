@@ -70,7 +70,7 @@ internal class RealConferenceStep(
                 url(node, conferenceAlias, "release_token")
                 header("token", token)
             },
-            mapper = UnitMapper
+            mapper = ::parseReleaseToken
         )
     }
 
@@ -78,14 +78,11 @@ internal class RealConferenceStep(
         RealParticipantStep(client, json, node, conferenceAlias, participantId)
 
     private fun parseRequestToken(response: Response) = when (response.code) {
-        200 -> response.parseRequestToken200()
+        200 -> json.decodeFromResponseBody(RequestTokenResponseSerializer, response.body!!)
         403 -> response.parseRequestToken403()
-        404 -> response.parseRequestToken404()
+        404 -> response.parse404()
         else -> throw IllegalStateException()
     }
-
-    private fun Response.parseRequestToken200() =
-        json.decodeFromResponseBody(RequestTokenResponseSerializer, body!!)
 
     private fun Response.parseRequestToken403(): Nothing {
         val r = json.decodeFromResponseBody(RequestToken403ResponseSerializer, body!!)
@@ -97,29 +94,26 @@ internal class RealConferenceStep(
         }
     }
 
-    private fun Response.parseRequestToken404(): Nothing = try {
-        val message = json.decodeFromResponseBody(StringSerializer, body!!)
-        throw NoSuchConferenceException(message)
-    } catch (e: SerializationException) {
-        throw NoSuchNodeException()
-    }
-
     private fun parseRefreshToken(response: Response) = when (response.code) {
-        200 -> response.parseRefreshToken200()
-        403 -> response.parseRefreshToken403()
-        404 -> response.parseRefreshToken404()
+        200 -> json.decodeFromResponseBody(RefreshTokenResponseSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
-    private fun Response.parseRefreshToken200() =
-        json.decodeFromResponseBody(RefreshTokenResponseSerializer, body!!)
+    private fun parseReleaseToken(response: Response) = when (response.code) {
+        200 -> Unit
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
 
-    private fun Response.parseRefreshToken403(): Nothing {
+    private fun Response.parse403(): Nothing {
         val message = json.decodeFromResponseBody(StringSerializer, body!!)
         throw InvalidTokenException(message)
     }
 
-    private fun Response.parseRefreshToken404(): Nothing = try {
+    private fun Response.parse404(): Nothing = try {
         val message = json.decodeFromResponseBody(StringSerializer, body!!)
         throw NoSuchConferenceException(message)
     } catch (e: SerializationException) {

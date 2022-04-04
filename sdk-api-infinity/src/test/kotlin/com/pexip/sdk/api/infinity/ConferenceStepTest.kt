@@ -204,10 +204,42 @@ internal class ConferenceStepTest {
     }
 
     @Test
-    fun `releaseToken returns on non-200`() {
+    fun `releaseToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
-        step.releaseToken(token).execute()
+        assertFailsWith<IllegalStateException> { step.releaseToken(token).execute() }
+        server.verifyReleaseToken(token)
+    }
+
+    @Test
+    fun `releaseToken throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.releaseToken(token).execute() }
+        server.verifyReleaseToken(token)
+    }
+
+    @Test
+    fun `releaseToken throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.releaseToken(token).execute() }
+        server.verifyReleaseToken(token)
+    }
+
+    @Test
+    fun `releaseToken throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.releaseToken(token).execute() }
         server.verifyReleaseToken(token)
     }
 

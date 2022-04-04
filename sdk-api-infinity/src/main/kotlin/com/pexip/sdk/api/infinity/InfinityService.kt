@@ -29,7 +29,8 @@ public interface InfinityService {
          *
          * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#maintenance_mode].
          *
-         * @return true if conferencing node is in maintenance mode, false otherwise
+         * @return true if the node is available, false otherwise
+         * @throws NoSuchNodeException if the node doesn't exist
          */
         public fun status(): Call<Boolean>
 
@@ -133,6 +134,9 @@ public interface InfinityService {
          *
          * @param request a request body
          * @param token a valid token
+         * @throws InvalidTokenException if the token is invalid
+         * @throws NoSuchNodeException if the node doesn't exist
+         * @throws NoSuchConferenceException if the conference doesn't exist
          */
         public fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit>
 
@@ -142,6 +146,9 @@ public interface InfinityService {
          * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack].
          *
          * @param token a valid token
+         * @throws InvalidTokenException if the token is invalid
+         * @throws NoSuchNodeException if the node doesn't exist
+         * @throws NoSuchConferenceException if the conference doesn't exist
          */
         public fun ack(token: String): Call<Unit>
 
@@ -152,6 +159,10 @@ public interface InfinityService {
          *
          * @param request a request body
          * @param token a valid token
+         * @throws InvalidTokenException if the token is invalid
+         * @throws NoSuchNodeException if the node doesn't exist
+         * @throws NoSuchConferenceException if the conference doesn't exist
+         * @return a new SDP
          */
         public fun update(request: UpdateRequest, token: String): Call<UpdateResponse>
     }

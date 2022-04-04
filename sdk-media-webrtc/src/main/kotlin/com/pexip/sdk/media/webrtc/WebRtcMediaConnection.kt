@@ -267,27 +267,39 @@ public class WebRtcMediaConnection private constructor(
     @Suppress("NAME_SHADOWING")
     private fun onSetLocalDescriptionSuccess(sdp: SessionDescription) {
         signalingExecutor.maybeExecute {
-            val sdp = SessionDescription(
-                SessionDescription.Type.ANSWER,
-                signaling.onOffer(
-                    callType = "WEBRTC",
-                    description = sdp.description,
-                    presentationInMix = presentationInMix
+            try {
+                val sdp = SessionDescription(
+                    SessionDescription.Type.ANSWER,
+                    signaling.onOffer(
+                        callType = "WEBRTC",
+                        description = sdp.description,
+                        presentationInMix = presentationInMix
+                    )
                 )
-            )
-            setRemoteDescription(sdp)
+                setRemoteDescription(sdp)
+            } catch (t: Throwable) {
+                // noop
+            }
         }
     }
 
     private fun onCandidate(candidate: String, mid: String) {
         signalingExecutor.maybeExecute {
-            signaling.onCandidate(candidate, mid)
+            try {
+                signaling.onCandidate(candidate, mid)
+            } catch (t: Throwable) {
+                // noop
+            }
         }
     }
 
     private fun onConnected() {
         signalingExecutor.maybeExecute {
-            signaling.onConnected()
+            try {
+                signaling.onConnected()
+            } catch (t: Throwable) {
+                // noop
+            }
         }
     }
 

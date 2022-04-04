@@ -39,13 +39,44 @@ internal class ParticipantStepTest {
     @Test
     fun `calls throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val request = CallsRequest(
-            sdp = Random.nextString(8),
-            present = Random.nextString(8),
-            callType = Random.nextString(8)
-        )
+        val request = Random.nextCallsRequest()
         val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.calls(request, token).execute() }
+        server.verifyCalls(request, token)
+    }
+
+    @Test
+    fun `calls throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val request = Random.nextCallsRequest()
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.calls(request, token).execute() }
+        server.verifyCalls(request, token)
+    }
+
+    @Test
+    fun `calls throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = Random.nextCallsRequest()
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.calls(request, token).execute() }
+        server.verifyCalls(request, token)
+    }
+
+    @Test
+    fun `calls throws InvalidPinException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = Random.nextCallsRequest()
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.calls(request, token).execute() }
         server.verifyCalls(request, token)
     }
 
@@ -59,11 +90,7 @@ internal class ParticipantStepTest {
             setResponseCode(200)
             setBody(json.encodeToString(Box(response)))
         }
-        val request = CallsRequest(
-            sdp = Random.nextString(8),
-            present = Random.nextString(8),
-            callType = Random.nextString(8)
-        )
+        val request = Random.nextCallsRequest()
         val token = Random.nextString(8)
         assertEquals(response, step.calls(request, token).execute())
         server.verifyCalls(request, token)
@@ -81,4 +108,10 @@ internal class ParticipantStepTest {
         assertToken(token)
         assertPost(json, request)
     }
+
+    private fun Random.nextCallsRequest() = CallsRequest(
+        sdp = nextString(8),
+        present = nextString(8),
+        callType = nextString(8)
+    )
 }

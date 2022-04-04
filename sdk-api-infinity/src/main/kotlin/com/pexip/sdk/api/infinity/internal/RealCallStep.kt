@@ -33,7 +33,7 @@ internal class RealCallStep(
                 url(node, conferenceAlias, participantId, callId, "new_candidate")
                 header("token", token)
             },
-            mapper = UnitMapper
+            mapper = ::parseNewCandidate
         )
     }
 
@@ -45,7 +45,7 @@ internal class RealCallStep(
                 url(node, conferenceAlias, participantId, callId, "ack")
                 header("token", token)
             },
-            mapper = UnitMapper
+            mapper = ::parseAck
         )
     }
 
@@ -61,22 +61,33 @@ internal class RealCallStep(
         )
     }
 
-    private fun parseUpdate(response: Response) = when (response.code) {
-        200 -> response.parseUpdate200()
-        403 -> response.parseUpdate403()
-        404 -> response.parseUpdate404()
+    private fun parseNewCandidate(response: Response) = when (response.code) {
+        200 -> Unit
+        403 -> response.parse403()
+        404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
-    private fun Response.parseUpdate200() =
-        json.decodeFromResponseBody(UpdateResponseSerializer, body!!)
+    private fun parseAck(response: Response) = when (response.code) {
+        200 -> Unit
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
 
-    private fun Response.parseUpdate403(): Nothing {
+    private fun parseUpdate(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(UpdateResponseSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun Response.parse403(): Nothing {
         val message = json.decodeFromResponseBody(StringSerializer, body!!)
         throw InvalidTokenException(message)
     }
 
-    private fun Response.parseUpdate404(): Nothing = try {
+    private fun Response.parse404(): Nothing = try {
         val message = json.decodeFromResponseBody(StringSerializer, body!!)
         throw NoSuchConferenceException(message)
     } catch (e: SerializationException) {

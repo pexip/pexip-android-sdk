@@ -38,7 +38,7 @@ class NodeWorkflow(
         runningSideEffect(props.toString()) {
             val action = try {
                 val nodes = resolver.resolve(props.host).await()
-                val node = nodes.find { !service.newRequest(it).status().await() }
+                val node = nodes.find { service.newRequest(it).status().await() }
                 OnNode(node)
             } catch (t: Throwable) {
                 OnError(t)
