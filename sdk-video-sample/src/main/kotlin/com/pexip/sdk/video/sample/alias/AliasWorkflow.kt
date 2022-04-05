@@ -1,6 +1,5 @@
 package com.pexip.sdk.video.sample.alias
 
-import android.util.Patterns
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -8,8 +7,6 @@ import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
 
 class AliasWorkflow : StatefulWorkflow<Unit, AliasState, AliasOutput, AliasRendering>() {
-
-    private val regex = Patterns.EMAIL_ADDRESS.toRegex()
 
     override fun initialState(props: Unit, snapshot: Snapshot?): AliasState =
         snapshot?.toParcelable() ?: AliasState()
@@ -21,9 +18,10 @@ class AliasWorkflow : StatefulWorkflow<Unit, AliasState, AliasOutput, AliasRende
         renderState: AliasState,
         context: RenderContext,
     ): AliasRendering = AliasRendering(
-        alias = renderState.conferenceAlias,
+        alias = renderState.alias,
+        host = renderState.host,
         onAliasChange = context.send(::OnAliasChange),
-        resolveEnabled = regex.matches(renderState.conferenceAlias),
+        onHostChange = context.send(::OnHostChange),
         onResolveClick = context.send(::OnResolveClick),
         onBackClick = context.send(::OnBackClick)
     )
