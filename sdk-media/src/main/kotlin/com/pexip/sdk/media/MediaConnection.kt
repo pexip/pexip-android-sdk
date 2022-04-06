@@ -2,6 +2,10 @@ package com.pexip.sdk.media
 
 public interface MediaConnection {
 
+    public fun start()
+
+    public fun dispose()
+
     public fun sendMainAudio()
 
     public fun sendMainVideo()
@@ -12,7 +16,7 @@ public interface MediaConnection {
 
     public fun stopMainCapture()
 
-    public fun start()
+    public fun registerMainCapturingListener(listener: CapturingListener)
 
-    public fun dispose()
+    public fun unregisterMainCapturingListener(listener: CapturingListener)
 }

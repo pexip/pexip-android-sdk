@@ -26,11 +26,13 @@ android {
 dependencies {
     implementation(projects.sdkApiCoroutines)
     implementation(projects.sdkConferenceInfinity)
+    implementation(projects.sdkMediaCoroutines)
     implementation(projects.sdkMediaWebrtcCoroutines)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.startup.runtime)
     implementation(libs.accompanist.appcompattheme)
     implementation(libs.okhttp.logginginterceptor)

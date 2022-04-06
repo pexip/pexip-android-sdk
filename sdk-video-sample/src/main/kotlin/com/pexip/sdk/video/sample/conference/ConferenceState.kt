@@ -9,6 +9,7 @@ data class ConferenceState(
     val conference: Conference,
     val connection: WebRtcMediaConnection,
     val sharedContext: EglBase.Context,
+    val mainCapturing: Boolean = false,
     val localVideoTrack: VideoTrack? = null,
     val remoteVideoTrack: VideoTrack? = null,
 )

@@ -9,6 +9,7 @@ android {
 }
 
 dependencies {
-    api(projects.sdkMediaCoroutines)
-    api(projects.sdkMediaWebrtc)
+    api(projects.sdkMedia)
+
+    api(libs.kotlinx.coroutines.core)
 }

@@ -1,6 +1,7 @@
 package com.pexip.sdk.media.webrtc
 
 import android.content.Context
+import com.pexip.sdk.media.CapturingListener
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.media.QualityProfile
@@ -72,6 +73,7 @@ public class WebRtcMediaConnection private constructor(
     private var mainAudioSource: AudioSource? = null
     private var mainAudioTrack: AudioTrack? = null
     private var mainVideoCapturer: CameraVideoCapturer? = null
+    private var mainVideoCapturing: Boolean = false
     private var mainVideoSource: VideoSource? = null
     private var mainVideoTrack: VideoTrack? = null
     private var mainVideoSurfaceTextureHelper: SurfaceTextureHelper? = null
@@ -97,6 +99,7 @@ public class WebRtcMediaConnection private constructor(
         }
     }
     private val remoteSdpObserver = object : SimpleSdpObserver {}
+    private val mainVideoCapturingListeners = CopyOnWriteArraySet<CapturingListener>()
     private val mainLocalVideoTrackListeners = CopyOnWriteArraySet<VideoTrackListener>()
     private val mainRemoteVideoTrackListeners = CopyOnWriteArraySet<VideoTrackListener>()
     private val presentationLocalVideoTrackListeners = CopyOnWriteArraySet<VideoTrackListener>()
@@ -120,17 +123,25 @@ public class WebRtcMediaConnection private constructor(
 
     override fun startMainCapture() {
         workerExecutor.maybeExecute {
-            mainVideoCapturer?.startCapture(
+            val capturer = mainVideoCapturer ?: return@maybeExecute
+            capturer.startCapture(
                 mainQualityProfile.width,
                 mainQualityProfile.height,
                 mainQualityProfile.fps
             )
+            onVideoUnmuted()
+            mainVideoCapturing = true
+            mainVideoCapturingListeners.forEach { it.onCapturing(true) }
         }
     }
 
     override fun stopMainCapture() {
         workerExecutor.maybeExecute {
-            mainVideoCapturer?.stopCapture()
+            val capturer = mainVideoCapturer ?: return@maybeExecute
+            capturer.stopCapture()
+            onVideoMuted()
+            mainVideoCapturing = false
+            mainVideoCapturingListeners.forEach { it.onCapturing(false) }
         }
     }
 
@@ -202,6 +213,17 @@ public class WebRtcMediaConnection private constructor(
 
     public fun unregisterPresentationRemoteVideoTrackListener(listener: VideoTrackListener) {
         presentationRemoteVideoTrackListeners -= listener
+    }
+
+    override fun registerMainCapturingListener(listener: CapturingListener) {
+        workerExecutor.maybeExecute {
+            listener.onCapturing(mainVideoCapturing)
+        }
+        mainVideoCapturingListeners += listener
+    }
+
+    override fun unregisterMainCapturingListener(listener: CapturingListener) {
+        mainVideoCapturingListeners -= listener
     }
 
     private fun sendMainAudioInternal() {
@@ -297,6 +319,26 @@ public class WebRtcMediaConnection private constructor(
         signalingExecutor.maybeExecute {
             try {
                 signaling.onConnected()
+            } catch (t: Throwable) {
+                // noop
+            }
+        }
+    }
+
+    private fun onVideoMuted() {
+        signalingExecutor.maybeExecute {
+            try {
+                signaling.onVideoMuted()
+            } catch (t: Throwable) {
+                // noop
+            }
+        }
+    }
+
+    private fun onVideoUnmuted() {
+        signalingExecutor.maybeExecute {
+            try {
+                signaling.onVideoUnmuted()
             } catch (t: Throwable) {
                 // noop
             }

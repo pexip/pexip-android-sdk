@@ -10,5 +10,9 @@ internal interface TestParticipantTest : InfinityService.ParticipantStep {
 
     override fun calls(request: CallsRequest, token: String): Call<CallsResponse> = TODO()
 
+    override fun videoMuted(token: String): Call<Unit> = TODO()
+
+    override fun videoUnmuted(token: String): Call<Unit> = TODO()
+
     override fun call(callId: UUID): InfinityService.CallStep = TODO()
 }

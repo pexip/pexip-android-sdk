@@ -3,6 +3,7 @@ package com.pexip.sdk.video.sample.conference
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.media.QualityProfile
+import com.pexip.sdk.media.coroutines.getMainCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnection
 import com.pexip.sdk.media.webrtc.coroutines.getMainLocalVideoTrack
 import com.pexip.sdk.media.webrtc.coroutines.getMainRemoteVideoTrack
@@ -45,12 +46,15 @@ class ConferenceWorkflow(private val service: InfinityService) :
         context: RenderContext,
     ): ConferenceRendering {
         context.leaveSideEffect(renderState)
+        context.mainVideoCapturingSideEffect(renderState.connection)
         context.mainLocalVideoTrackSideEffect(renderState.connection)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
         return ConferenceRendering(
             sharedContext = renderState.sharedContext,
             localVideoTrack = renderState.localVideoTrack,
             remoteVideoTrack = renderState.remoteVideoTrack,
+            mainCapturing = renderState.mainCapturing,
+            onToggleMainCapturing = context.send(::OnToggleMainVideoCapturing),
             onBackClick = context.send(::OnBackClick)
         )
     }
@@ -71,7 +75,7 @@ class ConferenceWorkflow(private val service: InfinityService) :
     }
 
     private fun RenderContext.mainLocalVideoTrackSideEffect(connection: WebRtcMediaConnection) {
-        runningSideEffect("${connection}mainLocalVideoTrack") {
+        runningSideEffect("${connection}MainLocalVideoTrack") {
             connection.getMainLocalVideoTrack()
                 .map(::OnMainLocalVideoTrack)
                 .collectLatest(actionSink::send)
@@ -79,9 +83,17 @@ class ConferenceWorkflow(private val service: InfinityService) :
     }
 
     private fun RenderContext.mainRemoteVideoTrackSideEffect(connection: WebRtcMediaConnection) {
-        runningSideEffect("${connection}mainRemoteVideoTrack") {
+        runningSideEffect("${connection}MainRemoteVideoTrack") {
             connection.getMainRemoteVideoTrack()
                 .map(::OnMainRemoteVideoTrack)
+                .collectLatest(actionSink::send)
+        }
+    }
+
+    private fun RenderContext.mainVideoCapturingSideEffect(connection: WebRtcMediaConnection) {
+        runningSideEffect("${connection}MainCapturing") {
+            connection.getMainCapturing()
+                .map(::OnMainCapturing)
                 .collectLatest(actionSink::send)
         }
     }

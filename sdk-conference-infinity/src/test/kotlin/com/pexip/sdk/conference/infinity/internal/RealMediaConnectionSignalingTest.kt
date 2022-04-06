@@ -127,6 +127,42 @@ internal class RealMediaConnectionSignalingTest {
         assertTrue(called)
     }
 
+    @Test
+    fun `onVideoMuted() returns`() {
+        var called = false
+        val step = object : TestParticipantTest {
+
+            override fun videoMuted(token: String): Call<Unit> = object : TestCall<Unit> {
+
+                override fun execute() {
+                    assertEquals(store.get(), token)
+                    called = true
+                }
+            }
+        }
+        val signaling = RealMediaConnectionSignaling(store, step)
+        signaling.onVideoMuted()
+        assertTrue(called)
+    }
+
+    @Test
+    fun `onVideoUnmuted() returns`() {
+        var called = false
+        val step = object : TestParticipantTest {
+
+            override fun videoUnmuted(token: String): Call<Unit> = object : TestCall<Unit> {
+
+                override fun execute() {
+                    assertEquals(store.get(), token)
+                    called = true
+                }
+            }
+        }
+        val signaling = RealMediaConnectionSignaling(store, step)
+        signaling.onVideoUnmuted()
+        assertTrue(called)
+    }
+
     @Suppress("SameParameterValue")
     private fun read(fileName: String) = FileSystem.RESOURCES.read(fileName.toPath()) { readUtf8() }
 }

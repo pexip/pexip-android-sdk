@@ -11,6 +11,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Response
+import okhttp3.internal.EMPTY_REQUEST
 import java.net.URL
 import java.util.UUID
 
@@ -34,11 +35,49 @@ internal class RealParticipantStep(
         )
     }
 
+    override fun videoMuted(token: String): Call<Unit> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            call = client.newCall {
+                post(EMPTY_REQUEST)
+                url(node, conferenceAlias, participantId, "video_muted")
+                header("token", token)
+            },
+            mapper = ::parseVideoMuted
+        )
+    }
+
+    override fun videoUnmuted(token: String): Call<Unit> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            call = client.newCall {
+                post(EMPTY_REQUEST)
+                url(node, conferenceAlias, participantId, "video_unmuted")
+                header("token", token)
+            },
+            mapper = ::parseVideoUnmuted
+        )
+    }
+
     override fun call(callId: UUID): InfinityService.CallStep =
         RealCallStep(client, json, node, conferenceAlias, participantId, callId)
 
     private fun parseCalls(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(CallsResponseSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseVideoMuted(response: Response) = when (response.code) {
+        200 -> Unit
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseVideoUnmuted(response: Response) = when (response.code) {
+        200 -> Unit
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

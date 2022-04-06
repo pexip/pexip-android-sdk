@@ -68,7 +68,7 @@ internal class ParticipantStepTest {
     }
 
     @Test
-    fun `calls throws InvalidPinException`() {
+    fun `calls throws InvalidTokenException`() {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -96,6 +96,102 @@ internal class ParticipantStepTest {
         server.verifyCalls(request, token)
     }
 
+    @Test
+    fun `videoMuted throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailsWith<IllegalStateException> { step.videoMuted(token).execute() }
+        server.verifyVideoMuted(token)
+    }
+
+    @Test
+    fun `videoMuted throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.videoMuted(token).execute() }
+        server.verifyVideoMuted(token)
+    }
+
+    @Test
+    fun `videoMuted throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.videoMuted(token).execute() }
+        server.verifyVideoMuted(token)
+    }
+
+    @Test
+    fun `videoMuted throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.videoMuted(token).execute() }
+        server.verifyVideoMuted(token)
+    }
+
+    @Test
+    fun `videoMuted returns`() {
+        server.enqueue { setResponseCode(200) }
+        val token = Random.nextString(8)
+        step.videoMuted(token).execute()
+        server.verifyVideoMuted(token)
+    }
+
+    @Test
+    fun `videoUnmuted throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailsWith<IllegalStateException> { step.videoUnmuted(token).execute() }
+        server.verifyVideoUnMuted(token)
+    }
+
+    @Test
+    fun `videoUnmuted throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.videoUnmuted(token).execute() }
+        server.verifyVideoUnMuted(token)
+    }
+
+    @Test
+    fun `videoUnmuted throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.videoUnmuted(token).execute() }
+        server.verifyVideoUnMuted(token)
+    }
+
+    @Test
+    fun `videoUnmuted throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.videoUnmuted(token).execute() }
+        server.verifyVideoUnMuted(token)
+    }
+
+    @Test
+    fun `videoUnmuted returns`() {
+        server.enqueue { setResponseCode(200) }
+        val token = Random.nextString(8)
+        step.videoUnmuted(token).execute()
+        server.verifyVideoUnMuted(token)
+    }
+
     private fun MockWebServer.verifyCalls(request: CallsRequest, token: String) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
@@ -107,6 +203,32 @@ internal class ParticipantStepTest {
         }
         assertToken(token)
         assertPost(json, request)
+    }
+
+    private fun MockWebServer.verifyVideoMuted(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId.toString())
+            addPathSegment("video_muted")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyVideoUnMuted(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId.toString())
+            addPathSegment("video_unmuted")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
     }
 
     private fun Random.nextCallsRequest() = CallsRequest(

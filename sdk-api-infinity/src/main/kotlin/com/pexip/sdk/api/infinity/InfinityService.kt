@@ -115,6 +115,24 @@ public interface InfinityService {
         public fun calls(request: CallsRequest, token: String): Call<CallsResponse>
 
         /**
+         * Requests to mute participant video.
+         *
+         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#videomute].
+         *
+         * @param token a valid token
+         */
+        public fun videoMuted(token: String): Call<Unit>
+
+        /**
+         * Requests to unmute participant video.
+         *
+         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#videomute].
+         *
+         * @param token a valid token
+         */
+        public fun videoUnmuted(token: String): Call<Unit>
+
+        /**
          * Sets the call ID.
          *
          * @param callId an ID of the call

@@ -61,6 +61,14 @@ internal class RealMediaConnectionSignaling(
         callStep.ack(token).execute()
     }
 
+    override fun onVideoMuted() {
+        participantStep.videoMuted(store.get()).execute()
+    }
+
+    override fun onVideoUnmuted() {
+        participantStep.videoUnmuted(store.get()).execute()
+    }
+
     private fun getUfrag(candidate: String) =
         checkNotNull(CANDIDATE_UFRAG.matchEntire(candidate)?.groupValues?.get(1))
 

@@ -5,6 +5,17 @@ import org.webrtc.VideoTrack
 
 typealias ConferenceAction = WorkflowAction<ConferenceProps, ConferenceState, ConferenceOutput>
 
+class OnToggleMainVideoCapturing : ConferenceAction() {
+
+    override fun Updater.apply() = with(state) {
+        if (mainCapturing) {
+            connection.stopMainCapture()
+        } else {
+            connection.startMainCapture()
+        }
+    }
+}
+
 class OnBackClick : ConferenceAction() {
 
     override fun Updater.apply() {
@@ -23,5 +34,12 @@ class OnMainRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAc
 
     override fun Updater.apply() {
         state = state.copy(remoteVideoTrack = videoTrack)
+    }
+}
+
+class OnMainCapturing(private val capturing: Boolean) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(mainCapturing = capturing)
     }
 }

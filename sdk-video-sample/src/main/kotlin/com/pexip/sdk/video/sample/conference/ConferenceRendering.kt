@@ -7,5 +7,7 @@ data class ConferenceRendering(
     val sharedContext: EglBase.Context,
     val localVideoTrack: VideoTrack?,
     val remoteVideoTrack: VideoTrack?,
+    val mainCapturing: Boolean,
+    val onToggleMainCapturing: () -> Unit,
     val onBackClick: () -> Unit,
 )
