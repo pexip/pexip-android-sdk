@@ -11,6 +11,7 @@ import com.pexip.sdk.api.infinity.UpdateResponse
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import java.net.URL
@@ -28,11 +29,12 @@ internal class RealCallStep(
     override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
-            call = client.newCall {
-                post(json.encodeToRequestBody(request))
-                url(node, conferenceAlias, participantId, callId, "new_candidate")
-                header("token", token)
-            },
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node, conferenceAlias, participantId, callId, "new_candidate")
+                .header("token", token)
+                .build(),
             mapper = ::parseNewCandidate
         )
     }
@@ -40,11 +42,12 @@ internal class RealCallStep(
     override fun ack(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
-            call = client.newCall {
-                post(EMPTY_REQUEST)
-                url(node, conferenceAlias, participantId, callId, "ack")
-                header("token", token)
-            },
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node, conferenceAlias, participantId, callId, "ack")
+                .header("token", token)
+                .build(),
             mapper = ::parseAck
         )
     }
@@ -52,11 +55,12 @@ internal class RealCallStep(
     override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
-            call = client.newCall {
-                post(json.encodeToRequestBody(request))
-                url(node, conferenceAlias, participantId, callId, "update")
-                header("token", token)
-            },
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node, conferenceAlias, participantId, callId, "update")
+                .header("token", token)
+                .build(),
             mapper = ::parseUpdate
         )
     }

@@ -1,6 +1,7 @@
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.Call
+import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.internal.RealInfinityService
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -89,6 +90,15 @@ public interface InfinityService {
          * @param token a valid token
          */
         public fun releaseToken(token: String): Call<Unit>
+
+        /**
+         * Subscribes to server-side events.
+         *
+         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#server_sent].
+         *
+         * @param token a valid token
+         */
+        public fun events(token: String): EventSourceFactory
 
         /**
          * Sets the participant ID.

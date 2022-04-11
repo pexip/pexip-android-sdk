@@ -5,6 +5,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.Response
 import java.net.URL
 
@@ -15,10 +16,11 @@ internal class RealRequestBuilder(
 ) : InfinityService.RequestBuilder {
 
     override fun status(): Call<Boolean> = RealCall(
-        call = client.newCall {
-            get()
-            url(node, "status")
-        },
+        client = client,
+        request = Request.Builder()
+            .get()
+            .url(node, "status")
+            .build(),
         mapper = ::parseStatus
     )
 

@@ -10,6 +10,7 @@ import com.pexip.sdk.api.infinity.NoSuchNodeException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import java.net.URL
@@ -26,11 +27,12 @@ internal class RealParticipantStep(
     override fun calls(request: CallsRequest, token: String): Call<CallsResponse> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
-            call = client.newCall {
-                post(json.encodeToRequestBody(request))
-                url(node, conferenceAlias, participantId, "calls")
-                header("token", token)
-            },
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node, conferenceAlias, participantId, "calls")
+                .header("token", token)
+                .build(),
             mapper = ::parseCalls
         )
     }
@@ -38,11 +40,12 @@ internal class RealParticipantStep(
     override fun videoMuted(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
-            call = client.newCall {
-                post(EMPTY_REQUEST)
-                url(node, conferenceAlias, participantId, "video_muted")
-                header("token", token)
-            },
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node, conferenceAlias, participantId, "video_muted")
+                .header("token", token)
+                .build(),
             mapper = ::parseVideoMuted
         )
     }
@@ -50,11 +53,12 @@ internal class RealParticipantStep(
     override fun videoUnmuted(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
-            call = client.newCall {
-                post(EMPTY_REQUEST)
-                url(node, conferenceAlias, participantId, "video_unmuted")
-                header("token", token)
-            },
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node, conferenceAlias, participantId, "video_unmuted")
+                .header("token", token)
+                .build(),
             mapper = ::parseVideoUnmuted
         )
     }

@@ -9,12 +9,10 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import okhttp3.ResponseBody
+import okhttp3.sse.EventSources
 import java.net.URL
 import java.util.UUID
-
-internal val UnitMapper = { _: Response -> }
 
 internal inline fun <reified T> Json.encodeToRequestBody(value: T) =
     encodeToString(value).toRequestBody(ApplicationJson)
@@ -24,8 +22,10 @@ internal inline fun <reified T> Json.decodeFromResponseBody(
     body: ResponseBody,
 ) = decodeFromString(deserializer, body.string())
 
-internal inline fun OkHttpClient.newCall(block: Request.Builder.() -> Unit) =
-    newCall(Request.Builder().apply(block).build())
+internal inline fun EventSources.createFactory(
+    client: OkHttpClient,
+    block: OkHttpClient.Builder.() -> Unit,
+) = createFactory(client.newBuilder().apply(block).build())
 
 internal fun Request.Builder.url(node: URL, method: String): Request.Builder {
     require(method.isNotBlank()) { "method is blank." }

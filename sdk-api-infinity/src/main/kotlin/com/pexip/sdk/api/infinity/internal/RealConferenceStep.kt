@@ -1,6 +1,7 @@
 package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.Call
+import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.InvalidTokenException
@@ -15,6 +16,7 @@ import com.pexip.sdk.api.infinity.SsoRedirectException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import java.net.URL
@@ -28,10 +30,11 @@ internal class RealConferenceStep(
 ) : InfinityService.ConferenceStep {
 
     override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> = RealCall(
-        call = client.newCall {
-            post(json.encodeToRequestBody(request))
-            url(node, conferenceAlias, "request_token")
-        },
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node, conferenceAlias, "request_token")
+            .build(),
         mapper = ::parseRequestToken
     )
 
@@ -41,11 +44,12 @@ internal class RealConferenceStep(
     ): Call<RequestTokenResponse> {
         require(pin.isNotBlank()) { "pin is blank." }
         return RealCall(
-            call = client.newCall {
-                post(json.encodeToRequestBody(request))
-                url(node, conferenceAlias, "request_token")
-                header("pin", pin.trim())
-            },
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node, conferenceAlias, "request_token")
+                .header("pin", pin.trim())
+                .build(),
             mapper = ::parseRequestToken
         )
     }
@@ -53,11 +57,12 @@ internal class RealConferenceStep(
     override fun refreshToken(token: String): Call<RefreshTokenResponse> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
-            call = client.newCall {
-                post(EMPTY_REQUEST)
-                url(node, conferenceAlias, "refresh_token")
-                header("token", token)
-            },
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node, conferenceAlias, "refresh_token")
+                .header("token", token)
+                .build(),
             mapper = ::parseRefreshToken
         )
     }
@@ -65,12 +70,26 @@ internal class RealConferenceStep(
     override fun releaseToken(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
-            call = client.newCall {
-                post(EMPTY_REQUEST)
-                url(node, conferenceAlias, "release_token")
-                header("token", token)
-            },
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node, conferenceAlias, "release_token")
+                .header("token", token)
+                .build(),
             mapper = ::parseReleaseToken
+        )
+    }
+
+    override fun events(token: String): EventSourceFactory {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealEventSourceFactory(
+            client = client,
+            request = Request.Builder()
+                .get()
+                .url(node, conferenceAlias, "events")
+                .header("token", token)
+                .build(),
+            json = json
         )
     }
 
