@@ -79,10 +79,13 @@ public class WebRtcMediaConnection private constructor(
     private var mainVideoSurfaceTextureHelper: SurfaceTextureHelper? = null
     private var mainAudioTransceiver: RtpTransceiver? = null
     private var mainVideoTransceiver: RtpTransceiver? = null
-    private val presentationVideoTransceiver: RtpTransceiver = connection.addTransceiver(
-        MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
-        RtpTransceiver.RtpTransceiverInit(RtpTransceiver.RtpTransceiverDirection.SEND_ONLY)
-    )
+    private val presentationVideoTransceiver: RtpTransceiver? = when (presentationInMix) {
+        true -> null
+        else -> connection.addTransceiver(
+            MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
+            RtpTransceiver.RtpTransceiverInit(RtpTransceiver.RtpTransceiverDirection.SEND_ONLY)
+        )
+    }
     private val localSdpObserver = object : SimpleSdpObserver {
 
         override fun onCreateSuccess(description: SessionDescription) {
@@ -93,7 +96,7 @@ public class WebRtcMediaConnection private constructor(
             val mangledDescription = connection.localDescription.mangle(
                 mainAudioMid = mainAudioTransceiver?.mid,
                 mainVideoMid = mainVideoTransceiver?.mid,
-                presentationVideoMid = presentationVideoTransceiver.mid
+                presentationVideoMid = presentationVideoTransceiver?.mid
             )
             onSetLocalDescriptionSuccess(mangledDescription)
         }
@@ -195,7 +198,7 @@ public class WebRtcMediaConnection private constructor(
 
     public fun registerPresentationLocalVideoTrackListener(listener: VideoTrackListener) {
         workerExecutor.maybeExecute {
-            listener.onVideoTrack(presentationVideoTransceiver.sender?.track() as? VideoTrack)
+            listener.onVideoTrack(presentationVideoTransceiver?.sender?.track() as? VideoTrack)
         }
         presentationLocalVideoTrackListeners += listener
     }
@@ -206,7 +209,7 @@ public class WebRtcMediaConnection private constructor(
 
     public fun registerPresentationRemoteVideoTrackListener(listener: VideoTrackListener) {
         workerExecutor.maybeExecute {
-            listener.onVideoTrack(presentationVideoTransceiver.receiver?.track() as? VideoTrack)
+            listener.onVideoTrack(presentationVideoTransceiver?.receiver?.track() as? VideoTrack)
         }
         presentationRemoteVideoTrackListeners += listener
     }
