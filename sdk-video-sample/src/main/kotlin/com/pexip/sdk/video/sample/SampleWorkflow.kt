@@ -66,6 +66,7 @@ class SampleWorkflow(
             props = ConferenceProps(
                 node = renderState.node,
                 conferenceAlias = renderState.conferenceAlias,
+                presentationInMain = renderState.presentationInMain,
                 response = renderState.response
             ),
             handler = ::OnConferenceOutput

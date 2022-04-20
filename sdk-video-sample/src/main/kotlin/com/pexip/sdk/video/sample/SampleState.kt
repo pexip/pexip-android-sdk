@@ -12,15 +12,24 @@ sealed class SampleState : Parcelable {
     object Alias : SampleState()
 
     @Parcelize
-    data class Node(val conferenceAlias: String, val host: String) : SampleState()
+    data class Node(
+        val conferenceAlias: String,
+        val host: String,
+        val presentationInMain: Boolean,
+    ) : SampleState()
 
     @Parcelize
-    data class PinRequirement(val node: URL, val conferenceAlias: String) : SampleState()
+    data class PinRequirement(
+        val node: URL,
+        val conferenceAlias: String,
+        val presentationInMain: Boolean,
+    ) : SampleState()
 
     @Parcelize
     data class PinChallenge(
         val node: URL,
         val conferenceAlias: String,
+        val presentationInMain: Boolean,
         val required: Boolean,
     ) : SampleState()
 
@@ -28,6 +37,7 @@ sealed class SampleState : Parcelable {
     data class Conference(
         val node: URL,
         val conferenceAlias: String,
+        val presentationInMain: Boolean,
         val response: @WriteWith<RequestTokenResponseParceler> RequestTokenResponse,
     ) : SampleState()
 }

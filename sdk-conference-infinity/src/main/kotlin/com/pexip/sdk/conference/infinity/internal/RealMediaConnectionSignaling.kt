@@ -31,6 +31,7 @@ internal class RealMediaConnectionSignaling(
                 )
                 val response = participantStep.calls(request, token).execute()
                 callStep = participantStep.call(response.callId)
+                callStep!!.ack(token).execute()
                 response.sdp
             }
             else -> {
@@ -53,12 +54,6 @@ internal class RealMediaConnectionSignaling(
             pwd = pwds[ufrag]
         )
         callStep.newCandidate(request, token).execute()
-    }
-
-    override fun onConnected() {
-        val callStep = checkNotNull(callStep) { "callStep is not set." }
-        val token = store.get()
-        callStep.ack(token).execute()
     }
 
     override fun onVideoMuted() {

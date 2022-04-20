@@ -16,7 +16,8 @@ data class OnAliasOutput(val output: AliasOutput) : SampleAction() {
             is AliasOutput.Alias -> {
                 state = SampleState.Node(
                     conferenceAlias = output.conferenceAlias,
-                    host = output.host
+                    host = output.host,
+                    presentationInMain = output.presentationInMain
                 )
             }
             is AliasOutput.Back -> setOutput(SampleOutput.Finish)
@@ -29,7 +30,11 @@ data class OnNodeOutput(val output: NodeOutput) : SampleAction() {
     override fun Updater.apply() {
         val s = checkNotNull(state as? SampleState.Node) { "Invalid state: $state" }
         state = when (output) {
-            is NodeOutput.Node -> SampleState.PinRequirement(output.node, s.conferenceAlias)
+            is NodeOutput.Node -> SampleState.PinRequirement(
+                node = output.node,
+                conferenceAlias = s.conferenceAlias,
+                presentationInMain = s.presentationInMain
+            )
             is NodeOutput.Back -> SampleState.Alias
         }
     }
@@ -43,11 +48,13 @@ data class OnPinRequirementOutput(val output: PinRequirementOutput) : SampleActi
             is PinRequirementOutput.Some -> SampleState.PinChallenge(
                 node = s.node,
                 conferenceAlias = s.conferenceAlias,
+                presentationInMain = s.presentationInMain,
                 required = output.required
             )
             is PinRequirementOutput.None -> SampleState.Conference(
                 node = s.node,
                 conferenceAlias = s.conferenceAlias,
+                presentationInMain = s.presentationInMain,
                 response = output.response
             )
             is PinRequirementOutput.Back -> SampleState.Alias
@@ -63,6 +70,7 @@ data class OnPinChallengeOutput(val output: PinChallengeOutput) : SampleAction()
             is PinChallengeOutput.Response -> SampleState.Conference(
                 node = s.node,
                 conferenceAlias = s.conferenceAlias,
+                presentationInMain = s.presentationInMain,
                 response = output.response
             )
             is PinChallengeOutput.Back -> SampleState.Alias

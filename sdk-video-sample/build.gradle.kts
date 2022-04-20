@@ -26,6 +26,7 @@ android {
 dependencies {
     implementation(projects.sdkApiCoroutines)
     implementation(projects.sdkConferenceInfinity)
+    implementation(projects.sdkConferenceCoroutines)
     implementation(projects.sdkMediaCoroutines)
     implementation(projects.sdkMediaWebrtcCoroutines)
 

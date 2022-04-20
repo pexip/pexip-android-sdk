@@ -1,7 +1,6 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.infinity.InfinityService
-import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
@@ -9,7 +8,7 @@ internal class RealTokenRefresher(
     expires: Long,
     private val store: TokenStore,
     private val conferenceStep: InfinityService.ConferenceStep,
-    private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
+    private val executor: ScheduledExecutorService,
 ) : TokenRefresher {
 
     private val refreshTokenRunnable = Runnable {
@@ -33,16 +32,15 @@ internal class RealTokenRefresher(
             // noop
         }
     }
-    private val refreshTokenFuture = executor.scheduleWithFixedDelay(
+    private val future = executor.scheduleWithFixedDelay(
         refreshTokenRunnable,
         0,
         expires / 2,
         TimeUnit.SECONDS,
     )
 
-    override fun dispose() {
-        refreshTokenFuture.cancel(true)
+    override fun cancel() {
+        future.cancel(true)
         executor.submit(releaseTokenRunnable)
-        executor.shutdown()
     }
 }

@@ -16,6 +16,10 @@ public interface MediaConnection {
 
     public fun stopMainCapture()
 
+    public fun startPresentationReceive()
+
+    public fun stopPresentationReceive()
+
     public fun registerMainCapturingListener(listener: CapturingListener)
 
     public fun unregisterMainCapturingListener(listener: CapturingListener)

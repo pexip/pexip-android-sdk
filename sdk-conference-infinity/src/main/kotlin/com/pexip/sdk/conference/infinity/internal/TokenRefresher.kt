@@ -2,5 +2,5 @@ package com.pexip.sdk.conference.infinity.internal
 
 internal interface TokenRefresher {
 
-    fun dispose()
+    fun cancel()
 }

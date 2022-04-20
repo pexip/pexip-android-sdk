@@ -18,6 +18,13 @@ data class OnHostChange(val host: String) : AliasAction() {
     }
 }
 
+data class OnPresentationInMainChange(val presentationInMain: Boolean) : AliasAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(presentationInMain = presentationInMain)
+    }
+}
+
 class OnResolveClick : AliasAction() {
 
     override fun Updater.apply() {
@@ -26,7 +33,8 @@ class OnResolveClick : AliasAction() {
             host = when (val host = state.host) {
                 "" -> state.alias.split("@").last()
                 else -> host
-            }
+            },
+            presentationInMain = state.presentationInMain
         )
         setOutput(output)
     }

@@ -24,6 +24,7 @@ import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.RtpTransceiver
+import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription
 import org.webrtc.SurfaceTextureHelper
@@ -42,7 +43,7 @@ public class WebRtcMediaConnection private constructor(
     private val workerExecutor: ExecutorService,
     private val signalingExecutor: ExecutorService,
     private val signaling: MediaConnectionSignaling,
-    private val presentationInMix: Boolean,
+    private val presentationInMain: Boolean,
     private val cameraEnumerator: CameraEnumerator,
     private val mainQualityProfile: QualityProfile,
 ) : MediaConnection {
@@ -54,12 +55,6 @@ public class WebRtcMediaConnection private constructor(
 
         override fun onIceCandidate(candidate: IceCandidate) {
             onCandidate(candidate.sdp, candidate.sdpMid)
-        }
-
-        override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {
-            if (newState == PeerConnection.PeerConnectionState.CONNECTED) {
-                onConnected()
-            }
         }
 
         override fun onRenegotiationNeeded() {
@@ -79,11 +74,11 @@ public class WebRtcMediaConnection private constructor(
     private var mainVideoSurfaceTextureHelper: SurfaceTextureHelper? = null
     private var mainAudioTransceiver: RtpTransceiver? = null
     private var mainVideoTransceiver: RtpTransceiver? = null
-    private val presentationVideoTransceiver: RtpTransceiver? = when (presentationInMix) {
+    private val presentationVideoTransceiver: RtpTransceiver? = when (presentationInMain) {
         true -> null
         else -> connection.addTransceiver(
             MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
-            RtpTransceiver.RtpTransceiverInit(RtpTransceiver.RtpTransceiverDirection.SEND_ONLY)
+            RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
         )
     }
     private val localSdpObserver = object : SimpleSdpObserver {
@@ -148,6 +143,27 @@ public class WebRtcMediaConnection private constructor(
         }
     }
 
+    override fun startPresentationReceive() {
+        workerExecutor.maybeExecute {
+            val t = presentationVideoTransceiver
+                ?.takeUnless { it.currentDirection == RtpTransceiverDirection.RECV_ONLY }
+                ?: return@maybeExecute
+            t.direction = RtpTransceiverDirection.RECV_ONLY
+            val videoTrack = t.receiver.track() as? VideoTrack
+            presentationRemoteVideoTrackListeners.forEach { it.onVideoTrack(videoTrack) }
+        }
+    }
+
+    override fun stopPresentationReceive() {
+        workerExecutor.maybeExecute {
+            val t = presentationVideoTransceiver
+                ?.takeUnless { it.currentDirection == RtpTransceiverDirection.INACTIVE }
+                ?: return@maybeExecute
+            t.direction = RtpTransceiverDirection.INACTIVE
+            presentationRemoteVideoTrackListeners.forEach { it.onVideoTrack(null) }
+        }
+    }
+
     override fun start() {
         if (started.compareAndSet(false, true)) {
             createOffer()
@@ -209,7 +225,10 @@ public class WebRtcMediaConnection private constructor(
 
     public fun registerPresentationRemoteVideoTrackListener(listener: VideoTrackListener) {
         workerExecutor.maybeExecute {
-            listener.onVideoTrack(presentationVideoTransceiver?.receiver?.track() as? VideoTrack)
+            val t = presentationVideoTransceiver
+                ?.takeIf { it.currentDirection == RtpTransceiverDirection.SEND_RECV }
+                ?: return@maybeExecute
+            listener.onVideoTrack(t.receiver.track() as? VideoTrack)
         }
         presentationRemoteVideoTrackListeners += listener
     }
@@ -298,7 +317,7 @@ public class WebRtcMediaConnection private constructor(
                     signaling.onOffer(
                         callType = "WEBRTC",
                         description = sdp.description,
-                        presentationInMix = presentationInMix
+                        presentationInMix = presentationInMain
                     )
                 )
                 setRemoteDescription(sdp)
@@ -312,16 +331,6 @@ public class WebRtcMediaConnection private constructor(
         signalingExecutor.maybeExecute {
             try {
                 signaling.onCandidate(candidate, mid)
-            } catch (t: Throwable) {
-                // noop
-            }
-        }
-    }
-
-    private fun onConnected() {
-        signalingExecutor.maybeExecute {
-            try {
-                signaling.onConnected()
             } catch (t: Throwable) {
                 // noop
             }
@@ -356,7 +365,7 @@ public class WebRtcMediaConnection private constructor(
 
         private val iceServers = mutableSetOf<PeerConnection.IceServer>()
 
-        private var presentationInMix = false
+        private var presentationInMain = false
         private var mainQualityProfile = QualityProfile.Medium
 
         public fun addIceServer(iceServer: PeerConnection.IceServer): Builder = apply {
@@ -368,8 +377,16 @@ public class WebRtcMediaConnection private constructor(
                 this.iceServers += iceServers
             }
 
-        public fun presentationInMix(presentationInMix: Boolean): Builder = apply {
-            this.presentationInMix = presentationInMix
+        @Deprecated(
+            message = "Renamed to presentationInMain.",
+            replaceWith = ReplaceWith("this.presentationInMain(presentationInMix)"),
+            level = DeprecationLevel.ERROR
+        )
+        public fun presentationInMix(presentationInMix: Boolean): Builder =
+            presentationInMain(presentationInMix)
+
+        public fun presentationInMain(presentationInMain: Boolean): Builder = apply {
+            this.presentationInMain = presentationInMain
         }
 
         public fun mainQualityProfile(qualityProfile: QualityProfile): Builder = apply {
@@ -396,7 +413,7 @@ public class WebRtcMediaConnection private constructor(
                 workerExecutor = Executors.newSingleThreadExecutor(),
                 signalingExecutor = Executors.newSingleThreadExecutor(),
                 signaling = signaling,
-                presentationInMix = presentationInMix,
+                presentationInMain = presentationInMain,
                 cameraEnumerator = CameraEnumerator(context),
                 mainQualityProfile = mainQualityProfile
             )

@@ -26,14 +26,14 @@ class OnBackClick : ConferenceAction() {
 class OnMainLocalVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAction() {
 
     override fun Updater.apply() {
-        state = state.copy(localVideoTrack = videoTrack)
+        state = state.copy(mainLocalVideoTrack = videoTrack)
     }
 }
 
 class OnMainRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAction() {
 
     override fun Updater.apply() {
-        state = state.copy(remoteVideoTrack = videoTrack)
+        state = state.copy(mainRemoteVideoTrack = videoTrack)
     }
 }
 
@@ -41,5 +41,19 @@ class OnMainCapturing(private val capturing: Boolean) : ConferenceAction() {
 
     override fun Updater.apply() {
         state = state.copy(mainCapturing = capturing)
+    }
+}
+
+class OnPresentation(private val presentation: Boolean) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(presentation = presentation)
+    }
+}
+
+class OnPresentationRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(presentationRemoteVideoTrack = videoTrack)
     }
 }

@@ -20,8 +20,10 @@ class AliasWorkflow : StatefulWorkflow<Unit, AliasState, AliasOutput, AliasRende
     ): AliasRendering = AliasRendering(
         alias = renderState.alias,
         host = renderState.host,
+        presentationInMain = renderState.presentationInMain,
         onAliasChange = context.send(::OnAliasChange),
         onHostChange = context.send(::OnHostChange),
+        onPresentationInMainChange = context.send(::OnPresentationInMainChange),
         onResolveClick = context.send(::OnResolveClick),
         onBackClick = context.send(::OnBackClick)
     )

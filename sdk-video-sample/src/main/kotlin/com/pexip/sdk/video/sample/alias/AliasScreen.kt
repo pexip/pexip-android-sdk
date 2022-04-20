@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -28,8 +30,10 @@ import androidx.compose.ui.unit.dp
 fun AliasScreen(
     alias: String,
     host: String,
+    presentationInMain: Boolean,
     onAliasChange: (String) -> Unit,
     onHostChange: (String) -> Unit,
+    onPresentationInMainChange: (Boolean) -> Unit,
     onResolveClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -100,6 +104,17 @@ fun AliasScreen(
                     keyboardActions = hostKeyboardActions,
                     modifier = Modifier.fillMaxWidth()
                 )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Presentation in main")
+                    Switch(
+                        checked = presentationInMain,
+                        onCheckedChange = onPresentationInMainChange
+                    )
+                }
             }
             Button(
                 onClick = onResolveClick,

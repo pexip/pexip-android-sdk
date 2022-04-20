@@ -27,6 +27,7 @@ internal class RealMediaConnectionSignalingTest {
 
     @Test
     fun `onOffer() returns Answer (first call)`() {
+        var ackCalled = false
         val callType = Random.nextString(8)
         val sdp = read("session_description_original")
         val presentationInMix = Random.nextBoolean()
@@ -34,7 +35,15 @@ internal class RealMediaConnectionSignalingTest {
             callId = UUID.randomUUID(),
             sdp = Random.nextString(8)
         )
-        val callStep = object : TestCallStep {}
+        val callStep = object : TestCallStep {
+
+            override fun ack(token: String): Call<Unit> = object : TestCall<Unit> {
+                override fun execute() {
+                    assertEquals(store.get(), token)
+                    ackCalled = true
+                }
+            }
+        }
         val participantStep = object : TestParticipantTest {
 
             override fun calls(request: CallsRequest, token: String): Call<CallsResponse> =
@@ -61,6 +70,7 @@ internal class RealMediaConnectionSignalingTest {
         assertEquals(signaling.onOffer(callType, sdp, presentationInMix), response.sdp)
         assertEquals(callStep, signaling.callStep)
         assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
+        assertTrue(ackCalled)
     }
 
     @Test
@@ -108,22 +118,6 @@ internal class RealMediaConnectionSignalingTest {
         }
         signaling.pwds = mapOf(ufrag to pwd)
         signaling.onCandidate(candidate, mid)
-        assertTrue(called)
-    }
-
-    @Test
-    fun `onConnected() returns`() {
-        var called = false
-        val signaling = RealMediaConnectionSignaling(store, object : TestParticipantTest {})
-        signaling.callStep = object : TestCallStep {
-            override fun ack(token: String): Call<Unit> = object : TestCall<Unit> {
-                override fun execute() {
-                    assertEquals(store.get(), token)
-                    called = true
-                }
-            }
-        }
-        signaling.onConnected()
         assertTrue(called)
     }
 

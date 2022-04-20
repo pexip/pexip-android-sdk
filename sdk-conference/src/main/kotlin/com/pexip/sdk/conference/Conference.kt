@@ -7,6 +7,10 @@ import com.pexip.sdk.media.MediaConnectionSignaling
  */
 public interface Conference : MediaConnectionSignaling {
 
+    public fun registerConferenceEventListener(listener: ConferenceEventListener)
+
+    public fun unregisterConferenceEventListener(listener: ConferenceEventListener)
+
     /**
      * Leaves the conference. Once left, the [Conference] object is no longer valid.
      */

@@ -4,8 +4,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,12 +32,25 @@ fun ConferenceScreen(rendering: ConferenceRendering, modifier: Modifier = Modifi
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize(),
     ) {
-        VideoRenderer(
-            videoTrack = rendering.remoteVideoTrack,
-            sharedContext = rendering.sharedContext,
-            aspectRatio = ASPECT_RATIO_LANDSCAPE,
+        Column(
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
-        )
+        ) {
+            VideoRenderer(
+                videoTrack = rendering.mainRemoteVideoTrack,
+                sharedContext = rendering.sharedContext,
+                aspectRatio = ASPECT_RATIO_LANDSCAPE,
+                modifier = Modifier.fillMaxWidth()
+            )
+            if (rendering.presentationRemoteVideoTrack != null) {
+                VideoRenderer(
+                    videoTrack = rendering.presentationRemoteVideoTrack,
+                    sharedContext = rendering.sharedContext,
+                    aspectRatio = ASPECT_RATIO_LANDSCAPE,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
@@ -51,7 +66,7 @@ fun ConferenceScreen(rendering: ConferenceRendering, modifier: Modifier = Modifi
             ) {
                 Surface(shape = SelfViewShape, elevation = 4.dp) {
                     VideoRenderer(
-                        videoTrack = rendering.localVideoTrack,
+                        videoTrack = rendering.mainLocalVideoTrack,
                         sharedContext = rendering.sharedContext,
                         aspectRatio = remember(maxWidth, maxHeight) {
                             when {

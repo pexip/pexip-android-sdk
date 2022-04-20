@@ -6,8 +6,6 @@ public interface MediaConnectionSignaling {
 
     public fun onCandidate(candidate: String, mid: String)
 
-    public fun onConnected()
-
     public fun onVideoMuted()
 
     public fun onVideoUnmuted()
