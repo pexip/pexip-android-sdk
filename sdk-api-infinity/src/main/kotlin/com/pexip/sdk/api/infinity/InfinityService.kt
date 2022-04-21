@@ -92,6 +92,16 @@ public interface InfinityService {
         public fun releaseToken(token: String): Call<Unit>
 
         /**
+         * Sends a message to all participants in the conference.
+         *
+         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#message].
+         *
+         * @param request a request body
+         * @param token a valid token
+         */
+        public fun message(request: MessageRequest, token: String): Call<Boolean>
+
+        /**
          * Subscribes to server-side events.
          *
          * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#server_sent].

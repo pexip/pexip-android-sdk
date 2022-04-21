@@ -5,6 +5,7 @@ import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.InvalidTokenException
+import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
@@ -80,6 +81,19 @@ internal class RealConferenceStep(
         )
     }
 
+    override fun message(request: MessageRequest, token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node, conferenceAlias, "message")
+                .header("token", token)
+                .build(),
+            mapper = ::parseMessage
+        )
+    }
+
     override fun events(token: String): EventSourceFactory {
         require(token.isNotBlank()) { "token is blank." }
         return RealEventSourceFactory(
@@ -122,6 +136,13 @@ internal class RealConferenceStep(
 
     private fun parseReleaseToken(response: Response) = when (response.code) {
         200 -> Unit
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseMessage(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

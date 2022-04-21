@@ -251,6 +251,65 @@ internal class ConferenceStepTest {
         server.verifyReleaseToken(token)
     }
 
+    @Test
+    fun `message throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        val request = MessageRequest(Random.nextString(8))
+        assertFailsWith<IllegalStateException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        val request = MessageRequest(Random.nextString(8))
+        assertFailsWith<NoSuchNodeException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        val request = MessageRequest(Random.nextString(8))
+        assertFailsWith<NoSuchConferenceException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        val request = MessageRequest(Random.nextString(8))
+        assertFailsWith<InvalidTokenException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message returns result on 200`() {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            val token = Random.nextString(8)
+            val request = MessageRequest(Random.nextString(8))
+            assertEquals(result, step.message(request, token).execute())
+            server.verifyMessage(request, token)
+        }
+    }
+
     private fun MockWebServer.verifyRequestToken(
         request: RequestTokenRequest,
         pin: String? = null,
@@ -286,4 +345,16 @@ internal class ConferenceStepTest {
         assertToken(token)
         assertPostEmptyBody()
     }
+
+    private fun MockWebServer.verifyMessage(request: MessageRequest, token: String) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                addPathSegment("message")
+            }
+            assertToken(token)
+            assertPost(json, request)
+        }
 }

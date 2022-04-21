@@ -3,6 +3,7 @@ package com.pexip.sdk.api.infinity.internal
 import com.pexip.sdk.api.infinity.ByeEvent
 import com.pexip.sdk.api.infinity.DisconnectEvent
 import com.pexip.sdk.api.infinity.Event
+import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.nextString
@@ -24,6 +25,12 @@ internal class EventTest {
         val testCases = buildMap {
             this["bye"] = ByeEvent
             this["disconnect"] = DisconnectEvent("Disconnected by remote host")
+            this["message_received"] = MessageReceivedEvent(
+                participantName = "Dmitry",
+                participantId = UUID.fromString("dc46269f-5b39-4356-93fd-94d31b890bd5"),
+                type = "text/plain",
+                payload = "hello"
+            )
             this["presentation_start"] = PresentationStartEvent(
                 presenterId = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
                 presenterName = "Dmitry"

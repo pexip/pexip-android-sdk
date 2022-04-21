@@ -23,6 +23,17 @@ public object PresentationStopEvent : Event {
 }
 
 @Serializable
+public data class MessageReceivedEvent(
+    @SerialName("origin")
+    val participantName: String,
+    @Serializable(with = UUIDSerializer::class)
+    @SerialName("uuid")
+    val participantId: UUID,
+    val type: String,
+    val payload: String,
+) : Event
+
+@Serializable
 public data class DisconnectEvent(val reason: String) : Event
 
 public object ByeEvent : Event {
@@ -33,6 +44,7 @@ public object ByeEvent : Event {
 internal fun Event(json: Json, id: String?, type: String?, data: String) = when (type) {
     "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
     "presentation_stop" -> PresentationStopEvent
+    "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
     "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
     "bye" -> ByeEvent
     else -> null
