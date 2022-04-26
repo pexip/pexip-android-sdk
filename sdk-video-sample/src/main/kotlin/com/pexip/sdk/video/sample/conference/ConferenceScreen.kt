@@ -68,6 +68,7 @@ fun ConferenceScreen(rendering: ConferenceRendering, modifier: Modifier = Modifi
                     VideoRenderer(
                         videoTrack = rendering.mainLocalVideoTrack,
                         sharedContext = rendering.sharedContext,
+                        mirror = true,
                         aspectRatio = remember(maxWidth, maxHeight) {
                             when {
                                 maxWidth > maxHeight -> ASPECT_RATIO_LANDSCAPE
