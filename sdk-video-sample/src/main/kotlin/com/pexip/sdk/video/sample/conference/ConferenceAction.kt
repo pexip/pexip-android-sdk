@@ -1,5 +1,8 @@
 package com.pexip.sdk.video.sample.conference
 
+import com.pexip.sdk.conference.ConferenceEvent
+import com.pexip.sdk.conference.PresentationStartConferenceEvent
+import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.squareup.workflow1.WorkflowAction
 import org.webrtc.VideoTrack
 
@@ -16,10 +19,21 @@ class OnToggleMainVideoCapturing : ConferenceAction() {
     }
 }
 
+class OnConferenceEventsClick : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(showingConferenceEvents = true)
+    }
+}
+
 class OnBackClick : ConferenceAction() {
 
     override fun Updater.apply() {
-        setOutput(ConferenceOutput.Back)
+        if (state.showingConferenceEvents) {
+            state = state.copy(showingConferenceEvents = false)
+        } else {
+            setOutput(ConferenceOutput.Back)
+        }
     }
 }
 
@@ -44,10 +58,38 @@ class OnMainCapturing(private val capturing: Boolean) : ConferenceAction() {
     }
 }
 
-class OnPresentation(private val presentation: Boolean) : ConferenceAction() {
+class OnConferenceEvent(private val conferenceEvent: ConferenceEvent) : ConferenceAction() {
 
     override fun Updater.apply() {
-        state = state.copy(presentation = presentation)
+        val presentation = when (conferenceEvent) {
+            is PresentationStartConferenceEvent -> true
+            is PresentationStopConferenceEvent -> false
+            else -> state.presentation
+        }
+        val conferenceEvents = state.conferenceEvents.asSequence()
+            .plus(conferenceEvent)
+            .sortedBy { it.at }
+            .toList()
+        state = state.copy(
+            presentation = presentation,
+            conferenceEvents = conferenceEvents
+        )
+    }
+}
+
+class OnMessageChange(private val message: String) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(message = message)
+    }
+}
+
+class OnSubmitClick : ConferenceAction() {
+
+    override fun Updater.apply() {
+        val message = state.message.takeIf { it.isNotBlank() }?.trim() ?: return
+        state.conference.message(message)
+        state = state.copy(message = "")
     }
 }
 

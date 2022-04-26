@@ -33,7 +33,8 @@ class SampleActivity : AppCompatActivity() {
         PinChallengeViewFactory,
         PinRequirementViewFactory.ResolvingPinRequirementViewFactory,
         PinRequirementViewFactory.FailureViewFactory,
-        ConferenceViewFactory
+        ConferenceViewFactory.ConferenceCallViewFactory,
+        ConferenceViewFactory.ConferenceEventsViewFactory
     )
     private val viewEnvironment = ViewEnvironment(mapOf(ViewRegistry to viewRegistry))
     private val launcher = registerForActivityResult(RequestMultiplePermissions()) {

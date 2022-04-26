@@ -5,11 +5,14 @@ import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.infinity.internal.ConferenceEventSource
+import com.pexip.sdk.conference.infinity.internal.Messenger
 import com.pexip.sdk.conference.infinity.internal.RealConferenceEventSource
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
+import com.pexip.sdk.conference.infinity.internal.RealMessenger
 import com.pexip.sdk.conference.infinity.internal.RealTokenRefresher
 import com.pexip.sdk.conference.infinity.internal.RealTokenStore
 import com.pexip.sdk.conference.infinity.internal.TokenRefresher
+import com.pexip.sdk.conference.infinity.internal.maybeSubmit
 import com.pexip.sdk.media.MediaConnectionSignaling
 import java.net.URL
 import java.util.concurrent.Executors
@@ -17,6 +20,7 @@ import java.util.concurrent.ScheduledExecutorService
 
 public class InfinityConference private constructor(
     private val source: ConferenceEventSource,
+    private val messenger: Messenger,
     private val refresher: TokenRefresher,
     private val signaling: MediaConnectionSignaling,
     private val executor: ScheduledExecutorService,
@@ -28,6 +32,12 @@ public class InfinityConference private constructor(
 
     override fun unregisterConferenceEventListener(listener: ConferenceEventListener) {
         source.unregisterConferenceEventListener(listener)
+    }
+
+    override fun message(payload: String) {
+        executor.maybeSubmit {
+            messenger.message(payload)
+        }
     }
 
     override fun leave() {
@@ -57,8 +67,20 @@ public class InfinityConference private constructor(
             val store = RealTokenStore(response.token)
             val participantStep = conferenceStep.participant(response.participantId)
             val executor = Executors.newSingleThreadScheduledExecutor()
+            val source = RealConferenceEventSource(
+                store = store,
+                conferenceStep = conferenceStep,
+                executor = executor
+            )
             return InfinityConference(
-                source = RealConferenceEventSource(store, conferenceStep, executor),
+                source = source,
+                messenger = RealMessenger(
+                    participantId = response.participantId,
+                    participantName = response.participantName,
+                    store = store,
+                    conferenceStep = conferenceStep,
+                    listener = source
+                ),
                 refresher = RealTokenRefresher(response.expires, store, conferenceStep, executor),
                 signaling = RealMediaConnectionSignaling(store, participantStep),
                 executor = executor

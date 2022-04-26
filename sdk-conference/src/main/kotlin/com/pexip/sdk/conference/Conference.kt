@@ -11,6 +11,8 @@ public interface Conference : MediaConnectionSignaling {
 
     public fun unregisterConferenceEventListener(listener: ConferenceEventListener)
 
+    public fun message(payload: String)
+
     /**
      * Leaves the conference. Once left, the [Conference] object is no longer valid.
      */

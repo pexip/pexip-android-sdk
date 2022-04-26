@@ -2,7 +2,7 @@ package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.conference.ConferenceEventListener
 
-internal interface ConferenceEventSource {
+internal interface ConferenceEventSource : ConferenceEventListener {
 
     fun registerConferenceEventListener(listener: ConferenceEventListener)
 

@@ -2,8 +2,6 @@ package com.pexip.sdk.video.sample.conference
 
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.conference.Conference
-import com.pexip.sdk.conference.PresentationStartConferenceEvent
-import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
 import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.media.QualityProfile
@@ -18,7 +16,6 @@ import com.squareup.workflow1.StatefulWorkflow
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import org.webrtc.PeerConnection
 
 class ConferenceWorkflow(private val service: InfinityService) :
@@ -55,18 +52,29 @@ class ConferenceWorkflow(private val service: InfinityService) :
         context.mainVideoCapturingSideEffect(renderState.connection)
         context.mainLocalVideoTrackSideEffect(renderState.connection)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
-        context.presentationSideEffect(renderState.conference)
+        context.conferenceEventsSideEffect(renderState.conference)
         context.receivePresentationSideEffect(renderState)
         context.presentationRemoteVideoTrackSideEffect(renderState.connection)
-        return ConferenceRendering(
-            sharedContext = renderState.sharedContext,
-            mainCapturing = renderState.mainCapturing,
-            mainLocalVideoTrack = renderState.mainLocalVideoTrack,
-            mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
-            presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
-            onToggleMainCapturing = context.send(::OnToggleMainVideoCapturing),
-            onBackClick = context.send(::OnBackClick)
-        )
+        return when (renderState.showingConferenceEvents) {
+            true -> ConferenceEventsRendering(
+                conferenceEvents = renderState.conferenceEvents,
+                message = renderState.message,
+                onMessageChange = context.send(::OnMessageChange),
+                submitEnabled = renderState.submitEnabled,
+                onSubmitClick = context.send(::OnSubmitClick),
+                onBackClick = context.send(::OnBackClick)
+            )
+            else -> ConferenceCallRendering(
+                sharedContext = renderState.sharedContext,
+                mainCapturing = renderState.mainCapturing,
+                mainLocalVideoTrack = renderState.mainLocalVideoTrack,
+                mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
+                presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
+                onToggleMainCapturing = context.send(::OnToggleMainVideoCapturing),
+                onConferenceEventsClick = context.send(::OnConferenceEventsClick),
+                onBackClick = context.send(::OnBackClick)
+            )
+        }
     }
 
     private fun RenderContext.leaveSideEffect(renderState: ConferenceState) =
@@ -111,16 +119,10 @@ class ConferenceWorkflow(private val service: InfinityService) :
                 .collectLatest(actionSink::send)
         }
 
-    private fun RenderContext.presentationSideEffect(conference: Conference) =
-        runningSideEffect("${conference}Presentation") {
+    private fun RenderContext.conferenceEventsSideEffect(conference: Conference) =
+        runningSideEffect("${conference}ConferenceEvents") {
             conference.getConferenceEvents()
-                .mapNotNull {
-                    when (it) {
-                        is PresentationStartConferenceEvent -> true
-                        is PresentationStopConferenceEvent -> false
-                    }
-                }
-                .map(::OnPresentation)
+                .map(::OnConferenceEvent)
                 .collectLatest(actionSink::send)
         }
 

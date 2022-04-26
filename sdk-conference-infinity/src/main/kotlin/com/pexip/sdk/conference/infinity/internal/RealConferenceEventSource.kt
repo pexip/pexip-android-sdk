@@ -4,9 +4,12 @@ import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.EventSource
 import com.pexip.sdk.api.EventSourceListener
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
+import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
+import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import java.io.IOException
@@ -43,8 +46,19 @@ internal class RealConferenceEventSource(
     override fun onEvent(eventSource: EventSource, event: Event) {
         val at = System.currentTimeMillis()
         val conferenceEvent = when (event) {
-            is PresentationStartEvent -> PresentationStartConferenceEvent(at)
+            is PresentationStartEvent -> PresentationStartConferenceEvent(
+                at = at,
+                presenterId = event.presenterId,
+                presenterName = event.presenterName
+            )
             is PresentationStopEvent -> PresentationStopConferenceEvent(at)
+            is MessageReceivedEvent -> MessageReceivedConferenceEvent(
+                at = at,
+                participantId = event.participantId,
+                participantName = event.participantName,
+                type = event.type,
+                payload = event.payload
+            )
             else -> return
         }
         listeners.forEach { it.onConferenceEvent(conferenceEvent) }
@@ -63,6 +77,10 @@ internal class RealConferenceEventSource(
 
     override fun unregisterConferenceEventListener(listener: ConferenceEventListener) {
         listeners -= listener
+    }
+
+    override fun onConferenceEvent(event: ConferenceEvent) {
+        listeners.forEach { it.onConferenceEvent(event) }
     }
 
     override fun cancel() {

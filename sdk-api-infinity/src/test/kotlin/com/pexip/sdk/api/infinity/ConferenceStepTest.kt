@@ -141,6 +141,7 @@ internal class ConferenceStepTest {
         val response = RequestTokenResponse(
             token = Random.nextString(8),
             participantId = UUID.randomUUID(),
+            participantName = Random.nextString(8),
             expires = 120
         )
         server.enqueue {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Message
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.VideocamOff
 import androidx.compose.runtime.Composable
@@ -26,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.pexip.libwebrtc.compose.VideoRenderer
 
 @Composable
-fun ConferenceScreen(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
+fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
     BackHandler(onBack = rendering.onBackClick)
     Box(
         contentAlignment = Alignment.Center,
@@ -78,17 +80,27 @@ fun ConferenceScreen(rendering: ConferenceRendering, modifier: Modifier = Modifi
                     )
                 }
             }
-            Button(
-                onClick = rendering.onToggleMainCapturing,
-                modifier = Modifier.align(Alignment.BottomStart)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = when (rendering.mainCapturing) {
-                        true -> Icons.Rounded.Videocam
-                        false -> Icons.Rounded.VideocamOff
-                    },
-                    contentDescription = null
-                )
+                Button(onClick = rendering.onToggleMainCapturing) {
+                    Icon(
+                        imageVector = when (rendering.mainCapturing) {
+                            true -> Icons.Rounded.Videocam
+                            false -> Icons.Rounded.VideocamOff
+                        },
+                        contentDescription = null
+                    )
+                }
+                Button(onClick = rendering.onConferenceEventsClick) {
+                    Icon(
+                        imageVector = Icons.Rounded.Message,
+                        contentDescription = null
+                    )
+                }
             }
         }
     }

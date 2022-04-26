@@ -14,4 +14,6 @@ public data class RequestTokenResponse(
     @Serializable(with = UUIDSerializer::class)
     @SerialName("participant_uuid")
     public val participantId: UUID,
+    @SerialName("display_name")
+    public val participantName: String,
 )

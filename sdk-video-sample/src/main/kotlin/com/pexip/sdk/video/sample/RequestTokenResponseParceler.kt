@@ -10,12 +10,14 @@ object RequestTokenResponseParceler : Parceler<RequestTokenResponse> {
     override fun create(parcel: Parcel): RequestTokenResponse = RequestTokenResponse(
         token = parcel.readString()!!,
         expires = parcel.readLong(),
-        participantId = UUID.fromString(parcel.readString()!!)
+        participantId = UUID.fromString(parcel.readString()!!),
+        participantName = parcel.readString()!!
     )
 
     override fun RequestTokenResponse.write(parcel: Parcel, flags: Int) {
         parcel.writeString(token)
         parcel.writeLong(expires)
         parcel.writeString(participantId.toString())
+        parcel.writeString(participantName)
     }
 }
