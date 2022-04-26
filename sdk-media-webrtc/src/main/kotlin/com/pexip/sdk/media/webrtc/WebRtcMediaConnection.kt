@@ -1,8 +1,11 @@
 package com.pexip.sdk.media.webrtc
 
 import android.content.Context
+import android.util.Log
 import com.pexip.sdk.media.CapturingListener
+import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnection
+import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.webrtc.internal.SimplePeerConnectionObserver
@@ -10,19 +13,12 @@ import com.pexip.sdk.media.webrtc.internal.SimpleSdpObserver
 import com.pexip.sdk.media.webrtc.internal.mangle
 import org.webrtc.AudioSource
 import org.webrtc.AudioTrack
-import org.webrtc.Camera1Enumerator
-import org.webrtc.Camera2Enumerator
-import org.webrtc.CameraEnumerator
 import org.webrtc.CameraVideoCapturer
-import org.webrtc.ContextUtils
-import org.webrtc.DefaultVideoDecoderFactory
-import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
-import org.webrtc.PeerConnectionFactory
 import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SdpObserver
@@ -35,17 +31,12 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
-public class WebRtcMediaConnection private constructor(
-    configuration: PeerConnection.RTCConfiguration,
-    private val context: Context,
-    private val eglBase: EglBase,
-    private val factory: PeerConnectionFactory,
+public class WebRtcMediaConnection internal constructor(
+    private val factory: WebRtcMediaConnectionFactory,
+    private val config: MediaConnectionConfig,
     private val workerExecutor: ExecutorService,
     private val signalingExecutor: ExecutorService,
-    private val signaling: MediaConnectionSignaling,
-    private val presentationInMain: Boolean,
-    private val cameraEnumerator: CameraEnumerator,
-    private val mainQualityProfile: QualityProfile,
+    private val shouldDisposeFactory: Boolean = false,
 ) : MediaConnection {
 
     private val started = AtomicBoolean()
@@ -64,7 +55,7 @@ public class WebRtcMediaConnection private constructor(
             createOffer()
         }
     }
-    private val connection = checkNotNull(factory.createPeerConnection(configuration, observer))
+    private val connection = createPeerConnection()
     private var mainAudioSource: AudioSource? = null
     private var mainAudioTrack: AudioTrack? = null
     private var mainVideoCapturer: CameraVideoCapturer? = null
@@ -74,7 +65,7 @@ public class WebRtcMediaConnection private constructor(
     private var mainVideoSurfaceTextureHelper: SurfaceTextureHelper? = null
     private var mainAudioTransceiver: RtpTransceiver? = null
     private var mainVideoTransceiver: RtpTransceiver? = null
-    private val presentationVideoTransceiver: RtpTransceiver? = when (presentationInMain) {
+    private val presentationVideoTransceiver: RtpTransceiver? = when (config.presentationInMain) {
         true -> null
         else -> connection.addTransceiver(
             MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
@@ -84,6 +75,7 @@ public class WebRtcMediaConnection private constructor(
     private val localSdpObserver = object : SimpleSdpObserver {
 
         override fun onCreateSuccess(description: SessionDescription) {
+            Log.e("Pexip", description.description)
             setLocalDescription(this)
         }
 
@@ -103,8 +95,9 @@ public class WebRtcMediaConnection private constructor(
     private val presentationLocalVideoTrackListeners = CopyOnWriteArraySet<VideoTrackListener>()
     private val presentationRemoteVideoTrackListeners = CopyOnWriteArraySet<VideoTrackListener>()
 
+    @Deprecated("Use WebRtcMediaConnectionFactory.eglBaseContext instead.")
     public val eglBaseContext: EglBase.Context
-        get() = eglBase.eglBaseContext
+        get() = factory.eglBaseContext
 
     override fun sendMainAudio() {
         sendMainAudioInternal()
@@ -115,7 +108,7 @@ public class WebRtcMediaConnection private constructor(
     }
 
     override fun sendMainVideo(deviceName: String) {
-        require(deviceName in cameraEnumerator.deviceNames) { "deviceName is not available." }
+        require(deviceName in factory.cameraEnumerator.deviceNames) { "deviceName is not available." }
         sendMainVideoInternal(deviceName)
     }
 
@@ -123,9 +116,9 @@ public class WebRtcMediaConnection private constructor(
         workerExecutor.maybeExecute {
             val capturer = mainVideoCapturer ?: return@maybeExecute
             capturer.startCapture(
-                mainQualityProfile.width,
-                mainQualityProfile.height,
-                mainQualityProfile.fps
+                config.mainQualityProfile.width,
+                config.mainQualityProfile.height,
+                config.mainQualityProfile.fps
             )
             onVideoUnmuted()
             mainVideoCapturing = true
@@ -175,6 +168,8 @@ public class WebRtcMediaConnection private constructor(
         workerExecutor.maybeExecute {
             mainLocalVideoTrackListeners.clear()
             mainRemoteVideoTrackListeners.clear()
+            presentationLocalVideoTrackListeners.clear()
+            presentationRemoteVideoTrackListeners.clear()
             connection.dispose()
             mainAudioTrack?.dispose()
             mainAudioSource?.dispose()
@@ -183,8 +178,9 @@ public class WebRtcMediaConnection private constructor(
             mainVideoSurfaceTextureHelper?.dispose()
             mainVideoSource?.dispose()
             mainVideoCapturer?.dispose()
-            factory.dispose()
-            eglBase.release()
+            if (shouldDisposeFactory) {
+                factory.dispose()
+            }
         }
         workerExecutor.shutdown()
         signalingExecutor.shutdown()
@@ -251,9 +247,14 @@ public class WebRtcMediaConnection private constructor(
     private fun sendMainAudioInternal() {
         workerExecutor.maybeExecute {
             if (mainAudioTransceiver == null) {
-                mainAudioSource = factory.createAudioSource(MediaConstraints())
-                mainAudioTrack = factory.createAudioTrack("ARDAMSa0", mainAudioSource)
-                mainAudioTransceiver = connection.addTransceiver(mainAudioTrack)
+                mainAudioSource = factory.factory.createAudioSource(MediaConstraints())
+                mainAudioTrack = factory.factory.createAudioTrack("ARDAMSa0", mainAudioSource)
+                val transceiver = connection.addTransceiver(
+                    MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
+                    RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.SEND_RECV)
+                )
+                transceiver.sender.setTrack(mainAudioTrack, false)
+                mainAudioTransceiver = transceiver
             }
         }
     }
@@ -262,15 +263,20 @@ public class WebRtcMediaConnection private constructor(
     private fun sendMainVideoInternal(deviceName: String? = null) {
         workerExecutor.maybeExecute {
             if (mainVideoTransceiver == null) {
-                val deviceNames = cameraEnumerator.deviceNames
+                val deviceNames = factory.cameraEnumerator.deviceNames
                 val deviceName = deviceName
-                    ?: deviceNames.firstOrNull(cameraEnumerator::isFrontFacing)
-                    ?: deviceNames.firstOrNull(cameraEnumerator::isBackFacing)
+                    ?: deviceNames.firstOrNull(factory.cameraEnumerator::isFrontFacing)
+                    ?: deviceNames.firstOrNull(factory.cameraEnumerator::isBackFacing)
                     ?: deviceNames.first()
-                mainVideoCapturer = cameraEnumerator.createCapturer(deviceName, null)
-                mainVideoSource = factory.createVideoSource(mainVideoCapturer!!.isScreencast)
-                mainVideoTrack = factory.createVideoTrack("ARDAMSv0", mainVideoSource)
-                val transceiver = connection.addTransceiver(mainVideoTrack)
+                mainVideoCapturer = factory.cameraEnumerator.createCapturer(deviceName, null)
+                mainVideoSource =
+                    factory.factory.createVideoSource(mainVideoCapturer!!.isScreencast)
+                mainVideoTrack = factory.factory.createVideoTrack("ARDAMSv0", mainVideoSource)
+                val transceiver = connection.addTransceiver(
+                    MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
+                    RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.SEND_RECV)
+                )
+                transceiver.sender.setTrack(mainVideoTrack, false)
                 mainVideoTransceiver = transceiver
                 mainLocalVideoTrackListeners.forEach {
                     it.onVideoTrack(transceiver.sender.track() as? VideoTrack)
@@ -278,10 +284,11 @@ public class WebRtcMediaConnection private constructor(
                 mainRemoteVideoTrackListeners.forEach {
                     it.onVideoTrack(transceiver.receiver.track() as? VideoTrack)
                 }
-                mainVideoSurfaceTextureHelper = SurfaceTextureHelper.create("main", eglBaseContext)
+                mainVideoSurfaceTextureHelper =
+                    SurfaceTextureHelper.create("main", factory.eglBaseContext)
                 mainVideoCapturer?.initialize(
                     mainVideoSurfaceTextureHelper,
-                    context,
+                    factory.applicationContext,
                     mainVideoSource?.capturerObserver
                 )
             }
@@ -290,9 +297,7 @@ public class WebRtcMediaConnection private constructor(
 
     private fun createOffer() {
         workerExecutor.maybeExecute {
-            val sdpConstraints = MediaConstraints()
-            sdpConstraints.optional += MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true")
-            connection.createOffer(localSdpObserver, sdpConstraints)
+            connection.createOffer(localSdpObserver, MediaConstraints())
         }
     }
 
@@ -314,10 +319,10 @@ public class WebRtcMediaConnection private constructor(
             try {
                 val sdp = SessionDescription(
                     SessionDescription.Type.ANSWER,
-                    signaling.onOffer(
+                    config.signaling.onOffer(
                         callType = "WEBRTC",
                         description = sdp.description,
-                        presentationInMix = presentationInMain
+                        presentationInMix = config.presentationInMain
                     )
                 )
                 setRemoteDescription(sdp)
@@ -330,7 +335,7 @@ public class WebRtcMediaConnection private constructor(
     private fun onCandidate(candidate: String, mid: String) {
         signalingExecutor.maybeExecute {
             try {
-                signaling.onCandidate(candidate, mid)
+                config.signaling.onCandidate(candidate, mid)
             } catch (t: Throwable) {
                 // noop
             }
@@ -340,7 +345,7 @@ public class WebRtcMediaConnection private constructor(
     private fun onVideoMuted() {
         signalingExecutor.maybeExecute {
             try {
-                signaling.onVideoMuted()
+                config.signaling.onVideoMuted()
             } catch (t: Throwable) {
                 // noop
             }
@@ -350,7 +355,7 @@ public class WebRtcMediaConnection private constructor(
     private fun onVideoUnmuted() {
         signalingExecutor.maybeExecute {
             try {
-                signaling.onVideoUnmuted()
+                config.signaling.onVideoUnmuted()
             } catch (t: Throwable) {
                 // noop
             }
@@ -361,20 +366,39 @@ public class WebRtcMediaConnection private constructor(
         if (!isShutdown) execute(block)
     }
 
-    public class Builder(private val signaling: MediaConnectionSignaling) {
+    private fun createPeerConnection() =
+        checkNotNull(factory.factory.createPeerConnection(createRTCConfiguration(), observer))
 
-        private val iceServers = mutableSetOf<PeerConnection.IceServer>()
-
-        private var presentationInMain = false
-        private var mainQualityProfile = QualityProfile.Medium
-
-        public fun addIceServer(iceServer: PeerConnection.IceServer): Builder = apply {
-            this.iceServers += iceServer
+    private fun createRTCConfiguration(): PeerConnection.RTCConfiguration {
+        val iceServers = config.iceServers.map {
+            PeerConnection.IceServer.builder(it.urls.toList())
+                .setUsername(it.username)
+                .setPassword(it.password)
+                .createIceServer()
         }
+        val c = PeerConnection.RTCConfiguration(iceServers)
+        c.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
+        c.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
+        return c
+    }
+
+    public class Builder(signaling: MediaConnectionSignaling) {
+
+        private val factory = WebRtcMediaConnectionFactory()
+        private val builder = MediaConnectionConfig.Builder(signaling)
+
+        public fun addIceServer(iceServer: PeerConnection.IceServer): Builder =
+            addIceServers(listOf(iceServer))
 
         public fun addIceServers(iceServers: Collection<PeerConnection.IceServer>): Builder =
             apply {
-                this.iceServers += iceServers
+                for (iceServer in iceServers) {
+                    val i = IceServer.Builder(iceServer.urls)
+                        .username(iceServer.username)
+                        .password(iceServer.password)
+                        .build()
+                    this.builder.addIceServer(i)
+                }
             }
 
         @Deprecated(
@@ -386,53 +410,36 @@ public class WebRtcMediaConnection private constructor(
             presentationInMain(presentationInMix)
 
         public fun presentationInMain(presentationInMain: Boolean): Builder = apply {
-            this.presentationInMain = presentationInMain
+            this.builder.presentationInMain(presentationInMain)
         }
 
-        public fun mainQualityProfile(qualityProfile: QualityProfile): Builder = apply {
-            this.mainQualityProfile = qualityProfile
+        public fun mainQualityProfile(mainQualityProfile: QualityProfile): Builder = apply {
+            this.builder.mainQualityProfile(mainQualityProfile)
         }
 
-        public fun build(): WebRtcMediaConnection {
-            val configuration = PeerConnection.RTCConfiguration(iceServers.toList())
-            configuration.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
-            configuration.continualGatheringPolicy =
-                PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
-            val eglBase = EglBase.create()
-            val decoderFactory = DefaultVideoDecoderFactory(eglBase.eglBaseContext)
-            val encoderFactory = DefaultVideoEncoderFactory(eglBase.eglBaseContext, false, false)
-            val context = ContextUtils.getApplicationContext()
-            return WebRtcMediaConnection(
-                configuration = configuration,
-                context = context,
-                eglBase = eglBase,
-                factory = PeerConnectionFactory.builder()
-                    .setVideoDecoderFactory(decoderFactory)
-                    .setVideoEncoderFactory(encoderFactory)
-                    .createPeerConnectionFactory(),
-                workerExecutor = Executors.newSingleThreadExecutor(),
-                signalingExecutor = Executors.newSingleThreadExecutor(),
-                signaling = signaling,
-                presentationInMain = presentationInMain,
-                cameraEnumerator = CameraEnumerator(context),
-                mainQualityProfile = mainQualityProfile
-            )
-        }
-
-        private fun CameraEnumerator(c: Context) = when (Camera2Enumerator.isSupported(c)) {
-            true -> Camera2Enumerator(c)
-            else -> Camera1Enumerator()
-        }
+        @Deprecated("Use WebRtcMediaConnectionFactory.createMediaConnection() instead.")
+        public fun build(): WebRtcMediaConnection = WebRtcMediaConnection(
+            factory = factory,
+            config = builder.build(),
+            workerExecutor = Executors.newSingleThreadExecutor(),
+            signalingExecutor = Executors.newSingleThreadExecutor(),
+            shouldDisposeFactory = true
+        )
     }
 
     public companion object {
 
+        @Deprecated(
+            message = "Use WebRtcMediaConnectionFactory.initialize(context) instead.",
+            replaceWith = ReplaceWith(
+                expression = "WebRtcMediaConnectionFactory.initialize(context)",
+                imports = ["com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory"]
+            ),
+            level = DeprecationLevel.ERROR
+        )
         @JvmStatic
         public fun initialize(context: Context) {
-            val applicationContext = context.applicationContext
-            val options = PeerConnectionFactory.InitializationOptions.builder(applicationContext)
-                .createInitializationOptions()
-            PeerConnectionFactory.initialize(options)
+            WebRtcMediaConnectionFactory.initialize(context)
         }
     }
 }

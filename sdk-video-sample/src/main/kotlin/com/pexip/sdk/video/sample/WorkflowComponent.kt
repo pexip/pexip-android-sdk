@@ -14,7 +14,9 @@ object WorkflowComponent {
     }
     private val pinRequirementWorkflow by lazy { PinRequirementWorkflow(NetworkComponent.service) }
     private val pinChallengeWorkflow by lazy { PinChallengeWorkflow(NetworkComponent.service) }
-    private val conferenceWorkflow by lazy { ConferenceWorkflow(NetworkComponent.service) }
+    private val conferenceWorkflow by lazy {
+        ConferenceWorkflow(NetworkComponent.service, MediaConnectionComponent.factory)
+    }
 
     val sampleWorkflow by lazy {
         SampleWorkflow(

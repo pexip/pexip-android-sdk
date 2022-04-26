@@ -4,9 +4,12 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
 import com.pexip.sdk.conference.infinity.InfinityConference
+import com.pexip.sdk.media.IceServer
+import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.coroutines.getMainCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnection
+import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import com.pexip.sdk.media.webrtc.coroutines.getMainLocalVideoTrack
 import com.pexip.sdk.media.webrtc.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.webrtc.coroutines.getPresentationRemoteVideoTrack
@@ -16,10 +19,11 @@ import com.squareup.workflow1.StatefulWorkflow
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
-import org.webrtc.PeerConnection
 
-class ConferenceWorkflow(private val service: InfinityService) :
-    StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
+class ConferenceWorkflow(
+    private val service: InfinityService,
+    private val factory: WebRtcMediaConnectionFactory,
+) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState {
         val conference = InfinityConference.create(
@@ -28,16 +32,17 @@ class ConferenceWorkflow(private val service: InfinityService) :
             conferenceAlias = props.conferenceAlias,
             response = props.response
         )
-        val iceServer = PeerConnection.IceServer.builder(GoogleStunUrls).createIceServer()
-        val connection = WebRtcMediaConnection.Builder(conference)
+        val iceServer = IceServer.Builder(GoogleStunUrls).build()
+        val config = MediaConnectionConfig.Builder(conference)
             .addIceServer(iceServer)
             .presentationInMain(props.presentationInMain)
             .mainQualityProfile(QualityProfile.High)
             .build()
+        val connection = factory.createMediaConnection(config)
         return ConferenceState(
             conference = conference,
             connection = connection,
-            sharedContext = connection.eglBaseContext
+            sharedContext = factory.eglBaseContext
         )
     }
 

@@ -36,7 +36,7 @@
                 android:value="androidx.startup" />
 
             <meta-data
-                android:name="com.pexip.sdk.video.sample.WebRtcMediaConnectionInitializer"
+                android:name="com.pexip.sdk.video.sample.WebRtcMediaConnectionFactoryInitializer"
                 android:value="androidx.startup" />
         </provider>
     </application>
