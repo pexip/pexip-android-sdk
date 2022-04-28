@@ -1,15 +1,19 @@
 package com.pexip.sdk.media.webrtc
 
 import android.content.Context
+import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionFactory
+import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.ContextUtils
 import org.webrtc.DefaultVideoDecoderFactory
 import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
+import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnectionFactory
+import java.util.UUID
 import java.util.concurrent.Executors
 
 public class WebRtcMediaConnectionFactory(context: Context) : MediaConnectionFactory {
@@ -29,6 +33,13 @@ public class WebRtcMediaConnectionFactory(context: Context) : MediaConnectionFac
 
     public val eglBaseContext: EglBase.Context
         get() = eglBase.eglBaseContext
+
+    override fun createLocalAudioTrack(): LocalAudioTrack {
+        val audioSource = factory.createAudioSource(MediaConstraints())
+        val audioTrackId = UUID.randomUUID().toString()
+        val audioTrack = factory.createAudioTrack(audioTrackId, audioSource)
+        return WebRtcLocalAudioTrack(audioSource, audioTrack)
+    }
 
     override fun createMediaConnection(config: MediaConnectionConfig): WebRtcMediaConnection =
         WebRtcMediaConnection(

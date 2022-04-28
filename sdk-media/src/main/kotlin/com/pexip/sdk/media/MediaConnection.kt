@@ -6,7 +6,10 @@ public interface MediaConnection {
 
     public fun dispose()
 
-    public fun sendMainAudio()
+    @Deprecated(message = "Use localAudioTrack version.", level = DeprecationLevel.ERROR)
+    public fun sendMainAudio(): Unit = throw UnsupportedOperationException("Deprecated.")
+
+    public fun sendMainAudio(localAudioTrack: LocalAudioTrack)
 
     public fun sendMainVideo()
 

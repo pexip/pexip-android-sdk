@@ -1,18 +1,17 @@
 package com.pexip.sdk.media.webrtc
 
 import android.content.Context
-import android.util.Log
 import com.pexip.sdk.media.CapturingListener
 import com.pexip.sdk.media.IceServer
+import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.webrtc.internal.SimplePeerConnectionObserver
 import com.pexip.sdk.media.webrtc.internal.SimpleSdpObserver
+import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.mangle
-import org.webrtc.AudioSource
-import org.webrtc.AudioTrack
 import org.webrtc.CameraVideoCapturer
 import org.webrtc.EglBase
 import org.webrtc.IceCandidate
@@ -56,8 +55,6 @@ public class WebRtcMediaConnection internal constructor(
         }
     }
     private val connection = createPeerConnection()
-    private var mainAudioSource: AudioSource? = null
-    private var mainAudioTrack: AudioTrack? = null
     private var mainVideoCapturer: CameraVideoCapturer? = null
     private var mainVideoCapturing: Boolean = false
     private var mainVideoSource: VideoSource? = null
@@ -75,7 +72,6 @@ public class WebRtcMediaConnection internal constructor(
     private val localSdpObserver = object : SimpleSdpObserver {
 
         override fun onCreateSuccess(description: SessionDescription) {
-            Log.e("Pexip", description.description)
             setLocalDescription(this)
         }
 
@@ -99,8 +95,9 @@ public class WebRtcMediaConnection internal constructor(
     public val eglBaseContext: EglBase.Context
         get() = factory.eglBaseContext
 
-    override fun sendMainAudio() {
-        sendMainAudioInternal()
+    override fun sendMainAudio(localAudioTrack: LocalAudioTrack) {
+        require(localAudioTrack is WebRtcLocalAudioTrack) { "localAudioTrack must be an instance of WebRtcLocalAudioTrack." }
+        sendMainAudioInternal(localAudioTrack)
     }
 
     override fun sendMainVideo() {
@@ -171,8 +168,6 @@ public class WebRtcMediaConnection internal constructor(
             presentationLocalVideoTrackListeners.clear()
             presentationRemoteVideoTrackListeners.clear()
             connection.dispose()
-            mainAudioTrack?.dispose()
-            mainAudioSource?.dispose()
             mainVideoTrack?.dispose()
             mainVideoCapturer?.stopCapture()
             mainVideoSurfaceTextureHelper?.dispose()
@@ -244,16 +239,14 @@ public class WebRtcMediaConnection internal constructor(
         mainVideoCapturingListeners -= listener
     }
 
-    private fun sendMainAudioInternal() {
+    private fun sendMainAudioInternal(localAudioTrack: WebRtcLocalAudioTrack) {
         workerExecutor.maybeExecute {
             if (mainAudioTransceiver == null) {
-                mainAudioSource = factory.factory.createAudioSource(MediaConstraints())
-                mainAudioTrack = factory.factory.createAudioTrack("ARDAMSa0", mainAudioSource)
                 val transceiver = connection.addTransceiver(
                     MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
                     RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.SEND_RECV)
                 )
-                transceiver.sender.setTrack(mainAudioTrack, false)
+                transceiver.sender.setTrack(localAudioTrack.audioTrack, false)
                 mainAudioTransceiver = transceiver
             }
         }

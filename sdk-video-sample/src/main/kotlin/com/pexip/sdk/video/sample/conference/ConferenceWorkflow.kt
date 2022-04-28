@@ -42,7 +42,8 @@ class ConferenceWorkflow(
         return ConferenceState(
             conference = conference,
             connection = connection,
-            sharedContext = factory.eglBaseContext
+            sharedContext = factory.eglBaseContext,
+            localAudioTrack = factory.createLocalAudioTrack()
         )
     }
 
@@ -85,7 +86,7 @@ class ConferenceWorkflow(
     private fun RenderContext.leaveSideEffect(renderState: ConferenceState) =
         runningSideEffect("${renderState.conference}Leave") {
             try {
-                renderState.connection.sendMainAudio()
+                renderState.connection.sendMainAudio(renderState.localAudioTrack)
                 renderState.connection.sendMainVideo()
                 renderState.connection.startMainCapture()
                 renderState.connection.start()
@@ -93,6 +94,7 @@ class ConferenceWorkflow(
             } finally {
                 renderState.connection.dispose()
                 renderState.conference.leave()
+                renderState.localAudioTrack.dispose()
             }
         }
 
