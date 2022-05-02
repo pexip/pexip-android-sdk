@@ -9,13 +9,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Message
 import androidx.compose.material.icons.rounded.Videocam
@@ -25,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.pexip.libwebrtc.compose.VideoRenderer
 
 @Composable
 fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
@@ -39,17 +37,19 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
             modifier = Modifier.fillMaxSize()
         ) {
             VideoRenderer(
-                videoTrack = rendering.mainRemoteVideoTrack,
                 sharedContext = rendering.sharedContext,
-                aspectRatio = ASPECT_RATIO_LANDSCAPE,
-                modifier = Modifier.fillMaxWidth()
+                videoTrack = rendering.mainRemoteVideoTrack,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(ASPECT_RATIO_LANDSCAPE)
             )
             if (rendering.presentationRemoteVideoTrack != null) {
                 VideoRenderer(
-                    videoTrack = rendering.presentationRemoteVideoTrack,
                     sharedContext = rendering.sharedContext,
-                    aspectRatio = ASPECT_RATIO_LANDSCAPE,
-                    modifier = Modifier.fillMaxWidth()
+                    videoTrack = rendering.presentationRemoteVideoTrack,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(ASPECT_RATIO_LANDSCAPE)
                 )
             }
         }
@@ -58,6 +58,12 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            val aspectRatio = remember(maxWidth, maxHeight) {
+                when {
+                    maxWidth > maxHeight -> ASPECT_RATIO_LANDSCAPE
+                    else -> ASPECT_RATIO_PORTRAIT
+                }
+            }
             AnimatedVisibility(
                 visible = rendering.mainCapturing,
                 enter = slideInHorizontally { it * 2 },
@@ -65,20 +71,13 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .fillMaxWidth(0.2f)
+                    .aspectRatio(aspectRatio)
             ) {
-                Surface(shape = SelfViewShape, elevation = 4.dp) {
-                    VideoRenderer(
-                        videoTrack = rendering.mainLocalVideoTrack,
-                        sharedContext = rendering.sharedContext,
-                        mirror = true,
-                        aspectRatio = remember(maxWidth, maxHeight) {
-                            when {
-                                maxWidth > maxHeight -> ASPECT_RATIO_LANDSCAPE
-                                else -> ASPECT_RATIO_PORTRAIT
-                            }
-                        }
-                    )
-                }
+                VideoRenderer(
+                    sharedContext = rendering.sharedContext,
+                    videoTrack = rendering.mainLocalVideoTrack,
+                    mirror = true
+                )
             }
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -106,6 +105,5 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
     }
 }
 
-private val SelfViewShape = RoundedCornerShape(4.dp)
 private const val ASPECT_RATIO_PORTRAIT = 9 / 16f
 private const val ASPECT_RATIO_LANDSCAPE = 16 / 9f

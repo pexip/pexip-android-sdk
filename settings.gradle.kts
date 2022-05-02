@@ -23,7 +23,6 @@ dependencyResolutionManagement {
         }
     }
 }
-includeBuild("../libwebrtc")
 
 rootProject.name = "sdk"
 include(":sdk-api")
@@ -37,3 +36,4 @@ include(":sdk-media-coroutines")
 include(":sdk-media-webrtc")
 include(":sdk-media-webrtc-coroutines")
 include(":sdk-video-sample")
+include(":sdk-webrtc")

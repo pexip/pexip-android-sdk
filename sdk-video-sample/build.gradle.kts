@@ -37,7 +37,6 @@ dependencies {
     implementation(libs.androidx.startup.runtime)
     implementation(libs.accompanist.appcompattheme)
     implementation(libs.okhttp.logginginterceptor)
-    implementation(libs.pexip.libwebrtc.compose)
     implementation(libs.workflow.core.jvm)
     implementation(libs.workflow.ui.compose)
 
