@@ -12,5 +12,7 @@ dependencies {
     api(projects.sdkMedia)
     api(projects.sdkWebrtc)
 
+    implementation(libs.androidx.core)
+
     testImplementation(libs.okio)
 }

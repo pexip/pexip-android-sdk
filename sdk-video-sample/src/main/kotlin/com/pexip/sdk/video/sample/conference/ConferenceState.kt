@@ -2,18 +2,19 @@ package com.pexip.sdk.video.sample.conference
 
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
+import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalAudioTrack
-import com.pexip.sdk.media.webrtc.WebRtcMediaConnection
+import com.pexip.sdk.media.MediaConnection
+import com.pexip.sdk.media.VideoTrack
 import org.webrtc.EglBase
-import org.webrtc.VideoTrack
 
 data class ConferenceState(
     val conference: Conference,
-    val connection: WebRtcMediaConnection,
     val sharedContext: EglBase.Context,
+    val connection: MediaConnection,
     val localAudioTrack: LocalAudioTrack,
-    val mainCapturing: Boolean = false,
-    val mainLocalVideoTrack: VideoTrack? = null,
+    val cameraVideoTrack: CameraVideoTrack,
+    val cameraCapturing: Boolean = false,
     val mainRemoteVideoTrack: VideoTrack? = null,
     val presentation: Boolean = false,
     val presentationRemoteVideoTrack: VideoTrack? = null,

@@ -3,18 +3,19 @@ package com.pexip.sdk.video.sample.conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
+import com.pexip.sdk.media.QualityProfile
+import com.pexip.sdk.media.VideoTrack
 import com.squareup.workflow1.WorkflowAction
-import org.webrtc.VideoTrack
 
 typealias ConferenceAction = WorkflowAction<ConferenceProps, ConferenceState, ConferenceOutput>
 
-class OnToggleMainVideoCapturing : ConferenceAction() {
+class OnToggleCameraCapturing : ConferenceAction() {
 
     override fun Updater.apply() = with(state) {
-        if (mainCapturing) {
-            connection.stopMainCapture()
+        if (cameraCapturing) {
+            cameraVideoTrack.stopCapture()
         } else {
-            connection.startMainCapture()
+            cameraVideoTrack.startCapture(QualityProfile.High)
         }
     }
 }
@@ -37,13 +38,6 @@ class OnBackClick : ConferenceAction() {
     }
 }
 
-class OnMainLocalVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAction() {
-
-    override fun Updater.apply() {
-        state = state.copy(mainLocalVideoTrack = videoTrack)
-    }
-}
-
 class OnMainRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAction() {
 
     override fun Updater.apply() {
@@ -51,10 +45,10 @@ class OnMainRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAc
     }
 }
 
-class OnMainCapturing(private val capturing: Boolean) : ConferenceAction() {
+class OnCameraCapturing(private val capturing: Boolean) : ConferenceAction() {
 
     override fun Updater.apply() {
-        state = state.copy(mainCapturing = capturing)
+        state = state.copy(cameraCapturing = capturing)
     }
 }
 

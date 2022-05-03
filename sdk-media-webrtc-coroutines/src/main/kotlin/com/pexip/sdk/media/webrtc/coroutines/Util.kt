@@ -1,44 +1,15 @@
 package com.pexip.sdk.media.webrtc.coroutines
 
-import com.pexip.sdk.media.webrtc.VideoTrackListener
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnection
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
 import org.webrtc.VideoTrack
 
-public fun WebRtcMediaConnection.getMainLocalVideoTrack(): Flow<VideoTrack?> = getVideoTrack(
-    register = ::registerMainLocalVideoTrackListener,
-    unregister = ::unregisterMainLocalVideoTrackListener
-)
+@Deprecated("Use WebRtcMediaConnectionFactory.createCameraVideoTrack().", level = DeprecationLevel.ERROR)
+public fun WebRtcMediaConnection.getMainLocalVideoTrack(): Flow<VideoTrack?> = flow { }
 
-public fun WebRtcMediaConnection.getMainRemoteVideoTrack(): Flow<VideoTrack?> = getVideoTrack(
-    register = ::registerMainRemoteVideoTrackListener,
-    unregister = ::unregisterMainRemoteVideoTrackListener
-)
+@Deprecated("Use MediaConnection.getMainRemoteVideoTrack().", level = DeprecationLevel.ERROR)
+public fun WebRtcMediaConnection.getMainRemoteVideoTrack(): Flow<VideoTrack?> = flow { }
 
-public fun WebRtcMediaConnection.getPresentationLocalVideoTrack(): Flow<VideoTrack?> =
-    getVideoTrack(
-        register = ::registerPresentationLocalVideoTrackListener,
-        unregister = ::unregisterPresentationLocalVideoTrackListener
-    )
-
-public fun WebRtcMediaConnection.getPresentationRemoteVideoTrack(): Flow<VideoTrack?> =
-    getVideoTrack(
-        register = ::registerPresentationRemoteVideoTrackListener,
-        unregister = ::unregisterPresentationRemoteVideoTrackListener
-    )
-
-private inline fun getVideoTrack(
-    crossinline register: (VideoTrackListener) -> Unit,
-    crossinline unregister: (VideoTrackListener) -> Unit,
-) = callbackFlow {
-    val listener = object : VideoTrackListener {
-        override fun onVideoTrack(videoTrack: VideoTrack?) {
-            trySend(videoTrack)
-        }
-    }
-    register(listener)
-    awaitClose { unregister(listener) }
-}.distinctUntilChanged()
+@Deprecated("Use MediaConnection.getPresentationRemoteVideoTrack().", level = DeprecationLevel.ERROR)
+public fun WebRtcMediaConnection.getPresentationRemoteVideoTrack(): Flow<VideoTrack?> = flow { }

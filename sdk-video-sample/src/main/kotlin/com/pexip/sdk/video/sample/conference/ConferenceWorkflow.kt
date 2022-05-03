@@ -4,15 +4,15 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
 import com.pexip.sdk.conference.infinity.InfinityConference
+import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.IceServer
+import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.QualityProfile
-import com.pexip.sdk.media.coroutines.getMainCapturing
-import com.pexip.sdk.media.webrtc.WebRtcMediaConnection
+import com.pexip.sdk.media.coroutines.getCapturing
+import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
+import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
-import com.pexip.sdk.media.webrtc.coroutines.getMainLocalVideoTrack
-import com.pexip.sdk.media.webrtc.coroutines.getMainRemoteVideoTrack
-import com.pexip.sdk.media.webrtc.coroutines.getPresentationRemoteVideoTrack
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -38,12 +38,12 @@ class ConferenceWorkflow(
             .presentationInMain(props.presentationInMain)
             .mainQualityProfile(QualityProfile.High)
             .build()
-        val connection = factory.createMediaConnection(config)
         return ConferenceState(
             conference = conference,
-            connection = connection,
             sharedContext = factory.eglBaseContext,
-            localAudioTrack = factory.createLocalAudioTrack()
+            connection = factory.createMediaConnection(config),
+            localAudioTrack = factory.createLocalAudioTrack(),
+            cameraVideoTrack = factory.createCameraVideoTrack()
         )
     }
 
@@ -55,8 +55,7 @@ class ConferenceWorkflow(
         context: RenderContext,
     ): ConferenceRendering {
         context.leaveSideEffect(renderState)
-        context.mainVideoCapturingSideEffect(renderState.connection)
-        context.mainLocalVideoTrackSideEffect(renderState.connection)
+        context.cameraVideoTrackCapturingSideEffect(renderState.cameraVideoTrack)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
         context.conferenceEventsSideEffect(renderState.conference)
         context.receivePresentationSideEffect(renderState)
@@ -72,11 +71,11 @@ class ConferenceWorkflow(
             )
             else -> ConferenceCallRendering(
                 sharedContext = renderState.sharedContext,
-                mainCapturing = renderState.mainCapturing,
-                mainLocalVideoTrack = renderState.mainLocalVideoTrack,
+                mainCapturing = renderState.cameraCapturing,
+                mainLocalVideoTrack = renderState.cameraVideoTrack,
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
-                onToggleMainCapturing = context.send(::OnToggleMainVideoCapturing),
+                onToggleMainCapturing = context.send(::OnToggleCameraCapturing),
                 onConferenceEventsClick = context.send(::OnConferenceEventsClick),
                 onBackClick = context.send(::OnBackClick)
             )
@@ -87,39 +86,33 @@ class ConferenceWorkflow(
         runningSideEffect("${renderState.conference}Leave") {
             try {
                 renderState.connection.sendMainAudio(renderState.localAudioTrack)
-                renderState.connection.sendMainVideo()
-                renderState.connection.startMainCapture()
+                renderState.connection.sendMainVideo(renderState.cameraVideoTrack)
+                renderState.cameraVideoTrack.startCapture(QualityProfile.High)
                 renderState.connection.start()
                 awaitCancellation()
             } finally {
                 renderState.connection.dispose()
                 renderState.conference.leave()
                 renderState.localAudioTrack.dispose()
+                renderState.cameraVideoTrack.dispose()
             }
         }
 
-    private fun RenderContext.mainLocalVideoTrackSideEffect(connection: WebRtcMediaConnection) =
-        runningSideEffect("${connection}MainLocalVideoTrack") {
-            connection.getMainLocalVideoTrack()
-                .map(::OnMainLocalVideoTrack)
+    private fun RenderContext.cameraVideoTrackCapturingSideEffect(cameraVideoTrack: CameraVideoTrack) =
+        runningSideEffect("${cameraVideoTrack}Capturing") {
+            cameraVideoTrack.getCapturing()
+                .map(::OnCameraCapturing)
                 .collectLatest(actionSink::send)
         }
 
-    private fun RenderContext.mainRemoteVideoTrackSideEffect(connection: WebRtcMediaConnection) =
+    private fun RenderContext.mainRemoteVideoTrackSideEffect(connection: MediaConnection) =
         runningSideEffect("${connection}MainRemoteVideoTrack") {
             connection.getMainRemoteVideoTrack()
                 .map(::OnMainRemoteVideoTrack)
                 .collectLatest(actionSink::send)
         }
 
-    private fun RenderContext.mainVideoCapturingSideEffect(connection: WebRtcMediaConnection) =
-        runningSideEffect("${connection}MainCapturing") {
-            connection.getMainCapturing()
-                .map(::OnMainCapturing)
-                .collectLatest(actionSink::send)
-        }
-
-    private fun RenderContext.presentationRemoteVideoTrackSideEffect(connection: WebRtcMediaConnection) =
+    private fun RenderContext.presentationRemoteVideoTrackSideEffect(connection: MediaConnection) =
         runningSideEffect("${connection}PresentationRemoteVideoTrack") {
             connection.getPresentationRemoteVideoTrack()
                 .map(::OnPresentationRemoteVideoTrack)

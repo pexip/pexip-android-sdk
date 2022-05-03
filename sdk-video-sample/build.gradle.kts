@@ -28,6 +28,7 @@ dependencies {
     implementation(projects.sdkConferenceInfinity)
     implementation(projects.sdkConferenceCoroutines)
     implementation(projects.sdkMediaCoroutines)
+    implementation(projects.sdkMediaWebrtcCompose)
     implementation(projects.sdkMediaWebrtcCoroutines)
 
     implementation(libs.androidx.activity.compose)

@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 
 @Composable
 fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
@@ -36,7 +37,7 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            VideoRenderer(
+            VideoTrackRenderer(
                 sharedContext = rendering.sharedContext,
                 videoTrack = rendering.mainRemoteVideoTrack,
                 modifier = Modifier
@@ -44,7 +45,7 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
                     .aspectRatio(ASPECT_RATIO_LANDSCAPE)
             )
             if (rendering.presentationRemoteVideoTrack != null) {
-                VideoRenderer(
+                VideoTrackRenderer(
                     sharedContext = rendering.sharedContext,
                     videoTrack = rendering.presentationRemoteVideoTrack,
                     modifier = Modifier
@@ -73,7 +74,7 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
                     .fillMaxWidth(0.2f)
                     .aspectRatio(aspectRatio)
             ) {
-                VideoRenderer(
+                VideoTrackRenderer(
                     sharedContext = rendering.sharedContext,
                     videoTrack = rendering.mainLocalVideoTrack,
                     mirror = true

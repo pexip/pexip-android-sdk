@@ -1,4 +1,4 @@
-package com.pexip.sdk.video.sample.conference
+package com.pexip.sdk.media.webrtc.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -7,14 +7,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import com.pexip.sdk.media.VideoTrack
 import org.webrtc.EglBase
 import org.webrtc.GlRectDrawer
 import org.webrtc.SurfaceViewRenderer
-import org.webrtc.VideoTrack
 
 @Composable
-internal fun VideoRenderer(
-    sharedContext: EglBase.Context,
+public fun VideoTrackRenderer(
+    sharedContext: EglBase.Context?,
     videoTrack: VideoTrack?,
     modifier: Modifier = Modifier,
     mirror: Boolean = false,
@@ -32,9 +32,9 @@ internal fun VideoRenderer(
         renderer.setMirror(mirror)
     }
     DisposableEffect(renderer, videoTrack) {
-        videoTrack?.addSink(renderer)
+        videoTrack?.addRenderer(renderer)
         onDispose {
-            videoTrack?.removeSink(renderer)
+            videoTrack?.removeRenderer(renderer)
             renderer.clearImage()
         }
     }

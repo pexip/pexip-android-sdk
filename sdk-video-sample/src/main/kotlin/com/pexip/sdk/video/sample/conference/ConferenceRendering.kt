@@ -1,8 +1,8 @@
 package com.pexip.sdk.video.sample.conference
 
 import com.pexip.sdk.conference.ConferenceEvent
+import com.pexip.sdk.media.VideoTrack
 import org.webrtc.EglBase
-import org.webrtc.VideoTrack
 
 sealed interface ConferenceRendering {
     val onBackClick: () -> Unit
@@ -11,7 +11,7 @@ sealed interface ConferenceRendering {
 data class ConferenceCallRendering(
     val sharedContext: EglBase.Context,
     val mainCapturing: Boolean,
-    val mainLocalVideoTrack: VideoTrack?,
+    val mainLocalVideoTrack: VideoTrack,
     val mainRemoteVideoTrack: VideoTrack?,
     val presentationRemoteVideoTrack: VideoTrack?,
     val onToggleMainCapturing: () -> Unit,

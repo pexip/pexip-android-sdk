@@ -7,3 +7,7 @@ android {
         freeCompilerArgs += "-Xexplicit-api=strict"
     }
 }
+
+dependencies {
+    api(libs.androidx.annotation)
+}

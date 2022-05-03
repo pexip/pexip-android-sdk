@@ -1,27 +1,26 @@
 package com.pexip.sdk.media.coroutines
 
-import com.pexip.sdk.media.CapturingListener
+import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
+import com.pexip.sdk.media.VideoTrack
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 
-public fun MediaConnection.getMainCapturing(): Flow<Boolean> = getCapturing(
-    register = ::registerMainCapturingListener,
-    unregister = ::unregisterMainCapturingListener,
-)
+public fun LocalVideoTrack.getCapturing(): Flow<Boolean> = callbackFlow {
+    val listener = LocalVideoTrack.CapturingListener(::trySend)
+    registerCapturingListener(listener)
+    awaitClose { unregisterCapturingListener(listener) }
+}
 
-private inline fun getCapturing(
-    crossinline register: (CapturingListener) -> Unit,
-    crossinline unregister: (CapturingListener) -> Unit,
-) = callbackFlow {
-    val listener = object : CapturingListener {
+public fun MediaConnection.getMainRemoteVideoTrack(): Flow<VideoTrack?> = callbackFlow {
+    val listener = MediaConnection.RemoteVideoTrackListener(::trySend)
+    registerMainRemoteVideoTrackListener(listener)
+    awaitClose { unregisterMainRemoteVideoTrackListener(listener) }
+}
 
-        override fun onCapturing(capturing: Boolean) {
-            trySend(capturing)
-        }
-    }
-    register(listener)
-    awaitClose { unregister(listener) }
-}.distinctUntilChanged()
+public fun MediaConnection.getPresentationRemoteVideoTrack(): Flow<VideoTrack?> = callbackFlow {
+    val listener = MediaConnection.RemoteVideoTrackListener(::trySend)
+    registerPresentationRemoteVideoTrackListener(listener)
+    awaitClose { unregisterPresentationRemoteVideoTrackListener(listener) }
+}
