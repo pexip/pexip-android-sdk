@@ -1,22 +1,12 @@
-package com.pexip.sdk.media.webrtc
+package com.pexip.sdk.media.webrtc.internal
 
-import android.content.Context
 import android.os.Looper
 import androidx.core.os.HandlerCompat
-import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
-import com.pexip.sdk.media.MediaConnectionSignaling
-import com.pexip.sdk.media.QualityProfile
-import com.pexip.sdk.media.webrtc.internal.SimplePeerConnectionObserver
-import com.pexip.sdk.media.webrtc.internal.SimpleSdpObserver
-import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
-import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
-import com.pexip.sdk.media.webrtc.internal.WebRtcVideoTrack
-import com.pexip.sdk.media.webrtc.internal.mangle
-import org.webrtc.EglBase
+import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
@@ -28,15 +18,13 @@ import org.webrtc.SessionDescription
 import org.webrtc.VideoTrack
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
-public class WebRtcMediaConnection internal constructor(
-    private val factory: WebRtcMediaConnectionFactory,
+internal class WebRtcMediaConnection(
+    factory: WebRtcMediaConnectionFactory,
     private val config: MediaConnectionConfig,
     private val workerExecutor: ExecutorService,
     private val signalingExecutor: ExecutorService,
-    private val shouldDisposeFactory: Boolean = false,
 ) : MediaConnection {
 
     private val started = AtomicBoolean()
@@ -95,10 +83,6 @@ public class WebRtcMediaConnection internal constructor(
         if (it) onVideoUnmuted() else onVideoMuted()
     }
 
-    @Deprecated("Use WebRtcMediaConnectionFactory.eglBaseContext instead.")
-    public val eglBaseContext: EglBase.Context
-        get() = factory.eglBaseContext
-
     override fun sendMainAudio(localAudioTrack: LocalAudioTrack) {
         require(localAudioTrack is WebRtcLocalAudioTrack) { "localAudioTrack must be an instance of WebRtcLocalAudioTrack." }
         sendMainAudioInternal(localAudioTrack)
@@ -148,9 +132,6 @@ public class WebRtcMediaConnection internal constructor(
             mainRemoteVideoTrackListeners.clear()
             presentationRemoteVideoTrackListeners.clear()
             connection.dispose()
-            if (shouldDisposeFactory) {
-                factory.dispose()
-            }
         }
         workerExecutor.shutdown()
         signalingExecutor.shutdown()
@@ -294,66 +275,5 @@ public class WebRtcMediaConnection internal constructor(
         c.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
         c.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
         return c
-    }
-
-    public class Builder(signaling: MediaConnectionSignaling) {
-
-        private val factory = WebRtcMediaConnectionFactory()
-        private val builder = MediaConnectionConfig.Builder(signaling)
-
-        public fun addIceServer(iceServer: PeerConnection.IceServer): Builder =
-            addIceServers(listOf(iceServer))
-
-        public fun addIceServers(iceServers: Collection<PeerConnection.IceServer>): Builder =
-            apply {
-                for (iceServer in iceServers) {
-                    val i = IceServer.Builder(iceServer.urls)
-                        .username(iceServer.username)
-                        .password(iceServer.password)
-                        .build()
-                    this.builder.addIceServer(i)
-                }
-            }
-
-        @Deprecated(
-            message = "Renamed to presentationInMain.",
-            replaceWith = ReplaceWith("this.presentationInMain(presentationInMix)"),
-            level = DeprecationLevel.ERROR
-        )
-        public fun presentationInMix(presentationInMix: Boolean): Builder =
-            presentationInMain(presentationInMix)
-
-        public fun presentationInMain(presentationInMain: Boolean): Builder = apply {
-            this.builder.presentationInMain(presentationInMain)
-        }
-
-        public fun mainQualityProfile(mainQualityProfile: QualityProfile): Builder = apply {
-            this.builder.mainQualityProfile(mainQualityProfile)
-        }
-
-        @Deprecated("Use WebRtcMediaConnectionFactory.createMediaConnection() instead.")
-        public fun build(): WebRtcMediaConnection = WebRtcMediaConnection(
-            factory = factory,
-            config = builder.build(),
-            workerExecutor = Executors.newSingleThreadExecutor(),
-            signalingExecutor = Executors.newSingleThreadExecutor(),
-            shouldDisposeFactory = true
-        )
-    }
-
-    public companion object {
-
-        @Deprecated(
-            message = "Use WebRtcMediaConnectionFactory.initialize(context) instead.",
-            replaceWith = ReplaceWith(
-                expression = "WebRtcMediaConnectionFactory.initialize(context)",
-                imports = ["com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory"]
-            ),
-            level = DeprecationLevel.ERROR
-        )
-        @JvmStatic
-        public fun initialize(context: Context) {
-            WebRtcMediaConnectionFactory.initialize(context)
-        }
     }
 }
