@@ -135,7 +135,25 @@ public interface InfinityService {
         public fun calls(request: CallsRequest, token: String): Call<CallsResponse>
 
         /**
-         * Requests to mute participant video.
+         * Requests to mute participant's audio.
+         *
+         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#mute].
+         *
+         * @param token a valid token
+         */
+        public fun mute(token: String): Call<Unit>
+
+        /**
+         * Requests to unmute participant's audio.
+         *
+         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#mute].
+         *
+         * @param token a valid token
+         */
+        public fun unmute(token: String): Call<Unit>
+
+        /**
+         * Requests to mute participant's video.
          *
          * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#videomute].
          *
@@ -144,7 +162,7 @@ public interface InfinityService {
         public fun videoMuted(token: String): Call<Unit>
 
         /**
-         * Requests to unmute participant video.
+         * Requests to unmute participant's video.
          *
          * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#videomute].
          *

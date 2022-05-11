@@ -3,6 +3,7 @@ package com.pexip.sdk.media.webrtc.internal
 import android.os.Looper
 import androidx.core.os.HandlerCompat
 import com.pexip.sdk.media.LocalAudioTrack
+import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
@@ -19,6 +20,7 @@ import org.webrtc.VideoTrack
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.properties.Delegates
 
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
@@ -45,7 +47,14 @@ internal class WebRtcMediaConnection(
         }
     }
     private val connection = factory.createPeerConnection(createRTCConfiguration(), observer)
-    private var mainVideoTrack: LocalVideoTrack? = null
+    private var mainAudioTrack: LocalAudioTrack? by Delegates.observable(null) { _, old, new ->
+        old?.unregisterCapturingListener(mainAudioCapturingListener)
+        new?.registerCapturingListener(mainAudioCapturingListener)
+    }
+    private var mainVideoTrack: LocalVideoTrack? by Delegates.observable(null) { _, old, new ->
+        old?.unregisterCapturingListener(mainVideoCapturingListener)
+        new?.registerCapturingListener(mainVideoCapturingListener)
+    }
 
     @Volatile
     private var mainAudioTransceiver: RtpTransceiver? = null
@@ -79,7 +88,10 @@ internal class WebRtcMediaConnection(
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
     private val presentationRemoteVideoTrackListeners =
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
-    private val mainCapturingListener = LocalVideoTrack.CapturingListener {
+    private val mainAudioCapturingListener = LocalMediaTrack.CapturingListener {
+        if (it) onAudioUnmuted() else onAudioMuted()
+    }
+    private val mainVideoCapturingListener = LocalMediaTrack.CapturingListener {
         if (it) onVideoUnmuted() else onVideoMuted()
     }
 
@@ -127,7 +139,7 @@ internal class WebRtcMediaConnection(
     @Synchronized
     override fun dispose() {
         workerExecutor.maybeExecute {
-            mainVideoTrack?.unregisterCapturingListener(mainCapturingListener)
+            mainAudioTrack = null
             mainVideoTrack = null
             mainRemoteVideoTrackListeners.clear()
             presentationRemoteVideoTrackListeners.clear()
@@ -168,6 +180,7 @@ internal class WebRtcMediaConnection(
     private fun sendMainAudioInternal(localAudioTrack: WebRtcLocalAudioTrack) {
         workerExecutor.maybeExecute {
             if (mainAudioTransceiver == null) {
+                mainAudioTrack = localAudioTrack
                 val transceiver = connection.addTransceiver(
                     MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
                     RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.SEND_RECV)
@@ -182,7 +195,6 @@ internal class WebRtcMediaConnection(
         workerExecutor.maybeExecute {
             if (mainVideoTransceiver == null) {
                 mainVideoTrack = localVideoTrack
-                mainVideoTrack?.registerCapturingListener(mainCapturingListener)
                 val transceiver = connection.addTransceiver(
                     MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
                     RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.SEND_RECV)
@@ -234,6 +246,26 @@ internal class WebRtcMediaConnection(
         signalingExecutor.maybeExecute {
             try {
                 config.signaling.onCandidate(candidate, mid)
+            } catch (t: Throwable) {
+                // noop
+            }
+        }
+    }
+
+    private fun onAudioMuted() {
+        signalingExecutor.maybeExecute {
+            try {
+                config.signaling.onAudioMuted()
+            } catch (t: Throwable) {
+                // noop
+            }
+        }
+    }
+
+    private fun onAudioUnmuted() {
+        signalingExecutor.maybeExecute {
+            try {
+                config.signaling.onAudioUnmuted()
             } catch (t: Throwable) {
                 // noop
             }

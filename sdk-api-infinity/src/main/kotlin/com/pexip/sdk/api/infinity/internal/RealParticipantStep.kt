@@ -37,6 +37,32 @@ internal class RealParticipantStep(
         )
     }
 
+    override fun mute(token: String): Call<Unit> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node, conferenceAlias, participantId, "mute")
+                .header("token", token)
+                .build(),
+            mapper = ::parseMuteUnmute
+        )
+    }
+
+    override fun unmute(token: String): Call<Unit> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node, conferenceAlias, participantId, "unmute")
+                .header("token", token)
+                .build(),
+            mapper = ::parseMuteUnmute
+        )
+    }
+
     override fun videoMuted(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -46,7 +72,7 @@ internal class RealParticipantStep(
                 .url(node, conferenceAlias, participantId, "video_muted")
                 .header("token", token)
                 .build(),
-            mapper = ::parseVideoMuted
+            mapper = ::parseVideoMutedVideoUnmuted
         )
     }
 
@@ -59,7 +85,7 @@ internal class RealParticipantStep(
                 .url(node, conferenceAlias, participantId, "video_unmuted")
                 .header("token", token)
                 .build(),
-            mapper = ::parseVideoUnmuted
+            mapper = ::parseVideoMutedVideoUnmuted
         )
     }
 
@@ -73,19 +99,14 @@ internal class RealParticipantStep(
         else -> throw IllegalStateException()
     }
 
-    private fun parseVideoMuted(response: Response) = when (response.code) {
+    private fun parseMuteUnmute(response: Response) = when (response.code) {
         200 -> Unit
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
-    private fun parseVideoUnmuted(response: Response) = when (response.code) {
-        200 -> Unit
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
+    private fun parseVideoMutedVideoUnmuted(response: Response) = parseMuteUnmute(response)
 
     private fun Response.parse403(): Nothing {
         val message = json.decodeFromResponseBody(StringSerializer, body!!)

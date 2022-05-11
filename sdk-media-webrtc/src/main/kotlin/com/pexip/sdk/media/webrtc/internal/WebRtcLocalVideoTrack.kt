@@ -3,6 +3,7 @@ package com.pexip.sdk.media.webrtc.internal
 import android.content.Context
 import android.os.Looper
 import androidx.core.os.HandlerCompat
+import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import org.webrtc.CapturerObserver
@@ -22,7 +23,7 @@ internal open class WebRtcLocalVideoTrack(
 ) : LocalVideoTrack, WebRtcVideoTrack(videoTrack) {
 
     private val handler = HandlerCompat.createAsync(Looper.getMainLooper())
-    private val capturingListeners = CopyOnWriteArraySet<LocalVideoTrack.CapturingListener>()
+    private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val capturerObserver = object : CapturerObserver {
 
         override fun onCapturerStarted(success: Boolean) {
@@ -59,16 +60,20 @@ internal open class WebRtcLocalVideoTrack(
         videoCapturer.startCapture(profile.width, profile.height, profile.fps)
     }
 
+    override fun startCapture() {
+        startCapture(QualityProfile.Medium)
+    }
+
     override fun stopCapture() {
         videoCapturer.stopCapture()
     }
 
-    override fun registerCapturingListener(listener: LocalVideoTrack.CapturingListener) {
+    override fun registerCapturingListener(listener: LocalMediaTrack.CapturingListener) {
         handler.post { listener.onCapturing(capturing) }
         capturingListeners += listener
     }
 
-    override fun unregisterCapturingListener(listener: LocalVideoTrack.CapturingListener) {
+    override fun unregisterCapturingListener(listener: LocalMediaTrack.CapturingListener) {
         capturingListeners -= listener
     }
 

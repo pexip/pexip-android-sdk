@@ -10,19 +10,7 @@ public interface MediaConnection {
 
     public fun sendMainAudio(localAudioTrack: LocalAudioTrack)
 
-    @Deprecated("Use localVideoTrack version.", level = DeprecationLevel.ERROR)
-    public fun sendMainVideo(): Unit = deprecated()
-
-    @Deprecated("Use localVideoTrack version.", level = DeprecationLevel.ERROR)
-    public fun sendMainVideo(deviceName: String): Unit = deprecated()
-
     public fun sendMainVideo(localVideoTrack: LocalVideoTrack)
-
-    @Deprecated("Use localVideoTrack version.", level = DeprecationLevel.ERROR)
-    public fun startMainCapture(): Unit = deprecated()
-
-    @Deprecated("Use localVideoTrack version.", level = DeprecationLevel.ERROR)
-    public fun stopMainCapture(): Unit = deprecated()
 
     public fun startPresentationReceive()
 
@@ -41,6 +29,4 @@ public interface MediaConnection {
         @MainThread
         public fun onRemoteVideoTrack(videoTrack: VideoTrack?)
     }
-
-    private fun deprecated(): Nothing = throw UnsupportedOperationException("Deprecated.")
 }

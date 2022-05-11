@@ -9,6 +9,17 @@ import com.squareup.workflow1.WorkflowAction
 
 typealias ConferenceAction = WorkflowAction<ConferenceProps, ConferenceState, ConferenceOutput>
 
+class OnToggleLocalAudioCapturing : ConferenceAction() {
+
+    override fun Updater.apply() = with(state) {
+        if (localAudioCapturing) {
+            localAudioTrack.stopCapture()
+        } else {
+            localAudioTrack.startCapture()
+        }
+    }
+}
+
 class OnToggleCameraCapturing : ConferenceAction() {
 
     override fun Updater.apply() = with(state) {
@@ -42,6 +53,13 @@ class OnMainRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAc
 
     override fun Updater.apply() {
         state = state.copy(mainRemoteVideoTrack = videoTrack)
+    }
+}
+
+class OnMicrophoneCapturing(private val capturing: Boolean) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(localAudioCapturing = capturing)
     }
 }
 

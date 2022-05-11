@@ -122,6 +122,42 @@ internal class RealMediaConnectionSignalingTest {
     }
 
     @Test
+    fun `onAudioMuted() returns`() {
+        var called = false
+        val step = object : TestParticipantTest {
+
+            override fun mute(token: String): Call<Unit> = object : TestCall<Unit> {
+
+                override fun execute() {
+                    assertEquals(store.get(), token)
+                    called = true
+                }
+            }
+        }
+        val signaling = RealMediaConnectionSignaling(store, step)
+        signaling.onAudioMuted()
+        assertTrue(called)
+    }
+
+    @Test
+    fun `onAudioUnmuted() returns`() {
+        var called = false
+        val step = object : TestParticipantTest {
+
+            override fun unmute(token: String): Call<Unit> = object : TestCall<Unit> {
+
+                override fun execute() {
+                    assertEquals(store.get(), token)
+                    called = true
+                }
+            }
+        }
+        val signaling = RealMediaConnectionSignaling(store, step)
+        signaling.onAudioUnmuted()
+        assertTrue(called)
+    }
+
+    @Test
     fun `onVideoMuted() returns`() {
         var called = false
         val step = object : TestParticipantTest {

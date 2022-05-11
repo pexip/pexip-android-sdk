@@ -1,6 +1,3 @@
 package com.pexip.sdk.media
 
-public interface LocalAudioTrack {
-
-    public fun dispose()
-}
+public interface LocalAudioTrack : LocalMediaTrack

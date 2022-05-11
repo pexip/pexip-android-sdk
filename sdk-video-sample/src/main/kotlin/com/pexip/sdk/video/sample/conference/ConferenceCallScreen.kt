@@ -17,6 +17,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Message
+import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.MicOff
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.VideocamOff
 import androidx.compose.runtime.Composable
@@ -68,7 +70,7 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
                 }
             }
             AnimatedVisibility(
-                visible = rendering.mainCapturing,
+                visible = rendering.cameraCapturing,
                 enter = slideInHorizontally { it * 2 },
                 exit = slideOutHorizontally { it * 2 },
                 modifier = Modifier
@@ -78,7 +80,7 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
             ) {
                 VideoTrackRenderer(
                     sharedContext = sharedContext,
-                    videoTrack = rendering.mainLocalVideoTrack,
+                    videoTrack = rendering.cameraVideoTrack,
                     mirror = true
                 )
             }
@@ -88,9 +90,18 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
             ) {
-                Button(onClick = rendering.onToggleMainCapturing) {
+                Button(onClick = rendering.onToggleLocalAudioCapturing) {
                     Icon(
-                        imageVector = when (rendering.mainCapturing) {
+                        imageVector = when (rendering.localAudioCapturing) {
+                            true -> Icons.Rounded.Mic
+                            false -> Icons.Rounded.MicOff
+                        },
+                        contentDescription = null
+                    )
+                }
+                Button(onClick = rendering.onToggleCameraCapturing) {
+                    Icon(
+                        imageVector = when (rendering.cameraCapturing) {
                             true -> Icons.Rounded.Videocam
                             false -> Icons.Rounded.VideocamOff
                         },

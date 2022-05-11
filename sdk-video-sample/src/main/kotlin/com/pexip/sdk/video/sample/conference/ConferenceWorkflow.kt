@@ -6,10 +6,10 @@ import com.pexip.sdk.conference.coroutines.getConferenceEvents
 import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.IceServer
+import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionFactory
-import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
@@ -53,7 +53,8 @@ class ConferenceWorkflow(
         context: RenderContext,
     ): ConferenceRendering {
         context.leaveSideEffect(renderState)
-        context.cameraVideoTrackCapturingSideEffect(renderState.cameraVideoTrack)
+        context.localAudioCapturingSideEffect(renderState.localAudioTrack)
+        context.cameraCapturingSideEffect(renderState.cameraVideoTrack)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
         context.conferenceEventsSideEffect(renderState.conference)
         context.receivePresentationSideEffect(renderState)
@@ -68,11 +69,13 @@ class ConferenceWorkflow(
                 onBackClick = context.send(::OnBackClick)
             )
             else -> ConferenceCallRendering(
-                mainCapturing = renderState.cameraCapturing,
-                mainLocalVideoTrack = renderState.cameraVideoTrack,
+                localAudioCapturing = renderState.localAudioCapturing,
+                cameraCapturing = renderState.cameraCapturing,
+                cameraVideoTrack = renderState.cameraVideoTrack,
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
-                onToggleMainCapturing = context.send(::OnToggleCameraCapturing),
+                onToggleLocalAudioCapturing = context.send(::OnToggleLocalAudioCapturing),
+                onToggleCameraCapturing = context.send(::OnToggleCameraCapturing),
                 onConferenceEventsClick = context.send(::OnConferenceEventsClick),
                 onBackClick = context.send(::OnBackClick)
             )
@@ -82,9 +85,10 @@ class ConferenceWorkflow(
     private fun RenderContext.leaveSideEffect(renderState: ConferenceState) =
         runningSideEffect("${renderState.conference}Leave") {
             try {
+                renderState.localAudioTrack.startCapture()
+                renderState.cameraVideoTrack.startCapture()
                 renderState.connection.sendMainAudio(renderState.localAudioTrack)
                 renderState.connection.sendMainVideo(renderState.cameraVideoTrack)
-                renderState.cameraVideoTrack.startCapture(QualityProfile.High)
                 renderState.connection.start()
                 awaitCancellation()
             } finally {
@@ -95,7 +99,14 @@ class ConferenceWorkflow(
             }
         }
 
-    private fun RenderContext.cameraVideoTrackCapturingSideEffect(cameraVideoTrack: CameraVideoTrack) =
+    private fun RenderContext.localAudioCapturingSideEffect(localAudioTrack: LocalAudioTrack) =
+        runningSideEffect("${localAudioTrack}Capturing") {
+            localAudioTrack.getCapturing()
+                .map(::OnMicrophoneCapturing)
+                .collectLatest(actionSink::send)
+        }
+
+    private fun RenderContext.cameraCapturingSideEffect(cameraVideoTrack: CameraVideoTrack) =
         runningSideEffect("${cameraVideoTrack}Capturing") {
             cameraVideoTrack.getCapturing()
                 .map(::OnCameraCapturing)

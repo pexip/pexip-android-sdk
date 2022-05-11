@@ -12,6 +12,7 @@ data class ConferenceState(
     val connection: MediaConnection,
     val localAudioTrack: LocalAudioTrack,
     val cameraVideoTrack: CameraVideoTrack,
+    val localAudioCapturing: Boolean = false,
     val cameraCapturing: Boolean = false,
     val mainRemoteVideoTrack: VideoTrack? = null,
     val presentation: Boolean = false,

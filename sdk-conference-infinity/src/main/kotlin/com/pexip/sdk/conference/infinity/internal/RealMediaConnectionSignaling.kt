@@ -56,6 +56,14 @@ internal class RealMediaConnectionSignaling(
         callStep.newCandidate(request, token).execute()
     }
 
+    override fun onAudioMuted() {
+        participantStep.mute(store.get()).execute()
+    }
+
+    override fun onAudioUnmuted() {
+        participantStep.unmute(store.get()).execute()
+    }
+
     override fun onVideoMuted() {
         participantStep.videoMuted(store.get()).execute()
     }

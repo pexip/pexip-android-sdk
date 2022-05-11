@@ -6,6 +6,10 @@ public interface MediaConnectionSignaling {
 
     public fun onCandidate(candidate: String, mid: String)
 
+    public fun onAudioMuted()
+
+    public fun onAudioUnmuted()
+
     public fun onVideoMuted()
 
     public fun onVideoUnmuted()

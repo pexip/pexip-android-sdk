@@ -8,11 +8,13 @@ sealed interface ConferenceRendering {
 }
 
 data class ConferenceCallRendering(
-    val mainCapturing: Boolean,
-    val mainLocalVideoTrack: VideoTrack,
+    val localAudioCapturing: Boolean,
+    val cameraCapturing: Boolean,
+    val cameraVideoTrack: VideoTrack,
     val mainRemoteVideoTrack: VideoTrack?,
     val presentationRemoteVideoTrack: VideoTrack?,
-    val onToggleMainCapturing: () -> Unit,
+    val onToggleLocalAudioCapturing: () -> Unit,
+    val onToggleCameraCapturing: () -> Unit,
     val onConferenceEventsClick: () -> Unit,
     override val onBackClick: () -> Unit,
 ) : ConferenceRendering
