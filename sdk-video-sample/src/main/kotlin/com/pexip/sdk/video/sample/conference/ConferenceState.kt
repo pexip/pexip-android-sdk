@@ -6,11 +6,9 @@ import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.VideoTrack
-import org.webrtc.EglBase
 
 data class ConferenceState(
     val conference: Conference,
-    val sharedContext: EglBase.Context,
     val connection: MediaConnection,
     val localAudioTrack: LocalAudioTrack,
     val cameraVideoTrack: CameraVideoTrack,

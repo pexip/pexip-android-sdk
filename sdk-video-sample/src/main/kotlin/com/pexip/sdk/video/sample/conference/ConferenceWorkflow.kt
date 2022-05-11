@@ -8,11 +8,11 @@ import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
+import com.pexip.sdk.media.MediaConnectionFactory
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
-import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import com.pexip.sdk.video.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.map
 
 class ConferenceWorkflow(
     private val service: InfinityService,
-    private val factory: WebRtcMediaConnectionFactory,
+    private val factory: MediaConnectionFactory,
 ) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState {
@@ -36,11 +36,9 @@ class ConferenceWorkflow(
         val config = MediaConnectionConfig.Builder(conference)
             .addIceServer(iceServer)
             .presentationInMain(props.presentationInMain)
-            .mainQualityProfile(QualityProfile.High)
             .build()
         return ConferenceState(
             conference = conference,
-            sharedContext = factory.eglBaseContext,
             connection = factory.createMediaConnection(config),
             localAudioTrack = factory.createLocalAudioTrack(),
             cameraVideoTrack = factory.createCameraVideoTrack()
@@ -70,7 +68,6 @@ class ConferenceWorkflow(
                 onBackClick = context.send(::OnBackClick)
             )
             else -> ConferenceCallRendering(
-                sharedContext = renderState.sharedContext,
                 mainCapturing = renderState.cameraCapturing,
                 mainLocalVideoTrack = renderState.cameraVideoTrack,
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,

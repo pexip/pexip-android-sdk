@@ -18,11 +18,12 @@ public fun VideoTrackRenderer(
     videoTrack: VideoTrack?,
     modifier: Modifier = Modifier,
     mirror: Boolean = false,
+    configAttributes: IntArray = EglBase.CONFIG_PLAIN,
 ) {
     val context = LocalContext.current
     val renderer = remember(context) { SurfaceViewRenderer(context) }
     DisposableEffect(renderer, sharedContext) {
-        renderer.init(sharedContext, null, EglBase.CONFIG_PLAIN, GlRectDrawer())
+        renderer.init(sharedContext, null, configAttributes, GlRectDrawer())
         onDispose {
             renderer.clearImage()
             renderer.release()

@@ -19,17 +19,31 @@ import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.SurfaceTextureHelper
+import org.webrtc.VideoDecoderFactory
+import org.webrtc.VideoEncoderFactory
 import java.util.UUID
 import java.util.concurrent.Executors
 
-public class WebRtcMediaConnectionFactory(context: Context) : MediaConnectionFactory {
+public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
+    context: Context,
+    private val eglBase: EglBase,
+    videoDecoderFactory: VideoDecoderFactory = DefaultVideoDecoderFactory(eglBase.eglBaseContext),
+    videoEncoderFactory: VideoEncoderFactory = DefaultVideoEncoderFactory(
+        eglBase.eglBaseContext,
+        false,
+        false
+    ),
+) : MediaConnectionFactory {
 
-    public constructor() : this(ContextUtils.getApplicationContext())
+    @Deprecated(
+        message = "Use primary constructor instead.",
+        level = DeprecationLevel.ERROR
+    )
+    public constructor() : this(ContextUtils.getApplicationContext(), EglBase.create())
 
-    private val eglBase = EglBase.create()
     private val factory = PeerConnectionFactory.builder()
-        .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBaseContext))
-        .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBaseContext, false, false))
+        .setVideoDecoderFactory(videoDecoderFactory)
+        .setVideoEncoderFactory(videoEncoderFactory)
         .createPeerConnectionFactory()
     private val applicationContext = context.applicationContext
     private val cameraEnumerator = when (Camera2Enumerator.isSupported(applicationContext)) {
@@ -37,8 +51,9 @@ public class WebRtcMediaConnectionFactory(context: Context) : MediaConnectionFac
         else -> Camera1Enumerator()
     }
 
+    @Deprecated(message = "Use EglBase.eglBaseContext instead.", level = DeprecationLevel.ERROR)
     public val eglBaseContext: EglBase.Context
-        get() = eglBase.eglBaseContext
+        get() = throw UnsupportedOperationException("Deprecated.")
 
     override fun createLocalAudioTrack(): LocalAudioTrack {
         val audioSource = factory.createAudioSource(MediaConstraints())
@@ -56,7 +71,8 @@ public class WebRtcMediaConnectionFactory(context: Context) : MediaConnectionFac
 
     override fun createCameraVideoTrack(deviceName: String): CameraVideoTrack {
         require(deviceName in cameraEnumerator.deviceNames) { "Unknown device name: $deviceName." }
-        val textureHelper = SurfaceTextureHelper.create("CaptureThread:$deviceName", eglBaseContext)
+        val textureHelper =
+            SurfaceTextureHelper.create("CaptureThread:$deviceName", eglBase.eglBaseContext)
         val videoCapturer = cameraEnumerator.createCapturer(deviceName, null)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         val videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource)
@@ -79,7 +95,6 @@ public class WebRtcMediaConnectionFactory(context: Context) : MediaConnectionFac
 
     override fun dispose() {
         factory.dispose()
-        eglBase.release()
     }
 
     internal fun createPeerConnection(
