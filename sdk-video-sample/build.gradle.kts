@@ -42,3 +42,7 @@ dependencies {
 
     testImplementation(libs.workflow.testing.jvm)
 }
+
+licensee {
+    allowUrl("https://webrtc.googlesource.com/src/+/8c6d88ff5c5d8d89b93e74935aa354d58ef3799f/LICENSE")
+}
