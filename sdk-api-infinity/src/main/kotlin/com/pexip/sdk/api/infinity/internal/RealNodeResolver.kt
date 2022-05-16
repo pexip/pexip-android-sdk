@@ -37,10 +37,7 @@ internal class RealNodeResolver(private val api: ResolverApi) : NodeResolver {
         }
 
         override fun cancel() {
-            future.getAndUpdate {
-                it?.cancel(true)
-                null
-            }
+            future.getAndSet(null)?.cancel(true)
         }
 
         private inline fun <T> maybeExecute(block: () -> T) =

@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    id("com.pexip.paddock.kotlin.android.library")
+    id("com.pexip.paddock.kotlin.android.library.publish")
     alias(libs.plugins.kotlin.serialization)
 }
 

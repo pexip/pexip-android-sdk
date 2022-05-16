@@ -8,5 +8,13 @@ internal class RealTokenStore(token: String) : TokenStore {
 
     override fun get(): String = token.get()
 
-    override fun updateAndGet(block: (String) -> String): String = token.updateAndGet(block)
+    override fun updateAndGet(block: (String) -> String): String = with(token) {
+        var prev: String
+        var next: String
+        do {
+            prev = get()
+            next = block(prev)
+        } while (!compareAndSet(prev, next))
+        return next
+    }
 }
