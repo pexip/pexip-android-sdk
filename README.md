@@ -2,8 +2,9 @@
 
 ![main.yml](https://github.com/pexip/pexip-android-sdk/workflows/main.yml/badge.svg)
 
-**Pexip Android SDK** is a collection of libraries for self hosted [Pexip Infinity] installations
-that enables customers to build bespoke applications for Android or add Pexip to existing mobile
+**Pexip Android SDK** is a collection of libraries for
+self-hosted [Pexip Infinity](https://docs.pexip.com/admin/admin_intro.htm) installations that
+enables customers to build bespoke applications for Android or add Pexip to existing mobile
 experiences and workflows.
 
 ## Using in your projects
@@ -39,6 +40,21 @@ dependencies {
 }
 ```
 
+Snapshot builds are
+also [available](https://s01.oss.sonatype.org/content/repositories/snapshots/com/pexip/sdk/) and can
+be configured as follows:
+
+```kotlin
+repositories {
+    maven {
+        url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+}
+```
+
 ## Documentation
 
-[Pexip Infinity]: https://docs.pexip.com/admin/admin_intro.htm
+## License
