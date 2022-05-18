@@ -25,7 +25,7 @@ Next, you must pick a node addresses that is available. This can be achieved via
 // You should generally provide your own instance of OkHttpClient to share its thread pool
 val okHttpClient = OkHttpClient()
 val infinityService = InfinityService.create(okHttpClient)
-val node: URL? = nodees.find { infinityService.newRequest(it).status().execute() }
+val node: URL? = nodes.find { infinityService.newRequest(it).status().execute() }
 ```
 
 ## Joining a conference
@@ -86,9 +86,15 @@ WebRtcMediaConnectionFactory.initialize(context)
 After that, ensure that `android.permission.RECORD_AUDIO` and `android.permission.CAMERA` were
 granted to get access to microphone and camera respectively.
 
-Now, use provided methods to create instances of `LocalMediaTrack`:
+Now, use provided methods to create instances of `LocalMediaTrack`. Note that you must provide an
+instance of `EglBase` to be able to utilize hardware decoding/encoding and render the video later:
 
 ```kotlin
+val eglBase = EglBase.create()
+val factory: MediaConnectionFactory = WebRtcMediaConnectionFactory(
+    context = context,
+    eglBase = eglBase
+)
 val localAudioTrack: LocalAudioTrack = factory.createLocalAudioTrack()
 val cameraVideoTrack: CameraVideoTrack = factory.createCameraVideoTrack()
 localAudioTrack.startCapture()
@@ -98,16 +104,9 @@ cameraVideoTrack.startCapture(QualityProfile.High)
 
 ## Joining the conference with audio and video
 
-To join the conference with audio and video, you need an instance of a `Conference`. Note that you
-must provide an instance of `EglBase` to be able to utilize hardware decoding/encoding and render
-the video:
+To join the conference with audio and video, you need an instance of a `Conference`:
 
 ```kotlin
-val eglBase = EglBase.create()
-val factory: MediaConnectionFactory = WebRtcMediaConnectionFactory(
-    context = context,
-    eglBase = eglBase
-)
 val iceServer = IceServer.Builder(listOf("stun:example.com:19302")).build()
 val config = MediaConnectionConfig.Builder(conference)
     .addIceServer(iceServer) // Optional
