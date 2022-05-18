@@ -57,4 +57,6 @@ repositories {
 
 ## Documentation
 
+- [Recipes](docs/recipes.md)
+
 ## License
