@@ -1,6 +1,6 @@
 # Pexip Android SDK
 
-![main.yml](https://github.com/pexip/pexip-android-sdk/workflows/main.yml/badge.svg)
+![main](https://github.com/pexip/pexip-android-sdk/actions/workflows/main.yml/badge.svg)
 
 **Pexip Android SDK** is a collection of libraries for
 self-hosted [Pexip Infinity](https://docs.pexip.com/admin/admin_intro.htm) installations that
