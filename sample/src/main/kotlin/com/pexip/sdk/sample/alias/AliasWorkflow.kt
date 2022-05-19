@@ -5,8 +5,12 @@ import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AliasWorkflow : StatefulWorkflow<Unit, AliasState, AliasOutput, AliasRendering>() {
+@Singleton
+class AliasWorkflow @Inject constructor() :
+    StatefulWorkflow<Unit, AliasState, AliasOutput, AliasRendering>() {
 
     override fun initialState(props: Unit, snapshot: Snapshot?): AliasState =
         snapshot?.toParcelable() ?: AliasState()

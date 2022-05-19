@@ -3,6 +3,7 @@
     package="com.pexip.sdk.sample">
 
     <application
+        android:name=".SampleApplication"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"

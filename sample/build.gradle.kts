@@ -2,6 +2,8 @@
 
 plugins {
     id("com.pexip.sdk.kotlin.android.application")
+    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
 }
 
@@ -22,6 +24,10 @@ android {
     }
 }
 
+hilt {
+    enableAggregatingTask = true
+}
+
 dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
@@ -29,6 +35,8 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.startup.runtime)
     implementation(libs.accompanist.appcompattheme)
+    implementation(libs.dagger.hilt.android.runtime)
+    kapt(libs.dagger.hilt.compiler)
     implementation(libs.okhttp.logginginterceptor)
     implementation(libs.pexip.sdk.api.coroutines)
     implementation(libs.pexip.sdk.conference.infinity)

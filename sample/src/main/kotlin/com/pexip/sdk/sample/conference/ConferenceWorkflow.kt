@@ -19,8 +19,11 @@ import com.squareup.workflow1.StatefulWorkflow
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ConferenceWorkflow(
+@Singleton
+class ConferenceWorkflow @Inject constructor(
     private val service: InfinityService,
     private val factory: MediaConnectionFactory,
 ) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
