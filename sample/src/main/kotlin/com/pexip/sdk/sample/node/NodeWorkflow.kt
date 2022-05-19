@@ -8,8 +8,11 @@ import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class NodeWorkflow(
+@Singleton
+class NodeWorkflow @Inject constructor(
     private val resolver: NodeResolver,
     private val service: InfinityService,
 ) : StatefulWorkflow<NodeProps, NodeState, NodeOutput, NodeRendering>() {

@@ -14,8 +14,11 @@ import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.renderChild
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SampleWorkflow(
+@Singleton
+class SampleWorkflow @Inject constructor(
     private val aliasWorkflow: AliasWorkflow,
     private val nodeWorkflow: NodeWorkflow,
     private val pinRequirementWorkflow: PinRequirementWorkflow,

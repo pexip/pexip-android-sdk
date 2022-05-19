@@ -19,10 +19,17 @@ import com.pexip.sdk.sample.pinrequirement.PinRequirementViewFactory
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.ViewRegistry
 import com.squareup.workflow1.ui.compose.WorkflowRendering
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.webrtc.EglBase
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SampleActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var eglBase: EglBase
 
     private val sampleViewModel by viewModels<SampleViewModel>()
 
@@ -36,7 +43,11 @@ class SampleActivity : AppCompatActivity() {
         ConferenceViewFactory.ConferenceCallViewFactory,
         ConferenceViewFactory.ConferenceEventsViewFactory
     )
-    private val viewEnvironment = ViewEnvironment(mapOf(ViewRegistry to viewRegistry))
+    private val map = buildMap {
+        this[ViewRegistry] = viewRegistry
+        this[EglBaseKey] = eglBase
+    }
+    private val viewEnvironment = ViewEnvironment(map)
     private val launcher = registerForActivityResult(RequestMultiplePermissions()) {
         if (it.any { (_, granted) -> !granted }) finish()
     }

@@ -9,8 +9,11 @@ import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PinChallengeWorkflow(private val service: InfinityService) :
+@Singleton
+class PinChallengeWorkflow @Inject constructor(private val service: InfinityService) :
     StatefulWorkflow<PinChallengeProps, PinChallengeState, PinChallengeOutput, PinChallengeRendering>() {
 
     override fun initialState(props: PinChallengeProps, snapshot: Snapshot?): PinChallengeState =

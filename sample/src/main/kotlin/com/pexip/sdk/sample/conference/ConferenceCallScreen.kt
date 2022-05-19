@@ -27,12 +27,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
-import com.pexip.sdk.sample.EglBaseComponent
+import org.webrtc.EglBase
 
 @Composable
-fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+fun ConferenceCallScreen(
+    rendering: ConferenceCallRendering,
+    eglBase: EglBase,
+    modifier: Modifier = Modifier
+) {
     BackHandler(onBack = rendering.onBackClick)
-    val sharedContext = with(EglBaseComponent.eglBase) { remember(this) { eglBaseContext } }
+    val sharedContext = remember(eglBase) { eglBase.eglBaseContext }
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize(),
