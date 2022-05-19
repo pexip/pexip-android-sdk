@@ -5,3 +5,7 @@ plugins {
 kotlin {
     explicitApi()
 }
+
+publishing.publications.named<MavenPublication>("release") {
+    pom.description.set("A set of common classes and interfaces to build APIs.")
+}

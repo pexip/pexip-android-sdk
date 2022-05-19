@@ -11,3 +11,7 @@ android {
 dependencies {
     api(projects.sdkMedia)
 }
+
+publishing.publications.named<MavenPublication>("release") {
+    pom.description.set("A set of tools to interact with conferences.")
+}

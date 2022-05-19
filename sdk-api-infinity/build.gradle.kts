@@ -26,3 +26,7 @@ dependencies {
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
 }
+
+publishing.publications.named<MavenPublication>("release") {
+    pom.description.set("A fluent wrapper for Pexip Infinity Client REST API.")
+}

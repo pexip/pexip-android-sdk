@@ -11,3 +11,7 @@ dependencies {
 
     api(libs.kotlinx.coroutines.core)
 }
+
+publishing.publications.named<MavenPublication>("release") {
+    pom.description.set("Coroutines support for sdk-api.")
+}
