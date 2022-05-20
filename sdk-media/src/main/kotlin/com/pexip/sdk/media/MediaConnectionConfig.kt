@@ -19,12 +19,6 @@ public class MediaConnectionConfig private constructor(
             this.presentationInMain = presentationInMain
         }
 
-        @Deprecated(
-            message = "Use LocalVideoTrack.startCapture() to control capture quality.",
-            level = DeprecationLevel.ERROR
-        )
-        public fun mainQualityProfile(mainQualityProfile: QualityProfile): Builder = this
-
         public fun build(): MediaConnectionConfig = MediaConnectionConfig(
             signaling = signaling,
             iceServers = iceServers,

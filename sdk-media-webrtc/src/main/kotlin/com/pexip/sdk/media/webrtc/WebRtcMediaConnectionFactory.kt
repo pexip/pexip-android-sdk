@@ -11,7 +11,6 @@ import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcMediaConnection
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
-import org.webrtc.ContextUtils
 import org.webrtc.DefaultVideoDecoderFactory
 import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
@@ -35,12 +34,6 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     ),
 ) : MediaConnectionFactory {
 
-    @Deprecated(
-        message = "Use primary constructor instead.",
-        level = DeprecationLevel.ERROR
-    )
-    public constructor() : this(ContextUtils.getApplicationContext(), EglBase.create())
-
     private val factory = PeerConnectionFactory.builder()
         .setVideoDecoderFactory(videoDecoderFactory)
         .setVideoEncoderFactory(videoEncoderFactory)
@@ -50,10 +43,6 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         true -> Camera2Enumerator(applicationContext)
         else -> Camera1Enumerator()
     }
-
-    @Deprecated(message = "Use EglBase.eglBaseContext instead.", level = DeprecationLevel.ERROR)
-    public val eglBaseContext: EglBase.Context
-        get() = throw UnsupportedOperationException("Deprecated.")
 
     override fun createLocalAudioTrack(): LocalAudioTrack {
         val audioSource = factory.createAudioSource(MediaConstraints())
