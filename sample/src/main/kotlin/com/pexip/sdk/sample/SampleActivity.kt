@@ -43,17 +43,17 @@ class SampleActivity : AppCompatActivity() {
         ConferenceViewFactory.ConferenceCallViewFactory,
         ConferenceViewFactory.ConferenceEventsViewFactory
     )
-    private val map = buildMap {
-        this[ViewRegistry] = viewRegistry
-        this[EglBaseKey] = eglBase
-    }
-    private val viewEnvironment = ViewEnvironment(map)
     private val launcher = registerForActivityResult(RequestMultiplePermissions()) {
         if (it.any { (_, granted) -> !granted }) finish()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val map = buildMap {
+            this[ViewRegistry] = viewRegistry
+            this[EglBaseKey] = eglBase
+        }
+        val viewEnvironment = ViewEnvironment(map)
         setContent {
             AppCompatTheme {
                 val rendering by sampleViewModel.rendering.collectAsState()

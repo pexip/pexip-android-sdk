@@ -16,5 +16,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "plugin"
-include("android")
+rootProject.name = "plugins"
+include(":android")

@@ -1,5 +1,6 @@
 .gradle
 /local.properties
+/local.settings.gradle.kts
 .DS_Store
 /build
 /captures

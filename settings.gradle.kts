@@ -9,7 +9,7 @@ pluginManagement {
         mavenCentral()
         google()
     }
-    includeBuild("plugin")
+    includeBuild("plugins")
 }
 
 dependencyResolutionManagement {
@@ -28,3 +28,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "pexip-android-sdk"
 include(":sample")
+
+val localSettings = file("local.settings.gradle.kts")
+if (localSettings.exists()) apply(from = localSettings)
