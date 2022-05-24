@@ -16,4 +16,6 @@ public data class RequestTokenResponse(
     public val participantId: UUID,
     @SerialName("display_name")
     public val participantName: String,
+    @SerialName("analytics_enabled")
+    public val analyticsEnabled: Boolean = false,
 )
