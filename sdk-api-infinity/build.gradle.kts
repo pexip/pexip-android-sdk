@@ -6,6 +6,9 @@ plugins {
 }
 
 android {
+    defaultConfig {
+        consumerProguardFiles("proguard.pro")
+    }
     kotlinOptions {
         freeCompilerArgs += "-Xexplicit-api=strict"
     }
