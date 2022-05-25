@@ -7,6 +7,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
+import com.pexip.sdk.media.IceServer
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import java.util.UUID
@@ -19,10 +20,27 @@ import kotlin.test.assertTrue
 internal class RealMediaConnectionSignalingTest {
 
     private lateinit var store: TokenStore
+    private lateinit var iceServers: List<IceServer>
 
     @BeforeTest
     fun setUp() {
         store = RealTokenStore(Random.nextString(8))
+        iceServers = List(10) {
+            IceServer.Builder(listOf("turn:turn$it.example.com:3478?transport=udp"))
+                .username("${it shl 1}")
+                .password("${it shr 1}")
+                .build()
+        }
+    }
+
+    @Test
+    fun `iceServers return IceServer list`() {
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantTest {},
+            iceServers = iceServers
+        )
+        assertEquals(iceServers, signaling.iceServers)
     }
 
     @Test
@@ -66,7 +84,7 @@ internal class RealMediaConnectionSignalingTest {
                 return callStep
             }
         }
-        val signaling = RealMediaConnectionSignaling(store, participantStep)
+        val signaling = RealMediaConnectionSignaling(store, participantStep, iceServers)
         assertEquals(signaling.onOffer(callType, sdp, presentationInMix), response.sdp)
         assertEquals(callStep, signaling.callStep)
         assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
@@ -79,7 +97,11 @@ internal class RealMediaConnectionSignalingTest {
         val sdp = read("session_description_original")
         val presentationInMix = Random.nextBoolean()
         val response = UpdateResponse(Random.nextString(8))
-        val signaling = RealMediaConnectionSignaling(store, object : TestParticipantTest {})
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantTest {},
+            iceServers = iceServers
+        )
         signaling.callStep = object : TestCallStep {
             override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> =
                 object : TestCall<UpdateResponse> {
@@ -102,7 +124,11 @@ internal class RealMediaConnectionSignalingTest {
         val mid = Random.nextString(8)
         val ufrag = "/GLA"
         val pwd = Random.nextString(8)
-        val signaling = RealMediaConnectionSignaling(store, object : TestParticipantTest {})
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantTest {},
+            iceServers = iceServers
+        )
         signaling.callStep = object : TestCallStep {
             override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> =
                 object : TestCall<Unit> {
@@ -134,7 +160,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             }
         }
-        val signaling = RealMediaConnectionSignaling(store, step)
+        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
         signaling.onAudioMuted()
         assertTrue(called)
     }
@@ -152,7 +178,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             }
         }
-        val signaling = RealMediaConnectionSignaling(store, step)
+        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
         signaling.onAudioUnmuted()
         assertTrue(called)
     }
@@ -170,7 +196,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             }
         }
-        val signaling = RealMediaConnectionSignaling(store, step)
+        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
         signaling.onVideoMuted()
         assertTrue(called)
     }
@@ -188,7 +214,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             }
         }
-        val signaling = RealMediaConnectionSignaling(store, step)
+        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
         signaling.onVideoUnmuted()
         assertTrue(called)
     }

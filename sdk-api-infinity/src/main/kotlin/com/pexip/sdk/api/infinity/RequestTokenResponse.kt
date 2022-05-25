@@ -18,4 +18,6 @@ public data class RequestTokenResponse(
     public val participantName: String,
     @SerialName("analytics_enabled")
     public val analyticsEnabled: Boolean = false,
+    public val stun: List<StunResponse> = emptyList(),
+    public val turn: List<TurnResponse> = emptyList(),
 )

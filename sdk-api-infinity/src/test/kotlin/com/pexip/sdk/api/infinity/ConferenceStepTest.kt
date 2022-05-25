@@ -143,7 +143,17 @@ internal class ConferenceStepTest {
             participantId = UUID.randomUUID(),
             participantName = Random.nextString(8),
             expires = 120,
-            analyticsEnabled = Random.nextBoolean()
+            analyticsEnabled = Random.nextBoolean(),
+            stun = List(10) {
+                StunResponse("stun:stun$it.example.com:19302")
+            },
+            turn = List(10) {
+                TurnResponse(
+                    urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
+                    username = "${it shl 1}",
+                    credential = "${it shr 1}"
+                )
+            }
         )
         server.enqueue {
             setResponseCode(200)

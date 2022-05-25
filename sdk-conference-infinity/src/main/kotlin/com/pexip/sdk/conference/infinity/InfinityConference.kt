@@ -13,6 +13,7 @@ import com.pexip.sdk.conference.infinity.internal.RealTokenRefresher
 import com.pexip.sdk.conference.infinity.internal.RealTokenStore
 import com.pexip.sdk.conference.infinity.internal.TokenRefresher
 import com.pexip.sdk.conference.infinity.internal.maybeSubmit
+import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import java.net.URL
 import java.util.concurrent.Executors
@@ -72,6 +73,19 @@ public class InfinityConference private constructor(
                 conferenceStep = conferenceStep,
                 executor = executor
             )
+            val iceServers = buildList(response.stun.size + response.turn.size) {
+                val stunIceServers = response.stun.map {
+                    IceServer.Builder(it.url).build()
+                }
+                addAll(stunIceServers)
+                val turnIceServers = response.turn.map {
+                    IceServer.Builder(it.urls)
+                        .username(it.username)
+                        .password(it.credential)
+                        .build()
+                }
+                addAll(turnIceServers)
+            }
             return InfinityConference(
                 source = source,
                 messenger = RealMessenger(
@@ -82,7 +96,11 @@ public class InfinityConference private constructor(
                     listener = source
                 ),
                 refresher = RealTokenRefresher(response.expires, store, conferenceStep, executor),
-                signaling = RealMediaConnectionSignaling(store, participantStep),
+                signaling = RealMediaConnectionSignaling(
+                    store = store,
+                    participantStep = participantStep,
+                    iceServers = iceServers
+                ),
                 executor = executor
             )
         }

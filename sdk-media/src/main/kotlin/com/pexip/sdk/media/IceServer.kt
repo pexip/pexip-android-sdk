@@ -8,6 +8,8 @@ public class IceServer private constructor(
 
     public class Builder(private val urls: Collection<String>) {
 
+        public constructor(url: String) : this(listOf(url))
+
         private var username: String = ""
         private var password: String = ""
 

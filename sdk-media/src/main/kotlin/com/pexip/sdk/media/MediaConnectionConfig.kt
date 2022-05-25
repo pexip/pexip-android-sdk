@@ -8,7 +8,7 @@ public class MediaConnectionConfig private constructor(
 
     public class Builder(private val signaling: MediaConnectionSignaling) {
 
-        private val iceServers = mutableListOf<IceServer>()
+        private val iceServers = ArrayList(signaling.iceServers)
         private var presentationInMain = false
 
         public fun addIceServer(iceServer: IceServer): Builder = apply {

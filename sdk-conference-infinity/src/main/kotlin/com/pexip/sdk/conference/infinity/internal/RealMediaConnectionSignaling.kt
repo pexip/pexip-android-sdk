@@ -4,12 +4,14 @@ import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.UpdateRequest
+import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlin.reflect.KProperty
 
 internal class RealMediaConnectionSignaling(
     private val store: TokenStore,
     private val participantStep: InfinityService.ParticipantStep,
+    override val iceServers: List<IceServer>
 ) : MediaConnectionSignaling {
 
     var callStep: InfinityService.CallStep? by ThreadLocal()
