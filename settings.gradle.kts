@@ -28,6 +28,7 @@ rootProject.name = "sdk"
 include(":sdk-api")
 include(":sdk-api-infinity")
 include(":sdk-api-coroutines")
+include(":sdk-catalog")
 include(":sdk-conference")
 include(":sdk-conference-infinity")
 include(":sdk-conference-coroutines")
