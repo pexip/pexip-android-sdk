@@ -24,19 +24,43 @@ And add modules that you need:
 ```kotlin
 dependencies {
     // A fluent wrapper for Infinity Client REST API
-    implementation("com.pexip.sdk:sdk-api-infinity:0.1.0")
+    implementation("com.pexip.sdk:sdk-api-infinity:0.2.0")
     // A set of tools for interacting with an Infinity conference
-    implementation("com.pexip.sdk:sdk-conference-infinity:0.1.0")
+    implementation("com.pexip.sdk:sdk-conference-infinity:0.2.0")
     // A `MediaConnection` implementation build on top of WebRTC
-    implementation("com.pexip.sdk:sdk-media-webrtc:0.1.0")
+    implementation("com.pexip.sdk:sdk-media-webrtc:0.2.0")
     // A set of extensions that add coroutines support for Infinity Client REST API
-    implementation("com.pexip.sdk:sdk-api-coroutines:0.1.0")
+    implementation("com.pexip.sdk:sdk-api-coroutines:0.2.0")
     // A set of extensions that add coroutines support for Conference object
-    implementation("com.pexip.sdk:sdk-conference-coroutines:0.1.0")
+    implementation("com.pexip.sdk:sdk-conference-coroutines:0.2.0")
     // A set of extensions that add coroutines support for MediaConnection object
-    implementation("com.pexip.sdk:sdk-media-coroutines:0.1.0")
+    implementation("com.pexip.sdk:sdk-media-coroutines:0.2.0")
     // A composable that wraps org.webrtc.SurfaceViewRenderer
-    implementation("com.pexip.sdk:sdk-media-webrtc-compose:0.1.0")
+    implementation("com.pexip.sdk:sdk-media-webrtc-compose:0.2.0")
+}
+```
+
+We also publish
+a [Version Catalog](https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog)
+that can be consumed as follows:
+
+```kotlin
+// settings.gradle.kts
+enableFeaturePreview("VERSION_CATALOGS")
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        register("pexipSdk") {
+            from("com.pexip.sdk:sdk-catalog:0.2.0")
+        }
+    }
+}
+// build.gradle.kts
+dependencies {
+    implementation(pexipSdk.api.infinity)
 }
 ```
 
