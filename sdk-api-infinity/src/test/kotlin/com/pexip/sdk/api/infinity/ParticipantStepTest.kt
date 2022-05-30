@@ -97,6 +97,63 @@ internal class ParticipantStepTest {
     }
 
     @Test
+    fun `dtmf throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        assertFailsWith<IllegalStateException> { step.dtmf(request, token).execute() }
+        server.verifyDtmf(request, token)
+    }
+
+    @Test
+    fun `dtmf throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.dtmf(request, token).execute() }
+        server.verifyDtmf(request, token)
+    }
+
+    @Test
+    fun `dtmf throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.dtmf(request, token).execute() }
+        server.verifyDtmf(request, token)
+    }
+
+    @Test
+    fun `dtmf throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.dtmf(request, token).execute() }
+        server.verifyDtmf(request, token)
+    }
+
+    @Test
+    fun `dtmf returns`() {
+        val response = Random.nextBoolean()
+        server.enqueue {
+            setResponseCode(200)
+            setBody(json.encodeToString(Box(response)))
+        }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        step.dtmf(request, token).execute()
+        server.verifyDtmf(request, token)
+    }
+
+    @Test
     fun `mute throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
@@ -296,6 +353,19 @@ internal class ParticipantStepTest {
             addPathSegment("participants")
             addPathSegment(participantId.toString())
             addPathSegment("calls")
+        }
+        assertToken(token)
+        assertPost(json, request)
+    }
+
+    private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId.toString())
+            addPathSegment("dtmf")
         }
         assertToken(token)
         assertPost(json, request)

@@ -18,6 +18,9 @@ private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJ
 internal fun Random.nextString(length: Int) =
     CharArray(length) { CHARACTERS.random(this) }.concatToString()
 
+internal fun Random.nextDigits(length: Int) =
+    CharArray(length) { DtmfRequest.ALLOWED_DIGITS.random(this) }.concatToString()
+
 internal fun Random.nextIdentityProviderId() = IdentityProviderId(nextUuid())
 
 internal fun Random.nextPin(): String = "${nextInt(1000..9999)}"

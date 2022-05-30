@@ -3,6 +3,7 @@ package com.pexip.sdk.api.infinity.internal
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.CallsResponse
+import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidTokenException
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
@@ -34,6 +35,19 @@ internal class RealParticipantStep(
                 .header("token", token)
                 .build(),
             mapper = ::parseCalls
+        )
+    }
+
+    override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node, conferenceAlias, participantId, "dtmf")
+                .header("token", token)
+                .build(),
+            mapper = ::parseDtmf
         )
     }
 
@@ -94,6 +108,13 @@ internal class RealParticipantStep(
 
     private fun parseCalls(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(CallsResponseSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseDtmf(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

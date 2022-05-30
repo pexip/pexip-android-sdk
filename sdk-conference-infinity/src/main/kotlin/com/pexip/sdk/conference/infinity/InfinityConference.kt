@@ -5,8 +5,10 @@ import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.infinity.internal.ConferenceEventSource
+import com.pexip.sdk.conference.infinity.internal.DtmfSender
 import com.pexip.sdk.conference.infinity.internal.Messenger
 import com.pexip.sdk.conference.infinity.internal.RealConferenceEventSource
+import com.pexip.sdk.conference.infinity.internal.RealDtmfSender
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
 import com.pexip.sdk.conference.infinity.internal.RealMessenger
 import com.pexip.sdk.conference.infinity.internal.RealTokenRefresher
@@ -21,6 +23,7 @@ import java.util.concurrent.ScheduledExecutorService
 
 public class InfinityConference private constructor(
     private val source: ConferenceEventSource,
+    private val sender: DtmfSender,
     private val messenger: Messenger,
     private val refresher: TokenRefresher,
     private val signaling: MediaConnectionSignaling,
@@ -33,6 +36,12 @@ public class InfinityConference private constructor(
 
     override fun unregisterConferenceEventListener(listener: ConferenceEventListener) {
         source.unregisterConferenceEventListener(listener)
+    }
+
+    override fun dtmf(digits: String) {
+        executor.maybeSubmit {
+            sender.send(digits)
+        }
     }
 
     override fun message(payload: String) {
@@ -88,6 +97,7 @@ public class InfinityConference private constructor(
             }
             return InfinityConference(
                 source = source,
+                sender = RealDtmfSender(store, participantStep),
                 messenger = RealMessenger(
                     participantId = response.participantId,
                     participantName = response.participantName,

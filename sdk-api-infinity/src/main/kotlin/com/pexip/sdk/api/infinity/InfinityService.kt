@@ -135,6 +135,17 @@ public interface InfinityService {
         public fun calls(request: CallsRequest, token: String): Call<CallsResponse>
 
         /**
+         * Sends DTMF digits to the participant.
+         *
+         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#dtmf].
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return true if successful, false otherwise
+         */
+        public fun dtmf(request: DtmfRequest, token: String): Call<Boolean>
+
+        /**
          * Requests to mute participant's audio.
          *
          * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#mute].

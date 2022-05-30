@@ -11,6 +11,8 @@ public interface Conference : MediaConnectionSignaling {
 
     public fun unregisterConferenceEventListener(listener: ConferenceEventListener)
 
+    public fun dtmf(digits: String)
+
     public fun message(payload: String)
 
     /**
