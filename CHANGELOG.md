@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] - 2022-06-03
+
+### Added
+
+- DTMF support
+- SDK will now correctly set `AudioManager` mode and request audio focus
+
 ## [0.2.0] - 2022-05-27
 
 ### Added
@@ -22,6 +29,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.2.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.3.0
 [0.2.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.2.0
 [0.1.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.1.0
