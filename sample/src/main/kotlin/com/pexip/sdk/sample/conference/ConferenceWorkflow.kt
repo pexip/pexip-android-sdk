@@ -13,6 +13,8 @@ import com.pexip.sdk.media.MediaConnectionFactory
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
+import com.pexip.sdk.sample.dtmf.DtmfProps
+import com.pexip.sdk.sample.dtmf.DtmfWorkflow
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -26,6 +28,7 @@ import javax.inject.Singleton
 class ConferenceWorkflow @Inject constructor(
     private val service: InfinityService,
     private val factory: MediaConnectionFactory,
+    private val dtmfWorkflow: DtmfWorkflow,
 ) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState {
@@ -77,6 +80,15 @@ class ConferenceWorkflow @Inject constructor(
                 cameraVideoTrack = renderState.cameraVideoTrack,
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
+                dtmfRendering = when (renderState.showingDtmf) {
+                    true -> context.renderChild(
+                        child = dtmfWorkflow,
+                        props = DtmfProps(renderState.conference),
+                        handler = ::OnDtmfOutput
+                    )
+                    else -> null
+                },
+                onToggleDtmfClick = context.send(::OnToggleDtmf),
                 onToggleLocalAudioCapturing = context.send(::OnToggleLocalAudioCapturing),
                 onToggleCameraCapturing = context.send(::OnToggleCameraCapturing),
                 onConferenceEventsClick = context.send(::OnConferenceEventsClick),

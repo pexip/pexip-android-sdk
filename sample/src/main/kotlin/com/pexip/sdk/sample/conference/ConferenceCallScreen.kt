@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Message
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.MicOff
+import androidx.compose.material.icons.rounded.Pin
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.VideocamOff
 import androidx.compose.runtime.Composable
@@ -27,13 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
+import com.pexip.sdk.sample.dtmf.DtmfDialog
 import org.webrtc.EglBase
 
 @Composable
 fun ConferenceCallScreen(
     rendering: ConferenceCallRendering,
     eglBase: EglBase,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = rendering.onBackClick)
     val sharedContext = remember(eglBase) { eglBase.eglBaseContext }
@@ -118,8 +120,17 @@ fun ConferenceCallScreen(
                         contentDescription = null
                     )
                 }
+                Button(onClick = rendering.onToggleDtmfClick) {
+                    Icon(
+                        imageVector = Icons.Rounded.Pin,
+                        contentDescription = null
+                    )
+                }
             }
         }
+    }
+    if (rendering.dtmfRendering != null) {
+        DtmfDialog(rendering = rendering.dtmfRendering)
     }
 }
 

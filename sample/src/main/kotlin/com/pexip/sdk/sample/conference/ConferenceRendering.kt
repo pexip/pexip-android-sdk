@@ -2,6 +2,7 @@ package com.pexip.sdk.sample.conference
 
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.media.VideoTrack
+import com.pexip.sdk.sample.dtmf.DtmfRendering
 
 sealed interface ConferenceRendering {
     val onBackClick: () -> Unit
@@ -13,6 +14,8 @@ data class ConferenceCallRendering(
     val cameraVideoTrack: VideoTrack,
     val mainRemoteVideoTrack: VideoTrack?,
     val presentationRemoteVideoTrack: VideoTrack?,
+    val dtmfRendering: DtmfRendering?,
+    val onToggleDtmfClick: () -> Unit,
     val onToggleLocalAudioCapturing: () -> Unit,
     val onToggleCameraCapturing: () -> Unit,
     val onConferenceEventsClick: () -> Unit,
