@@ -14,6 +14,7 @@ dependencies {
     api(libs.pexip.webrtc)
 
     implementation(libs.androidx.core)
+    implementation(libs.androidx.media)
 
     testImplementation(libs.okio)
 }

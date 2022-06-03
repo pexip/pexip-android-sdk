@@ -9,6 +9,7 @@ import org.webrtc.AudioTrack
 import java.util.concurrent.CopyOnWriteArraySet
 
 internal class WebRtcLocalAudioTrack(
+    private val audioHandler: AudioHandler,
     private val audioSource: AudioSource,
     internal val audioTrack: AudioTrack,
 ) : LocalAudioTrack {
@@ -18,6 +19,10 @@ internal class WebRtcLocalAudioTrack(
 
     @Volatile
     private var capturing = audioTrack.enabled()
+
+    init {
+        audioHandler.start()
+    }
 
     override fun startCapture() {
         if (capturing) return
@@ -49,6 +54,7 @@ internal class WebRtcLocalAudioTrack(
     }
 
     override fun dispose() {
+        audioHandler.stop()
         audioTrack.dispose()
         audioSource.dispose()
         handler.removeCallbacksAndMessages(null)
