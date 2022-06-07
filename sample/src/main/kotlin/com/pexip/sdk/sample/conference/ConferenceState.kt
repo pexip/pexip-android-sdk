@@ -17,6 +17,7 @@ data class ConferenceState(
     val mainRemoteVideoTrack: VideoTrack? = null,
     val presentation: Boolean = false,
     val presentationRemoteVideoTrack: VideoTrack? = null,
+    val showingDtmf: Boolean = false,
     val showingConferenceEvents: Boolean = false,
     val conferenceEvents: List<ConferenceEvent> = emptyList(),
     val message: String = "",

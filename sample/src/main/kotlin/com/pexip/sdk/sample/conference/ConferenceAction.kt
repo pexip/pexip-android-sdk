@@ -5,9 +5,26 @@ import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
+import com.pexip.sdk.sample.dtmf.DtmfOutput
 import com.squareup.workflow1.WorkflowAction
 
 typealias ConferenceAction = WorkflowAction<ConferenceProps, ConferenceState, ConferenceOutput>
+
+class OnToggleDtmf : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(showingDtmf = !state.showingDtmf)
+    }
+}
+
+class OnDtmfOutput(private val output: DtmfOutput) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        when (output) {
+            DtmfOutput.Back -> state = state.copy(showingDtmf = false)
+        }
+    }
+}
 
 class OnToggleLocalAudioCapturing : ConferenceAction() {
 
