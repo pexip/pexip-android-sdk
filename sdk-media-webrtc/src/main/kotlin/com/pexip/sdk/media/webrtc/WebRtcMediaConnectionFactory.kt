@@ -13,6 +13,7 @@ import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcMediaConnection
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
+import org.webrtc.CameraEnumerator
 import org.webrtc.DefaultVideoDecoderFactory
 import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
@@ -29,6 +30,10 @@ import java.util.concurrent.Executors
 public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     context: Context,
     private val eglBase: EglBase,
+    private val cameraEnumerator: CameraEnumerator = when (Camera2Enumerator.isSupported(context)) {
+        true -> Camera2Enumerator(context.applicationContext)
+        else -> Camera1Enumerator()
+    },
     videoDecoderFactory: VideoDecoderFactory = DefaultVideoDecoderFactory(eglBase.eglBaseContext),
     videoEncoderFactory: VideoEncoderFactory = DefaultVideoEncoderFactory(
         eglBase.eglBaseContext,
@@ -51,10 +56,6 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         .setVideoDecoderFactory(videoDecoderFactory)
         .setVideoEncoderFactory(videoEncoderFactory)
         .createPeerConnectionFactory()
-    private val cameraEnumerator = when (Camera2Enumerator.isSupported(applicationContext)) {
-        true -> Camera2Enumerator(applicationContext)
-        else -> Camera1Enumerator()
-    }
 
     override fun createLocalAudioTrack(): LocalAudioTrack {
         val audioSource = factory.createAudioSource(MediaConstraints())
