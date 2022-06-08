@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.pexip.sdk.media.VideoTrack
+import com.pexip.sdk.media.webrtc.SurfaceViewRenderer
 import org.webrtc.EglBase
 import org.webrtc.GlRectDrawer
-import org.webrtc.SurfaceViewRenderer
 
 @Composable
 public fun VideoTrackRenderer(

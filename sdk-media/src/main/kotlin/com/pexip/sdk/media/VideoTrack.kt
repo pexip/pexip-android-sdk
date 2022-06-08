@@ -1,10 +1,14 @@
 package com.pexip.sdk.media
 
-import android.view.SurfaceView
-
 public interface VideoTrack {
 
-    public fun addRenderer(renderer: SurfaceView)
+    @Deprecated("Use addRenderer that accepts a Renderer.")
+    public fun addRenderer(renderer: Any)
 
-    public fun removeRenderer(renderer: SurfaceView)
+    @Deprecated("Use removeRenderer that accepts a Renderer.")
+    public fun removeRenderer(renderer: Any)
+
+    public fun addRenderer(renderer: Renderer)
+
+    public fun removeRenderer(renderer: Renderer)
 }

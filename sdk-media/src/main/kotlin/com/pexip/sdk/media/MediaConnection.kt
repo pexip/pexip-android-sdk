@@ -1,7 +1,5 @@
 package com.pexip.sdk.media
 
-import androidx.annotation.MainThread
-
 public interface MediaConnection {
 
     public fun start()
@@ -26,7 +24,6 @@ public interface MediaConnection {
 
     public fun interface RemoteVideoTrackListener {
 
-        @MainThread
         public fun onRemoteVideoTrack(videoTrack: VideoTrack?)
     }
 }

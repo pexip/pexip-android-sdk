@@ -1,7 +1,5 @@
 package com.pexip.sdk.media
 
-import androidx.annotation.MainThread
-
 /**
  * A local media track
  */
@@ -48,7 +46,6 @@ public interface LocalMediaTrack {
          *
          * @param capturing true if capturing, false otherwise
          */
-        @MainThread
         public fun onCapturing(capturing: Boolean)
     }
 }

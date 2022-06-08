@@ -1,11 +1,9 @@
 plugins {
-    id("com.pexip.paddock.kotlin.android.library.publish")
+    id("com.pexip.paddock.kotlin.jvm.publish")
 }
 
-android {
-    kotlinOptions {
-        freeCompilerArgs += "-Xexplicit-api=strict"
-    }
+kotlin {
+    explicitApi()
 }
 
 dependencies {
