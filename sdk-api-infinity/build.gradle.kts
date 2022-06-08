@@ -1,33 +1,25 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    id("com.pexip.paddock.kotlin.android.library.publish")
+    id("com.pexip.paddock.kotlin.jvm.publish")
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    defaultConfig {
-        consumerProguardFiles("proguard.pro")
-    }
-    kotlinOptions {
-        freeCompilerArgs += "-Xexplicit-api=strict"
-    }
+kotlin {
+    explicitApi()
 }
 
 dependencies {
     api(projects.sdkApi)
 
     api(libs.okhttp)
+    api(libs.okio)
 
     implementation(libs.okhttp.sse)
-    implementation(libs.okio)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.minidns.hla)
-    implementation(libs.minidns.android21)
 
-    testImplementation(libs.androidx.test.core.ktx)
     testImplementation(libs.okhttp.mockwebserver)
-    testImplementation(libs.robolectric)
 }
 
 publishing.publications.named<MavenPublication>("release") {

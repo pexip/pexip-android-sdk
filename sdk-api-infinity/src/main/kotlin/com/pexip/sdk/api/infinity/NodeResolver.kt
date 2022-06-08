@@ -1,9 +1,7 @@
 package com.pexip.sdk.api.infinity
 
-import android.content.Context
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.internal.RealNodeResolver
-import org.minidns.dnsserverlookup.android21.AndroidUsingLinkProperties
 import org.minidns.hla.DnssecResolverApi
 import org.minidns.hla.ResolverApi
 import java.net.URL
@@ -25,9 +23,9 @@ public fun interface NodeResolver {
 
     public companion object {
 
+        @Deprecated("Use AndroidUsingLinkProperties.setup(context) in org.minidns:minidns-android21 instead.")
         @JvmStatic
-        public fun initialize(context: Context) {
-            AndroidUsingLinkProperties.setup(context.applicationContext)
+        public fun initialize(context: Any) {
         }
 
         @JvmStatic
