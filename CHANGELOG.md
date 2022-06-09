@@ -7,6 +7,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2022-06-09
+
+### Added
+
+- `Renderer` marker interface to denote objects that can render an instance of a `VideoTrack`
+- `SurfaceViewRenderer` as a replacement for `org.webrtc.SurfaceViewRenderer`
+- Custom `org.webrtc.CameraEnumerator` support in `WebRtcMediaConnectionFactory`
+
+### Changed
+
+- Library type from Android to JVM for most of the artifacts
+
 ## [0.3.0] - 2022-06-03
 
 ### Added
@@ -29,7 +41,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.3.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.4.0...HEAD
+[0.4.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.4.0
 [0.3.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.3.0
 [0.2.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.2.0
 [0.1.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.1.0
