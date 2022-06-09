@@ -21,14 +21,14 @@ public interface InfinityService {
     public fun newRequest(node: URL): RequestBuilder
 
     /**
-     * Represents the (Other miscellaneous requests)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#misc] section.
+     * Represents the [Other miscellaneous requests](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#misc) section.
      */
     public interface RequestBuilder {
 
         /**
          * Checks the status of the conferencing node.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#maintenance_mode].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#maintenance_mode).
          *
          * @return true if the node is available, false otherwise
          * @throws NoSuchNodeException if the node doesn't exist
@@ -44,14 +44,14 @@ public interface InfinityService {
     }
 
     /**
-     * Represents the (Conference control functions)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#conference] section.
+     * Represents the [Conference control functions](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#conference) section.
      */
     public interface ConferenceStep {
 
         /**
          * Requests a token for the conference alias.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#request_token].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#request_token).
          *
          * @param request a request body
          * @return a token for the conference
@@ -61,7 +61,7 @@ public interface InfinityService {
         /**
          * Requests a token for the conference alias.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#request_token].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#request_token).
          *
          * @param request a request body
          * @param pin an optional PIN
@@ -75,7 +75,7 @@ public interface InfinityService {
         /**
          * Refreshes the token.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#refresh_token].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#refresh_token).
          *
          * @param token a current valid token
          * @return a new token for the conference
@@ -85,7 +85,7 @@ public interface InfinityService {
         /**
          * Releases the token.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#release_token].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#release_token).
          *
          * @param token a valid token
          */
@@ -94,7 +94,7 @@ public interface InfinityService {
         /**
          * Sends a message to all participants in the conference.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#message].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#message).
          *
          * @param request a request body
          * @param token a valid token
@@ -104,7 +104,7 @@ public interface InfinityService {
         /**
          * Subscribes to server-side events.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#server_sent].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#server_sent).
          *
          * @param token a valid token
          */
@@ -119,14 +119,14 @@ public interface InfinityService {
     }
 
     /**
-     * Represents the (Participant functions)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#participant] section.
+     * Represents the [Participant functions](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#participant) section.
      */
     public interface ParticipantStep {
 
         /**
          * Requests an upgrade of the call to include media.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#calls].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#calls).
          *
          * @param request a request body
          * @param token a valid token
@@ -137,7 +137,7 @@ public interface InfinityService {
         /**
          * Sends DTMF digits to the participant.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#dtmf].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#dtmf).
          *
          * @param request a request body
          * @param token a valid token
@@ -148,7 +148,7 @@ public interface InfinityService {
         /**
          * Requests to mute participant's audio.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#mute].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#mute).
          *
          * @param token a valid token
          */
@@ -157,7 +157,7 @@ public interface InfinityService {
         /**
          * Requests to unmute participant's audio.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#mute].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#mute).
          *
          * @param token a valid token
          */
@@ -166,7 +166,7 @@ public interface InfinityService {
         /**
          * Requests to mute participant's video.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#videomute].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#videomute).
          *
          * @param token a valid token
          */
@@ -175,7 +175,7 @@ public interface InfinityService {
         /**
          * Requests to unmute participant's video.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm#videomute].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#videomute).
          *
          * @param token a valid token
          */
@@ -190,14 +190,14 @@ public interface InfinityService {
     }
 
     /**
-     * Represents the (Call functions)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#call_functions] section.
+     * Represents the [Call functions](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#call_functions) section.
      */
     public interface CallStep {
 
         /**
          * Sends the new ICE candidate.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#new_candidate].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#new_candidate).
          *
          * @param request a request body
          * @param token a valid token
@@ -210,7 +210,7 @@ public interface InfinityService {
         /**
          * Acks the call.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack).
          *
          * @param token a valid token
          * @throws InvalidTokenException if the token is invalid
@@ -222,7 +222,7 @@ public interface InfinityService {
         /**
          * Sends a new SDP.
          *
-         * See (documentation)[https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#update].
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#update).
          *
          * @param request a request body
          * @param token a valid token
