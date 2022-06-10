@@ -24,9 +24,7 @@ tasks.register<Delete>("clean") {
     delete(rootProject.buildDir)
 }
 
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTaskPartial>().configureEach {
-    suppressInheritedMembers.set(true)
-    dokkaSourceSets.named("main") {
-        noAndroidSdkLink.set(false)
-    }
+tasks.dokkaHtmlMultiModule.configure {
+    moduleName.set("Pexip Android SDK")
+    includes.from("README.md")
 }
