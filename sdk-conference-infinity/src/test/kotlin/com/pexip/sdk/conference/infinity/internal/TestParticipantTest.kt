@@ -21,5 +21,9 @@ internal interface TestParticipantTest : InfinityService.ParticipantStep {
 
     override fun videoUnmuted(token: String): Call<Unit> = TODO()
 
+    override fun takeFloor(token: String): Call<Unit> = TODO()
+
+    override fun releaseFloor(token: String): Call<Unit> = TODO()
+
     override fun call(callId: UUID): InfinityService.CallStep = TODO()
 }

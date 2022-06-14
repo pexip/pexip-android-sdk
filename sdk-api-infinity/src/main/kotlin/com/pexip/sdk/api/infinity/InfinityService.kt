@@ -182,6 +182,20 @@ public interface InfinityService {
         public fun videoUnmuted(token: String): Call<Unit>
 
         /**
+         * Requests to take presentation floor.
+         *
+         * @param token a valid token
+         */
+        public fun takeFloor(token: String): Call<Unit>
+
+        /**
+         * Requests to release presentation floor.
+         *
+         * @param token a valid token
+         */
+        public fun releaseFloor(token: String): Call<Unit>
+
+        /**
          * Sets the call ID.
          *
          * @param callId an ID of the call

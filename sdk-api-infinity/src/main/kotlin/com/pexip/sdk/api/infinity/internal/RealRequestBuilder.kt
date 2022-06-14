@@ -4,29 +4,36 @@ import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.net.URL
 
 internal class RealRequestBuilder(
     private val client: OkHttpClient,
     private val json: Json,
-    private val node: URL,
+    private val url: HttpUrl,
 ) : InfinityService.RequestBuilder {
 
     override fun status(): Call<Boolean> = RealCall(
         client = client,
         request = Request.Builder()
             .get()
-            .url(node, "status")
+            .url(HttpUrl(url) { addPathSegment("status") })
             .build(),
         mapper = ::parseStatus
     )
 
     override fun conference(conferenceAlias: String): InfinityService.ConferenceStep {
         require(conferenceAlias.isNotBlank()) { "conferenceAlias is blank." }
-        return RealConferenceStep(client, json, node, conferenceAlias)
+        return RealConferenceStep(
+            client = client,
+            json = json,
+            url = HttpUrl(url) {
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+            }
+        )
     }
 
     private fun parseStatus(response: Response) = when (response.code) {

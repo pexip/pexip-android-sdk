@@ -10,19 +10,17 @@ import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
-import java.net.URL
 import java.util.UUID
 
 internal class RealParticipantStep(
     private val client: OkHttpClient,
     private val json: Json,
-    private val node: URL,
-    private val conferenceAlias: String,
-    private val participantId: UUID,
+    private val url: HttpUrl,
 ) : InfinityService.ParticipantStep {
 
     override fun calls(request: CallsRequest, token: String): Call<CallsResponse> {
@@ -31,7 +29,7 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(node, conferenceAlias, participantId, "calls")
+                .url(HttpUrl(url) { addPathSegment("calls") })
                 .header("token", token)
                 .build(),
             mapper = ::parseCalls
@@ -44,7 +42,7 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(node, conferenceAlias, participantId, "dtmf")
+                .url(HttpUrl(url) { addPathSegment("dtmf") })
                 .header("token", token)
                 .build(),
             mapper = ::parseDtmf
@@ -57,7 +55,7 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(node, conferenceAlias, participantId, "mute")
+                .url(HttpUrl(url) { addPathSegment("mute") })
                 .header("token", token)
                 .build(),
             mapper = ::parseMuteUnmute
@@ -70,7 +68,7 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(node, conferenceAlias, participantId, "unmute")
+                .url(HttpUrl(url) { addPathSegment("unmute") })
                 .header("token", token)
                 .build(),
             mapper = ::parseMuteUnmute
@@ -83,7 +81,7 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(node, conferenceAlias, participantId, "video_muted")
+                .url(HttpUrl(url) { addPathSegment("video_muted") })
                 .header("token", token)
                 .build(),
             mapper = ::parseVideoMutedVideoUnmuted
@@ -96,15 +94,48 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(node, conferenceAlias, participantId, "video_unmuted")
+                .url(HttpUrl(url) { addPathSegment("video_unmuted") })
                 .header("token", token)
                 .build(),
             mapper = ::parseVideoMutedVideoUnmuted
         )
     }
 
+    override fun takeFloor(token: String): Call<Unit> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(HttpUrl(url) { addPathSegment("take_floor") })
+                .header("token", token)
+                .build(),
+            mapper = ::parseTakeReleaseFloor
+        )
+    }
+
+    override fun releaseFloor(token: String): Call<Unit> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(HttpUrl(url) { addPathSegment("release_floor") })
+                .header("token", token)
+                .build(),
+            mapper = ::parseTakeReleaseFloor
+        )
+    }
+
     override fun call(callId: UUID): InfinityService.CallStep =
-        RealCallStep(client, json, node, conferenceAlias, participantId, callId)
+        RealCallStep(
+            client = client,
+            json = json,
+            url = HttpUrl(url) {
+                addPathSegment("calls")
+                addPathSegment(callId.toString())
+            }
+        )
 
     private fun parseCalls(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(CallsResponseSerializer, response.body!!)
@@ -128,6 +159,13 @@ internal class RealParticipantStep(
     }
 
     private fun parseVideoMutedVideoUnmuted(response: Response) = parseMuteUnmute(response)
+
+    private fun parseTakeReleaseFloor(response: Response) = when (response.code) {
+        200 -> Unit
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
 
     private fun Response.parse403(): Nothing {
         val message = json.decodeFromResponseBody(StringSerializer, body!!)

@@ -345,6 +345,102 @@ internal class ParticipantStepTest {
         server.verifyVideoUnMuted(token)
     }
 
+    @Test
+    fun `takeFloor throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailsWith<IllegalStateException> { step.takeFloor(token).execute() }
+        server.verifyTakeFloor(token)
+    }
+
+    @Test
+    fun `takeFloor throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.takeFloor(token).execute() }
+        server.verifyTakeFloor(token)
+    }
+
+    @Test
+    fun `takeFloor throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.takeFloor(token).execute() }
+        server.verifyTakeFloor(token)
+    }
+
+    @Test
+    fun `takeFloor throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.takeFloor(token).execute() }
+        server.verifyTakeFloor(token)
+    }
+
+    @Test
+    fun `takeFloor returns`() {
+        server.enqueue { setResponseCode(200) }
+        val token = Random.nextString(8)
+        step.takeFloor(token).execute()
+        server.verifyTakeFloor(token)
+    }
+
+    @Test
+    fun `releaseFloor throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailsWith<IllegalStateException> { step.releaseFloor(token).execute() }
+        server.verifyReleaseFloor(token)
+    }
+
+    @Test
+    fun `releaseFloor throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.releaseFloor(token).execute() }
+        server.verifyReleaseFloor(token)
+    }
+
+    @Test
+    fun `releaseFloor throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.releaseFloor(token).execute() }
+        server.verifyReleaseFloor(token)
+    }
+
+    @Test
+    fun `releaseFloor throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.releaseFloor(token).execute() }
+        server.verifyReleaseFloor(token)
+    }
+
+    @Test
+    fun `releaseFloor returns`() {
+        server.enqueue { setResponseCode(200) }
+        val token = Random.nextString(8)
+        step.releaseFloor(token).execute()
+        server.verifyReleaseFloor(token)
+    }
+
     private fun MockWebServer.verifyCalls(request: CallsRequest, token: String) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
@@ -418,6 +514,32 @@ internal class ParticipantStepTest {
             addPathSegment("participants")
             addPathSegment(participantId.toString())
             addPathSegment("video_unmuted")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyTakeFloor(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId.toString())
+            addPathSegment("take_floor")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyReleaseFloor(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId.toString())
+            addPathSegment("release_floor")
         }
         assertToken(token)
         assertPostEmptyBody()

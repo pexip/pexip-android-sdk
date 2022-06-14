@@ -16,25 +16,24 @@ import com.pexip.sdk.api.infinity.RequiredSsoException
 import com.pexip.sdk.api.infinity.SsoRedirectException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
-import java.net.URL
 import java.util.UUID
 
 internal class RealConferenceStep(
     private val client: OkHttpClient,
     private val json: Json,
-    private val node: URL,
-    private val conferenceAlias: String,
+    private val url: HttpUrl,
 ) : InfinityService.ConferenceStep {
 
     override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> = RealCall(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node, conferenceAlias, "request_token")
+            .url(HttpUrl(url) { addPathSegment("request_token") })
             .build(),
         mapper = ::parseRequestToken
     )
@@ -48,7 +47,7 @@ internal class RealConferenceStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(node, conferenceAlias, "request_token")
+                .url(HttpUrl(url) { addPathSegment("request_token") })
                 .header("pin", pin.trim())
                 .build(),
             mapper = ::parseRequestToken
@@ -61,7 +60,7 @@ internal class RealConferenceStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(node, conferenceAlias, "refresh_token")
+                .url(HttpUrl(url) { addPathSegment("refresh_token") })
                 .header("token", token)
                 .build(),
             mapper = ::parseRefreshToken
@@ -74,7 +73,7 @@ internal class RealConferenceStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(node, conferenceAlias, "release_token")
+                .url(HttpUrl(url) { addPathSegment("release_token") })
                 .header("token", token)
                 .build(),
             mapper = ::parseReleaseToken
@@ -87,7 +86,7 @@ internal class RealConferenceStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(node, conferenceAlias, "message")
+                .url(HttpUrl(url) { addPathSegment("message") })
                 .header("token", token)
                 .build(),
             mapper = ::parseMessage
@@ -100,7 +99,7 @@ internal class RealConferenceStep(
             client = client,
             request = Request.Builder()
                 .get()
-                .url(node, conferenceAlias, "events")
+                .url(HttpUrl(url) { addPathSegment("events") })
                 .header("token", token)
                 .build(),
             json = json
@@ -108,7 +107,14 @@ internal class RealConferenceStep(
     }
 
     override fun participant(participantId: UUID): InfinityService.ParticipantStep =
-        RealParticipantStep(client, json, node, conferenceAlias, participantId)
+        RealParticipantStep(
+            client = client,
+            json = json,
+            url = HttpUrl(url) {
+                addPathSegment("participants")
+                addPathSegment(participantId.toString())
+            }
+        )
 
     private fun parseRequestToken(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(RequestTokenResponseSerializer, response.body!!)

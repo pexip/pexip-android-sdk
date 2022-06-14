@@ -11,5 +11,13 @@ internal class RealInfinityService(
     private val json: Json = Json { ignoreUnknownKeys = true },
 ) : InfinityService {
 
-    override fun newRequest(node: URL): RequestBuilder = RealRequestBuilder(client, json, node)
+    override fun newRequest(node: URL): RequestBuilder = RealRequestBuilder(
+        client = client,
+        json = json,
+        url = HttpUrl(node) {
+            addPathSegment("api")
+            addPathSegment("client")
+            addPathSegment("v2")
+        }
+    )
 }

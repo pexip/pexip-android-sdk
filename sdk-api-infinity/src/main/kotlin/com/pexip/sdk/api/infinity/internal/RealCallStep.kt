@@ -10,20 +10,16 @@ import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
-import java.net.URL
-import java.util.UUID
 
 internal class RealCallStep(
     private val client: OkHttpClient,
     private val json: Json,
-    private val node: URL,
-    private val conferenceAlias: String,
-    private val participantId: UUID,
-    private val callId: UUID,
+    private val url: HttpUrl,
 ) : InfinityService.CallStep {
 
     override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> {
@@ -32,7 +28,7 @@ internal class RealCallStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(node, conferenceAlias, participantId, callId, "new_candidate")
+                .url(HttpUrl(url) { addPathSegment("new_candidate") })
                 .header("token", token)
                 .build(),
             mapper = ::parseNewCandidate
@@ -45,7 +41,7 @@ internal class RealCallStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(node, conferenceAlias, participantId, callId, "ack")
+                .url(HttpUrl(url) { addPathSegment("ack") })
                 .header("token", token)
                 .build(),
             mapper = ::parseAck
@@ -58,7 +54,7 @@ internal class RealCallStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(node, conferenceAlias, participantId, callId, "update")
+                .url(HttpUrl(url) { addPathSegment("update") })
                 .header("token", token)
                 .build(),
             mapper = ::parseUpdate
