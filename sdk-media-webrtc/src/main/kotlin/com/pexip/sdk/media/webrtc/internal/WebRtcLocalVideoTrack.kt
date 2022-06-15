@@ -80,6 +80,7 @@ internal open class WebRtcLocalVideoTrack(
     override fun dispose() {
         videoTrack.dispose()
         videoSource.dispose()
+        videoCapturer.stopCapture()
         videoCapturer.dispose()
         textureHelper.dispose()
         handler.removeCallbacksAndMessages(null)

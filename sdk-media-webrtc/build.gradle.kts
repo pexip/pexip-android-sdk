@@ -9,7 +9,7 @@ android {
 }
 
 dependencies {
-    api(projects.sdkMedia)
+    api(projects.sdkMediaAndroid)
 
     api(libs.pexip.webrtc)
 

@@ -1,15 +1,19 @@
 package com.pexip.sdk.media.webrtc
 
 import android.content.Context
+import android.content.Intent
 import android.media.AudioAttributes
+import android.media.projection.MediaProjection
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalAudioTrack
+import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
-import com.pexip.sdk.media.MediaConnectionFactory
+import com.pexip.sdk.media.android.AndroidMediaConnectionFactory
 import com.pexip.sdk.media.webrtc.internal.RealAudioHandler
 import com.pexip.sdk.media.webrtc.internal.WebRtcCameraVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
+import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcMediaConnection
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
@@ -20,6 +24,7 @@ import org.webrtc.EglBase
 import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
+import org.webrtc.ScreenCapturerAndroid
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoDecoderFactory
 import org.webrtc.VideoEncoderFactory
@@ -40,7 +45,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         false,
         false
     ),
-) : MediaConnectionFactory {
+) : AndroidMediaConnectionFactory {
 
     private val applicationContext = context.applicationContext
     private val audioAttributes = AudioAttributes.Builder()
@@ -73,17 +78,29 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
 
     override fun createCameraVideoTrack(deviceName: String): CameraVideoTrack {
         require(deviceName in cameraEnumerator.deviceNames) { "Unknown device name: $deviceName." }
-        val textureHelper =
-            SurfaceTextureHelper.create("CaptureThread:$deviceName", eglBase.eglBaseContext)
         val videoCapturer = cameraEnumerator.createCapturer(deviceName, null)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
-        val videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource)
         return WebRtcCameraVideoTrack(
             applicationContext = applicationContext,
-            textureHelper = textureHelper,
+            textureHelper = createSurfaceTextureHelper("CaptureThread:$deviceName"),
             videoCapturer = videoCapturer,
             videoSource = videoSource,
-            videoTrack = videoTrack
+            videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource)
+        )
+    }
+
+    override fun createMediaProjectionVideoTrack(
+        intent: Intent,
+        callback: MediaProjection.Callback,
+    ): LocalVideoTrack {
+        val videoCapturer = ScreenCapturerAndroid(intent, callback)
+        val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
+        return WebRtcLocalVideoTrack(
+            applicationContext = applicationContext,
+            textureHelper = createSurfaceTextureHelper("CaptureThread:MediaProjection"),
+            videoCapturer = videoCapturer,
+            videoSource = videoSource,
+            videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource)
         )
     }
 
@@ -106,6 +123,9 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     ) = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
 
     private fun createMediaTrackId() = UUID.randomUUID().toString()
+
+    private fun createSurfaceTextureHelper(threadName: String) =
+        SurfaceTextureHelper.create(threadName, eglBase.eglBaseContext)
 
     public companion object {
 
