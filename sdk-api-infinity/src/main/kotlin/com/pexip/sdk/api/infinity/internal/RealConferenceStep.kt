@@ -41,18 +41,15 @@ internal class RealConferenceStep(
     override fun requestToken(
         request: RequestTokenRequest,
         pin: String,
-    ): Call<RequestTokenResponse> {
-        require(pin.isNotBlank()) { "pin is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(HttpUrl(url) { addPathSegment("request_token") })
-                .header("pin", pin.trim())
-                .build(),
-            mapper = ::parseRequestToken
-        )
-    }
+    ): Call<RequestTokenResponse> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(HttpUrl(url) { addPathSegment("request_token") })
+            .header("pin", if (pin.isBlank()) "none" else pin.trim())
+            .build(),
+        mapper = ::parseRequestToken
+    )
 
     override fun refreshToken(token: String): Call<RefreshTokenResponse> {
         require(token.isNotBlank()) { "token is blank." }

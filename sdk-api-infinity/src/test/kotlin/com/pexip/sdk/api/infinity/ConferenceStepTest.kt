@@ -165,6 +165,35 @@ internal class ConferenceStepTest {
     }
 
     @Test
+    fun `requestToken returns if the pin is blank`() {
+        val response = RequestTokenResponse(
+            token = Random.nextString(8),
+            participantId = UUID.randomUUID(),
+            participantName = Random.nextString(8),
+            expires = 120,
+            analyticsEnabled = Random.nextBoolean(),
+            stun = List(10) {
+                StunResponse("stun:stun$it.example.com:19302")
+            },
+            turn = List(10) {
+                TurnResponse(
+                    urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
+                    username = "${it shl 1}",
+                    credential = "${it shr 1}"
+                )
+            }
+        )
+        server.enqueue {
+            setResponseCode(200)
+            setBody(json.encodeToString(Box(response)))
+        }
+        val request = RequestTokenRequest()
+        val pin = "   "
+        assertEquals(response, step.requestToken(request, pin).execute())
+        server.verifyRequestToken(request, pin)
+    }
+
+    @Test
     fun `refreshToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)

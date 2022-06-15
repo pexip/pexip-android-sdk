@@ -52,7 +52,10 @@ internal fun RecordedRequest.assertRequestUrl(url: URL, block: HttpUrl.Builder.(
 
 internal fun RecordedRequest.assertToken(token: String?) = assertEquals(token, getHeader("token"))
 
-internal fun RecordedRequest.assertPin(pin: String?) = assertEquals(pin, getHeader("pin"))
+internal fun RecordedRequest.assertPin(pin: String?) = assertEquals(
+    expected = pin?.let { if (it.isBlank()) "none" else it.trim() },
+    actual = getHeader("pin")
+)
 
 private fun RecordedRequest.assertContentType(contentType: String?) =
     assertEquals(contentType, getHeader("Content-Type"))
