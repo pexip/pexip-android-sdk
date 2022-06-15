@@ -17,6 +17,9 @@ public interface MediaConnectionFactory {
      * 1. First front-facing camera
      * 2. First back-facing camera
      * 3. First available camera
+     *
+     * @return a [CameraVideoTrack]
+     * @throws IllegalStateException if no camera is available
      */
     public fun createCameraVideoTrack(): CameraVideoTrack
 
@@ -24,6 +27,8 @@ public interface MediaConnectionFactory {
      * Creates a [CameraVideoTrack] for specific [deviceName].
      *
      * @param deviceName a device name that should be opened
+     * @return a [CameraVideoTrack]
+     * @throws IllegalStateException if [deviceName] is not available
      */
     public fun createCameraVideoTrack(deviceName: String): CameraVideoTrack
 

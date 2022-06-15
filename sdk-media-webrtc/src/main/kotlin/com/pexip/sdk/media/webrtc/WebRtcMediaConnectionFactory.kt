@@ -72,12 +72,12 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         val deviceNames = cameraEnumerator.deviceNames
         val deviceName = deviceNames.firstOrNull(cameraEnumerator::isFrontFacing)
             ?: deviceNames.firstOrNull(cameraEnumerator::isBackFacing)
-            ?: deviceNames.first()
-        return createCameraVideoTrack(deviceName)
+            ?: deviceNames.firstOrNull()
+        return createCameraVideoTrack(checkNotNull(deviceName) { "No available camera." })
     }
 
     override fun createCameraVideoTrack(deviceName: String): CameraVideoTrack {
-        require(deviceName in cameraEnumerator.deviceNames) { "Unknown device name: $deviceName." }
+        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
         val videoCapturer = cameraEnumerator.createCapturer(deviceName, null)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         return WebRtcCameraVideoTrack(
