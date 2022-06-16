@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.accompanist.appcompattheme)
     implementation(libs.dagger.hilt.android.runtime)
     kapt(libs.dagger.hilt.compiler)
+    implementation(libs.minidns.android21)
     implementation(libs.okhttp.logginginterceptor)
     implementation(libs.workflow.core.jvm)
     implementation(libs.workflow.ui.compose)
