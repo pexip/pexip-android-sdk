@@ -25,6 +25,18 @@ tasks.register<Delete>("clean") {
 }
 
 tasks.dokkaHtmlMultiModule.configure {
-    moduleName.set("Pexip Android SDK")
     includes.from("README.md")
+    val calendar = java.util.Calendar.getInstance(
+        java.util.TimeZone.getTimeZone("UTC"),
+        java.util.Locale.ENGLISH
+    )
+    val footerMessage = "${calendar.get(java.util.Calendar.YEAR)} Pexip® AS, All rights reserved."
+    val m = mapOf(
+        "org.jetbrains.dokka.base.DokkaBase" to """{
+            |"footerMessage": "$footerMessage",
+            |"customAssets": ["${file("dokka/pexip.svg")}"],
+            |"customStyleSheets": ["${file("dokka/logo-styles.css")}"]
+            |}""".trimMargin()
+    )
+    pluginsMapConfiguration.set(m)
 }
