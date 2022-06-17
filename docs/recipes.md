@@ -2,10 +2,18 @@
 
 ## Resolving a node
 
-First, make sure to initialize the `NodeResolver` (you need to do this just once):
+Include the following dependency in your `build.gradle`:
 
 ```kotlin
-NodeResolver.initialize(context)
+dependencies {
+    implementation("org.minidns:minidns-android21:1.0.3")
+}
+```
+
+Then, make sure to initialize the `NodeResolver` (you need to do this just once):
+
+```kotlin
+AndroidUsingLinkProperties.setup(context)
 ```
 
 Create an instance of `NodeResolver` (it can be a singleton instance) and use it to resolve node

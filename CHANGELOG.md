@@ -7,6 +7,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.0] - 2022-06-16
+
+### Added
+
+- Basic module-level documentation
+- `takeFloor`/`releaseFloor` REST API methods
+- `AndroidMediaConnectionFactory.createMediaProjectionVideoTrack` used to capture screen content
+
+### Changed
+
+- `InfinityService.ConferenceStep.requestToken` to accept an empty string (with the same behavior
+  as `"none"`)
+- **BREAKING**: `MediaConnectionFactory.createCameraVideoTrack` will now
+  throw `IllegalStateException` if there are no available cameras or a camera with `deviceName` does
+  not exist
+
 ## [0.4.1] - 2022-06-09
 
 ### Added
@@ -18,12 +34,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - `Renderer` marker interface to denote objects that can render an instance of a `VideoTrack`
-- `SurfaceViewRenderer` as a replacement for `org.webrtc.SurfaceViewRenderer`
+- **BREAKING**: `SurfaceViewRenderer` as a replacement for `org.webrtc.SurfaceViewRenderer`
 - Custom `org.webrtc.CameraEnumerator` support in `WebRtcMediaConnectionFactory`
 
 ### Changed
 
-- Library type from Android to JVM for most of the artifacts
+- **BREAKING**: Library type from Android to JVM for most of the artifacts
 
 ## [0.3.0] - 2022-06-03
 
@@ -47,7 +63,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.4.1...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.5.0
 [0.4.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.4.1
 [0.4.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.4.0
 [0.3.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.3.0
