@@ -23,7 +23,10 @@ public fun interface NodeResolver {
 
     public companion object {
 
-        @Deprecated("Use AndroidUsingLinkProperties.setup(context) in org.minidns:minidns-android21 instead.")
+        @Deprecated(
+            message = "Use AndroidUsingLinkProperties.setup(context) in org.minidns:minidns-android21 instead.",
+            level = DeprecationLevel.ERROR
+        )
         @JvmStatic
         public fun initialize(context: Any) {
         }
