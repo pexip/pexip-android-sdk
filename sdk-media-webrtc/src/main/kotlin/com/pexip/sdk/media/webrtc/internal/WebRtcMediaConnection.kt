@@ -44,19 +44,22 @@ internal class WebRtcMediaConnection(
         }
     }
     private val connection = factory.createPeerConnection(createRTCConfiguration(), observer)
+
+    // Rename due to platform declaration clash
+    @set:JvmName("setMainAudioTrackInternal")
     private var mainAudioTrack: LocalAudioTrack? by Delegates.observable(null) { _, old, new ->
-        old?.unregisterCapturingListener(mainAudioCapturingListener)
-        new?.registerCapturingListener(mainAudioCapturingListener)
+        old?.unregisterCapturingListener(mainAudioTrackCapturingListener)
+        new?.registerCapturingListener(mainAudioTrackCapturingListener)
     }
+
+    // Rename due to platform declaration clash
+    @set:JvmName("setMainVideoTrackInternal")
     private var mainVideoTrack: LocalVideoTrack? by Delegates.observable(null) { _, old, new ->
-        old?.unregisterCapturingListener(mainVideoCapturingListener)
-        new?.registerCapturingListener(mainVideoCapturingListener)
+        old?.unregisterCapturingListener(mainVideoTrackCapturingListener)
+        new?.registerCapturingListener(mainVideoTrackCapturingListener)
     }
 
-    @Volatile
     private var mainAudioTransceiver: RtpTransceiver? = null
-
-    @Volatile
     private var mainVideoTransceiver: RtpTransceiver? = null
     private val presentationVideoTransceiver = connection.addTransceiver(
         MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
@@ -82,21 +85,53 @@ internal class WebRtcMediaConnection(
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
     private val presentationRemoteVideoTrackListeners =
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
-    private val mainAudioCapturingListener = LocalMediaTrack.CapturingListener {
+    private val mainAudioTrackCapturingListener = LocalMediaTrack.CapturingListener {
         if (it) onAudioUnmuted() else onAudioMuted()
     }
-    private val mainVideoCapturingListener = LocalMediaTrack.CapturingListener {
+    private val mainVideoTrackCapturingListener = LocalMediaTrack.CapturingListener {
         if (it) onVideoUnmuted() else onVideoMuted()
     }
 
     override fun sendMainAudio(localAudioTrack: LocalAudioTrack) {
-        require(localAudioTrack is WebRtcLocalAudioTrack) { "localAudioTrack must be an instance of WebRtcLocalAudioTrack." }
-        sendMainAudioInternal(localAudioTrack)
+        setMainAudioTrack(localAudioTrack)
     }
 
     override fun sendMainVideo(localVideoTrack: LocalVideoTrack) {
-        require(localVideoTrack is WebRtcLocalVideoTrack) { "localVideoTrack must be an instance of WebRtcLocalVideoTrack." }
-        sendMainVideoInternal(localVideoTrack)
+        setMainVideoTrack(localVideoTrack)
+    }
+
+    override fun setMainAudioTrack(localAudioTrack: LocalAudioTrack?) {
+        val lat = when (localAudioTrack) {
+            is WebRtcLocalAudioTrack -> localAudioTrack
+            null -> null
+            else -> throw IllegalArgumentException("localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.")
+        }
+        workerExecutor.maybeExecute {
+            val transceiver = when (val transceiver = mainAudioTransceiver) {
+                null -> connection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
+                else -> transceiver
+            }
+            transceiver.sender.setTrack(lat?.audioTrack, false)
+            mainAudioTransceiver = transceiver
+            mainAudioTrack = lat
+        }
+    }
+
+    override fun setMainVideoTrack(localVideoTrack: LocalVideoTrack?) {
+        val lvt = when (localVideoTrack) {
+            is WebRtcLocalVideoTrack -> localVideoTrack
+            null -> null
+            else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
+        }
+        workerExecutor.maybeExecute {
+            val transceiver = when (val transceiver = mainVideoTransceiver) {
+                null -> connection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
+                else -> transceiver
+            }
+            transceiver.sender.setTrack(lvt?.videoTrack, false)
+            mainVideoTransceiver = transceiver
+            mainVideoTrack = lvt
+        }
     }
 
     override fun startPresentationReceive() {
@@ -135,6 +170,9 @@ internal class WebRtcMediaConnection(
         workerExecutor.maybeExecute {
             mainAudioTrack = null
             mainVideoTrack = null
+            mainAudioTransceiver?.sender?.setTrack(null, false)
+            mainVideoTransceiver?.sender?.setTrack(null, false)
+            presentationVideoTransceiver.sender.setTrack(null, false)
             mainRemoteVideoTrackListeners.clear()
             presentationRemoteVideoTrackListeners.clear()
             connection.dispose()
@@ -168,34 +206,6 @@ internal class WebRtcMediaConnection(
 
     override fun unregisterPresentationRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
         presentationRemoteVideoTrackListeners -= listener
-    }
-
-    private fun sendMainAudioInternal(localAudioTrack: WebRtcLocalAudioTrack) {
-        workerExecutor.maybeExecute {
-            if (mainAudioTransceiver == null) {
-                mainAudioTrack = localAudioTrack
-                val transceiver = connection.addTransceiver(
-                    MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
-                    RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.SEND_RECV)
-                )
-                transceiver.sender.setTrack(localAudioTrack.audioTrack, false)
-                mainAudioTransceiver = transceiver
-            }
-        }
-    }
-
-    private fun sendMainVideoInternal(localVideoTrack: WebRtcLocalVideoTrack) {
-        workerExecutor.maybeExecute {
-            if (mainVideoTransceiver == null) {
-                mainVideoTrack = localVideoTrack
-                val transceiver = connection.addTransceiver(
-                    MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
-                    RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.SEND_RECV)
-                )
-                transceiver.sender.setTrack(localVideoTrack.videoTrack, false)
-                mainVideoTransceiver = transceiver
-            }
-        }
     }
 
     private fun createOffer() {
