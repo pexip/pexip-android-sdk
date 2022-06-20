@@ -1,7 +1,5 @@
 package com.pexip.sdk.media.webrtc.internal
 
-import android.os.Looper
-import androidx.core.os.HandlerCompat
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
@@ -30,7 +28,6 @@ internal class WebRtcMediaConnection(
 ) : MediaConnection {
 
     private val started = AtomicBoolean()
-    private val handler = HandlerCompat.createAsync(Looper.getMainLooper())
     private val observer = object : SimplePeerConnectionObserver {
 
         private val shouldRenegotiate = AtomicBoolean()
@@ -61,13 +58,10 @@ internal class WebRtcMediaConnection(
 
     @Volatile
     private var mainVideoTransceiver: RtpTransceiver? = null
-    private val presentationVideoTransceiver: RtpTransceiver? = when (config.presentationInMain) {
-        true -> null
-        else -> connection.addTransceiver(
-            MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
-            RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
-        )
-    }
+    private val presentationVideoTransceiver = connection.addTransceiver(
+        MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
+        RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
+    )
     private val localSdpObserver = object : SimpleSdpObserver {
 
         override fun onCreateSuccess(description: SessionDescription) {
@@ -78,7 +72,7 @@ internal class WebRtcMediaConnection(
             val mangledDescription = connection.localDescription.mangle(
                 mainAudioMid = mainAudioTransceiver?.mid,
                 mainVideoMid = mainVideoTransceiver?.mid,
-                presentationVideoMid = presentationVideoTransceiver?.mid
+                presentationVideoMid = presentationVideoTransceiver.mid
             )
             onSetLocalDescriptionSuccess(mangledDescription)
         }
@@ -106,11 +100,11 @@ internal class WebRtcMediaConnection(
     }
 
     override fun startPresentationReceive() {
-        workerExecutor.maybeExecute {
+        if (!config.presentationInMain) workerExecutor.maybeExecute {
             val t = presentationVideoTransceiver
-                ?.takeUnless { it.currentDirection == RtpTransceiverDirection.RECV_ONLY }
+                .takeUnless { it.currentDirection == RtpTransceiverDirection.SEND_RECV }
                 ?: return@maybeExecute
-            t.direction = RtpTransceiverDirection.RECV_ONLY
+            t.direction = RtpTransceiverDirection.SEND_RECV
             val videoTrack = (t.receiver.track() as? VideoTrack)?.let(::WebRtcVideoTrack)
             presentationRemoteVideoTrackListeners.forEach {
                 it.onRemoteVideoTrack(videoTrack)
@@ -119,9 +113,9 @@ internal class WebRtcMediaConnection(
     }
 
     override fun stopPresentationReceive() {
-        workerExecutor.maybeExecute {
+        if (!config.presentationInMain) workerExecutor.maybeExecute {
             val t = presentationVideoTransceiver
-                ?.takeUnless { it.currentDirection == RtpTransceiverDirection.INACTIVE }
+                .takeUnless { it.currentDirection == RtpTransceiverDirection.INACTIVE }
                 ?: return@maybeExecute
             t.direction = RtpTransceiverDirection.INACTIVE
             presentationRemoteVideoTrackListeners.forEach {
@@ -147,11 +141,10 @@ internal class WebRtcMediaConnection(
         }
         workerExecutor.shutdown()
         signalingExecutor.shutdown()
-        handler.removeCallbacksAndMessages(null)
     }
 
     override fun registerMainRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
-        if (!workerExecutor.isShutdown) handler.post {
+        workerExecutor.maybeExecute {
             val videoTrack = mainVideoTransceiver?.receiver?.track() as? VideoTrack
             listener.onRemoteVideoTrack(videoTrack?.let(::WebRtcVideoTrack))
         }
@@ -163,10 +156,10 @@ internal class WebRtcMediaConnection(
     }
 
     override fun registerPresentationRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
-        if (!workerExecutor.isShutdown) handler.post {
+        if (!config.presentationInMain) workerExecutor.maybeExecute {
             val t = presentationVideoTransceiver
-                ?.takeIf { it.currentDirection == RtpTransceiverDirection.RECV_ONLY }
-                ?: return@post
+                .takeIf { it.currentDirection == RtpTransceiverDirection.SEND_RECV }
+                ?: return@maybeExecute
             val videoTrack = t.receiver.track() as? VideoTrack
             listener.onRemoteVideoTrack(videoTrack?.let(::WebRtcVideoTrack))
         }
