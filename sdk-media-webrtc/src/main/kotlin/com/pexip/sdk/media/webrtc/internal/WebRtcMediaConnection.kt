@@ -307,6 +307,7 @@ internal class WebRtcMediaConnection(
                 .createIceServer()
         }
         val c = PeerConnection.RTCConfiguration(iceServers)
+        c.enableDscp = config.dscp
         c.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
         c.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
         return c
