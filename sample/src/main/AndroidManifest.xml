@@ -2,6 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.pexip.sdk.sample">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name=".SampleApplication"
         android:allowBackup="false"
@@ -25,6 +27,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".conference.ConferenceService"
+            android:foregroundServiceType="camera" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

@@ -1,5 +1,10 @@
 package com.pexip.sdk.sample.conference
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
@@ -18,6 +23,7 @@ import com.pexip.sdk.sample.dtmf.DtmfWorkflow
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
@@ -26,6 +32,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ConferenceWorkflow @Inject constructor(
+    @ApplicationContext private val applicationContext: Context,
     private val service: InfinityService,
     private val factory: MediaConnectionFactory,
     private val dtmfWorkflow: DtmfWorkflow,
@@ -58,6 +65,7 @@ class ConferenceWorkflow @Inject constructor(
         renderState: ConferenceState,
         context: RenderContext,
     ): ConferenceRendering {
+        context.bindConferenceServiceSideEffect()
         context.leaveSideEffect(renderState)
         context.localAudioCapturingSideEffect(renderState.localAudioTrack)
         context.cameraCapturingSideEffect(renderState.cameraVideoTrack)
@@ -96,6 +104,26 @@ class ConferenceWorkflow @Inject constructor(
             )
         }
     }
+
+    private fun RenderContext.bindConferenceServiceSideEffect() =
+        runningSideEffect("bindConferenceService") {
+            val connection = object : ServiceConnection {
+                override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                    // noop
+                }
+
+                override fun onServiceDisconnected(name: ComponentName) {
+                    // noop
+                }
+            }
+            try {
+                val intent = Intent(applicationContext, ConferenceService::class.java)
+                applicationContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+                awaitCancellation()
+            } finally {
+                applicationContext.unbindService(connection)
+            }
+        }
 
     private fun RenderContext.leaveSideEffect(renderState: ConferenceState) =
         runningSideEffect("${renderState.conference}Leave") {
