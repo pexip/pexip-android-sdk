@@ -26,8 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
+import com.pexip.sdk.sample.R
 import com.pexip.sdk.sample.dtmf.DtmfDialog
 import org.webrtc.EglBase
 
@@ -96,6 +98,12 @@ fun ConferenceCallScreen(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
             ) {
+                Button(onClick = rendering.onToggleBlur) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.blur),
+                        contentDescription = null
+                    )
+                }
                 Button(onClick = rendering.onToggleLocalAudioCapturing) {
                     Icon(
                         imageVector = when (rendering.localAudioCapturing) {

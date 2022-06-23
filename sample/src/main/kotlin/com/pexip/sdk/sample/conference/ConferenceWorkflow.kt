@@ -100,7 +100,8 @@ class ConferenceWorkflow @Inject constructor(
                 onToggleLocalAudioCapturing = context.send(::OnToggleLocalAudioCapturing),
                 onToggleCameraCapturing = context.send(::OnToggleCameraCapturing),
                 onConferenceEventsClick = context.send(::OnConferenceEventsClick),
-                onBackClick = context.send(::OnBackClick)
+                onBackClick = context.send(::OnBackClick),
+                onToggleBlur = context.send(::OnToggleBlur)
             )
         }
     }

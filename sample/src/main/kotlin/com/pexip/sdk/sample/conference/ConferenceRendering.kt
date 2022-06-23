@@ -16,6 +16,7 @@ data class ConferenceCallRendering(
     val presentationRemoteVideoTrack: VideoTrack?,
     val dtmfRendering: DtmfRendering?,
     val onToggleDtmfClick: () -> Unit,
+    val onToggleBlur: () -> Unit,
     val onToggleLocalAudioCapturing: () -> Unit,
     val onToggleCameraCapturing: () -> Unit,
     val onConferenceEventsClick: () -> Unit,

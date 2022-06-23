@@ -26,6 +26,13 @@ class OnDtmfOutput(private val output: DtmfOutput) : ConferenceAction() {
     }
 }
 
+class OnToggleBlur : ConferenceAction() {
+
+    override fun Updater.apply() = with(state) {
+        cameraVideoTrack.toggleBlur()
+    }
+}
+
 class OnToggleLocalAudioCapturing : ConferenceAction() {
 
     override fun Updater.apply() = with(state) {

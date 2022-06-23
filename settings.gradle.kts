@@ -23,6 +23,7 @@ dependencyResolutionManagement {
                 snapshotsOnly()
             }
         }
+        maven(url = "https://artifactory.cronapp.io/libs-release")
     }
     versionCatalogs {
         register("pexipSdk") {
