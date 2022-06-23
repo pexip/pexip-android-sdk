@@ -20,15 +20,15 @@ class ConferenceService : Service() {
     override fun onCreate() {
         super.onCreate()
         val notificationChannel = NotificationChannelCompat.Builder(
-            NOTIFICATION_CHANNEL_ID,
+            getString(R.string.conference_notification_channel_id),
             NOTIFICATION_CHANNEL_IMPORTANCE
         )
-            .setName("Conference")
+            .setName(getString(R.string.conference_notification_channel_name))
             .build()
         manager.createNotificationChannel(notificationChannel)
-        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        val notification = NotificationCompat.Builder(this, notificationChannel.id)
             .setOngoing(true)
-            .setContentTitle("Conference")
+            .setContentTitle(getString(R.string.conference_notification_content_title))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
         startForeground(NOTIFICATION_ID, notification)
@@ -44,7 +44,6 @@ class ConferenceService : Service() {
     private companion object {
 
         const val NOTIFICATION_ID = 1
-        const val NOTIFICATION_CHANNEL_ID = "conference"
         const val NOTIFICATION_CHANNEL_IMPORTANCE = NotificationManagerCompat.IMPORTANCE_DEFAULT
     }
 }
