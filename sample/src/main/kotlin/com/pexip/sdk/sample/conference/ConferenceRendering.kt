@@ -1,5 +1,6 @@
 package com.pexip.sdk.sample.conference
 
+import android.content.Intent
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.sample.dtmf.DtmfRendering
@@ -15,9 +16,12 @@ data class ConferenceCallRendering(
     val mainRemoteVideoTrack: VideoTrack?,
     val presentationRemoteVideoTrack: VideoTrack?,
     val dtmfRendering: DtmfRendering?,
+    val screenCapturing: Boolean,
+    val onScreenCapture: (Intent) -> Unit,
     val onToggleDtmfClick: () -> Unit,
     val onToggleLocalAudioCapturing: () -> Unit,
     val onToggleCameraCapturing: () -> Unit,
+    val onStopScreenCapture: () -> Unit,
     val onConferenceEventsClick: () -> Unit,
     override val onBackClick: () -> Unit,
 ) : ConferenceRendering

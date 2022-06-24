@@ -1,14 +1,47 @@
 package com.pexip.sdk.sample.conference
 
+import android.content.Intent
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
+import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.sample.dtmf.DtmfOutput
 import com.squareup.workflow1.WorkflowAction
 
 typealias ConferenceAction = WorkflowAction<ConferenceProps, ConferenceState, ConferenceOutput>
+
+class OnScreenCapture(private val data: Intent) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(screenCaptureData = data)
+    }
+}
+
+class OnScreenCaptureVideoTrack(private val localVideoTrack: LocalVideoTrack) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(
+            screenCaptureData = null,
+            screenCaptureVideoTrack = localVideoTrack
+        )
+        state.connection.setPresentationVideoTrack(localVideoTrack)
+        localVideoTrack.startCapture(QualityProfile.High)
+    }
+}
+
+class OnStopScreenCapture : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state.connection.setPresentationVideoTrack(null)
+        state.screenCaptureVideoTrack?.dispose()
+        state = state.copy(
+            screenCapturing = false,
+            screenCaptureVideoTrack = null
+        )
+    }
+}
 
 class OnToggleDtmf : ConferenceAction() {
 
@@ -87,6 +120,13 @@ class OnCameraCapturing(private val capturing: Boolean) : ConferenceAction() {
     }
 }
 
+class OnScreenCapturing(private val capturing: Boolean) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(screenCapturing = capturing)
+    }
+}
+
 class OnConferenceEvent(private val conferenceEvent: ConferenceEvent) : ConferenceAction() {
 
     override fun Updater.apply() {
@@ -99,9 +139,24 @@ class OnConferenceEvent(private val conferenceEvent: ConferenceEvent) : Conferen
             .plus(conferenceEvent)
             .sortedBy { it.at }
             .toList()
+        if (conferenceEvent is PresentationStartConferenceEvent) {
+            state.connection.setPresentationVideoTrack(null)
+            state.screenCaptureVideoTrack?.dispose()
+            state.connection.startPresentationReceive()
+        } else if (conferenceEvent is PresentationStopConferenceEvent) {
+            state.connection.stopPresentationReceive()
+        }
         state = state.copy(
             presentation = presentation,
-            conferenceEvents = conferenceEvents
+            conferenceEvents = conferenceEvents,
+            screenCapturing = when (conferenceEvent) {
+                is PresentationStartConferenceEvent -> false
+                else -> state.screenCapturing
+            },
+            screenCaptureVideoTrack = when (conferenceEvent) {
+                is PresentationStartConferenceEvent -> null
+                else -> state.screenCaptureVideoTrack
+            }
         )
     }
 }

@@ -1,6 +1,10 @@
 package com.pexip.sdk.sample.conference
 
+import android.app.Activity
+import android.media.projection.MediaProjectionManager
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -20,13 +24,17 @@ import androidx.compose.material.icons.rounded.Message
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.MicOff
 import androidx.compose.material.icons.rounded.Pin
+import androidx.compose.material.icons.rounded.ScreenShare
+import androidx.compose.material.icons.rounded.StopScreenShare
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.VideocamOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.pexip.sdk.sample.dtmf.DtmfDialog
 import org.webrtc.EglBase
@@ -114,6 +122,28 @@ fun ConferenceCallScreen(
                         contentDescription = null
                     )
                 }
+                val manager = rememberMediaProjectionManager()
+                val launcher = rememberLauncherForActivityResult(StartActivityForResult()) {
+                    val data = it.data
+                    if (it.resultCode == Activity.RESULT_OK && data != null) {
+                        rendering.onScreenCapture(data)
+                    }
+                }
+                val onToggleScreenCapture = when (rendering.screenCapturing) {
+                    true -> rendering.onStopScreenCapture
+                    else -> {
+                        { launcher.launch(manager.createScreenCaptureIntent()) }
+                    }
+                }
+                Button(onClick = onToggleScreenCapture) {
+                    Icon(
+                        imageVector = when (rendering.screenCapturing) {
+                            true -> Icons.Rounded.StopScreenShare
+                            false -> Icons.Rounded.ScreenShare
+                        },
+                        contentDescription = null
+                    )
+                }
                 Button(onClick = rendering.onConferenceEventsClick) {
                     Icon(
                         imageVector = Icons.Rounded.Message,
@@ -132,6 +162,12 @@ fun ConferenceCallScreen(
     if (rendering.dtmfRendering != null) {
         DtmfDialog(rendering = rendering.dtmfRendering)
     }
+}
+
+@Composable
+private fun rememberMediaProjectionManager(): MediaProjectionManager {
+    val context = LocalContext.current
+    return remember(context.applicationContext) { context.applicationContext.getSystemService()!! }
 }
 
 private const val ASPECT_RATIO_PORTRAIT = 9 / 16f

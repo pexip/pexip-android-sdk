@@ -1,7 +1,7 @@
 package com.pexip.sdk.sample.di
 
 import android.app.Application
-import com.pexip.sdk.media.MediaConnectionFactory
+import com.pexip.sdk.media.android.AndroidMediaConnectionFactory
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import dagger.Module
 import dagger.Provides
@@ -16,7 +16,7 @@ object MediaConnectionFactoryModule {
 
     @Provides
     @Singleton
-    fun Application.provideMediaConnectionFactory(eglBase: EglBase): MediaConnectionFactory =
+    fun Application.provideMediaConnectionFactory(eglBase: EglBase): AndroidMediaConnectionFactory =
         WebRtcMediaConnectionFactory(
             context = this,
             eglBase = eglBase
