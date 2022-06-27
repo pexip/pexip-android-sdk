@@ -50,6 +50,8 @@ public interface AndroidMediaConnectionFactory : MediaConnectionFactory {
      *
      * @param intent a data parameter obtained from [Activity.onActivityResult]
      * @param callback a callback to indicate when the session is no longer valid
+     * @return a [MediaProjection]-backed [LocalVideoTrack]
+     * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
      */
     public fun createMediaProjectionVideoTrack(
         intent: Intent,

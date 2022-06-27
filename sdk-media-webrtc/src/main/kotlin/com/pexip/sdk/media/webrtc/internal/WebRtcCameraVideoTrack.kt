@@ -6,6 +6,7 @@ import org.webrtc.CameraVideoCapturer
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
+import java.util.concurrent.Executor
 
 internal class WebRtcCameraVideoTrack(
     applicationContext: Context,
@@ -13,12 +14,14 @@ internal class WebRtcCameraVideoTrack(
     private val videoCapturer: CameraVideoCapturer,
     videoSource: VideoSource,
     videoTrack: VideoTrack,
+    workerExecutor: Executor,
 ) : CameraVideoTrack, WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
     textureHelper = textureHelper,
     videoCapturer = videoCapturer,
     videoSource = videoSource,
-    videoTrack = videoTrack
+    videoTrack = videoTrack,
+    workerExecutor = workerExecutor
 ) {
 
     override fun switchCamera(callback: CameraVideoTrack.SwitchCameraCallback) {

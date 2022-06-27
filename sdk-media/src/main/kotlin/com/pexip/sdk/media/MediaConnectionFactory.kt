@@ -7,6 +7,9 @@ public interface MediaConnectionFactory {
 
     /**
      * Creates a [LocalAudioTrack].
+     *
+     * @return a [LocalAudioTrack]
+     * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
      */
     public fun createLocalAudioTrack(): LocalAudioTrack
 
@@ -20,6 +23,7 @@ public interface MediaConnectionFactory {
      *
      * @return a [CameraVideoTrack]
      * @throws IllegalStateException if no camera is available
+     * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
      */
     public fun createCameraVideoTrack(): CameraVideoTrack
 
@@ -29,11 +33,15 @@ public interface MediaConnectionFactory {
      * @param deviceName a device name that should be opened
      * @return a [CameraVideoTrack]
      * @throws IllegalStateException if [deviceName] is not available
+     * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
      */
     public fun createCameraVideoTrack(deviceName: String): CameraVideoTrack
 
     /**
      * Creates a [MediaConnection] with the specified [config].
+     *
+     * @return a [MediaConnection]
+     * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
      */
     public fun createMediaConnection(config: MediaConnectionConfig): MediaConnection
 
@@ -41,6 +49,8 @@ public interface MediaConnectionFactory {
      * Disposes this [MediaConnectionFactory] and releases any held resources.
      *
      * The instance will become unusable after this call.
+     *
+     * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
      */
     public fun dispose()
 }

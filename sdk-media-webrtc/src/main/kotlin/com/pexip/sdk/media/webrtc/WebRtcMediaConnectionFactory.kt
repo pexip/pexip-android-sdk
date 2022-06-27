@@ -31,6 +31,7 @@ import org.webrtc.VideoEncoderFactory
 import org.webrtc.audio.JavaAudioDeviceModule
 import java.util.UUID
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     context: Context,
@@ -47,6 +48,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     ),
 ) : AndroidMediaConnectionFactory {
 
+    private val disposed = AtomicBoolean()
     private val applicationContext = context.applicationContext
     private val audioAttributes = AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
@@ -61,14 +63,18 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         .setVideoDecoderFactory(videoDecoderFactory)
         .setVideoEncoderFactory(videoEncoderFactory)
         .createPeerConnectionFactory()
+    private val workerExecutor = Executors.newSingleThreadExecutor()
+    private val networkExecutor = Executors.newSingleThreadExecutor()
 
     override fun createLocalAudioTrack(): LocalAudioTrack {
+        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
         val audioSource = factory.createAudioSource(MediaConstraints())
         val audioTrack = factory.createAudioTrack(createMediaTrackId(), audioSource)
-        return WebRtcLocalAudioTrack(audioHandler, audioSource, audioTrack)
+        return WebRtcLocalAudioTrack(audioHandler, audioSource, audioTrack, workerExecutor)
     }
 
     override fun createCameraVideoTrack(): CameraVideoTrack {
+        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
         val deviceNames = cameraEnumerator.deviceNames
         val deviceName = deviceNames.firstOrNull(cameraEnumerator::isFrontFacing)
             ?: deviceNames.firstOrNull(cameraEnumerator::isBackFacing)
@@ -77,6 +83,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     }
 
     override fun createCameraVideoTrack(deviceName: String): CameraVideoTrack {
+        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
         check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
         val videoCapturer = cameraEnumerator.createCapturer(deviceName, null)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
@@ -85,7 +92,8 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
             textureHelper = createSurfaceTextureHelper("CaptureThread:$deviceName"),
             videoCapturer = videoCapturer,
             videoSource = videoSource,
-            videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource)
+            videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
+            workerExecutor = workerExecutor
         )
     }
 
@@ -93,6 +101,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         intent: Intent,
         callback: MediaProjection.Callback,
     ): LocalVideoTrack {
+        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
         val videoCapturer = ScreenCapturerAndroid(intent, callback)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         return WebRtcLocalVideoTrack(
@@ -100,21 +109,31 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
             textureHelper = createSurfaceTextureHelper("CaptureThread:MediaProjection"),
             videoCapturer = videoCapturer,
             videoSource = videoSource,
-            videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource)
+            videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
+            workerExecutor = workerExecutor
         )
     }
 
-    override fun createMediaConnection(config: MediaConnectionConfig): MediaConnection =
-        WebRtcMediaConnection(
+    override fun createMediaConnection(config: MediaConnectionConfig): MediaConnection {
+        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+        return WebRtcMediaConnection(
             factory = this,
             config = config,
-            workerExecutor = Executors.newSingleThreadExecutor(),
-            signalingExecutor = Executors.newSingleThreadExecutor()
+            workerExecutor = workerExecutor,
+            networkExecutor = networkExecutor
         )
+    }
 
     override fun dispose() {
-        factory.dispose()
-        audioDeviceModule.release()
+        if (disposed.compareAndSet(false, true)) {
+            workerExecutor.execute {
+                factory.dispose()
+                audioDeviceModule.release()
+            }
+            workerExecutor.shutdown()
+        } else {
+            throw IllegalStateException("WebRtcMediaConnectionFactory has been disposed!")
+        }
     }
 
     internal fun createPeerConnection(

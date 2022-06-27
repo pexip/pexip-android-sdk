@@ -13,6 +13,8 @@ import org.webrtc.VideoFrame
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import java.util.concurrent.CopyOnWriteArraySet
+import java.util.concurrent.Executor
+import java.util.concurrent.atomic.AtomicBoolean
 
 internal open class WebRtcLocalVideoTrack(
     applicationContext: Context,
@@ -20,9 +22,11 @@ internal open class WebRtcLocalVideoTrack(
     private val videoCapturer: VideoCapturer,
     private val videoSource: VideoSource,
     videoTrack: VideoTrack,
+    private val workerExecutor: Executor,
 ) : LocalVideoTrack, WebRtcVideoTrack(videoTrack) {
 
     private val handler = HandlerCompat.createAsync(Looper.getMainLooper())
+    private val disposed = AtomicBoolean()
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val capturerObserver = object : CapturerObserver {
 
@@ -78,11 +82,15 @@ internal open class WebRtcLocalVideoTrack(
     }
 
     override fun dispose() {
-        videoTrack.dispose()
-        videoSource.dispose()
-        videoCapturer.stopCapture()
-        videoCapturer.dispose()
-        textureHelper.dispose()
-        handler.removeCallbacksAndMessages(null)
+        if (disposed.compareAndSet(false, true)) {
+            workerExecutor.execute {
+                videoTrack.dispose()
+                videoSource.dispose()
+                videoCapturer.stopCapture()
+                videoCapturer.dispose()
+                textureHelper.dispose()
+            }
+            handler.removeCallbacksAndMessages(null)
+        }
     }
 }

@@ -16,18 +16,19 @@ import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription
 import org.webrtc.VideoTrack
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
     private val config: MediaConnectionConfig,
-    private val workerExecutor: ExecutorService,
-    private val signalingExecutor: ExecutorService,
+    private val workerExecutor: Executor,
+    private val networkExecutor: Executor,
 ) : MediaConnection {
 
     private val started = AtomicBoolean()
+    private val disposed = AtomicBoolean()
     private val observer = object : SimplePeerConnectionObserver {
 
         private val shouldRenegotiate = AtomicBoolean()
@@ -165,20 +166,19 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    @Synchronized
     override fun dispose() {
-        workerExecutor.maybeExecute {
-            mainAudioTrack = null
-            mainVideoTrack = null
-            mainAudioTransceiver?.sender?.setTrack(null, false)
-            mainVideoTransceiver?.sender?.setTrack(null, false)
-            presentationVideoTransceiver.sender.setTrack(null, false)
-            mainRemoteVideoTrackListeners.clear()
-            presentationRemoteVideoTrackListeners.clear()
-            connection.dispose()
+        if (disposed.compareAndSet(false, true)) {
+            workerExecutor.execute {
+                mainAudioTrack = null
+                mainVideoTrack = null
+                mainAudioTransceiver?.sender?.setTrack(null, false)
+                mainVideoTransceiver?.sender?.setTrack(null, false)
+                presentationVideoTransceiver.sender.setTrack(null, false)
+                mainRemoteVideoTrackListeners.clear()
+                presentationRemoteVideoTrackListeners.clear()
+                connection.dispose()
+            }
         }
-        workerExecutor.shutdown()
-        signalingExecutor.shutdown()
     }
 
     override fun registerMainRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
@@ -228,7 +228,7 @@ internal class WebRtcMediaConnection(
 
     @Suppress("NAME_SHADOWING")
     private fun onSetLocalDescriptionSuccess(sdp: SessionDescription) {
-        signalingExecutor.maybeExecute {
+        networkExecutor.maybeExecute {
             try {
                 val sdp = SessionDescription(
                     SessionDescription.Type.ANSWER,
@@ -246,7 +246,7 @@ internal class WebRtcMediaConnection(
     }
 
     private fun onCandidate(candidate: String, mid: String) {
-        signalingExecutor.maybeExecute {
+        networkExecutor.maybeExecute {
             try {
                 config.signaling.onCandidate(candidate, mid)
             } catch (t: Throwable) {
@@ -256,7 +256,7 @@ internal class WebRtcMediaConnection(
     }
 
     private fun onAudioMuted() {
-        signalingExecutor.maybeExecute {
+        networkExecutor.maybeExecute {
             try {
                 config.signaling.onAudioMuted()
             } catch (t: Throwable) {
@@ -266,7 +266,7 @@ internal class WebRtcMediaConnection(
     }
 
     private fun onAudioUnmuted() {
-        signalingExecutor.maybeExecute {
+        networkExecutor.maybeExecute {
             try {
                 config.signaling.onAudioUnmuted()
             } catch (t: Throwable) {
@@ -276,7 +276,7 @@ internal class WebRtcMediaConnection(
     }
 
     private fun onVideoMuted() {
-        signalingExecutor.maybeExecute {
+        networkExecutor.maybeExecute {
             try {
                 config.signaling.onVideoMuted()
             } catch (t: Throwable) {
@@ -286,17 +286,13 @@ internal class WebRtcMediaConnection(
     }
 
     private fun onVideoUnmuted() {
-        signalingExecutor.maybeExecute {
+        networkExecutor.maybeExecute {
             try {
                 config.signaling.onVideoUnmuted()
             } catch (t: Throwable) {
                 // noop
             }
         }
-    }
-
-    private fun ExecutorService.maybeExecute(block: () -> Unit) {
-        if (!isShutdown) execute(block)
     }
 
     private fun createRTCConfiguration(): PeerConnection.RTCConfiguration {
