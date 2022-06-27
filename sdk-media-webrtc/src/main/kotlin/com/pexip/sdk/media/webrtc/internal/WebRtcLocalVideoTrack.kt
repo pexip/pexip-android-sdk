@@ -1,8 +1,6 @@
 package com.pexip.sdk.media.webrtc.internal
 
 import android.content.Context
-import android.os.Looper
-import androidx.core.os.HandlerCompat
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
@@ -23,9 +21,9 @@ internal open class WebRtcLocalVideoTrack(
     private val videoSource: VideoSource,
     videoTrack: VideoTrack,
     private val workerExecutor: Executor,
+    protected val signalingExecutor: Executor,
 ) : LocalVideoTrack, WebRtcVideoTrack(videoTrack) {
 
-    private val handler = HandlerCompat.createAsync(Looper.getMainLooper())
     private val disposed = AtomicBoolean()
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val capturerObserver = object : CapturerObserver {
@@ -33,18 +31,22 @@ internal open class WebRtcLocalVideoTrack(
         override fun onCapturerStarted(success: Boolean) {
             videoSource.capturerObserver.onCapturerStarted(success)
             if (capturing == success) return
-            handler.post {
-                capturing = success
-                capturingListeners.forEach { it.onCapturing(success) }
+            capturing = success
+            signalingExecutor.maybeExecute {
+                capturingListeners.forEach {
+                    it.safeOnCapturing(success)
+                }
             }
         }
 
         override fun onCapturerStopped() {
             videoSource.capturerObserver.onCapturerStopped()
             if (!capturing) return
-            handler.post {
-                capturing = false
-                capturingListeners.forEach { it.onCapturing(false) }
+            capturing = false
+            signalingExecutor.maybeExecute {
+                capturingListeners.forEach {
+                    it.safeOnCapturing(false)
+                }
             }
         }
 
@@ -73,7 +75,9 @@ internal open class WebRtcLocalVideoTrack(
     }
 
     override fun registerCapturingListener(listener: LocalMediaTrack.CapturingListener) {
-        handler.post { listener.onCapturing(capturing) }
+        signalingExecutor.maybeExecute {
+            listener.safeOnCapturing(capturing)
+        }
         capturingListeners += listener
     }
 
@@ -90,7 +94,6 @@ internal open class WebRtcLocalVideoTrack(
                 videoCapturer.dispose()
                 textureHelper.dispose()
             }
-            handler.removeCallbacksAndMessages(null)
         }
     }
 }

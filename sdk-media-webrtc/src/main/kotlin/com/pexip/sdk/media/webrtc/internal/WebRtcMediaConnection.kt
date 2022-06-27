@@ -25,6 +25,7 @@ internal class WebRtcMediaConnection(
     private val config: MediaConnectionConfig,
     private val workerExecutor: Executor,
     private val networkExecutor: Executor,
+    private val signalingExecutor: Executor,
 ) : MediaConnection {
 
     private val started = AtomicBoolean()
@@ -73,12 +74,7 @@ internal class WebRtcMediaConnection(
         }
 
         override fun onSetSuccess() {
-            val mangledDescription = connection.localDescription.mangle(
-                mainAudioMid = mainAudioTransceiver?.mid,
-                mainVideoMid = mainVideoTransceiver?.mid,
-                presentationVideoMid = presentationVideoTransceiver.mid
-            )
-            onSetLocalDescriptionSuccess(mangledDescription)
+            onSetLocalDescriptionSuccess()
         }
     }
     private val remoteSdpObserver = object : SimpleSdpObserver {}
@@ -142,9 +138,7 @@ internal class WebRtcMediaConnection(
                 ?: return@maybeExecute
             t.direction = RtpTransceiverDirection.SEND_RECV
             val videoTrack = (t.receiver.track() as? VideoTrack)?.let(::WebRtcVideoTrack)
-            presentationRemoteVideoTrackListeners.forEach {
-                it.onRemoteVideoTrack(videoTrack)
-            }
+            presentationRemoteVideoTrackListeners.notify(videoTrack)
         }
     }
 
@@ -154,9 +148,7 @@ internal class WebRtcMediaConnection(
                 .takeUnless { it.currentDirection == RtpTransceiverDirection.INACTIVE }
                 ?: return@maybeExecute
             t.direction = RtpTransceiverDirection.INACTIVE
-            presentationRemoteVideoTrackListeners.forEach {
-                it.onRemoteVideoTrack(null)
-            }
+            presentationRemoteVideoTrackListeners.notify(null)
         }
     }
 
@@ -183,8 +175,9 @@ internal class WebRtcMediaConnection(
 
     override fun registerMainRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
         workerExecutor.maybeExecute {
-            val videoTrack = mainVideoTransceiver?.receiver?.track() as? VideoTrack
-            listener.onRemoteVideoTrack(videoTrack?.let(::WebRtcVideoTrack))
+            val videoTrack =
+                (mainVideoTransceiver?.receiver?.track() as? VideoTrack)?.let(::WebRtcVideoTrack)
+            listener.notify(videoTrack)
         }
         mainRemoteVideoTrackListeners += listener
     }
@@ -198,8 +191,8 @@ internal class WebRtcMediaConnection(
             val t = presentationVideoTransceiver
                 .takeIf { it.currentDirection == RtpTransceiverDirection.SEND_RECV }
                 ?: return@maybeExecute
-            val videoTrack = t.receiver.track() as? VideoTrack
-            listener.onRemoteVideoTrack(videoTrack?.let(::WebRtcVideoTrack))
+            val videoTrack = (t.receiver?.track() as? VideoTrack)?.let(::WebRtcVideoTrack)
+            listener.notify(videoTrack)
         }
         presentationRemoteVideoTrackListeners += listener
     }
@@ -226,21 +219,27 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    @Suppress("NAME_SHADOWING")
-    private fun onSetLocalDescriptionSuccess(sdp: SessionDescription) {
-        networkExecutor.maybeExecute {
-            try {
-                val sdp = SessionDescription(
-                    SessionDescription.Type.ANSWER,
-                    config.signaling.onOffer(
-                        callType = "WEBRTC",
-                        description = sdp.description,
-                        presentationInMix = config.presentationInMain
+    private fun onSetLocalDescriptionSuccess() {
+        workerExecutor.maybeExecute {
+            val mangledDescription = connection.localDescription.mangle(
+                mainAudioMid = mainAudioTransceiver?.mid,
+                mainVideoMid = mainVideoTransceiver?.mid,
+                presentationVideoMid = presentationVideoTransceiver.mid
+            )
+            networkExecutor.maybeExecute {
+                try {
+                    val sdp = SessionDescription(
+                        SessionDescription.Type.ANSWER,
+                        config.signaling.onOffer(
+                            callType = "WEBRTC",
+                            description = mangledDescription.description,
+                            presentationInMix = config.presentationInMain
+                        )
                     )
-                )
-                setRemoteDescription(sdp)
-            } catch (t: Throwable) {
-                // noop
+                    setRemoteDescription(sdp)
+                } catch (t: Throwable) {
+                    // noop
+                }
             }
         }
     }
@@ -291,6 +290,20 @@ internal class WebRtcMediaConnection(
                 config.signaling.onVideoUnmuted()
             } catch (t: Throwable) {
                 // noop
+            }
+        }
+    }
+
+    private fun MediaConnection.RemoteVideoTrackListener.notify(videoTrack: WebRtcVideoTrack?) {
+        signalingExecutor.maybeExecute {
+            safeOnRemoteVideoTrack(videoTrack)
+        }
+    }
+
+    private fun Collection<MediaConnection.RemoteVideoTrackListener>.notify(videoTrack: WebRtcVideoTrack?) {
+        signalingExecutor.maybeExecute {
+            forEach {
+                it.safeOnRemoteVideoTrack(videoTrack)
             }
         }
     }

@@ -65,12 +65,19 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         .createPeerConnectionFactory()
     private val workerExecutor = Executors.newSingleThreadExecutor()
     private val networkExecutor = Executors.newSingleThreadExecutor()
+    private val signalingExecutor = Executors.newSingleThreadExecutor()
 
     override fun createLocalAudioTrack(): LocalAudioTrack {
         check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
         val audioSource = factory.createAudioSource(MediaConstraints())
         val audioTrack = factory.createAudioTrack(createMediaTrackId(), audioSource)
-        return WebRtcLocalAudioTrack(audioHandler, audioSource, audioTrack, workerExecutor)
+        return WebRtcLocalAudioTrack(
+            audioHandler = audioHandler,
+            audioSource = audioSource,
+            audioTrack = audioTrack,
+            workerExecutor = workerExecutor,
+            signalingExecutor = signalingExecutor
+        )
     }
 
     override fun createCameraVideoTrack(): CameraVideoTrack {
@@ -93,7 +100,8 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            workerExecutor = workerExecutor
+            workerExecutor = workerExecutor,
+            signalingExecutor = signalingExecutor
         )
     }
 
@@ -110,7 +118,8 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            workerExecutor = workerExecutor
+            workerExecutor = workerExecutor,
+            signalingExecutor = signalingExecutor
         )
     }
 
@@ -120,7 +129,8 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
             factory = this,
             config = config,
             workerExecutor = workerExecutor,
-            networkExecutor = networkExecutor
+            networkExecutor = networkExecutor,
+            signalingExecutor = signalingExecutor
         )
     }
 
@@ -131,6 +141,8 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
                 audioDeviceModule.release()
             }
             workerExecutor.shutdown()
+            networkExecutor.shutdown()
+            signalingExecutor.shutdown()
         } else {
             throw IllegalStateException("WebRtcMediaConnectionFactory has been disposed!")
         }

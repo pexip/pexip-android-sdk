@@ -15,24 +15,30 @@ internal class WebRtcCameraVideoTrack(
     videoSource: VideoSource,
     videoTrack: VideoTrack,
     workerExecutor: Executor,
+    signalingExecutor: Executor,
 ) : CameraVideoTrack, WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
     textureHelper = textureHelper,
     videoCapturer = videoCapturer,
     videoSource = videoSource,
     videoTrack = videoTrack,
-    workerExecutor = workerExecutor
+    workerExecutor = workerExecutor,
+    signalingExecutor = signalingExecutor
 ) {
 
     override fun switchCamera(callback: CameraVideoTrack.SwitchCameraCallback) {
         val handler = object : CameraVideoCapturer.CameraSwitchHandler {
 
             override fun onCameraSwitchDone(front: Boolean) {
-                callback.onSuccess(front)
+                signalingExecutor.maybeExecute {
+                    callback.safeOnSuccess(front)
+                }
             }
 
             override fun onCameraSwitchError(error: String) {
-                callback.onFailure(error)
+                signalingExecutor.maybeExecute {
+                    callback.safeOnFailure(error)
+                }
             }
         }
         videoCapturer.switchCamera(handler)
