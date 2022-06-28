@@ -22,6 +22,8 @@ public interface MediaConnection {
 
     public fun setMainVideoTrack(localVideoTrack: LocalVideoTrack?)
 
+    public fun setPresentationVideoTrack(localVideoTrack: LocalVideoTrack?)
+
     public fun startPresentationReceive()
 
     public fun stopPresentationReceive()

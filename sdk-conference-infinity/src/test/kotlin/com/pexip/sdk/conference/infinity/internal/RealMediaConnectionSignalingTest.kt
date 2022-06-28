@@ -219,6 +219,42 @@ internal class RealMediaConnectionSignalingTest {
         assertTrue(called)
     }
 
+    @Test
+    fun `onTakeFloor() returns`() {
+        var called = false
+        val step = object : TestParticipantTest {
+
+            override fun takeFloor(token: String): Call<Unit> = object : TestCall<Unit> {
+
+                override fun execute() {
+                    assertEquals(store.get(), token)
+                    called = true
+                }
+            }
+        }
+        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
+        signaling.onTakeFloor()
+        assertTrue(called)
+    }
+
+    @Test
+    fun `onReleaseFloor() returns`() {
+        var called = false
+        val step = object : TestParticipantTest {
+
+            override fun releaseFloor(token: String): Call<Unit> = object : TestCall<Unit> {
+
+                override fun execute() {
+                    assertEquals(store.get(), token)
+                    called = true
+                }
+            }
+        }
+        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
+        signaling.onReleaseFloor()
+        assertTrue(called)
+    }
+
     @Suppress("SameParameterValue")
     private fun read(fileName: String) = FileSystem.RESOURCES.read(fileName.toPath()) { readUtf8() }
 }

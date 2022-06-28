@@ -41,6 +41,8 @@ internal class WebRtcCameraVideoTrack(
                 }
             }
         }
-        videoCapturer.switchCamera(handler)
+        workerExecutor.maybeExecute {
+            videoCapturer.switchCamera(handler)
+        }
     }
 }

@@ -11,7 +11,7 @@ import kotlin.reflect.KProperty
 internal class RealMediaConnectionSignaling(
     private val store: TokenStore,
     private val participantStep: InfinityService.ParticipantStep,
-    override val iceServers: List<IceServer>
+    override val iceServers: List<IceServer>,
 ) : MediaConnectionSignaling {
 
     var callStep: InfinityService.CallStep? by ThreadLocal()
@@ -72,6 +72,14 @@ internal class RealMediaConnectionSignaling(
 
     override fun onVideoUnmuted() {
         participantStep.videoUnmuted(store.get()).execute()
+    }
+
+    override fun onTakeFloor() {
+        participantStep.takeFloor(store.get()).execute()
+    }
+
+    override fun onReleaseFloor() {
+        participantStep.releaseFloor(store.get()).execute()
     }
 
     private fun getUfrag(candidate: String) =

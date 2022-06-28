@@ -20,7 +20,7 @@ internal open class WebRtcLocalVideoTrack(
     private val videoCapturer: VideoCapturer,
     private val videoSource: VideoSource,
     videoTrack: VideoTrack,
-    private val workerExecutor: Executor,
+    protected val workerExecutor: Executor,
     protected val signalingExecutor: Executor,
 ) : LocalVideoTrack, WebRtcVideoTrack(videoTrack) {
 
@@ -59,11 +59,15 @@ internal open class WebRtcLocalVideoTrack(
     private var capturing = false
 
     init {
-        videoCapturer.initialize(textureHelper, applicationContext, capturerObserver)
+        workerExecutor.maybeExecute {
+            videoCapturer.initialize(textureHelper, applicationContext, capturerObserver)
+        }
     }
 
     override fun startCapture(profile: QualityProfile) {
-        videoCapturer.startCapture(profile.width, profile.height, profile.fps)
+        workerExecutor.maybeExecute {
+            videoCapturer.startCapture(profile.width, profile.height, profile.fps)
+        }
     }
 
     override fun startCapture() {
@@ -71,7 +75,9 @@ internal open class WebRtcLocalVideoTrack(
     }
 
     override fun stopCapture() {
-        videoCapturer.stopCapture()
+        workerExecutor.maybeExecute {
+            videoCapturer.stopCapture()
+        }
     }
 
     override fun registerCapturingListener(listener: LocalMediaTrack.CapturingListener) {
@@ -88,9 +94,9 @@ internal open class WebRtcLocalVideoTrack(
     override fun dispose() {
         if (disposed.compareAndSet(false, true)) {
             workerExecutor.execute {
+                videoCapturer.stopCapture()
                 videoTrack.dispose()
                 videoSource.dispose()
-                videoCapturer.stopCapture()
                 videoCapturer.dispose()
                 textureHelper.dispose()
             }

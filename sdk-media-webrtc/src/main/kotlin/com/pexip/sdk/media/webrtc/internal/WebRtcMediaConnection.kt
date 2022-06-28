@@ -61,6 +61,12 @@ internal class WebRtcMediaConnection(
         new?.registerCapturingListener(mainVideoTrackCapturingListener)
     }
 
+    @set:JvmName("setPresentationVideoTrackInternal")
+    private var presentationVideoTrack: LocalVideoTrack? by Delegates.observable(null) { _, old, new ->
+        if (old == new) return@observable
+        if (new != null) onTakeFloor() else onReleaseFloor()
+    }
+
     private var mainAudioTransceiver: RtpTransceiver? = null
     private var mainVideoTransceiver: RtpTransceiver? = null
     private val presentationVideoTransceiver = connection.addTransceiver(
@@ -131,23 +137,36 @@ internal class WebRtcMediaConnection(
         }
     }
 
+    override fun setPresentationVideoTrack(localVideoTrack: LocalVideoTrack?) {
+        val lvt = when (localVideoTrack) {
+            is WebRtcLocalVideoTrack -> localVideoTrack
+            null -> null
+            else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
+        }
+        workerExecutor.maybeExecute {
+            presentationVideoTransceiver.direction = when (lvt) {
+                null -> RtpTransceiverDirection.INACTIVE
+                else -> RtpTransceiverDirection.SEND_RECV
+            }
+            presentationVideoTransceiver.sender.setTrack(lvt?.videoTrack, false)
+            presentationVideoTrack = lvt
+        }
+    }
+
     override fun startPresentationReceive() {
         if (!config.presentationInMain) workerExecutor.maybeExecute {
-            val t = presentationVideoTransceiver
-                .takeUnless { it.currentDirection == RtpTransceiverDirection.SEND_RECV }
-                ?: return@maybeExecute
-            t.direction = RtpTransceiverDirection.SEND_RECV
-            val videoTrack = (t.receiver.track() as? VideoTrack)?.let(::WebRtcVideoTrack)
+            presentationVideoTransceiver.direction = RtpTransceiverDirection.SEND_RECV
+            val videoTrack =
+                (presentationVideoTransceiver.receiver.track() as? VideoTrack)?.let(::WebRtcVideoTrack)
             presentationRemoteVideoTrackListeners.notify(videoTrack)
         }
     }
 
     override fun stopPresentationReceive() {
         if (!config.presentationInMain) workerExecutor.maybeExecute {
-            val t = presentationVideoTransceiver
-                .takeUnless { it.currentDirection == RtpTransceiverDirection.INACTIVE }
-                ?: return@maybeExecute
-            t.direction = RtpTransceiverDirection.INACTIVE
+            if (presentationVideoTransceiver.sender.track() == null) {
+                presentationVideoTransceiver.direction = RtpTransceiverDirection.INACTIVE
+            }
             presentationRemoteVideoTrackListeners.notify(null)
         }
     }
@@ -163,6 +182,7 @@ internal class WebRtcMediaConnection(
             workerExecutor.execute {
                 mainAudioTrack = null
                 mainVideoTrack = null
+                presentationVideoTrack = null
                 mainAudioTransceiver?.sender?.setTrack(null, false)
                 mainVideoTransceiver?.sender?.setTrack(null, false)
                 presentationVideoTransceiver.sender.setTrack(null, false)
@@ -304,6 +324,26 @@ internal class WebRtcMediaConnection(
         signalingExecutor.maybeExecute {
             forEach {
                 it.safeOnRemoteVideoTrack(videoTrack)
+            }
+        }
+    }
+
+    private fun onTakeFloor() {
+        networkExecutor.maybeExecute {
+            try {
+                config.signaling.onTakeFloor()
+            } catch (t: Throwable) {
+                // noop
+            }
+        }
+    }
+
+    private fun onReleaseFloor() {
+        networkExecutor.maybeExecute {
+            try {
+                config.signaling.onReleaseFloor()
+            } catch (t: Throwable) {
+                // noop
             }
         }
     }

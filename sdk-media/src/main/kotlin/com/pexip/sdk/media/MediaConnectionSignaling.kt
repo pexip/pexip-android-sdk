@@ -15,4 +15,8 @@ public interface MediaConnectionSignaling {
     public fun onVideoMuted()
 
     public fun onVideoUnmuted()
+
+    public fun onTakeFloor()
+
+    public fun onReleaseFloor()
 }
