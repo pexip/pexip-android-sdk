@@ -1,9 +1,16 @@
 package com.pexip.sdk.media
 
+/**
+ * A quality profile used to capture the video.
+ *
+ * @property width a frame width in pixels (must be in the range of 640..1920)
+ * @property height a frame height in pixels (must be in the range of 360..1080)
+ * @property fps a FPS value used to capture the video (must be in the range of 1..60)
+ */
 public data class QualityProfile(
-    val width: Int,
-    val height: Int,
-    val fps: Int,
+    public val width: Int,
+    public val height: Int,
+    public val fps: Int,
 ) {
 
     init {

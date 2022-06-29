@@ -20,7 +20,7 @@ internal class RealMediaConnectionSignaling(
     override fun onOffer(
         callType: String,
         description: String,
-        presentationInMix: Boolean,
+        presentationInMain: Boolean,
     ): String {
         val token = store.get()
         pwds = getUfragPwd(description)
@@ -29,7 +29,7 @@ internal class RealMediaConnectionSignaling(
                 val request = CallsRequest(
                     callType = callType,
                     sdp = description,
-                    present = if (presentationInMix) "main" else null
+                    present = if (presentationInMain) "main" else null
                 )
                 val response = participantStep.calls(request, token).execute()
                 callStep = participantStep.call(response.callId)

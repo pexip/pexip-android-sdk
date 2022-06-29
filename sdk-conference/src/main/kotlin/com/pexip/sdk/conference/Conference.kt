@@ -7,12 +7,32 @@ import com.pexip.sdk.media.MediaConnectionSignaling
  */
 public interface Conference : MediaConnectionSignaling {
 
+    /**
+     * Registers a [ConferenceEventListener].
+     *
+     * @param listener a conference event listener
+     */
     public fun registerConferenceEventListener(listener: ConferenceEventListener)
 
+    /**
+     * Unregisters a [ConferenceEventListener].
+     *
+     * @param listener a conference event listener
+     */
     public fun unregisterConferenceEventListener(listener: ConferenceEventListener)
 
+    /**
+     * Sends DTMF digits to this [Conference].
+     *
+     * @param digits a sequence of valid DTMF digits
+     */
     public fun dtmf(digits: String)
 
+    /**
+     * Sends a plain text message to this [Conference].
+     *
+     * @param payload a plain text message
+     */
     public fun message(payload: String)
 
     /**

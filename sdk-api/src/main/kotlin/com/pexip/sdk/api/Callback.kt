@@ -4,7 +4,7 @@ package com.pexip.sdk.api
  * Communicates responses from a server or offline requests. One and only one method will be invoked
  * in response to a given request.
  *
- * @param T Successful response body type.
+ * @param T successful response body type
  */
 public interface Callback<T> {
 

@@ -7,6 +7,11 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
+/**
+ * Converts this [Conference] to a [Flow] that emits [ConferenceEvent]s.
+ *
+ * @return a flow of conference events
+ */
 public fun Conference.getConferenceEvents(): Flow<ConferenceEvent> = callbackFlow {
     val listener = ConferenceEventListener(::trySend)
     registerConferenceEventListener(listener)

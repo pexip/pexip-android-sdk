@@ -13,6 +13,12 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+/**
+ * Suspends until the [Call] completes with either success or failure.
+ *
+ * @param T successful response body type
+ * @return successful response body
+ */
 public suspend fun <T> Call<T>.await(): T = suspendCancellableCoroutine {
     it.invokeOnCancellation { cancel() }
     val callback = object : Callback<T> {
@@ -24,6 +30,11 @@ public suspend fun <T> Call<T>.await(): T = suspendCancellableCoroutine {
     enqueue(callback)
 }
 
+/**
+ * Converts this [EventSourceFactory] to a [Flow].
+ *
+ * @return a [Flow] of [Event]s
+ */
 public fun EventSourceFactory.asFlow(): Flow<Event> = callbackFlow {
     val listener = object : EventSourceListener {
 
