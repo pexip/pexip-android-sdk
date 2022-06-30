@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 
 plugins {
@@ -13,9 +15,12 @@ pluginManager.withPlugin("org.jetbrains.kotlin.kapt") {
 }
 
 android {
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.2.0"
+    }
     kotlinOptions {
         jvmTarget = "${compileOptions.targetCompatibility}"
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
     sourceSets.configureEach {
         java.srcDirs("src/$name/kotlin")
