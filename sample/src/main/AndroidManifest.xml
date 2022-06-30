@@ -30,7 +30,7 @@
 
         <service
             android:name=".conference.ConferenceService"
-            android:foregroundServiceType="camera" />
+            android:foregroundServiceType="camera|mediaProjection" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

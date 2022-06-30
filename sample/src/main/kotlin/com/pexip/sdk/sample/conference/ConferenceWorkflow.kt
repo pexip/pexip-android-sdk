@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.media.projection.MediaProjection
 import android.os.IBinder
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.conference.Conference
@@ -12,9 +13,10 @@ import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.LocalAudioTrack
+import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
-import com.pexip.sdk.media.MediaConnectionFactory
+import com.pexip.sdk.media.android.AndroidMediaConnectionFactory
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
@@ -34,7 +36,7 @@ import javax.inject.Singleton
 class ConferenceWorkflow @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     private val service: InfinityService,
-    private val factory: MediaConnectionFactory,
+    private val factory: AndroidMediaConnectionFactory,
     private val dtmfWorkflow: DtmfWorkflow,
 ) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
@@ -69,9 +71,10 @@ class ConferenceWorkflow @Inject constructor(
         context.leaveSideEffect(renderState)
         context.localAudioCapturingSideEffect(renderState.localAudioTrack)
         context.cameraCapturingSideEffect(renderState.cameraVideoTrack)
+        context.screenCapturingSideEffect(renderState.screenCaptureVideoTrack)
+        context.screenCaptureVideoTrackSideEffect(renderState.screenCaptureData)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
         context.conferenceEventsSideEffect(renderState.conference)
-        context.receivePresentationSideEffect(renderState)
         context.presentationRemoteVideoTrackSideEffect(renderState.connection)
         return when (renderState.showingConferenceEvents) {
             true -> ConferenceEventsRendering(
@@ -96,9 +99,12 @@ class ConferenceWorkflow @Inject constructor(
                     )
                     else -> null
                 },
+                screenCapturing = renderState.screenCapturing,
+                onScreenCapture = context.send(::OnScreenCapture),
                 onToggleDtmfClick = context.send(::OnToggleDtmf),
                 onToggleLocalAudioCapturing = context.send(::OnToggleLocalAudioCapturing),
                 onToggleCameraCapturing = context.send(::OnToggleCameraCapturing),
+                onStopScreenCapture = context.send(::OnStopScreenCapture),
                 onConferenceEventsClick = context.send(::OnConferenceEventsClick),
                 onBackClick = context.send(::OnBackClick)
             )
@@ -130,8 +136,8 @@ class ConferenceWorkflow @Inject constructor(
             try {
                 renderState.localAudioTrack.startCapture()
                 renderState.cameraVideoTrack.startCapture()
-                renderState.connection.sendMainAudio(renderState.localAudioTrack)
-                renderState.connection.sendMainVideo(renderState.cameraVideoTrack)
+                renderState.connection.setMainAudioTrack(renderState.localAudioTrack)
+                renderState.connection.setMainVideoTrack(renderState.cameraVideoTrack)
                 renderState.connection.start()
                 awaitCancellation()
             } finally {
@@ -139,6 +145,7 @@ class ConferenceWorkflow @Inject constructor(
                 renderState.conference.leave()
                 renderState.localAudioTrack.dispose()
                 renderState.cameraVideoTrack.dispose()
+                renderState.screenCaptureVideoTrack?.dispose()
             }
         }
 
@@ -155,6 +162,26 @@ class ConferenceWorkflow @Inject constructor(
                 .map(::OnCameraCapturing)
                 .collectLatest(actionSink::send)
         }
+
+    private fun RenderContext.screenCapturingSideEffect(localVideoTrack: LocalVideoTrack?) {
+        if (localVideoTrack != null) runningSideEffect("${localVideoTrack}Capturing") {
+            localVideoTrack.getCapturing()
+                .map(::OnScreenCapturing)
+                .collectLatest(actionSink::send)
+        }
+    }
+
+    private fun RenderContext.screenCaptureVideoTrackSideEffect(data: Intent?) {
+        if (data != null) runningSideEffect("${data}Data") {
+            val callback = object : MediaProjection.Callback() {
+                override fun onStop() {
+                    actionSink.send(OnStopScreenCapture())
+                }
+            }
+            val localVideoTrack = factory.createMediaProjectionVideoTrack(data, callback)
+            actionSink.send(OnScreenCaptureVideoTrack(localVideoTrack))
+        }
+    }
 
     private fun RenderContext.mainRemoteVideoTrackSideEffect(connection: MediaConnection) =
         runningSideEffect("${connection}MainRemoteVideoTrack") {
@@ -175,15 +202,6 @@ class ConferenceWorkflow @Inject constructor(
             conference.getConferenceEvents()
                 .map(::OnConferenceEvent)
                 .collectLatest(actionSink::send)
-        }
-
-    private fun RenderContext.receivePresentationSideEffect(renderState: ConferenceState) =
-        runningSideEffect("presentation: ${renderState.presentation},${renderState.connection}") {
-            if (renderState.presentation) {
-                renderState.connection.startPresentationReceive()
-            } else {
-                renderState.connection.stopPresentationReceive()
-            }
         }
 
     private companion object {
