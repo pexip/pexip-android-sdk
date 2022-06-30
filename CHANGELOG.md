@@ -7,6 +7,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.0] - 2022-06-30
+
+### Added
+
+- An option to enable DSCP (see `MediaConnectionConfig`)
+- Ability to set presentation video to send to the conference
+
+### Changed
+
+- Threading in `MediaConnection`
+- Deprecated `MediaConnection.sendMainAudio/sendMainVideo` in favor
+  of `setMainAudioTrack/setMainVideoTrack`
+- Various deprecation levels to `ERROR`
+
 ## [0.5.0] - 2022-06-16
 
 ### Added
@@ -63,7 +77,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.5.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.6.0
 [0.5.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.5.0
 [0.4.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.4.1
 [0.4.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.4.0
