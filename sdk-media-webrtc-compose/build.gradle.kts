@@ -4,7 +4,6 @@ plugins {
 
 android {
     buildFeatures.compose = true
-    composeOptions.kotlinCompilerExtensionVersion = libs.versions.androidx.compose.get()
     kotlinOptions {
         freeCompilerArgs += "-Xexplicit-api=strict"
     }
