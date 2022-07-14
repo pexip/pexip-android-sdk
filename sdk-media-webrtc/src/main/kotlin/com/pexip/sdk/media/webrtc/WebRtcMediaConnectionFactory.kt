@@ -11,6 +11,7 @@ import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.android.AndroidMediaConnectionFactory
 import com.pexip.sdk.media.webrtc.internal.RealAudioHandler
+import com.pexip.sdk.media.webrtc.internal.SimpleCameraEventsHandler
 import com.pexip.sdk.media.webrtc.internal.WebRtcCameraVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
@@ -93,6 +94,35 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
         check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
         val videoCapturer = cameraEnumerator.createCapturer(deviceName, null)
+        val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
+        return WebRtcCameraVideoTrack(
+            applicationContext = applicationContext,
+            textureHelper = createSurfaceTextureHelper("CaptureThread:$deviceName"),
+            videoCapturer = videoCapturer,
+            videoSource = videoSource,
+            videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
+            workerExecutor = workerExecutor,
+            signalingExecutor = signalingExecutor
+        )
+    }
+
+    override fun createCameraVideoTrack(callback: CameraVideoTrack.Callback): CameraVideoTrack {
+        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+        val deviceNames = cameraEnumerator.deviceNames
+        val deviceName = deviceNames.firstOrNull(cameraEnumerator::isFrontFacing)
+            ?: deviceNames.firstOrNull(cameraEnumerator::isBackFacing)
+            ?: deviceNames.firstOrNull()
+        return createCameraVideoTrack(checkNotNull(deviceName) { "No available camera." }, callback)
+    }
+
+    override fun createCameraVideoTrack(
+        deviceName: String,
+        callback: CameraVideoTrack.Callback,
+    ): CameraVideoTrack {
+        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
+        val handler = SimpleCameraEventsHandler(callback, signalingExecutor)
+        val videoCapturer = cameraEnumerator.createCapturer(deviceName, handler)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         return WebRtcCameraVideoTrack(
             applicationContext = applicationContext,

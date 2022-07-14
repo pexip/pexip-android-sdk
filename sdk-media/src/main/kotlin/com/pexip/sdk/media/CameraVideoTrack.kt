@@ -12,6 +12,14 @@ public interface CameraVideoTrack : LocalVideoTrack {
      */
     public fun switchCamera(callback: SwitchCameraCallback)
 
+    public interface Callback {
+
+        /**
+         * Invoked when the camera has been disconnected.
+         */
+        public fun onCameraDisconnected()
+    }
+
     public interface SwitchCameraCallback {
 
         /**
