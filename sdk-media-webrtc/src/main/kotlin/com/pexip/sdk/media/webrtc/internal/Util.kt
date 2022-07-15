@@ -19,6 +19,12 @@ internal fun LocalMediaTrack.CapturingListener.safeOnCapturing(capturing: Boolea
     // noop
 }
 
+internal fun CameraVideoTrack.Callback.safeOnCameraDisconnected() = try {
+    onCameraDisconnected()
+} catch (t: Throwable) {
+    // noop
+}
+
 internal fun CameraVideoTrack.SwitchCameraCallback.safeOnSuccess(front: Boolean) = try {
     onSuccess(front)
 } catch (t: Throwable) {

@@ -11,13 +11,13 @@ internal class SimpleCameraEventsHandler(
 
     override fun onCameraDisconnected() {
         signalingExecutor.maybeExecute {
-            callback.onCameraDisconnected()
+            callback.safeOnCameraDisconnected()
         }
     }
 
     override fun onCameraError(reason: String) {
         signalingExecutor.maybeExecute {
-            callback.onCameraDisconnected()
+            callback.safeOnCameraDisconnected()
         }
     }
 
