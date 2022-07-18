@@ -18,45 +18,36 @@ internal class WebRtcLocalAudioTrack(
 
     private val disposed = AtomicBoolean()
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
-
-    @Volatile
-    private var capturing = audioTrack.enabled()
-
-    init {
-        workerExecutor.maybeExecute(audioHandler::start)
-    }
-
-    override fun startCapture() {
-        if (capturing) return
-        workerExecutor.maybeExecute {
-            if (audioTrack.setEnabled(true)) {
-                capturing = true
-                signalingExecutor.maybeExecute {
-                    capturingListeners.forEach {
-                        it.safeOnCapturing(true)
-                    }
-                }
+    private val microphoneMuteListener = AudioHandler.MicrophoneMuteListener { microphoneMute ->
+        signalingExecutor.maybeExecute {
+            capturingListeners.forEach {
+                it.safeOnCapturing(!microphoneMute)
             }
         }
     }
 
-    override fun stopCapture() {
-        if (!capturing) return
+    init {
         workerExecutor.maybeExecute {
-            if (audioTrack.setEnabled(false)) {
-                capturing = false
-                signalingExecutor.maybeExecute {
-                    capturingListeners.forEach {
-                        it.safeOnCapturing(false)
-                    }
-                }
-            }
+            audioHandler.registerMicrophoneMuteListener(microphoneMuteListener)
+            audioHandler.start()
+        }
+    }
+
+    override fun startCapture() {
+        workerExecutor.maybeExecute {
+            audioHandler.microphoneMute = false
+        }
+    }
+
+    override fun stopCapture() {
+        workerExecutor.maybeExecute {
+            audioHandler.microphoneMute = true
         }
     }
 
     override fun registerCapturingListener(listener: LocalMediaTrack.CapturingListener) {
         signalingExecutor.maybeExecute {
-            listener.safeOnCapturing(capturing)
+            listener.safeOnCapturing(!audioHandler.microphoneMute)
         }
         capturingListeners += listener
     }
@@ -68,6 +59,7 @@ internal class WebRtcLocalAudioTrack(
     override fun dispose() {
         if (disposed.compareAndSet(false, true)) {
             workerExecutor.execute {
+                audioHandler.unregisterMicrophoneMuteListener(microphoneMuteListener)
                 audioHandler.stop()
                 audioTrack.dispose()
                 audioSource.dispose()
