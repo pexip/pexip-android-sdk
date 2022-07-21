@@ -16,6 +16,7 @@ import java.io.IOException
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
 internal class RealConferenceEventSource(
@@ -25,6 +26,7 @@ internal class RealConferenceEventSource(
 ) : ConferenceEventSource, EventSourceListener {
 
     private val attempts = AtomicLong()
+    private val skipPresentationStop = AtomicBoolean(true)
     private val createEventSourceRunnable = Runnable {
         source = conferenceStep.events(store.get()).create(this)
     }
@@ -41,9 +43,13 @@ internal class RealConferenceEventSource(
 
     override fun onOpen(eventSource: EventSource) {
         attempts.set(0)
+        skipPresentationStop.set(true)
     }
 
     override fun onEvent(eventSource: EventSource, event: Event) {
+        if (event is PresentationStopEvent && skipPresentationStop.compareAndSet(true, false)) {
+            return
+        }
         val at = System.currentTimeMillis()
         val conferenceEvent = when (event) {
             is PresentationStartEvent -> PresentationStartConferenceEvent(
