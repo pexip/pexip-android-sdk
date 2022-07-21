@@ -36,6 +36,18 @@ internal class RealRequestBuilder(
         )
     }
 
+    override fun registration(deviceAlias: String): InfinityService.RegistrationStep {
+        require(deviceAlias.isNotBlank()) { "registrationAlias is blank." }
+        return RealRegistrationStep(
+            client = client,
+            json = json,
+            url = HttpUrl(url) {
+                addPathSegment("registrations")
+                addPathSegment(deviceAlias)
+            }
+        )
+    }
+
     private fun parseStatus(response: Response) = when (response.code) {
         200 -> true
         503 -> false

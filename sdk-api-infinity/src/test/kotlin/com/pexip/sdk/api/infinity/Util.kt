@@ -7,6 +7,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import okio.ByteString.Companion.encodeUtf8
 import java.net.URL
 import java.util.UUID
 import kotlin.random.Random
@@ -51,6 +52,11 @@ internal fun RecordedRequest.assertRequestUrl(url: URL, block: HttpUrl.Builder.(
     assertEquals(url.toString().toHttpUrl().newBuilder().apply(block).build(), requestUrl)
 
 internal fun RecordedRequest.assertToken(token: String?) = assertEquals(token, getHeader("token"))
+
+internal fun RecordedRequest.assertAuthorization(username: String, password: String) {
+    val base64 = "$username:$password".encodeUtf8().base64Url()
+    assertEquals("x-pexip-basic $base64", getHeader("Authorization"))
+}
 
 internal fun RecordedRequest.assertPin(pin: String?) = assertEquals(
     expected = pin?.let { if (it.isBlank()) "none" else it.trim() },

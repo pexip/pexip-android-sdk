@@ -41,6 +41,13 @@ public interface InfinityService {
          * @param conferenceAlias a conference alias
          */
         public fun conference(conferenceAlias: String): ConferenceStep
+
+        /**
+         * Sets the registration alias.
+         *
+         * @param deviceAlias a registration alias
+         */
+        public fun registration(deviceAlias: String): RegistrationStep
     }
 
     /**
@@ -116,6 +123,54 @@ public interface InfinityService {
          * @param participantId an ID of the participant
          */
         public fun participant(participantId: UUID): ParticipantStep
+    }
+
+    /**
+     * Represents the registration control functions section.
+     */
+    public interface RegistrationStep {
+
+        /**
+         * Requests a token for the registration alias.
+         *
+         * @param username a username
+         * @param password a password
+         * @throws IllegalArgumentException if either username or password is blank
+         * @throws NoSuchRegistrationException if device alias does not exist or username or password is not correct
+         * @throws NoSuchNodeException if the node does not exist
+         * @throws IllegalStateException on server error
+         * @return a registration token
+         */
+        public fun requestToken(
+            username: String,
+            password: String,
+        ): Call<RequestRegistrationTokenResponse>
+
+        /**
+         * Refreshes the token.
+         *
+         * @param token a current valid token
+         * @throws IllegalArgumentException if token is blank
+         * @throws NoSuchRegistrationException if device alias does not exist
+         * @throws InvalidTokenException if token is not valid
+         * @throws NoSuchNodeException if the node does not exist
+         * @throws IllegalStateException on server error
+         * @return a new registration token
+         */
+        public fun refreshToken(token: String): Call<RefreshRegistrationTokenResponse>
+
+        /**
+         * Releases the token.
+         *
+         * @param token a valid token
+         * @throws IllegalArgumentException if token is blank
+         * @throws NoSuchRegistrationException if device alias does not exist
+         * @throws InvalidTokenException if token is not valid
+         * @throws NoSuchNodeException if the node does not exist
+         * @throws IllegalStateException on server error
+         * @return true if operation was successful, false otherwise
+         */
+        public fun releaseToken(token: String): Call<Boolean>
     }
 
     /**
