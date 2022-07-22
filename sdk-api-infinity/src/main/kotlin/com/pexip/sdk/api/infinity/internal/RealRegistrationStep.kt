@@ -1,6 +1,7 @@
 package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.Call
+import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidTokenException
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
@@ -64,6 +65,19 @@ internal class RealRegistrationStep(
                 .header("token", token)
                 .build(),
             mapper = ::parseReleaseToken
+        )
+    }
+
+    override fun events(token: String): EventSourceFactory {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealEventSourceFactory(
+            client = client,
+            request = Request.Builder()
+                .get()
+                .url(HttpUrl(url) { addPathSegment("events") })
+                .header("token", token)
+                .build(),
+            json = json
         )
     }
 

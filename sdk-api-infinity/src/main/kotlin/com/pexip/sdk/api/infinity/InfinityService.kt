@@ -171,6 +171,15 @@ public interface InfinityService {
          * @return true if operation was successful, false otherwise
          */
         public fun releaseToken(token: String): Call<Boolean>
+
+        /**
+         * Subscribes to server-side events.
+         *
+         * @param token a valid token
+         * @throws IllegalArgumentException if token is blank
+         * @return an event source factory
+         */
+        public fun events(token: String): EventSourceFactory
     }
 
     /**
