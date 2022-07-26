@@ -125,7 +125,10 @@ internal class RegistrationStepTest {
 
     @Test
     fun `refreshToken returns`() {
-        val response = RefreshRegistrationTokenResponse(Random.nextString(8))
+        val response = RefreshRegistrationTokenResponse(
+            token = Random.nextString(8),
+            expires = 120
+        )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
         val token = Random.nextString(8)
         assertEquals(response, step.refreshToken(token).execute())

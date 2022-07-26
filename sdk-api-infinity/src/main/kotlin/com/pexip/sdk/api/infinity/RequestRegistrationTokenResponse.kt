@@ -8,9 +8,9 @@ import java.util.UUID
 
 @Serializable
 public data class RequestRegistrationTokenResponse(
-    public val token: String,
+    override val token: String,
     @Serializable(with = LongAsStringSerializer::class)
-    public val expires: Long,
+    override val expires: Long,
     @Serializable(with = UUIDSerializer::class)
     @SerialName("registration_uuid")
     public val registrationId: UUID,
@@ -18,4 +18,4 @@ public data class RequestRegistrationTokenResponse(
     public val directoryEnabled: Boolean,
     @SerialName("route_via_registrar")
     public val routeViaRegistrar: Boolean,
-)
+) : Token

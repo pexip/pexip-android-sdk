@@ -237,7 +237,10 @@ internal class ConferenceStepTest {
 
     @Test
     fun `refreshToken returns`() {
-        val response = RefreshTokenResponse(Random.nextString(8))
+        val response = RefreshTokenResponse(
+            token = Random.nextString(8),
+            expires = 120
+        )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
         val token = Random.nextString(8)
         assertEquals(response, step.refreshToken(token).execute())
@@ -286,9 +289,13 @@ internal class ConferenceStepTest {
 
     @Test
     fun `releaseToken returns on 200`() {
-        server.enqueue { setResponseCode(200) }
+        val result = Random.nextBoolean()
+        server.enqueue {
+            setResponseCode(200)
+            setBody(json.encodeToString(Box(result)))
+        }
         val token = Random.nextString(8)
-        step.releaseToken(token).execute()
+        assertEquals(result, step.releaseToken(token).execute())
         server.verifyReleaseToken(token)
     }
 

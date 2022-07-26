@@ -8,9 +8,9 @@ import java.util.UUID
 
 @Serializable
 public data class RequestTokenResponse(
-    public val token: String,
+    override val token: String,
     @Serializable(with = LongAsStringSerializer::class)
-    public val expires: Long,
+    override val expires: Long,
     @Serializable(with = UUIDSerializer::class)
     @SerialName("participant_uuid")
     public val participantId: UUID,
@@ -20,4 +20,4 @@ public data class RequestTokenResponse(
     public val analyticsEnabled: Boolean = false,
     public val stun: List<StunResponse> = emptyList(),
     public val turn: List<TurnResponse> = emptyList(),
-)
+) : Token

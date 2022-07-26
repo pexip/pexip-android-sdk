@@ -2,6 +2,8 @@ package com.pexip.sdk.conference.infinity
 
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.api.infinity.TokenRefresher
+import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.infinity.internal.ConferenceEventSource
@@ -11,9 +13,6 @@ import com.pexip.sdk.conference.infinity.internal.RealConferenceEventSource
 import com.pexip.sdk.conference.infinity.internal.RealDtmfSender
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
 import com.pexip.sdk.conference.infinity.internal.RealMessenger
-import com.pexip.sdk.conference.infinity.internal.RealTokenRefresher
-import com.pexip.sdk.conference.infinity.internal.RealTokenStore
-import com.pexip.sdk.conference.infinity.internal.TokenRefresher
 import com.pexip.sdk.conference.infinity.internal.maybeSubmit
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
@@ -65,21 +64,21 @@ public class InfinityConference private constructor(
             conferenceAlias: String,
             response: RequestTokenResponse,
         ): InfinityConference = create(
-            conferenceStep = service.newRequest(node).conference(conferenceAlias),
+            step = service.newRequest(node).conference(conferenceAlias),
             response = response
         )
 
         @JvmStatic
         public fun create(
-            conferenceStep: InfinityService.ConferenceStep,
+            step: InfinityService.ConferenceStep,
             response: RequestTokenResponse,
         ): InfinityConference {
-            val store = RealTokenStore(response.token)
-            val participantStep = conferenceStep.participant(response.participantId)
+            val store = TokenStore.create(response)
+            val participantStep = step.participant(response.participantId)
             val executor = Executors.newSingleThreadScheduledExecutor()
             val source = RealConferenceEventSource(
                 store = store,
-                conferenceStep = conferenceStep,
+                conferenceStep = step,
                 executor = executor
             )
             val iceServers = buildList(response.stun.size + response.turn.size) {
@@ -102,10 +101,10 @@ public class InfinityConference private constructor(
                     participantId = response.participantId,
                     participantName = response.participantName,
                     store = store,
-                    conferenceStep = conferenceStep,
+                    conferenceStep = step,
                     listener = source
                 ),
-                refresher = RealTokenRefresher(response.expires, store, conferenceStep, executor),
+                refresher = TokenRefresher.create(step, store, executor),
                 signaling = RealMediaConnectionSignaling(
                     store = store,
                     participantStep = participantStep,

@@ -5,6 +5,7 @@ import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.CallsResponse
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NewCandidateRequest
+import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 import com.pexip.sdk.media.IceServer
@@ -24,7 +25,7 @@ internal class RealMediaConnectionSignalingTest {
 
     @BeforeTest
     fun setUp() {
-        store = RealTokenStore(Random.nextString(8))
+        store = TokenStore.create(Random.nextToken())
         iceServers = List(10) {
             IceServer.Builder(listOf("turn:turn$it.example.com:3478?transport=udp"))
                 .username("${it shl 1}")
@@ -37,7 +38,7 @@ internal class RealMediaConnectionSignalingTest {
     fun `iceServers return IceServer list`() {
         val signaling = RealMediaConnectionSignaling(
             store = store,
-            participantStep = object : TestParticipantTest {},
+            participantStep = object : TestParticipantTest() {},
             iceServers = iceServers
         )
         assertEquals(iceServers, signaling.iceServers)
@@ -53,16 +54,16 @@ internal class RealMediaConnectionSignalingTest {
             callId = UUID.randomUUID(),
             sdp = Random.nextString(8)
         )
-        val callStep = object : TestCallStep {
+        val callStep = object : TestCallStep() {
 
             override fun ack(token: String): Call<Unit> = object : TestCall<Unit> {
                 override fun execute() {
-                    assertEquals(store.get(), token)
+                    assertEquals(store.get().token, token)
                     ackCalled = true
                 }
             }
         }
-        val participantStep = object : TestParticipantTest {
+        val participantStep = object : TestParticipantTest() {
 
             override fun calls(request: CallsRequest, token: String): Call<CallsResponse> =
                 object : TestCall<CallsResponse> {
@@ -74,7 +75,7 @@ internal class RealMediaConnectionSignalingTest {
                             actual = request.present,
                         )
                         assertEquals(callType, request.callType)
-                        assertEquals(store.get(), token)
+                        assertEquals(store.get().token, token)
                         return response
                     }
                 }
@@ -99,15 +100,15 @@ internal class RealMediaConnectionSignalingTest {
         val response = UpdateResponse(Random.nextString(8))
         val signaling = RealMediaConnectionSignaling(
             store = store,
-            participantStep = object : TestParticipantTest {},
+            participantStep = object : TestParticipantTest() {},
             iceServers = iceServers
         )
-        signaling.callStep = object : TestCallStep {
+        signaling.callStep = object : TestCallStep() {
             override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> =
                 object : TestCall<UpdateResponse> {
                     override fun execute(): UpdateResponse {
                         assertEquals(sdp, request.sdp)
-                        assertEquals(store.get(), token)
+                        assertEquals(store.get().token, token)
                         return response
                     }
                 }
@@ -126,10 +127,10 @@ internal class RealMediaConnectionSignalingTest {
         val pwd = Random.nextString(8)
         val signaling = RealMediaConnectionSignaling(
             store = store,
-            participantStep = object : TestParticipantTest {},
+            participantStep = object : TestParticipantTest() {},
             iceServers = iceServers
         )
-        signaling.callStep = object : TestCallStep {
+        signaling.callStep = object : TestCallStep() {
             override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> =
                 object : TestCall<Unit> {
                     override fun execute() {
@@ -137,7 +138,7 @@ internal class RealMediaConnectionSignalingTest {
                         assertEquals(mid, request.mid)
                         assertEquals(ufrag, request.ufrag)
                         assertEquals(pwd, request.pwd)
-                        assertEquals(store.get(), token)
+                        assertEquals(store.get().token, token)
                         called = true
                     }
                 }
@@ -150,12 +151,12 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onAudioMuted() returns`() {
         var called = false
-        val step = object : TestParticipantTest {
+        val step = object : TestParticipantTest() {
 
             override fun mute(token: String): Call<Unit> = object : TestCall<Unit> {
 
                 override fun execute() {
-                    assertEquals(store.get(), token)
+                    assertEquals(store.get().token, token)
                     called = true
                 }
             }
@@ -168,12 +169,12 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onAudioUnmuted() returns`() {
         var called = false
-        val step = object : TestParticipantTest {
+        val step = object : TestParticipantTest() {
 
             override fun unmute(token: String): Call<Unit> = object : TestCall<Unit> {
 
                 override fun execute() {
-                    assertEquals(store.get(), token)
+                    assertEquals(store.get().token, token)
                     called = true
                 }
             }
@@ -186,12 +187,12 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onVideoMuted() returns`() {
         var called = false
-        val step = object : TestParticipantTest {
+        val step = object : TestParticipantTest() {
 
             override fun videoMuted(token: String): Call<Unit> = object : TestCall<Unit> {
 
                 override fun execute() {
-                    assertEquals(store.get(), token)
+                    assertEquals(store.get().token, token)
                     called = true
                 }
             }
@@ -204,12 +205,12 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onVideoUnmuted() returns`() {
         var called = false
-        val step = object : TestParticipantTest {
+        val step = object : TestParticipantTest() {
 
             override fun videoUnmuted(token: String): Call<Unit> = object : TestCall<Unit> {
 
                 override fun execute() {
-                    assertEquals(store.get(), token)
+                    assertEquals(store.get().token, token)
                     called = true
                 }
             }
@@ -222,12 +223,12 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onTakeFloor() returns`() {
         var called = false
-        val step = object : TestParticipantTest {
+        val step = object : TestParticipantTest() {
 
             override fun takeFloor(token: String): Call<Unit> = object : TestCall<Unit> {
 
                 override fun execute() {
-                    assertEquals(store.get(), token)
+                    assertEquals(store.get().token, token)
                     called = true
                 }
             }
@@ -240,12 +241,12 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onReleaseFloor() returns`() {
         var called = false
-        val step = object : TestParticipantTest {
+        val step = object : TestParticipantTest() {
 
             override fun releaseFloor(token: String): Call<Unit> = object : TestCall<Unit> {
 
                 override fun execute() {
-                    assertEquals(store.get(), token)
+                    assertEquals(store.get().token, token)
                     called = true
                 }
             }

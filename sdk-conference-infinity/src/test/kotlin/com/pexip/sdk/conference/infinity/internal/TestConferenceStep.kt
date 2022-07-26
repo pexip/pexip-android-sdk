@@ -7,9 +7,10 @@ import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
 import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.api.infinity.Token
 import java.util.UUID
 
-internal interface TestConferenceStep : InfinityService.ConferenceStep {
+internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
 
     override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> = TODO()
 
@@ -20,11 +21,21 @@ internal interface TestConferenceStep : InfinityService.ConferenceStep {
 
     override fun refreshToken(token: String): Call<RefreshTokenResponse> = TODO()
 
-    override fun releaseToken(token: String): Call<Unit> = TODO()
+    final override fun refreshToken(token: Token): Call<RefreshTokenResponse> =
+        refreshToken(token.token)
+
+    override fun releaseToken(token: String): Call<Boolean> = TODO()
+
+    final override fun releaseToken(token: Token): Call<Boolean> = releaseToken(token.token)
 
     override fun message(request: MessageRequest, token: String): Call<Boolean> = TODO()
 
+    final override fun message(request: MessageRequest, token: Token): Call<Boolean> =
+        message(request, token.token)
+
     override fun events(token: String): EventSourceFactory = TODO()
+
+    final override fun events(token: Token): EventSourceFactory = events(token.token)
 
     override fun participant(participantId: UUID): InfinityService.ParticipantStep = TODO()
 }

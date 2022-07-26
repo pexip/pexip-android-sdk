@@ -6,6 +6,7 @@ import com.pexip.sdk.api.infinity.InvalidTokenException
 import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
+import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 import kotlinx.serialization.SerializationException
@@ -35,6 +36,9 @@ internal class RealCallStep(
         )
     }
 
+    override fun newCandidate(request: NewCandidateRequest, token: Token): Call<Unit> =
+        newCandidate(request, token.token)
+
     override fun ack(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -48,6 +52,8 @@ internal class RealCallStep(
         )
     }
 
+    override fun ack(token: Token): Call<Unit> = ack(token.token)
+
     override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -60,6 +66,9 @@ internal class RealCallStep(
             mapper = ::parseUpdate
         )
     }
+
+    override fun update(request: UpdateRequest, token: Token): Call<UpdateResponse> =
+        update(request, token.token)
 
     private fun parseNewCandidate(response: Response) = when (response.code) {
         200 -> Unit

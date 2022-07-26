@@ -2,6 +2,7 @@ package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.MessageRequest
+import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import java.util.UUID
@@ -21,7 +22,7 @@ internal class RealMessengerTest {
     fun setUp() {
         participantId = UUID.randomUUID()
         participantName = Random.nextString(8)
-        store = RealTokenStore(Random.nextString(8))
+        store = TokenStore.create(Random.nextToken())
     }
 
     @Test
@@ -34,7 +35,7 @@ internal class RealMessengerTest {
             participantId = participantId,
             participantName = participantName,
             store = store,
-            conferenceStep = object : TestConferenceStep {
+            conferenceStep = object : TestConferenceStep() {
 
                 override fun message(request: MessageRequest, token: String): Call<Boolean> =
                     object : TestCall<Boolean> {
@@ -42,7 +43,7 @@ internal class RealMessengerTest {
                         override fun execute(): Boolean {
                             assertEquals(type, request.type)
                             assertEquals(payload, request.payload)
-                            assertEquals(store.get(), token)
+                            assertEquals(store.get().token, token)
                             return true
                         }
                     }
@@ -72,7 +73,7 @@ internal class RealMessengerTest {
             participantId = participantId,
             participantName = participantName,
             store = store,
-            conferenceStep = object : TestConferenceStep {
+            conferenceStep = object : TestConferenceStep() {
 
                 override fun message(request: MessageRequest, token: String): Call<Boolean> =
                     object : TestCall<Boolean> {
@@ -80,7 +81,7 @@ internal class RealMessengerTest {
                         override fun execute(): Boolean {
                             assertEquals(type, request.type)
                             assertEquals(payload, request.payload)
-                            assertEquals(store.get(), token)
+                            assertEquals(store.get().token, token)
                             return false
                         }
                     }
@@ -101,7 +102,7 @@ internal class RealMessengerTest {
             participantId = participantId,
             participantName = participantName,
             store = store,
-            conferenceStep = object : TestConferenceStep {
+            conferenceStep = object : TestConferenceStep() {
 
                 override fun message(request: MessageRequest, token: String): Call<Boolean> =
                     object : TestCall<Boolean> {
@@ -109,7 +110,7 @@ internal class RealMessengerTest {
                         override fun execute(): Boolean {
                             assertEquals(type, request.type)
                             assertEquals(payload, request.payload)
-                            assertEquals(store.get(), token)
+                            assertEquals(store.get().token, token)
                             throw t
                         }
                     }

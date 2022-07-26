@@ -8,6 +8,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidTokenException
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
+import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -36,6 +37,9 @@ internal class RealParticipantStep(
         )
     }
 
+    override fun calls(request: CallsRequest, token: Token): Call<CallsResponse> =
+        calls(request, token.token)
+
     override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -48,6 +52,9 @@ internal class RealParticipantStep(
             mapper = ::parseDtmf
         )
     }
+
+    override fun dtmf(request: DtmfRequest, token: Token): Call<Boolean> =
+        dtmf(request, token.token)
 
     override fun mute(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
@@ -62,6 +69,8 @@ internal class RealParticipantStep(
         )
     }
 
+    override fun mute(token: Token): Call<Unit> = mute(token.token)
+
     override fun unmute(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -74,6 +83,8 @@ internal class RealParticipantStep(
             mapper = ::parseMuteUnmute
         )
     }
+
+    override fun unmute(token: Token): Call<Unit> = unmute(token.token)
 
     override fun videoMuted(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
@@ -88,6 +99,8 @@ internal class RealParticipantStep(
         )
     }
 
+    override fun videoMuted(token: Token): Call<Unit> = videoMuted(token.token)
+
     override fun videoUnmuted(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -100,6 +113,8 @@ internal class RealParticipantStep(
             mapper = ::parseVideoMutedVideoUnmuted
         )
     }
+
+    override fun videoUnmuted(token: Token): Call<Unit> = videoUnmuted(token.token)
 
     override fun takeFloor(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
@@ -114,6 +129,8 @@ internal class RealParticipantStep(
         )
     }
 
+    override fun takeFloor(token: Token): Call<Unit> = takeFloor(token.token)
+
     override fun releaseFloor(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -126,6 +143,8 @@ internal class RealParticipantStep(
             mapper = ::parseTakeReleaseFloor
         )
     }
+
+    override fun releaseFloor(token: Token): Call<Unit> = releaseFloor(token.token)
 
     override fun call(callId: UUID): InfinityService.CallStep =
         RealCallStep(

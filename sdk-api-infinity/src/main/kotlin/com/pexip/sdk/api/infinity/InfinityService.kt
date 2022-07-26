@@ -90,13 +90,34 @@ public interface InfinityService {
         public fun refreshToken(token: String): Call<RefreshTokenResponse>
 
         /**
+         * Refreshes the token.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#refresh_token).
+         *
+         * @param token a current valid token
+         * @return a new token for the conference
+         */
+        public fun refreshToken(token: Token): Call<RefreshTokenResponse>
+
+        /**
          * Releases the token.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#release_token).
          *
          * @param token a valid token
+         * @return true if operation was successful, false otherwise
          */
-        public fun releaseToken(token: String): Call<Unit>
+        public fun releaseToken(token: String): Call<Boolean>
+
+        /**
+         * Releases the token.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#release_token).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun releaseToken(token: Token): Call<Boolean>
 
         /**
          * Sends a message to all participants in the conference.
@@ -105,8 +126,20 @@ public interface InfinityService {
          *
          * @param request a request body
          * @param token a valid token
+         * @return true if operation was successful, false otherwise
          */
         public fun message(request: MessageRequest, token: String): Call<Boolean>
+
+        /**
+         * Sends a message to all participants in the conference.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#message).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun message(request: MessageRequest, token: Token): Call<Boolean>
 
         /**
          * Subscribes to server-side events.
@@ -116,6 +149,15 @@ public interface InfinityService {
          * @param token a valid token
          */
         public fun events(token: String): EventSourceFactory
+
+        /**
+         * Subscribes to server-side events.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#server_sent).
+         *
+         * @param token a valid token
+         */
+        public fun events(token: Token): EventSourceFactory
 
         /**
          * Sets the participant ID.
@@ -160,6 +202,19 @@ public interface InfinityService {
         public fun refreshToken(token: String): Call<RefreshRegistrationTokenResponse>
 
         /**
+         * Refreshes the token.
+         *
+         * @param token a current valid token
+         * @throws IllegalArgumentException if token is blank
+         * @throws NoSuchRegistrationException if device alias does not exist
+         * @throws InvalidTokenException if token is not valid
+         * @throws NoSuchNodeException if the node does not exist
+         * @throws IllegalStateException on server error
+         * @return a new registration token
+         */
+        public fun refreshToken(token: Token): Call<RefreshRegistrationTokenResponse>
+
+        /**
          * Releases the token.
          *
          * @param token a valid token
@@ -173,6 +228,19 @@ public interface InfinityService {
         public fun releaseToken(token: String): Call<Boolean>
 
         /**
+         * Releases the token.
+         *
+         * @param token a valid token
+         * @throws IllegalArgumentException if token is blank
+         * @throws NoSuchRegistrationException if device alias does not exist
+         * @throws InvalidTokenException if token is not valid
+         * @throws NoSuchNodeException if the node does not exist
+         * @throws IllegalStateException on server error
+         * @return true if operation was successful, false otherwise
+         */
+        public fun releaseToken(token: Token): Call<Boolean>
+
+        /**
          * Subscribes to server-side events.
          *
          * @param token a valid token
@@ -180,6 +248,15 @@ public interface InfinityService {
          * @return an event source factory
          */
         public fun events(token: String): EventSourceFactory
+
+        /**
+         * Subscribes to server-side events.
+         *
+         * @param token a valid token
+         * @throws IllegalArgumentException if token is blank
+         * @return an event source factory
+         */
+        public fun events(token: Token): EventSourceFactory
     }
 
     /**
@@ -199,6 +276,17 @@ public interface InfinityService {
         public fun calls(request: CallsRequest, token: String): Call<CallsResponse>
 
         /**
+         * Requests an upgrade of the call to include media.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#calls).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return an answer
+         */
+        public fun calls(request: CallsRequest, token: Token): Call<CallsResponse>
+
+        /**
          * Sends DTMF digits to the participant.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#dtmf).
@@ -210,6 +298,17 @@ public interface InfinityService {
         public fun dtmf(request: DtmfRequest, token: String): Call<Boolean>
 
         /**
+         * Sends DTMF digits to the participant.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#dtmf).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return true if successful, false otherwise
+         */
+        public fun dtmf(request: DtmfRequest, token: Token): Call<Boolean>
+
+        /**
          * Requests to mute participant's audio.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#mute).
@@ -217,6 +316,15 @@ public interface InfinityService {
          * @param token a valid token
          */
         public fun mute(token: String): Call<Unit>
+
+        /**
+         * Requests to mute participant's audio.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#mute).
+         *
+         * @param token a valid token
+         */
+        public fun mute(token: Token): Call<Unit>
 
         /**
          * Requests to unmute participant's audio.
@@ -228,6 +336,15 @@ public interface InfinityService {
         public fun unmute(token: String): Call<Unit>
 
         /**
+         * Requests to unmute participant's audio.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#mute).
+         *
+         * @param token a valid token
+         */
+        public fun unmute(token: Token): Call<Unit>
+
+        /**
          * Requests to mute participant's video.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#videomute).
@@ -235,6 +352,15 @@ public interface InfinityService {
          * @param token a valid token
          */
         public fun videoMuted(token: String): Call<Unit>
+
+        /**
+         * Requests to mute participant's video.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#videomute).
+         *
+         * @param token a valid token
+         */
+        public fun videoMuted(token: Token): Call<Unit>
 
         /**
          * Requests to unmute participant's video.
@@ -246,6 +372,15 @@ public interface InfinityService {
         public fun videoUnmuted(token: String): Call<Unit>
 
         /**
+         * Requests to unmute participant's video.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#videomute).
+         *
+         * @param token a valid token
+         */
+        public fun videoUnmuted(token: Token): Call<Unit>
+
+        /**
          * Requests to take presentation floor.
          *
          * @param token a valid token
@@ -253,11 +388,25 @@ public interface InfinityService {
         public fun takeFloor(token: String): Call<Unit>
 
         /**
+         * Requests to take presentation floor.
+         *
+         * @param token a valid token
+         */
+        public fun takeFloor(token: Token): Call<Unit>
+
+        /**
          * Requests to release presentation floor.
          *
          * @param token a valid token
          */
         public fun releaseFloor(token: String): Call<Unit>
+
+        /**
+         * Requests to release presentation floor.
+         *
+         * @param token a valid token
+         */
+        public fun releaseFloor(token: Token): Call<Unit>
 
         /**
          * Sets the call ID.
@@ -286,6 +435,19 @@ public interface InfinityService {
         public fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit>
 
         /**
+         * Sends the new ICE candidate.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#new_candidate).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @throws InvalidTokenException if the token is invalid
+         * @throws NoSuchNodeException if the node doesn't exist
+         * @throws NoSuchConferenceException if the conference doesn't exist
+         */
+        public fun newCandidate(request: NewCandidateRequest, token: Token): Call<Unit>
+
+        /**
          * Acks the call.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack).
@@ -296,6 +458,18 @@ public interface InfinityService {
          * @throws NoSuchConferenceException if the conference doesn't exist
          */
         public fun ack(token: String): Call<Unit>
+
+        /**
+         * Acks the call.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack).
+         *
+         * @param token a valid token
+         * @throws InvalidTokenException if the token is invalid
+         * @throws NoSuchNodeException if the node doesn't exist
+         * @throws NoSuchConferenceException if the conference doesn't exist
+         */
+        public fun ack(token: Token): Call<Unit>
 
         /**
          * Sends a new SDP.
@@ -310,6 +484,20 @@ public interface InfinityService {
          * @return a new SDP
          */
         public fun update(request: UpdateRequest, token: String): Call<UpdateResponse>
+
+        /**
+         * Sends a new SDP.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#update).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @throws InvalidTokenException if the token is invalid
+         * @throws NoSuchNodeException if the node doesn't exist
+         * @throws NoSuchConferenceException if the conference doesn't exist
+         * @return a new SDP
+         */
+        public fun update(request: UpdateRequest, token: Token): Call<UpdateResponse>
     }
 
     public companion object {

@@ -14,6 +14,7 @@ import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.api.infinity.RequiredPinException
 import com.pexip.sdk.api.infinity.RequiredSsoException
 import com.pexip.sdk.api.infinity.SsoRedirectException
+import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -64,7 +65,9 @@ internal class RealConferenceStep(
         )
     }
 
-    override fun releaseToken(token: String): Call<Unit> {
+    override fun refreshToken(token: Token): Call<RefreshTokenResponse> = refreshToken(token.token)
+
+    override fun releaseToken(token: String): Call<Boolean> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
             client = client,
@@ -76,6 +79,8 @@ internal class RealConferenceStep(
             mapper = ::parseReleaseToken
         )
     }
+
+    override fun releaseToken(token: Token): Call<Boolean> = releaseToken(token.token)
 
     override fun message(request: MessageRequest, token: String): Call<Boolean> {
         require(token.isNotBlank()) { "token is blank." }
@@ -90,6 +95,9 @@ internal class RealConferenceStep(
         )
     }
 
+    override fun message(request: MessageRequest, token: Token): Call<Boolean> =
+        message(request, token.token)
+
     override fun events(token: String): EventSourceFactory {
         require(token.isNotBlank()) { "token is blank." }
         return RealEventSourceFactory(
@@ -102,6 +110,8 @@ internal class RealConferenceStep(
             json = json
         )
     }
+
+    override fun events(token: Token): EventSourceFactory = events(token.token)
 
     override fun participant(participantId: UUID): InfinityService.ParticipantStep =
         RealParticipantStep(
@@ -138,7 +148,7 @@ internal class RealConferenceStep(
     }
 
     private fun parseReleaseToken(response: Response) = when (response.code) {
-        200 -> Unit
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

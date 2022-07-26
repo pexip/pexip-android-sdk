@@ -2,6 +2,7 @@ package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageRequest
+import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import java.util.UUID

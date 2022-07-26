@@ -9,6 +9,7 @@ import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.NoSuchRegistrationException
 import com.pexip.sdk.api.infinity.RefreshRegistrationTokenResponse
 import com.pexip.sdk.api.infinity.RequestRegistrationTokenResponse
+import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -55,6 +56,9 @@ internal class RealRegistrationStep(
         )
     }
 
+    override fun refreshToken(token: Token): Call<RefreshRegistrationTokenResponse> =
+        refreshToken(token.token)
+
     override fun releaseToken(token: String): Call<Boolean> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -68,6 +72,8 @@ internal class RealRegistrationStep(
         )
     }
 
+    override fun releaseToken(token: Token): Call<Boolean> = releaseToken(token.token)
+
     override fun events(token: String): EventSourceFactory {
         require(token.isNotBlank()) { "token is blank." }
         return RealEventSourceFactory(
@@ -80,6 +86,8 @@ internal class RealRegistrationStep(
             json = json
         )
     }
+
+    override fun events(token: Token): EventSourceFactory = events(token.token)
 
     private fun parseRequestToken(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(

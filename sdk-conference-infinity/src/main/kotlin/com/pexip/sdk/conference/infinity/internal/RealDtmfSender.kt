@@ -2,6 +2,7 @@ package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.TokenStore
 
 internal class RealDtmfSender(
     private val store: TokenStore,

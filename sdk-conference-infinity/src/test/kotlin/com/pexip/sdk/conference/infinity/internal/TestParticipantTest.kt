@@ -5,25 +5,44 @@ import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.CallsResponse
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.Token
 import java.util.UUID
 
-internal interface TestParticipantTest : InfinityService.ParticipantStep {
+internal abstract class TestParticipantTest : InfinityService.ParticipantStep {
 
     override fun calls(request: CallsRequest, token: String): Call<CallsResponse> = TODO()
 
+    final override fun calls(request: CallsRequest, token: Token): Call<CallsResponse> =
+        calls(request, token.token)
+
     override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> = TODO()
+
+    final override fun dtmf(request: DtmfRequest, token: Token): Call<Boolean> =
+        dtmf(request, token.token)
 
     override fun mute(token: String): Call<Unit> = TODO()
 
+    final override fun mute(token: Token): Call<Unit> = mute(token.token)
+
     override fun unmute(token: String): Call<Unit> = TODO()
+
+    final override fun unmute(token: Token): Call<Unit> = unmute(token.token)
 
     override fun videoMuted(token: String): Call<Unit> = TODO()
 
+    final override fun videoMuted(token: Token): Call<Unit> = videoMuted(token.token)
+
     override fun videoUnmuted(token: String): Call<Unit> = TODO()
+
+    final override fun videoUnmuted(token: Token): Call<Unit> = videoUnmuted(token.token)
 
     override fun takeFloor(token: String): Call<Unit> = TODO()
 
+    final override fun takeFloor(token: Token): Call<Unit> = takeFloor(token.token)
+
     override fun releaseFloor(token: String): Call<Unit> = TODO()
+
+    final override fun releaseFloor(token: Token): Call<Unit> = releaseFloor(token.token)
 
     override fun call(callId: UUID): InfinityService.CallStep = TODO()
 }
