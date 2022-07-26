@@ -4,7 +4,6 @@ androidx-activity = "1.4.0"
 androidx-appcompat = "1.4.1"
 androidx-compose = "1.1.1"
 androidx-startup = "1.1.1"
-accompanist = "0.23.0"
 cachefix = "2.5.5"
 dagger = "2.42"
 kotlin = "1.7.0"
@@ -20,7 +19,6 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "a
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose" }
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "androidx-startup" }
-accompanist-appcompattheme = { module = "com.google.accompanist:accompanist-appcompat-theme", version.ref = "accompanist" }
 cachefix = { module = "gradle.plugin.org.gradle.android:android-cache-fix-gradle-plugin", version.ref = "cachefix" }
 dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
 dagger-hilt-android-runtime = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
