@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SampleViewModel @Inject constructor(
     handle: SavedStateHandle,
-    sampleWorkflow: SampleWorkflow
+    sampleWorkflow: SampleWorkflow,
 ) : ViewModel() {
 
     private val _output = MutableSharedFlow<SampleOutput>(extraBufferCapacity = 1)

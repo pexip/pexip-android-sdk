@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
-import com.google.accompanist.appcompattheme.AppCompatTheme
 import com.pexip.sdk.sample.alias.AliasViewFactory
 import com.pexip.sdk.sample.conference.ConferenceViewFactory
 import com.pexip.sdk.sample.node.NodeViewFactory
@@ -55,7 +54,7 @@ class SampleActivity : AppCompatActivity() {
         }
         val viewEnvironment = ViewEnvironment(map)
         setContent {
-            AppCompatTheme {
+            SampleTheme {
                 val rendering by sampleViewModel.rendering.collectAsState()
                 WorkflowRendering(
                     rendering = rendering,

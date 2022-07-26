@@ -31,7 +31,6 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.startup.runtime)
-    implementation(libs.accompanist.appcompattheme)
     implementation(libs.dagger.hilt.android.runtime)
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.minidns.android21)
