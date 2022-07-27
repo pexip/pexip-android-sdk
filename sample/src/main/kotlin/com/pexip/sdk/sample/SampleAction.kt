@@ -5,22 +5,31 @@ import com.pexip.sdk.sample.conference.ConferenceOutput
 import com.pexip.sdk.sample.node.NodeOutput
 import com.pexip.sdk.sample.pinchallenge.PinChallengeOutput
 import com.pexip.sdk.sample.pinrequirement.PinRequirementOutput
+import com.pexip.sdk.sample.welcome.WelcomeOutput
 import com.squareup.workflow1.WorkflowAction
 
-typealias SampleAction = WorkflowAction<SampleProps, SampleState, SampleOutput>
+typealias SampleAction = WorkflowAction<Unit, SampleState, SampleOutput>
+
+data class OnWelcomeOutput(val output: WelcomeOutput) : SampleAction() {
+
+    override fun Updater.apply() {
+        when (output) {
+            is WelcomeOutput.Next -> state = SampleState.Alias
+            is WelcomeOutput.Back -> setOutput(SampleOutput.Finish)
+        }
+    }
+}
 
 data class OnAliasOutput(val output: AliasOutput) : SampleAction() {
 
     override fun Updater.apply() {
-        when (output) {
-            is AliasOutput.Alias -> {
-                state = SampleState.Node(
-                    conferenceAlias = output.conferenceAlias,
-                    host = output.host,
-                    presentationInMain = output.presentationInMain
-                )
-            }
-            is AliasOutput.Back -> setOutput(SampleOutput.Finish)
+        state = when (output) {
+            is AliasOutput.Alias -> SampleState.Node(
+                conferenceAlias = output.conferenceAlias,
+                host = output.host,
+                presentationInMain = output.presentationInMain
+            )
+            is AliasOutput.Back -> SampleState.Welcome
         }
     }
 }

@@ -15,6 +15,7 @@ import com.pexip.sdk.sample.conference.ConferenceViewFactory
 import com.pexip.sdk.sample.node.NodeViewFactory
 import com.pexip.sdk.sample.pinchallenge.PinChallengeViewFactory
 import com.pexip.sdk.sample.pinrequirement.PinRequirementViewFactory
+import com.pexip.sdk.sample.welcome.WelcomeViewFactory
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.ViewRegistry
 import com.squareup.workflow1.ui.compose.WorkflowRendering
@@ -33,6 +34,7 @@ class SampleActivity : AppCompatActivity() {
     private val sampleViewModel by viewModels<SampleViewModel>()
 
     private val viewRegistry = ViewRegistry(
+        WelcomeViewFactory,
         AliasViewFactory,
         NodeViewFactory.ResolvingNodeViewFactory,
         NodeViewFactory.FailureViewFactory,
