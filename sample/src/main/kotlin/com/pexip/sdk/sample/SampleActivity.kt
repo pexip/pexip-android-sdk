@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import com.pexip.sdk.sample.alias.AliasViewFactory
 import com.pexip.sdk.sample.conference.ConferenceViewFactory
-import com.pexip.sdk.sample.node.NodeViewFactory
 import com.pexip.sdk.sample.pinchallenge.PinChallengeViewFactory
 import com.pexip.sdk.sample.pinrequirement.PinRequirementViewFactory
 import com.pexip.sdk.sample.welcome.WelcomeViewFactory
@@ -36,8 +35,6 @@ class SampleActivity : AppCompatActivity() {
     private val viewRegistry = ViewRegistry(
         WelcomeViewFactory,
         AliasViewFactory,
-        NodeViewFactory.ResolvingNodeViewFactory,
-        NodeViewFactory.FailureViewFactory,
         PinChallengeViewFactory,
         PinRequirementViewFactory.ResolvingPinRequirementViewFactory,
         PinRequirementViewFactory.FailureViewFactory,
