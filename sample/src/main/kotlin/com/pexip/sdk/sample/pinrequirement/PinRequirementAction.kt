@@ -1,8 +1,8 @@
 package com.pexip.sdk.sample.pinrequirement
 
 import com.pexip.sdk.api.infinity.RequestTokenResponse
-import com.pexip.sdk.api.infinity.RequiredPinException
 import com.squareup.workflow1.WorkflowAction
+import java.net.URL
 
 typealias PinRequirementAction = WorkflowAction<PinRequirementProps, PinRequirementState, PinRequirementOutput>
 
@@ -13,19 +13,30 @@ class OnBackClick : PinRequirementAction() {
     }
 }
 
-data class OnResponse(val response: RequestTokenResponse) : PinRequirementAction() {
+data class OnNode(val node: URL) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        setOutput(PinRequirementOutput.None(response))
+        state = PinRequirementState.ResolvingPinRequirement(node)
+    }
+}
+
+data class OnResponse(val node: URL, val response: RequestTokenResponse) : PinRequirementAction() {
+
+    override fun Updater.apply() {
+        setOutput(PinRequirementOutput.None(node, response))
+    }
+}
+
+data class OnRequiredPin(val node: URL, val guestPin: Boolean) : PinRequirementAction() {
+
+    override fun Updater.apply() {
+        setOutput(PinRequirementOutput.Some(node, guestPin))
     }
 }
 
 data class OnError(val t: Throwable) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        when (t) {
-            is RequiredPinException -> setOutput(PinRequirementOutput.Some(t.guestPin))
-            else -> state = PinRequirementState.Failure(t)
-        }
+        state = PinRequirementState.Failure(t)
     }
 }

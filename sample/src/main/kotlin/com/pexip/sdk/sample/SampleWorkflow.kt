@@ -3,8 +3,6 @@ package com.pexip.sdk.sample
 import com.pexip.sdk.sample.alias.AliasWorkflow
 import com.pexip.sdk.sample.conference.ConferenceProps
 import com.pexip.sdk.sample.conference.ConferenceWorkflow
-import com.pexip.sdk.sample.node.NodeProps
-import com.pexip.sdk.sample.node.NodeWorkflow
 import com.pexip.sdk.sample.pinchallenge.PinChallengeProps
 import com.pexip.sdk.sample.pinchallenge.PinChallengeWorkflow
 import com.pexip.sdk.sample.pinrequirement.PinRequirementProps
@@ -22,7 +20,6 @@ import javax.inject.Singleton
 class SampleWorkflow @Inject constructor(
     private val welcomeWorkflow: WelcomeWorkflow,
     private val aliasWorkflow: AliasWorkflow,
-    private val nodeWorkflow: NodeWorkflow,
     private val pinRequirementWorkflow: PinRequirementWorkflow,
     private val pinChallengeWorkflow: PinChallengeWorkflow,
     private val conferenceWorkflow: ConferenceWorkflow,
@@ -46,17 +43,9 @@ class SampleWorkflow @Inject constructor(
             child = aliasWorkflow,
             handler = ::OnAliasOutput
         )
-        is SampleState.Node -> context.renderChild(
-            child = nodeWorkflow,
-            props = NodeProps(renderState.host),
-            handler = ::OnNodeOutput
-        )
         is SampleState.PinRequirement -> context.renderChild(
             child = pinRequirementWorkflow,
-            props = PinRequirementProps(
-                conferenceAlias = renderState.conferenceAlias,
-                node = renderState.node
-            ),
+            props = PinRequirementProps(renderState.conferenceAlias, renderState.host),
             handler = ::OnPinRequirementOutput
         )
         is SampleState.PinChallenge -> context.renderChild(

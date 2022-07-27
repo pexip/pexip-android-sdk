@@ -2,7 +2,6 @@ package com.pexip.sdk.sample
 
 import com.pexip.sdk.sample.alias.AliasOutput
 import com.pexip.sdk.sample.conference.ConferenceOutput
-import com.pexip.sdk.sample.node.NodeOutput
 import com.pexip.sdk.sample.pinchallenge.PinChallengeOutput
 import com.pexip.sdk.sample.pinrequirement.PinRequirementOutput
 import com.pexip.sdk.sample.welcome.WelcomeOutput
@@ -24,27 +23,12 @@ data class OnAliasOutput(val output: AliasOutput) : SampleAction() {
 
     override fun Updater.apply() {
         state = when (output) {
-            is AliasOutput.Alias -> SampleState.Node(
+            is AliasOutput.Alias -> SampleState.PinRequirement(
                 conferenceAlias = output.conferenceAlias,
                 host = output.host,
                 presentationInMain = output.presentationInMain
             )
             is AliasOutput.Back -> SampleState.Welcome
-        }
-    }
-}
-
-data class OnNodeOutput(val output: NodeOutput) : SampleAction() {
-
-    override fun Updater.apply() {
-        val s = checkNotNull(state as? SampleState.Node) { "Invalid state: $state" }
-        state = when (output) {
-            is NodeOutput.Node -> SampleState.PinRequirement(
-                node = output.node,
-                conferenceAlias = s.conferenceAlias,
-                presentationInMain = s.presentationInMain
-            )
-            is NodeOutput.Back -> SampleState.Alias
         }
     }
 }
@@ -55,13 +39,13 @@ data class OnPinRequirementOutput(val output: PinRequirementOutput) : SampleActi
         val s = checkNotNull(state as? SampleState.PinRequirement) { "Invalid state: $state" }
         state = when (output) {
             is PinRequirementOutput.Some -> SampleState.PinChallenge(
-                node = s.node,
+                node = output.node,
                 conferenceAlias = s.conferenceAlias,
                 presentationInMain = s.presentationInMain,
                 required = output.required
             )
             is PinRequirementOutput.None -> SampleState.Conference(
-                node = s.node,
+                node = output.node,
                 conferenceAlias = s.conferenceAlias,
                 presentationInMain = s.presentationInMain,
                 response = output.response
