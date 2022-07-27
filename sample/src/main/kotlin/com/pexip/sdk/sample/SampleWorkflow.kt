@@ -9,6 +9,7 @@ import com.pexip.sdk.sample.pinchallenge.PinChallengeProps
 import com.pexip.sdk.sample.pinchallenge.PinChallengeWorkflow
 import com.pexip.sdk.sample.pinrequirement.PinRequirementProps
 import com.pexip.sdk.sample.pinrequirement.PinRequirementWorkflow
+import com.pexip.sdk.sample.welcome.WelcomeWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.renderChild
@@ -19,23 +20,28 @@ import javax.inject.Singleton
 
 @Singleton
 class SampleWorkflow @Inject constructor(
+    private val welcomeWorkflow: WelcomeWorkflow,
     private val aliasWorkflow: AliasWorkflow,
     private val nodeWorkflow: NodeWorkflow,
     private val pinRequirementWorkflow: PinRequirementWorkflow,
     private val pinChallengeWorkflow: PinChallengeWorkflow,
     private val conferenceWorkflow: ConferenceWorkflow,
-) : StatefulWorkflow<SampleProps, SampleState, SampleOutput, Any>() {
+) : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>() {
 
-    override fun initialState(props: SampleProps, snapshot: Snapshot?): SampleState =
-        snapshot?.toParcelable() ?: SampleState.Alias
+    override fun initialState(props: Unit, snapshot: Snapshot?): SampleState =
+        snapshot?.toParcelable() ?: SampleState.Welcome
 
     override fun snapshotState(state: SampleState): Snapshot = state.toSnapshot()
 
     override fun render(
-        renderProps: SampleProps,
+        renderProps: Unit,
         renderState: SampleState,
         context: RenderContext,
     ): Any = when (renderState) {
+        is SampleState.Welcome -> context.renderChild(
+            child = welcomeWorkflow,
+            handler = ::OnWelcomeOutput
+        )
         is SampleState.Alias -> context.renderChild(
             child = aliasWorkflow,
             handler = ::OnAliasOutput
@@ -49,8 +55,7 @@ class SampleWorkflow @Inject constructor(
             child = pinRequirementWorkflow,
             props = PinRequirementProps(
                 conferenceAlias = renderState.conferenceAlias,
-                node = renderState.node,
-                displayName = renderProps.displayName
+                node = renderState.node
             ),
             handler = ::OnPinRequirementOutput
         )
@@ -59,7 +64,6 @@ class SampleWorkflow @Inject constructor(
             props = PinChallengeProps(
                 node = renderState.node,
                 conferenceAlias = renderState.conferenceAlias,
-                displayName = renderProps.displayName,
                 required = renderState.required
             ),
             handler = ::OnPinChallengeOutput

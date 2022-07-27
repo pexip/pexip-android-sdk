@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.wire)
 }
 
 android {
@@ -25,11 +26,16 @@ hilt {
     enableAggregatingTask = true
 }
 
+wire {
+    kotlin { }
+}
+
 dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.datastore)
     implementation(libs.androidx.startup.runtime)
     implementation(libs.dagger.hilt.android.runtime)
     kapt(libs.dagger.hilt.compiler)
@@ -42,4 +48,7 @@ dependencies {
     implementation(pexipSdk.conference.coroutines)
     implementation(pexipSdk.media.coroutines)
     implementation(pexipSdk.media.webrtc.compose)
+
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }

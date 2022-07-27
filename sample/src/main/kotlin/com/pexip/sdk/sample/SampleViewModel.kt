@@ -22,7 +22,6 @@ class SampleViewModel @Inject constructor(
         renderWorkflowIn(
             workflow = sampleWorkflow,
             scope = viewModelScope,
-            prop = SampleProps("Pexip Video SDK"),
             savedStateHandle = handle,
             onOutput = _output::emit
         )
