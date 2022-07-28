@@ -15,13 +15,6 @@ sealed class SampleState : Parcelable {
     object Alias : SampleState()
 
     @Parcelize
-    data class PinRequirement(
-        val conferenceAlias: String,
-        val host: String,
-        val presentationInMain: Boolean,
-    ) : SampleState()
-
-    @Parcelize
     data class PinChallenge(
         val node: URL,
         val conferenceAlias: String,

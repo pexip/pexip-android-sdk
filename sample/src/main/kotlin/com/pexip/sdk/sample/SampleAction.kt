@@ -3,7 +3,6 @@ package com.pexip.sdk.sample
 import com.pexip.sdk.sample.alias.AliasOutput
 import com.pexip.sdk.sample.conference.ConferenceOutput
 import com.pexip.sdk.sample.pinchallenge.PinChallengeOutput
-import com.pexip.sdk.sample.pinrequirement.PinRequirementOutput
 import com.pexip.sdk.sample.welcome.WelcomeOutput
 import com.squareup.workflow1.WorkflowAction
 
@@ -22,35 +21,21 @@ data class OnWelcomeOutput(val output: WelcomeOutput) : SampleAction() {
 data class OnAliasOutput(val output: AliasOutput) : SampleAction() {
 
     override fun Updater.apply() {
-        state = when (output) {
-            is AliasOutput.Alias -> SampleState.PinRequirement(
+        when (output) {
+            is AliasOutput.Conference -> state = SampleState.Conference(
+                node = output.node,
                 conferenceAlias = output.conferenceAlias,
-                host = output.host,
-                presentationInMain = output.presentationInMain
-            )
-            is AliasOutput.Back -> SampleState.Welcome
-        }
-    }
-}
-
-data class OnPinRequirementOutput(val output: PinRequirementOutput) : SampleAction() {
-
-    override fun Updater.apply() {
-        val s = checkNotNull(state as? SampleState.PinRequirement) { "Invalid state: $state" }
-        state = when (output) {
-            is PinRequirementOutput.Some -> SampleState.PinChallenge(
-                node = output.node,
-                conferenceAlias = s.conferenceAlias,
-                presentationInMain = s.presentationInMain,
-                required = output.required
-            )
-            is PinRequirementOutput.None -> SampleState.Conference(
-                node = output.node,
-                conferenceAlias = s.conferenceAlias,
-                presentationInMain = s.presentationInMain,
+                presentationInMain = output.presentationInMain,
                 response = output.response
             )
-            is PinRequirementOutput.Back -> SampleState.Alias
+            is AliasOutput.PinChallenge -> state = SampleState.PinChallenge(
+                node = output.node,
+                conferenceAlias = output.conferenceAlias,
+                presentationInMain = output.presentationInMain,
+                required = output.required
+            )
+            is AliasOutput.Toast -> setOutput(SampleOutput.Toast(output.message))
+            is AliasOutput.Back -> state = SampleState.Welcome
         }
     }
 }

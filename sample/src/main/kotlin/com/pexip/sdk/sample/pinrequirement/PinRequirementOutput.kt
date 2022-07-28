@@ -5,12 +5,17 @@ import java.net.URL
 
 sealed class PinRequirementOutput {
 
-    data class Some(val node: URL, val required: Boolean) : PinRequirementOutput()
+    data class None(
+        val node: URL,
+        val conferenceAlias: String,
+        val response: RequestTokenResponse,
+    ) : PinRequirementOutput()
 
-    data class None(val node: URL, val response: RequestTokenResponse) : PinRequirementOutput()
+    data class Some(
+        val node: URL,
+        val conferenceAlias: String,
+        val required: Boolean,
+    ) : PinRequirementOutput()
 
-    object Back : PinRequirementOutput() {
-
-        override fun toString(): String = "Back"
-    }
+    data class Error(val t: Throwable) : PinRequirementOutput()
 }
