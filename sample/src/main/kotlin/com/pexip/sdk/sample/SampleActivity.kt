@@ -13,7 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import com.pexip.sdk.sample.alias.AliasViewFactory
 import com.pexip.sdk.sample.conference.ConferenceViewFactory
 import com.pexip.sdk.sample.pinchallenge.PinChallengeViewFactory
-import com.pexip.sdk.sample.pinrequirement.PinRequirementViewFactory
 import com.pexip.sdk.sample.welcome.WelcomeViewFactory
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.ViewRegistry
@@ -36,8 +35,6 @@ class SampleActivity : AppCompatActivity() {
         WelcomeViewFactory,
         AliasViewFactory,
         PinChallengeViewFactory,
-        PinRequirementViewFactory.ResolvingPinRequirementViewFactory,
-        PinRequirementViewFactory.FailureViewFactory,
         ConferenceViewFactory.ConferenceCallViewFactory,
         ConferenceViewFactory.ConferenceEventsViewFactory
     )

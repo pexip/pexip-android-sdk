@@ -5,7 +5,6 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NodeResolver
 import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequiredPinException
-import com.pexip.sdk.sample.send
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -20,7 +19,7 @@ class PinRequirementWorkflow @Inject constructor(
     private val store: SettingsStore,
     private val resolver: NodeResolver,
     private val service: InfinityService,
-) : StatefulWorkflow<PinRequirementProps, PinRequirementState, PinRequirementOutput, PinRequirementRendering>() {
+) : StatefulWorkflow<PinRequirementProps, PinRequirementState, PinRequirementOutput, Unit>() {
 
     override fun initialState(
         props: PinRequirementProps,
@@ -33,20 +32,11 @@ class PinRequirementWorkflow @Inject constructor(
         renderProps: PinRequirementProps,
         renderState: PinRequirementState,
         context: RenderContext,
-    ): PinRequirementRendering {
+    ) {
         if (renderState is PinRequirementState.ResolvingNode) {
             context.getNodeSideEffect(renderProps)
-        }
-        if (renderState is PinRequirementState.ResolvingPinRequirement) {
+        } else if (renderState is PinRequirementState.ResolvingPinRequirement) {
             context.getPinRequirementSideEffect(renderProps, renderState)
-        }
-        return when (renderState) {
-            is PinRequirementState.ResolvingNode -> PinRequirementRendering.ResolvingPinRequirement
-            is PinRequirementState.ResolvingPinRequirement -> PinRequirementRendering.ResolvingPinRequirement
-            is PinRequirementState.Failure -> PinRequirementRendering.Failure(
-                t = renderState.t,
-                onBackClick = context.send(::OnBackClick)
-            )
         }
     }
 
@@ -61,7 +51,7 @@ class PinRequirementWorkflow @Inject constructor(
     private fun RenderContext.getPinRequirementSideEffect(
         props: PinRequirementProps,
         state: PinRequirementState.ResolvingPinRequirement,
-    ) = runningSideEffect("$props:${state.node}") {
+    ) = runningSideEffect("${props.conferenceAlias}:${state.node}") {
         val action = runCatching { store.getDisplayName().first() }
             .mapCatching { RequestTokenRequest(displayName = it) }
             .mapCatching {
@@ -71,10 +61,14 @@ class PinRequirementWorkflow @Inject constructor(
                     .await()
             }
             .fold(
-                onSuccess = { OnResponse(state.node, it) },
+                onSuccess = { OnResponse(state.node, props.conferenceAlias, it) },
                 onFailure = {
                     when (it) {
-                        is RequiredPinException -> OnRequiredPin(state.node, it.guestPin)
+                        is RequiredPinException -> OnRequiredPin(
+                            node = state.node,
+                            conferenceAlias = props.conferenceAlias,
+                            required = it.guestPin
+                        )
                         else -> OnError(it)
                     }
                 }

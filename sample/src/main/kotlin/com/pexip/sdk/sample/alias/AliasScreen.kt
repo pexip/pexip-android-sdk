@@ -35,6 +35,7 @@ fun AliasScreen(
     alias: String,
     host: String,
     presentationInMain: Boolean,
+    resolveEnabled: Boolean,
     onAliasChange: (String) -> Unit,
     onHostChange: (String) -> Unit,
     onPresentationInMainChange: (Boolean) -> Unit,
@@ -130,6 +131,7 @@ fun AliasScreen(
             }
             Button(
                 onClick = onResolveClick,
+                enabled = resolveEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

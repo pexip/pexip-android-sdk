@@ -7,6 +7,7 @@ val AliasViewFactory = composeViewFactory<AliasRendering> { rendering, _ ->
         alias = rendering.alias,
         host = rendering.host,
         presentationInMain = rendering.presentationInMain,
+        resolveEnabled = rendering.resolveEnabled,
         onAliasChange = rendering.onAliasChange,
         onHostChange = rendering.onHostChange,
         onPresentationInMainChange = rendering.onPresentationInMainChange,

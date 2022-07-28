@@ -6,13 +6,6 @@ import java.net.URL
 
 typealias PinRequirementAction = WorkflowAction<PinRequirementProps, PinRequirementState, PinRequirementOutput>
 
-class OnBackClick : PinRequirementAction() {
-
-    override fun Updater.apply() {
-        setOutput(PinRequirementOutput.Back)
-    }
-}
-
 data class OnNode(val node: URL) : PinRequirementAction() {
 
     override fun Updater.apply() {
@@ -20,23 +13,31 @@ data class OnNode(val node: URL) : PinRequirementAction() {
     }
 }
 
-data class OnResponse(val node: URL, val response: RequestTokenResponse) : PinRequirementAction() {
+data class OnResponse(
+    val node: URL,
+    val conferenceAlias: String,
+    val response: RequestTokenResponse,
+) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        setOutput(PinRequirementOutput.None(node, response))
+        setOutput(PinRequirementOutput.None(node, conferenceAlias, response))
     }
 }
 
-data class OnRequiredPin(val node: URL, val guestPin: Boolean) : PinRequirementAction() {
+data class OnRequiredPin(
+    val node: URL,
+    val conferenceAlias: String,
+    val required: Boolean,
+) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        setOutput(PinRequirementOutput.Some(node, guestPin))
+        setOutput(PinRequirementOutput.Some(node, conferenceAlias, required))
     }
 }
 
 data class OnError(val t: Throwable) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        state = PinRequirementState.Failure(t)
+        setOutput(PinRequirementOutput.Error(t))
     }
 }
