@@ -1,8 +1,8 @@
 [versions]
 android = "7.2.1"
-androidx-activity = "1.5.0"
+androidx-activity = "1.5.1"
 androidx-appcompat = "1.4.2"
-androidx-compose = "1.1.1"
+androidx-compose = "1.2.0"
 androidx-datastore = "1.0.0"
 androidx-startup = "1.1.1"
 cachefix = "2.5.6"
