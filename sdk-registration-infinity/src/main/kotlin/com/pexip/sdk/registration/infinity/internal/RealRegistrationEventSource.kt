@@ -3,8 +3,12 @@ package com.pexip.sdk.registration.infinity.internal
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.EventSource
 import com.pexip.sdk.api.EventSourceListener
+import com.pexip.sdk.api.infinity.IncomingCancelledEvent
+import com.pexip.sdk.api.infinity.IncomingEvent
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.TokenStore
+import com.pexip.sdk.registration.IncomingCancelledRegistrationEvent
+import com.pexip.sdk.registration.IncomingRegistrationEvent
 import com.pexip.sdk.registration.RegistrationEvent
 import com.pexip.sdk.registration.RegistrationEventListener
 import java.io.IOException
@@ -39,7 +43,16 @@ internal class RealRegistrationEventSource(
     }
 
     override fun onEvent(eventSource: EventSource, event: Event) {
-        // TODO: Map events and send them downstream
+        val e = when (event) {
+            is IncomingEvent -> IncomingRegistrationEvent(
+                conferenceAlias = event.conferenceAlias,
+                remoteDisplayName = event.remoteDisplayName,
+                token = event.token
+            )
+            is IncomingCancelledEvent -> IncomingCancelledRegistrationEvent(event.token)
+            else -> null
+        } ?: return
+        listeners.forEach { it.onRegistrationEvent(e) }
     }
 
     override fun onClosed(eventSource: EventSource, t: Throwable?) {

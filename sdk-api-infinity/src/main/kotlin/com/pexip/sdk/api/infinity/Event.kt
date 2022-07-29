@@ -41,11 +41,25 @@ public object ByeEvent : Event {
     override fun toString(): String = "ByeEvent"
 }
 
+@Serializable
+public data class IncomingEvent(
+    @SerialName("conference_alias")
+    val conferenceAlias: String,
+    @SerialName("remote_display_name")
+    val remoteDisplayName: String,
+    val token: String,
+) : Event
+
+@Serializable
+public data class IncomingCancelledEvent(val token: String) : Event
+
 internal fun Event(json: Json, id: String?, type: String?, data: String) = when (type) {
     "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
     "presentation_stop" -> PresentationStopEvent
     "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
     "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
     "bye" -> ByeEvent
+    "incoming" -> json.decodeFromString<IncomingEvent>(data)
+    "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
     else -> null
 }
