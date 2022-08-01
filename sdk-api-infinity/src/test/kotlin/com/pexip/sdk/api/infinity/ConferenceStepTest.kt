@@ -155,13 +155,18 @@ internal class ConferenceStepTest {
                 )
             }
         )
-        server.enqueue {
-            setResponseCode(200)
-            setBody(json.encodeToString(Box(response)))
+        val requests = setOf(
+            RequestTokenRequest(ssoToken = Random.nextString(8)),
+            RequestTokenRequest(incomingToken = Random.nextString(8))
+        )
+        requests.forEach {
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(response)))
+            }
+            assertEquals(response, step.requestToken(it).execute())
+            server.verifyRequestToken(it)
         }
-        val request = RequestTokenRequest(ssoToken = Random.nextSsoToken())
-        assertEquals(response, step.requestToken(request).execute())
-        server.verifyRequestToken(request)
     }
 
     @Test
@@ -369,7 +374,9 @@ internal class ConferenceStepTest {
             addPathSegment("request_token")
         }
         assertPin(pin)
-        assertPost(json, request)
+        assertToken(request.incomingToken)
+        // Copy due to incomingToken being @Transient
+        assertPost(json, request.copy(incomingToken = null))
     }
 
     private fun MockWebServer.verifyRefreshToken(token: String) = takeRequest {

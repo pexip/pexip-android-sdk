@@ -26,8 +26,6 @@ internal fun Random.nextIdentityProviderId() = IdentityProviderId(nextUuid())
 
 internal fun Random.nextPin(): String = "${nextInt(1000..9999)}"
 
-internal fun Random.nextSsoToken() = nextString(16)
-
 internal inline fun MockWebServer.enqueue(block: MockResponse.() -> Unit) =
     enqueue(MockResponse().apply(block))
 
