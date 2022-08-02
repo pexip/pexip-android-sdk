@@ -18,4 +18,5 @@ public data class RequestRegistrationTokenResponse(
     public val directoryEnabled: Boolean,
     @SerialName("route_via_registrar")
     public val routeViaRegistrar: Boolean,
+    public val version: VersionResponse,
 ) : Token

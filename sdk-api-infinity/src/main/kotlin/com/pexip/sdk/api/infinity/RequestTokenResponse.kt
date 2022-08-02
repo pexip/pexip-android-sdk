@@ -16,6 +16,7 @@ public data class RequestTokenResponse(
     public val participantId: UUID,
     @SerialName("display_name")
     public val participantName: String,
+    public val version: VersionResponse,
     @SerialName("analytics_enabled")
     public val analyticsEnabled: Boolean = false,
     public val stun: List<StunResponse> = emptyList(),

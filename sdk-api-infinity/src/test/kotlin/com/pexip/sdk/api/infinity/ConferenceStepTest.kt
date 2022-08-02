@@ -144,6 +144,10 @@ internal class ConferenceStepTest {
             participantName = Random.nextString(8),
             expires = 120,
             analyticsEnabled = Random.nextBoolean(),
+            version = VersionResponse(
+                versionId = Random.nextString(8),
+                pseudoVersion = Random.nextString(8)
+            ),
             stun = List(10) {
                 StunResponse("stun:stun$it.example.com:19302")
             },
@@ -177,6 +181,10 @@ internal class ConferenceStepTest {
             participantName = Random.nextString(8),
             expires = 120,
             analyticsEnabled = Random.nextBoolean(),
+            version = VersionResponse(
+                versionId = Random.nextString(8),
+                pseudoVersion = Random.nextString(8)
+            ),
             stun = List(10) {
                 StunResponse("stun:stun$it.example.com:19302")
             },

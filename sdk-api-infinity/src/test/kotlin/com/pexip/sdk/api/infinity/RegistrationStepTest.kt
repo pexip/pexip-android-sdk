@@ -71,7 +71,11 @@ internal class RegistrationStepTest {
             registrationId = UUID.randomUUID(),
             expires = 120,
             directoryEnabled = Random.nextBoolean(),
-            routeViaRegistrar = Random.nextBoolean()
+            routeViaRegistrar = Random.nextBoolean(),
+            version = VersionResponse(
+                versionId = Random.nextString(8),
+                pseudoVersion = Random.nextString(8)
+            )
         )
         server.enqueue {
             setResponseCode(200)
