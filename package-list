@@ -23,3 +23,9 @@ module:sdk-media-webrtc
 com.pexip.sdk.media.webrtc
 module:sdk-media-webrtc-compose
 com.pexip.sdk.media.webrtc.compose
+module:sdk-registration
+com.pexip.sdk.registration
+module:sdk-registration-coroutines
+com.pexip.sdk.registration.coroutines
+module:sdk-registration-infinity
+com.pexip.sdk.registration.infinity
