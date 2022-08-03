@@ -29,18 +29,16 @@ internal class RealAudioHandler(private val context: Context, audioAttributes: A
             .build()
     private var snapshot: Snapshot? by Delegates.observable(null) { _, old, new ->
         if (old == null && new != null) {
-            audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-            audioManager.isMicrophoneMute = false
-            audioManager.isSpeakerphoneOn = false
-            audioManager.requestAudioFocus(audioFocusRequest)
             if (Build.VERSION.SDK_INT >= 28) {
                 context.registerMicrophoneMuteReceiver()
             }
+            audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+            audioManager.isMicrophoneMute = false
+            audioManager.requestAudioFocus(audioFocusRequest)
         }
         if (old != null && new == null) {
             audioManager.mode = old.mode
             audioManager.isMicrophoneMute = old.microphoneMute
-            audioManager.isSpeakerphoneOn = old.speakerphoneOn
             audioManager.abandonAudioFocusRequest(audioFocusRequest)
             if (Build.VERSION.SDK_INT >= 28) {
                 context.unregisterMicrophoneMuteReceiver()
@@ -76,7 +74,6 @@ internal class RealAudioHandler(private val context: Context, audioAttributes: A
                 snapshot = Snapshot(
                     mode = audioManager.mode,
                     microphoneMute = audioManager.isMicrophoneMute,
-                    speakerphoneOn = audioManager.isSpeakerphoneOn
                 )
             }
         }
@@ -137,9 +134,5 @@ internal class RealAudioHandler(private val context: Context, audioAttributes: A
         }
     }
 
-    private data class Snapshot(
-        val mode: Int,
-        val microphoneMute: Boolean,
-        val speakerphoneOn: Boolean,
-    )
+    private data class Snapshot(val mode: Int, val microphoneMute: Boolean)
 }
