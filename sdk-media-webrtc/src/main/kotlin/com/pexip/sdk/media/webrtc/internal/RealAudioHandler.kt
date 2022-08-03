@@ -33,12 +33,12 @@ internal class RealAudioHandler(private val context: Context, audioAttributes: A
                 context.registerMicrophoneMuteReceiver()
             }
             audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-            audioManager.isMicrophoneMute = false
+            _microphoneMute = false
             audioManager.requestAudioFocus(audioFocusRequest)
         }
         if (old != null && new == null) {
             audioManager.mode = old.mode
-            audioManager.isMicrophoneMute = old.microphoneMute
+            _microphoneMute = old.microphoneMute
             audioManager.abandonAudioFocusRequest(audioFocusRequest)
             if (Build.VERSION.SDK_INT >= 28) {
                 context.unregisterMicrophoneMuteReceiver()
@@ -54,27 +54,27 @@ internal class RealAudioHandler(private val context: Context, audioAttributes: A
         }
     }
     private val microphoneMuteListeners = CopyOnWriteArraySet<AudioHandler.MicrophoneMuteListener>()
+    private var _microphoneMute: Boolean
+        get() = audioManager.isMicrophoneMute
+        set(value) {
+            audioManager.isMicrophoneMute = value
+            if (Build.VERSION.SDK_INT < 28) {
+                microphoneMuteListeners.notify()
+            }
+        }
 
     override var microphoneMute: Boolean
-        get() = audioManager.isMicrophoneMute
-        set(microphoneMute) {
+        get() = _microphoneMute
+        set(value) {
             handler.post {
-                if (snapshot != null) {
-                    audioManager.isMicrophoneMute = microphoneMute
-                    if (Build.VERSION.SDK_INT < 28) {
-                        microphoneMuteListeners.notify()
-                    }
-                }
+                _microphoneMute = value
             }
         }
 
     override fun start() {
         handler.post {
             if (++startCount == 1) {
-                snapshot = Snapshot(
-                    mode = audioManager.mode,
-                    microphoneMute = audioManager.isMicrophoneMute,
-                )
+                snapshot = Snapshot(audioManager)
             }
         }
     }
@@ -95,7 +95,7 @@ internal class RealAudioHandler(private val context: Context, audioAttributes: A
 
     override fun registerMicrophoneMuteListener(listener: AudioHandler.MicrophoneMuteListener) {
         handler.post {
-            listener.onMicrophoneMute(audioManager.isMicrophoneMute)
+            listener.onMicrophoneMute(_microphoneMute)
         }
         microphoneMuteListeners += listener
     }
@@ -128,11 +128,17 @@ internal class RealAudioHandler(private val context: Context, audioAttributes: A
     }
 
     private fun Collection<AudioHandler.MicrophoneMuteListener>.notify() {
-        val microphoneMute = audioManager.isMicrophoneMute
+        val microphoneMute = _microphoneMute
         forEach {
             it.onMicrophoneMute(microphoneMute)
         }
     }
 
-    private data class Snapshot(val mode: Int, val microphoneMute: Boolean)
+    private data class Snapshot(val mode: Int, val microphoneMute: Boolean) {
+
+        constructor(audioManager: AudioManager) : this(
+            mode = audioManager.mode,
+            microphoneMute = audioManager.isMicrophoneMute
+        )
+    }
 }
