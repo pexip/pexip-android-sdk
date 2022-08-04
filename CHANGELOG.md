@@ -17,7 +17,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Unreliable capturing state notification for `LocalAudioTrack`
 
-## [0.7.1] - 2022-08-02
+## [0.7.0] - 2022-08-02
 
 ### Added
 
