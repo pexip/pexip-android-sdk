@@ -7,7 +7,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.7.0] - 2022-08-02
+## [0.7.1] - 2022-08-04
+
+### Added
+
+- Infinity version info
+
+### Fixed
+
+- Unreliable capturing state notification for `LocalAudioTrack`
+
+## [0.7.1] - 2022-08-02
 
 ### Added
 
@@ -92,7 +102,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.7.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.7.1...HEAD
+[0.7.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.7.1
 [0.7.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.7.0
 [0.6.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.6.0
 [0.5.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.5.0

@@ -2,6 +2,7 @@ package com.pexip.sdk.sample
 
 import android.os.Parcel
 import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.api.infinity.VersionResponse
 import kotlinx.parcelize.Parceler
 import java.util.UUID
 
@@ -11,7 +12,11 @@ object RequestTokenResponseParceler : Parceler<RequestTokenResponse> {
         token = parcel.readString()!!,
         expires = parcel.readLong(),
         participantId = UUID.fromString(parcel.readString()!!),
-        participantName = parcel.readString()!!
+        participantName = parcel.readString()!!,
+        version = VersionResponse(
+            versionId = parcel.readString()!!,
+            pseudoVersion = parcel.readString()!!
+        )
     )
 
     override fun RequestTokenResponse.write(parcel: Parcel, flags: Int) {
@@ -19,5 +24,7 @@ object RequestTokenResponseParceler : Parceler<RequestTokenResponse> {
         parcel.writeLong(expires)
         parcel.writeString(participantId.toString())
         parcel.writeString(participantName)
+        parcel.writeString(version.versionId)
+        parcel.writeString(version.pseudoVersion)
     }
 }
