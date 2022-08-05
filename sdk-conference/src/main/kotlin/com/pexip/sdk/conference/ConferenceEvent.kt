@@ -22,3 +22,8 @@ public data class MessageReceivedConferenceEvent(
     val type: String,
     val payload: String,
 ) : ConferenceEvent
+
+public data class DisconnectConferenceEvent(
+    override val at: Long,
+    val reason: String,
+) : ConferenceEvent

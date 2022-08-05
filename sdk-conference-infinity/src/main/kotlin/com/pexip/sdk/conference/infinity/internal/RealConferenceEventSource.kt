@@ -4,15 +4,10 @@ import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.EventSource
 import com.pexip.sdk.api.EventSourceListener
 import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.MessageReceivedEvent
-import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
-import com.pexip.sdk.conference.MessageReceivedConferenceEvent
-import com.pexip.sdk.conference.PresentationStartConferenceEvent
-import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import java.io.IOException
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.ScheduledExecutorService
@@ -51,23 +46,7 @@ internal class RealConferenceEventSource(
         if (event is PresentationStopEvent && skipPresentationStop.compareAndSet(true, false)) {
             return
         }
-        val at = System.currentTimeMillis()
-        val conferenceEvent = when (event) {
-            is PresentationStartEvent -> PresentationStartConferenceEvent(
-                at = at,
-                presenterId = event.presenterId,
-                presenterName = event.presenterName
-            )
-            is PresentationStopEvent -> PresentationStopConferenceEvent(at)
-            is MessageReceivedEvent -> MessageReceivedConferenceEvent(
-                at = at,
-                participantId = event.participantId,
-                participantName = event.participantName,
-                type = event.type,
-                payload = event.payload
-            )
-            else -> return
-        }
+        val conferenceEvent = ConferenceEvent(event) ?: return
         listeners.forEach { it.onConferenceEvent(conferenceEvent) }
     }
 
