@@ -24,15 +24,9 @@ internal class TokenStoreTest {
     }
 
     @Test
-    fun `updateAndGet() returns updated token`() {
+    fun `set() updates the token`() {
         val newToken = Random.nextToken()
-        assertEquals(
-            expected = newToken,
-            actual = store.updateAndGet {
-                assertEquals(token, it)
-                newToken
-            }
-        )
+        store.set(newToken)
         assertEquals(newToken, store.get())
     }
 }

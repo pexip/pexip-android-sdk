@@ -15,12 +15,11 @@ public interface TokenStore {
     public fun get(): Token
 
     /**
-     * Updates and gets the token.
+     * Sets the token.
      *
-     * @param block a block that should return an updated token
-     * @return an updated token
+     * @param token a token
      */
-    public fun updateAndGet(block: (Token) -> Token): Token
+    public fun set(token: Token)
 
     public companion object {
 

@@ -6,17 +6,9 @@ import java.util.concurrent.atomic.AtomicReference
 
 internal class RealTokenStore(token: Token) : TokenStore {
 
-    private val token = AtomicReference(token)
+    private val _token = AtomicReference(token)
 
-    override fun get(): Token = token.get()
+    override fun get(): Token = _token.get()
 
-    override fun updateAndGet(block: (Token) -> Token): Token = with(token) {
-        var prev: Token
-        var next: Token
-        do {
-            prev = get()
-            next = block(prev)
-        } while (!compareAndSet(prev, next))
-        return next
-    }
+    override fun set(token: Token): Unit = _token.set(token)
 }

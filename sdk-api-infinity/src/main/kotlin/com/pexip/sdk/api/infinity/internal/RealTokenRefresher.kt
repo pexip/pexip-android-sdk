@@ -4,6 +4,7 @@ import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenRefresher
 import com.pexip.sdk.api.infinity.TokenStore
+import java.util.concurrent.Future
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
@@ -15,30 +16,28 @@ internal class RealTokenRefresher<T : Token>(
 ) : TokenRefresher {
 
     private val refreshTokenRunnable = Runnable {
-        store.updateAndGet { token ->
-            try {
-                refreshToken(token).execute()
-            } catch (t: Throwable) {
-                token
-            }
-        }
+        runCatching(store::get)
+            .mapCatching(refreshToken)
+            .mapCatching { it.execute() }
+            .onSuccess(store::set)
+            .onSuccess(::scheduleRefresh)
     }
     private val releaseTokenRunnable = Runnable {
-        try {
-            releaseToken(store.get()).execute()
-        } catch (t: Throwable) {
-            // noop
-        }
+        runCatching(store::get)
+            .mapCatching(releaseToken)
+            .mapCatching { it.execute() }
     }
-    private val future = executor.scheduleWithFixedDelay(
-        refreshTokenRunnable,
-        0,
-        store.get().expires / 2,
-        TimeUnit.SECONDS,
-    )
+
+    @Volatile
+    private var future: Future<*> = executor.submit(refreshTokenRunnable)
 
     override fun cancel() {
         future.cancel(true)
         executor.submit(releaseTokenRunnable)
+    }
+
+    private fun scheduleRefresh(token: Token) {
+        if (executor.isShutdown) return
+        future = executor.schedule(refreshTokenRunnable, token.expires / 2, TimeUnit.SECONDS)
     }
 }
