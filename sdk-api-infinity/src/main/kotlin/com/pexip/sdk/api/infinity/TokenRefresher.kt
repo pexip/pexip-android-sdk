@@ -13,6 +13,14 @@ public interface TokenRefresher {
      */
     public fun cancel()
 
+    public fun interface Callback {
+
+        /**
+         * Invoked when an exception occurred during refresh.
+         */
+        public fun onFailure(t: Throwable)
+    }
+
     public companion object {
 
         @JvmStatic
@@ -20,11 +28,13 @@ public interface TokenRefresher {
             step: InfinityService.ConferenceStep,
             store: TokenStore,
             executor: ScheduledExecutorService,
+            callback: Callback,
         ): TokenRefresher = RealTokenRefresher(
             store = store,
             refreshToken = step::refreshToken,
             releaseToken = step::releaseToken,
-            executor = executor
+            executor = executor,
+            callback = callback
         )
 
         @JvmStatic
@@ -32,11 +42,13 @@ public interface TokenRefresher {
             step: InfinityService.RegistrationStep,
             store: TokenStore,
             executor: ScheduledExecutorService,
+            callback: Callback,
         ): TokenRefresher = RealTokenRefresher(
             store = store,
             refreshToken = step::refreshToken,
             releaseToken = step::releaseToken,
-            executor = executor
+            executor = executor,
+            callback = callback
         )
     }
 }

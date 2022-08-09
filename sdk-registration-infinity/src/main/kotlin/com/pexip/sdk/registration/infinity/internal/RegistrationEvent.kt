@@ -3,6 +3,7 @@ package com.pexip.sdk.registration.infinity.internal
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.IncomingCancelledEvent
 import com.pexip.sdk.api.infinity.IncomingEvent
+import com.pexip.sdk.registration.FailureRegistrationEvent
 import com.pexip.sdk.registration.IncomingCancelledRegistrationEvent
 import com.pexip.sdk.registration.IncomingRegistrationEvent
 
@@ -22,3 +23,6 @@ internal inline fun RegistrationEvent(
     )
     else -> null
 }
+
+internal inline fun RegistrationEvent(t: Throwable, at: () -> Long = System::currentTimeMillis) =
+    FailureRegistrationEvent(at(), t)

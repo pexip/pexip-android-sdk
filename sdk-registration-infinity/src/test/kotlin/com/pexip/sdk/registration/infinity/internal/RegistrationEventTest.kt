@@ -3,11 +3,13 @@ package com.pexip.sdk.registration.infinity.internal
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.IncomingCancelledEvent
 import com.pexip.sdk.api.infinity.IncomingEvent
+import com.pexip.sdk.registration.FailureRegistrationEvent
 import com.pexip.sdk.registration.IncomingCancelledRegistrationEvent
 import com.pexip.sdk.registration.IncomingRegistrationEvent
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 internal class RegistrationEventTest {
 
@@ -32,9 +34,18 @@ internal class RegistrationEventTest {
                 token = incomingCancelledEvent.token
             )
             this[TestEvent] = null
+            val t = Throwable()
+            this[t] = FailureRegistrationEvent(at, t)
         }
-        testCases.forEach { (event, registrationEvent) ->
-            assertEquals(registrationEvent, RegistrationEvent(event) { at })
+        testCases.forEach { (value, registrationEvent) ->
+            assertEquals(
+                expected = registrationEvent,
+                actual = when (value) {
+                    is Throwable -> RegistrationEvent(value) { at }
+                    is Event -> RegistrationEvent(value) { at }
+                    else -> fail()
+                }
+            )
         }
     }
 

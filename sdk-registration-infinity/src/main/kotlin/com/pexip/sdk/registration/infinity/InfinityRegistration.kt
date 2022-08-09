@@ -7,6 +7,7 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.registration.Registration
 import com.pexip.sdk.registration.RegistrationEventListener
 import com.pexip.sdk.registration.infinity.internal.RealRegistrationEventSource
+import com.pexip.sdk.registration.infinity.internal.RegistrationEvent
 import com.pexip.sdk.registration.infinity.internal.RegistrationEventSource
 import java.net.URL
 import java.util.concurrent.Executors
@@ -53,7 +54,9 @@ public class InfinityRegistration private constructor(
             val store = TokenStore.create(response)
             val executor = Executors.newSingleThreadScheduledExecutor()
             val source = RealRegistrationEventSource(step, store, executor)
-            val refresher = TokenRefresher.create(step, store, executor)
+            val refresher = TokenRefresher.create(step, store, executor) {
+                source.onRegistrationEvent(RegistrationEvent(it))
+            }
             return InfinityRegistration(source, refresher, executor)
         }
     }

@@ -13,6 +13,7 @@ internal class RealTokenRefresher<T : Token>(
     private val refreshToken: (Token) -> Call<T>,
     private val releaseToken: (Token) -> Call<*>,
     private val executor: ScheduledExecutorService,
+    private val callback: TokenRefresher.Callback,
 ) : TokenRefresher {
 
     private val refreshTokenRunnable = Runnable {
@@ -21,6 +22,7 @@ internal class RealTokenRefresher<T : Token>(
             .mapCatching { it.execute() }
             .onSuccess(store::set)
             .onSuccess(::scheduleRefresh)
+            .onFailure(callback::onFailure)
     }
     private val releaseTokenRunnable = Runnable {
         runCatching(store::get)
@@ -29,7 +31,8 @@ internal class RealTokenRefresher<T : Token>(
     }
 
     @Volatile
-    private var future: Future<*> = executor.submit(refreshTokenRunnable)
+    private var future: Future<*> =
+        executor.schedule(refreshTokenRunnable, getDelay(), TimeUnit.SECONDS)
 
     override fun cancel() {
         future.cancel(true)
@@ -38,6 +41,8 @@ internal class RealTokenRefresher<T : Token>(
 
     private fun scheduleRefresh(token: Token) {
         if (executor.isShutdown) return
-        future = executor.schedule(refreshTokenRunnable, token.expires / 2, TimeUnit.SECONDS)
+        future = executor.schedule(refreshTokenRunnable, getDelay(token), TimeUnit.SECONDS)
     }
+
+    private fun getDelay(token: Token = store.get()) = token.expires / 2
 }

@@ -16,3 +16,8 @@ public data class IncomingCancelledRegistrationEvent(
     override val at: Long,
     val token: String,
 ) : RegistrationEvent
+
+public data class FailureRegistrationEvent(
+    override val at: Long,
+    val t: Throwable,
+) : RegistrationEvent

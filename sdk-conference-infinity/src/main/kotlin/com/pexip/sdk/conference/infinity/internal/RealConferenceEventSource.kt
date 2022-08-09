@@ -47,7 +47,7 @@ internal class RealConferenceEventSource(
             return
         }
         val conferenceEvent = ConferenceEvent(event) ?: return
-        listeners.forEach { it.onConferenceEvent(conferenceEvent) }
+        onConferenceEvent(conferenceEvent)
     }
 
     override fun onClosed(eventSource: EventSource, t: Throwable?) {

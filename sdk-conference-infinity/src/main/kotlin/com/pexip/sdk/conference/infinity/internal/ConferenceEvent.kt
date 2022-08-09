@@ -6,6 +6,7 @@ import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
+import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
@@ -33,3 +34,6 @@ internal inline fun ConferenceEvent(
     )
     else -> null
 }
+
+internal inline fun ConferenceEvent(t: Throwable, at: () -> Long = System::currentTimeMillis) =
+    FailureConferenceEvent(at(), t)

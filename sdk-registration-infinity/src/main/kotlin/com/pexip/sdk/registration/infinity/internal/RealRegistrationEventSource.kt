@@ -40,7 +40,7 @@ internal class RealRegistrationEventSource(
 
     override fun onEvent(eventSource: EventSource, event: Event) {
         val registrationEvent = RegistrationEvent(event) ?: return
-        listeners.forEach { it.onRegistrationEvent(registrationEvent) }
+        onRegistrationEvent(registrationEvent)
     }
 
     override fun onClosed(eventSource: EventSource, t: Throwable?) {

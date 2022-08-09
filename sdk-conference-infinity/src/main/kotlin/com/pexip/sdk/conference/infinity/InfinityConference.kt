@@ -6,6 +6,7 @@ import com.pexip.sdk.api.infinity.TokenRefresher
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEventListener
+import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.ConferenceEventSource
 import com.pexip.sdk.conference.infinity.internal.DtmfSender
 import com.pexip.sdk.conference.infinity.internal.Messenger
@@ -76,11 +77,7 @@ public class InfinityConference private constructor(
             val store = TokenStore.create(response)
             val participantStep = step.participant(response.participantId)
             val executor = Executors.newSingleThreadScheduledExecutor()
-            val source = RealConferenceEventSource(
-                store = store,
-                conferenceStep = step,
-                executor = executor
-            )
+            val source = RealConferenceEventSource(store, step, executor)
             val iceServers = buildList(response.stun.size + response.turn.size) {
                 val stunIceServers = response.stun.map {
                     IceServer.Builder(it.url).build()
@@ -104,7 +101,9 @@ public class InfinityConference private constructor(
                     conferenceStep = step,
                     listener = source
                 ),
-                refresher = TokenRefresher.create(step, store, executor),
+                refresher = TokenRefresher.create(step, store, executor) {
+                    source.onConferenceEvent(ConferenceEvent(it))
+                },
                 signaling = RealMediaConnectionSignaling(
                     store = store,
                     participantStep = participantStep,

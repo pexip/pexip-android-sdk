@@ -27,3 +27,5 @@ public data class DisconnectConferenceEvent(
     override val at: Long,
     val reason: String,
 ) : ConferenceEvent
+
+public data class FailureConferenceEvent(override val at: Long, val t: Throwable) : ConferenceEvent

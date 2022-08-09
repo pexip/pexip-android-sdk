@@ -6,6 +6,7 @@ import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
+import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
@@ -13,6 +14,7 @@ import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 internal class ConferenceEventTest {
 
@@ -49,9 +51,18 @@ internal class ConferenceEventTest {
                 reason = disconnectEvent.reason
             )
             this[TestEvent] = null
+            val t = Throwable()
+            this[t] = FailureConferenceEvent(at, t)
         }
-        testCases.forEach { (event, conferenceEvent) ->
-            assertEquals(conferenceEvent, ConferenceEvent(event) { at })
+        testCases.forEach { (value, conferenceEvent) ->
+            assertEquals(
+                expected = conferenceEvent,
+                actual = when (value) {
+                    is Throwable -> ConferenceEvent(value) { at }
+                    is Event -> ConferenceEvent(value) { at }
+                    else -> fail()
+                }
+            )
         }
     }
 
