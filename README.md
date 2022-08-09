@@ -83,6 +83,18 @@ repositories {
 }
 ```
 
+## Requirements
+
+* JDK 8
+* Android SDK 21+
+
+## WebRTC versions
+
+| SDK version | WebRTC Milestone |
+| ----------- | ---------------- |
+| 0.7.0+      | 102              |
+| 0.1.0+      | 96               |
+
 ## Documentation
 
 - [Recipes](https://github.com/pexip/pexip-android-sdk/blob/main/docs/recipes.md)
