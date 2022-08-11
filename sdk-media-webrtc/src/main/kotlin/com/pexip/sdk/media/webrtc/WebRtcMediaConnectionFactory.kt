@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.projection.MediaProjection
+import androidx.core.content.ContextCompat
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalVideoTrack
@@ -66,7 +67,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         .createPeerConnectionFactory()
     private val workerExecutor = Executors.newSingleThreadExecutor()
     private val networkExecutor = Executors.newSingleThreadExecutor()
-    private val signalingExecutor = Executors.newSingleThreadExecutor()
+    private val signalingExecutor = ContextCompat.getMainExecutor(applicationContext)
 
     override fun createLocalAudioTrack(): LocalAudioTrack {
         check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
@@ -172,7 +173,6 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
             }
             workerExecutor.shutdown()
             networkExecutor.shutdown()
-            signalingExecutor.shutdown()
         } else {
             throw IllegalStateException("WebRtcMediaConnectionFactory has been disposed!")
         }
