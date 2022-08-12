@@ -1,7 +1,6 @@
 plugins {
+    id("com.pexip.paddock.publish")
     `version-catalog`
-    `maven-publish`
-    signing
 }
 
 group = checkNotNull(property("group")) { "group == null." }
@@ -39,59 +38,12 @@ val sourcesJar by tasks.register<Jar>("sourcesJar") {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "MavenCentral"
-            val repositoryUrl = when (version.toString().endsWith("SNAPSHOT")) {
-                true -> "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                else -> "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            }
-            setUrl(repositoryUrl)
-            credentials(PasswordCredentials::class)
-        }
-    }
     publications {
-        register<MavenPublication>("release") {
+        named<MavenPublication>("release") {
             from(components["versionCatalog"])
             artifact(javadocJar)
             artifact(sourcesJar)
-            pom {
-                name.set(artifactId)
-                description.set("Gradle Version Catalog for Pexip Android SDK")
-                url.set("https://github.com/pexip/paddock")
-                licenses {
-                    license {
-                        name.set("The Apache License, Version 1.1")
-                        url.set("https://www.apache.org/licenses/LICENSE-1.1.txt")
-                    }
-                }
-                developers {
-                    developer {
-                        name.set("Dmitry Rymarev")
-                        email.set("dmitry@pexip.com")
-                        organization.set("Pexip")
-                        organizationUrl.set("https://www.pexip.com")
-                    }
-                    developer {
-                        name.set("Thomas Pettersen")
-                        email.set("thomas.pettersen@pexip.com")
-                        organization.set("Pexip")
-                        organizationUrl.set("https://www.pexip.com")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/pexip/paddock.git")
-                    developerConnection.set("scm:git:ssh://github.com:pexip/paddock.git")
-                    url.set("https://github.com/pexip/paddock")
-                }
-            }
+            pom.description.set("Gradle Version Catalog for Pexip Android SDK")
         }
     }
-}
-
-signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications["release"])
 }
