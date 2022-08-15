@@ -11,6 +11,6 @@ dependencies {
     api(projects.sdkConference)
 }
 
-publishing.publications.named<MavenPublication>("release") {
+publishing.publications.withType<MavenPublication>().configureEach {
     pom.description.set("Infinity-based implementation of sdk-conference.")
 }

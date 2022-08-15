@@ -12,6 +12,6 @@ dependencies {
     api(projects.sdkMedia)
 }
 
-publishing.publications.named<MavenPublication>("release") {
+publishing.publications.withType<MavenPublication>().configureEach {
     pom.description.set("Android-specific extensions for sdk-media.")
 }

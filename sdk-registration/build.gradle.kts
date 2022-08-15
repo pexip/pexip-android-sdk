@@ -6,6 +6,6 @@ kotlin {
     explicitApi()
 }
 
-publishing.publications.named<MavenPublication>("release") {
+publishing.publications.withType<MavenPublication>().configureEach {
     pom.description.set("A set of tools to interact with registrations.")
 }

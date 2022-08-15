@@ -22,6 +22,6 @@ dependencies {
     testImplementation(libs.okhttp.mockwebserver)
 }
 
-publishing.publications.named<MavenPublication>("release") {
+publishing.publications.withType<MavenPublication>().configureEach {
     pom.description.set("A fluent wrapper for Pexip Infinity Client REST API.")
 }

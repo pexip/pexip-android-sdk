@@ -39,7 +39,7 @@ val sourcesJar by tasks.register<Jar>("sourcesJar") {
 
 publishing {
     publications {
-        named<MavenPublication>("release") {
+        register<MavenPublication>("release") {
             from(components["versionCatalog"])
             artifact(javadocJar)
             artifact(sourcesJar)

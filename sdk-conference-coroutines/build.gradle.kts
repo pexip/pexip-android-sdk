@@ -14,7 +14,7 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
 }
 
-publishing.publications.named<MavenPublication>("release") {
+publishing.publications.withType<MavenPublication>().configureEach {
     pom.description.set("Coroutines support for sdk-conference.")
 }
 

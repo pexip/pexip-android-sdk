@@ -18,6 +18,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling)
 }
 
-publishing.publications.named<MavenPublication>("release") {
+publishing.publications.withType<MavenPublication>().configureEach {
     pom.description.set("Compose support for sdk-media-webrtc.")
 }
