@@ -14,11 +14,34 @@ import org.webrtc.GlRectDrawer
 
 @Composable
 public fun VideoTrackRenderer(
+    videoTrack: VideoTrack?,
+    modifier: Modifier = Modifier,
+    mirror: Boolean = false,
+) {
+    val eglBase = LocalEglBase.current
+    val eglBaseContext = remember(eglBase) { eglBase?.eglBaseContext }
+    VideoTrackRenderer(
+        sharedContext = eglBaseContext,
+        videoTrack = videoTrack,
+        modifier = modifier,
+        mirror = mirror,
+    )
+}
+
+@Deprecated(
+    "Use EglBase.Context-less version and use LocalEglBase to provide an EglBase instance.",
+    ReplaceWith(
+        expression = "VideoTrackRenderer(videoTrack, modifier, mirror)",
+        imports = ["com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer"]
+    )
+)
+@Composable
+public fun VideoTrackRenderer(
     sharedContext: EglBase.Context?,
     videoTrack: VideoTrack?,
     modifier: Modifier = Modifier,
     mirror: Boolean = false,
-    configAttributes: IntArray = EglBase.CONFIG_PLAIN,
+    configAttributes: IntArray = LocalEglBaseConfigAttributes.current,
 ) {
     val context = LocalContext.current
     val renderer = remember(context) { SurfaceViewRenderer(context) }
