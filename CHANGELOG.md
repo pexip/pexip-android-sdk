@@ -7,6 +7,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.0] - 2022-08-16
+
+### Added
+
+- `DisconnectedConferenceEvent`, `FailureConferenceEvent` and `FailureRegistrationEvent`
+- `RegistrationEvent.at` property
+- `LocalEglBase` in `sdk-media-webrtc-compose` that must be set before using `VideoTrackRenderer`
+
+### Changed
+
+- `compileSdk` to 32
+- `androidx.compose` to 1.2.0
+- Notify various `MediaConnection` listeners on main thread
+- Break down `MediaConnectionFactory` into various factories for tracks
+
 ## [0.7.1] - 2022-08-04
 
 ### Added
@@ -102,7 +117,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.7.1...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.8.0...HEAD
+[0.8.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.8.0
 [0.7.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.7.1
 [0.7.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.7.0
 [0.6.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.6.0

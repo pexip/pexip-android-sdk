@@ -2,6 +2,8 @@ package com.pexip.sdk.sample.conference
 
 import android.content.Intent
 import com.pexip.sdk.conference.ConferenceEvent
+import com.pexip.sdk.conference.DisconnectConferenceEvent
+import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.media.LocalVideoTrack
@@ -158,6 +160,9 @@ class OnConferenceEvent(private val conferenceEvent: ConferenceEvent) : Conferen
                 else -> state.screenCaptureVideoTrack
             }
         )
+        if (conferenceEvent is DisconnectConferenceEvent || conferenceEvent is FailureConferenceEvent) {
+            setOutput(ConferenceOutput.Back)
+        }
     }
 }
 

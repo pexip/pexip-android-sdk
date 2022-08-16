@@ -7,9 +7,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
+import com.pexip.sdk.media.webrtc.compose.LocalEglBase
 import com.pexip.sdk.sample.alias.AliasViewFactory
 import com.pexip.sdk.sample.conference.ConferenceViewFactory
 import com.pexip.sdk.sample.pinchallenge.PinChallengeViewFactory
@@ -38,24 +40,22 @@ class SampleActivity : AppCompatActivity() {
         ConferenceViewFactory.ConferenceCallViewFactory,
         ConferenceViewFactory.ConferenceEventsViewFactory
     )
+    private val viewEnvironment = ViewEnvironment(mapOf(ViewRegistry to viewRegistry))
     private val launcher = registerForActivityResult(RequestMultiplePermissions()) {
         if (it.any { (_, granted) -> !granted }) finish()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val map = buildMap {
-            this[ViewRegistry] = viewRegistry
-            this[EglBaseKey] = eglBase
-        }
-        val viewEnvironment = ViewEnvironment(map)
         setContent {
-            SampleTheme {
-                val rendering by sampleViewModel.rendering.collectAsState()
-                WorkflowRendering(
-                    rendering = rendering,
-                    viewEnvironment = viewEnvironment
-                )
+            CompositionLocalProvider(LocalEglBase provides eglBase) {
+                SampleTheme {
+                    val rendering by sampleViewModel.rendering.collectAsState()
+                    WorkflowRendering(
+                        rendering = rendering,
+                        viewEnvironment = viewEnvironment
+                    )
+                }
             }
         }
         sampleViewModel.output

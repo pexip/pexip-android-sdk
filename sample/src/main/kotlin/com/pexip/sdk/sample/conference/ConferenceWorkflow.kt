@@ -11,12 +11,15 @@ import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
 import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.media.CameraVideoTrack
+import com.pexip.sdk.media.CameraVideoTrackFactory
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.LocalAudioTrack
+import com.pexip.sdk.media.LocalAudioTrackFactory
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
-import com.pexip.sdk.media.android.AndroidMediaConnectionFactory
+import com.pexip.sdk.media.MediaConnectionFactory
+import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
@@ -36,7 +39,10 @@ import javax.inject.Singleton
 class ConferenceWorkflow @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     private val service: InfinityService,
-    private val factory: AndroidMediaConnectionFactory,
+    private val mediaConnectionFactory: MediaConnectionFactory,
+    private val localAudioTrackFactory: LocalAudioTrackFactory,
+    private val cameraVideoTrackFactory: CameraVideoTrackFactory,
+    private val mediaProjectionVideoTrackFactory: MediaProjectionVideoTrackFactory,
     private val dtmfWorkflow: DtmfWorkflow,
 ) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
@@ -54,9 +60,9 @@ class ConferenceWorkflow @Inject constructor(
             .build()
         return ConferenceState(
             conference = conference,
-            connection = factory.createMediaConnection(config),
-            localAudioTrack = factory.createLocalAudioTrack(),
-            cameraVideoTrack = factory.createCameraVideoTrack()
+            connection = mediaConnectionFactory.createMediaConnection(config),
+            localAudioTrack = localAudioTrackFactory.createLocalAudioTrack(),
+            cameraVideoTrack = cameraVideoTrackFactory.createCameraVideoTrack()
         )
     }
 
@@ -178,7 +184,10 @@ class ConferenceWorkflow @Inject constructor(
                     actionSink.send(OnStopScreenCapture())
                 }
             }
-            val localVideoTrack = factory.createMediaProjectionVideoTrack(data, callback)
+            val localVideoTrack = mediaProjectionVideoTrackFactory.createMediaProjectionVideoTrack(
+                intent = data,
+                callback = callback
+            )
             actionSink.send(OnScreenCaptureVideoTrack(localVideoTrack))
         }
     }

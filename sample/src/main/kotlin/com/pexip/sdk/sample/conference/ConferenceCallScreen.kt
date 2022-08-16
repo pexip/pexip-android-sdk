@@ -37,16 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.pexip.sdk.sample.dtmf.DtmfDialog
-import org.webrtc.EglBase
 
 @Composable
-fun ConferenceCallScreen(
-    rendering: ConferenceCallRendering,
-    eglBase: EglBase,
-    modifier: Modifier = Modifier,
-) {
+fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
     BackHandler(onBack = rendering.onBackClick)
-    val sharedContext = remember(eglBase) { eglBase.eglBaseContext }
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize(),
@@ -56,7 +50,6 @@ fun ConferenceCallScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             VideoTrackRenderer(
-                sharedContext = sharedContext,
                 videoTrack = rendering.mainRemoteVideoTrack,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -64,7 +57,6 @@ fun ConferenceCallScreen(
             )
             if (rendering.presentationRemoteVideoTrack != null) {
                 VideoTrackRenderer(
-                    sharedContext = sharedContext,
                     videoTrack = rendering.presentationRemoteVideoTrack,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -93,7 +85,6 @@ fun ConferenceCallScreen(
                     .aspectRatio(aspectRatio)
             ) {
                 VideoTrackRenderer(
-                    sharedContext = sharedContext,
                     videoTrack = rendering.cameraVideoTrack,
                     mirror = true
                 )
