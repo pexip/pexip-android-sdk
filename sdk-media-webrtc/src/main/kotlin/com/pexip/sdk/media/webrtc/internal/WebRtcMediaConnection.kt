@@ -77,7 +77,7 @@ internal class WebRtcMediaConnection(
     private val localSdpObserver = object : SimpleSdpObserver {
 
         override fun onCreateSuccess(description: SessionDescription) {
-            setLocalDescription(this)
+            setLocalDescription(this, description)
         }
 
         override fun onSetSuccess() {
@@ -244,9 +244,9 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    private fun setLocalDescription(observer: SdpObserver) {
+    private fun setLocalDescription(observer: SdpObserver, description: SessionDescription) {
         workerExecutor.maybeExecute {
-            connection.setLocalDescription(observer)
+            connection.setLocalDescription(observer, description)
         }
     }
 
@@ -378,6 +378,7 @@ internal class WebRtcMediaConnection(
         }
         val c = PeerConnection.RTCConfiguration(iceServers)
         c.enableDscp = config.dscp
+        c.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
         c.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
         return c
     }
