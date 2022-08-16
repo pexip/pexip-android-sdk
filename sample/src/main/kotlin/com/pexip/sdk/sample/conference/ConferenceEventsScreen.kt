@@ -81,6 +81,7 @@ private fun ConferenceEvent(conferenceEvent: ConferenceEvent, modifier: Modifier
             conferenceEvent = conferenceEvent,
             modifier = modifier
         )
+        else -> {}
     }
 }
 
