@@ -12,7 +12,7 @@ if(savedDarkMode === true){
     <div class="navigation-wrapper" id="navigation-wrapper">
       <div id="leftToggler"><span class="icon-toggler"></span></div>
       <div class="library-name"><a href="index.html">sdk</a></div>
-      <div>0.7.1</div>
+      <div>0.8.0</div>
       <div class="pull-right d-flex"><button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
       </div>
@@ -39,13 +39,13 @@ if(savedDarkMode === true){
                 </span></div>
               <p class="paragraph">And add modules that you need:</p>
               <div class="sample-container">
-                <pre><code class="block lang-kotlin" theme="idea">dependencies {<br>    // A fluent wrapper for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-infinity:0.7.1&quot;)<br>    // A set of tools for interacting with an Infinity conference<br>    implementation(&quot;com.pexip.sdk:sdk-conference-infinity:0.7.1&quot;)<br>    // A set of tools for interacting with an Infinity registration<br>    implementation(&quot;com.pexip.sdk:sdk-registration-infinity:0.7.1&quot;)<br>    // A `MediaConnection` implementation build on top of WebRTC<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc:0.7.1&quot;)<br>    // A set of extensions that add coroutines support for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-coroutines:0.7.1&quot;)<br>    // A set of extensions that add coroutines support for Conference object<br>    implementation(&quot;com.pexip.sdk:sdk-conference-coroutines:0.7.1&quot;)<br>    // A set of extensions that add coroutines support for Registration object<br>    implementation(&quot;com.pexip.sdk:sdk-registration-coroutines:0.7.1&quot;)<br>    // A set of extensions that add coroutines support for MediaConnection object<br>    implementation(&quot;com.pexip.sdk:sdk-media-coroutines:0.7.1&quot;)<br>    // A composable that wraps SurfaceViewRenderer<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc-compose:0.7.1&quot;)<br>}</code></pre>
+                <pre><code class="block lang-kotlin" theme="idea">dependencies {<br>    // A fluent wrapper for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-infinity:0.8.0&quot;)<br>    // A set of tools for interacting with an Infinity conference<br>    implementation(&quot;com.pexip.sdk:sdk-conference-infinity:0.8.0&quot;)<br>    // A set of tools for interacting with an Infinity registration<br>    implementation(&quot;com.pexip.sdk:sdk-registration-infinity:0.8.0&quot;)<br>    // A `MediaConnection` implementation build on top of WebRTC<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc:0.8.0&quot;)<br>    // A set of extensions that add coroutines support for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-coroutines:0.8.0&quot;)<br>    // A set of extensions that add coroutines support for Conference object<br>    implementation(&quot;com.pexip.sdk:sdk-conference-coroutines:0.8.0&quot;)<br>    // A set of extensions that add coroutines support for Registration object<br>    implementation(&quot;com.pexip.sdk:sdk-registration-coroutines:0.8.0&quot;)<br>    // A set of extensions that add coroutines support for MediaConnection object<br>    implementation(&quot;com.pexip.sdk:sdk-media-coroutines:0.8.0&quot;)<br>    // A composable that wraps SurfaceViewRenderer<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc-compose:0.8.0&quot;)<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
                   <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
                 </span></div>
               <p class="paragraph">We also publish a <a href="https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog">Version Catalog</a> that can be consumed as follows:</p>
               <div class="sample-container">
-                <pre><code class="block lang-kotlin" theme="idea">// settings.gradle.kts<br>enableFeaturePreview(&quot;VERSION_CATALOGS&quot;)<br><br>dependencyResolutionManagement {<br>    repositories {<br>        mavenCentral()<br>    }<br>    versionCatalogs {<br>        register(&quot;pexipSdk&quot;) {<br>            from(&quot;com.pexip.sdk:sdk-catalog:0.7.1&quot;)<br>        }<br>    }<br>}<br>// build.gradle.kts<br>dependencies {<br>    implementation(pexipSdk.api.infinity)<br>}</code></pre>
+                <pre><code class="block lang-kotlin" theme="idea">// settings.gradle.kts<br>enableFeaturePreview(&quot;VERSION_CATALOGS&quot;)<br><br>dependencyResolutionManagement {<br>    repositories {<br>        mavenCentral()<br>    }<br>    versionCatalogs {<br>        register(&quot;pexipSdk&quot;) {<br>            from(&quot;com.pexip.sdk:sdk-catalog:0.8.0&quot;)<br>        }<br>    }<br>}<br>// build.gradle.kts<br>dependencies {<br>    implementation(pexipSdk.api.infinity)<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
                   <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
                 </span></div>
@@ -55,6 +55,34 @@ if(savedDarkMode === true){
 <span class="top-right-position"><span class="copy-icon"></span>
                   <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
                 </span></div>
+              <h2 class=""> Requirements</h2>
+              <ul>
+                <li>
+                  <p class="paragraph">JDK 8</p>
+                </li>
+                <li>
+                  <p class="paragraph">Android SDK 21+</p>
+                </li>
+              </ul>
+              <h2 class=""> WebRTC versions</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>SDK version</th>
+                    <th>WebRTC Milestone</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>0.7.0+</td>
+                    <td>102</td>
+                  </tr>
+                  <tr>
+                    <td>0.1.0+</td>
+                    <td>96</td>
+                  </tr>
+                </tbody>
+              </table>
               <h2 class=""> Documentation</h2>
               <ul>
                 <li>
