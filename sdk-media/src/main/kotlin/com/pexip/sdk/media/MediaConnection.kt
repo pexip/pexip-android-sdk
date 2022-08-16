@@ -19,13 +19,15 @@ public interface MediaConnection {
 
     @Deprecated(
         message = "Use setMainAudioTrack instead.",
-        replaceWith = ReplaceWith("setMainAudioTrack(localAudioTrack)")
+        replaceWith = ReplaceWith("setMainAudioTrack(localAudioTrack)"),
+        level = DeprecationLevel.ERROR
     )
     public fun sendMainAudio(localAudioTrack: LocalAudioTrack)
 
     @Deprecated(
         message = "Use setMainVideoTrack instead.",
-        replaceWith = ReplaceWith("setMainVideoTrack(localVideoTrack)")
+        replaceWith = ReplaceWith("setMainVideoTrack(localVideoTrack)"),
+        level = DeprecationLevel.ERROR
     )
     public fun sendMainVideo(localVideoTrack: LocalVideoTrack)
 

@@ -6,16 +6,6 @@ import org.webrtc.VideoSink
 
 internal open class WebRtcVideoTrack(internal val videoTrack: org.webrtc.VideoTrack) : VideoTrack {
 
-    override fun addRenderer(renderer: Any) {
-        require(renderer is VideoSink) { "renderer must be an instance of VideoSink." }
-        videoTrack.addSink(renderer)
-    }
-
-    override fun removeRenderer(renderer: Any) {
-        require(renderer is VideoSink) { "renderer must be an instance of VideoSink." }
-        videoTrack.removeSink(renderer)
-    }
-
     override fun addRenderer(renderer: Renderer) {
         require(renderer is VideoSink) { "renderer must be an instance of VideoSink." }
         videoTrack.addSink(renderer)

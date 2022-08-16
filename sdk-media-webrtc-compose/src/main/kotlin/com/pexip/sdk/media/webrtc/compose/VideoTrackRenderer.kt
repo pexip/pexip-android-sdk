@@ -29,8 +29,8 @@ public fun VideoTrackRenderer(
 }
 
 @Deprecated(
-    "Use EglBase.Context-less version and use LocalEglBase to provide an EglBase instance.",
-    ReplaceWith(
+    message = "Use EglBase.Context-less version and use LocalEglBase to provide an EglBase instance.",
+    replaceWith = ReplaceWith(
         expression = "VideoTrackRenderer(videoTrack, modifier, mirror)",
         imports = ["com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer"]
     )

@@ -82,6 +82,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         )
     }
 
+    @Deprecated("Use createCameraVideoTrack() that also accepts a Callback.")
     override fun createCameraVideoTrack(): CameraVideoTrack {
         check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
         val deviceNames = cameraEnumerator.deviceNames
@@ -91,6 +92,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         return createCameraVideoTrack(checkNotNull(deviceName) { "No available camera." })
     }
 
+    @Deprecated("Use createCameraVideoTrack() that also accepts a Callback.")
     override fun createCameraVideoTrack(deviceName: String): CameraVideoTrack {
         check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
         check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
