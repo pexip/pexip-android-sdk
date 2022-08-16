@@ -8,6 +8,6 @@ Infinity-based implementation of sdk-conference.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-conference-infinity:0.7.1")
+    implementation("com.pexip.sdk:sdk-conference-infinity:0.8.0")
 }
 ```
