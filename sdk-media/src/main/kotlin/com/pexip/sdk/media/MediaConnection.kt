@@ -70,6 +70,13 @@ public interface MediaConnection {
     public fun stopPresentationReceive()
 
     /**
+     * Sends DTMF digits to this [MediaConnection].
+     *
+     * @param digits a sequence of valid DTMF digits
+     */
+    public fun dtmf(digits: String)
+
+    /**
      * Registers a [RemoteVideoTrackListener] for main video.
      *
      * @param listener a remote video track listener

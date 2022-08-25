@@ -96,10 +96,20 @@ internal class WebRtcMediaConnection(
         if (it) onVideoUnmuted() else onVideoMuted()
     }
 
+    @Deprecated(
+        message = "Use setMainAudioTrack instead.",
+        replaceWith = ReplaceWith("setMainAudioTrack(localAudioTrack)"),
+        level = DeprecationLevel.ERROR
+    )
     override fun sendMainAudio(localAudioTrack: LocalAudioTrack) {
         setMainAudioTrack(localAudioTrack)
     }
 
+    @Deprecated(
+        "Use setMainVideoTrack instead.",
+        replaceWith = ReplaceWith("setMainVideoTrack(localVideoTrack)"),
+        level = DeprecationLevel.ERROR
+    )
     override fun sendMainVideo(localVideoTrack: LocalVideoTrack) {
         setMainVideoTrack(localVideoTrack)
     }
@@ -177,6 +187,12 @@ internal class WebRtcMediaConnection(
                 }
                 presentationRemoteVideoTrackListeners.notify(null)
             }
+        }
+    }
+
+    override fun dtmf(digits: String) {
+        networkExecutor.maybeExecute {
+            runCatching { config.signaling.onDtmf(digits) }
         }
     }
 
@@ -287,51 +303,31 @@ internal class WebRtcMediaConnection(
 
     private fun onCandidate(candidate: String, mid: String) {
         networkExecutor.maybeExecute {
-            try {
-                config.signaling.onCandidate(candidate, mid)
-            } catch (t: Throwable) {
-                // noop
-            }
+            runCatching { config.signaling.onCandidate(candidate, mid) }
         }
     }
 
     private fun onAudioMuted() {
         networkExecutor.maybeExecute {
-            try {
-                config.signaling.onAudioMuted()
-            } catch (t: Throwable) {
-                // noop
-            }
+            runCatching(config.signaling::onAudioMuted)
         }
     }
 
     private fun onAudioUnmuted() {
         networkExecutor.maybeExecute {
-            try {
-                config.signaling.onAudioUnmuted()
-            } catch (t: Throwable) {
-                // noop
-            }
+            runCatching(config.signaling::onAudioUnmuted)
         }
     }
 
     private fun onVideoMuted() {
         networkExecutor.maybeExecute {
-            try {
-                config.signaling.onVideoMuted()
-            } catch (t: Throwable) {
-                // noop
-            }
+            runCatching(config.signaling::onVideoMuted)
         }
     }
 
     private fun onVideoUnmuted() {
         networkExecutor.maybeExecute {
-            try {
-                config.signaling.onVideoUnmuted()
-            } catch (t: Throwable) {
-                // noop
-            }
+            runCatching(config.signaling::onVideoUnmuted)
         }
     }
 
@@ -351,21 +347,13 @@ internal class WebRtcMediaConnection(
 
     private fun onTakeFloor() {
         networkExecutor.maybeExecute {
-            try {
-                config.signaling.onTakeFloor()
-            } catch (t: Throwable) {
-                // noop
-            }
+            runCatching(config.signaling::onTakeFloor)
         }
     }
 
     private fun onReleaseFloor() {
         networkExecutor.maybeExecute {
-            try {
-                config.signaling.onReleaseFloor()
-            } catch (t: Throwable) {
-                // noop
-            }
+            runCatching(config.signaling::onReleaseFloor)
         }
     }
 

@@ -38,6 +38,7 @@ public class InfinityConference private constructor(
         source.unregisterConferenceEventListener(listener)
     }
 
+    @Deprecated("Use MediaConnection.dtmf() instead.")
     override fun dtmf(digits: String) {
         executor.maybeSubmit {
             sender.send(digits)

@@ -1,6 +1,7 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.infinity.CallsRequest
+import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.TokenStore
@@ -57,6 +58,13 @@ internal class RealMediaConnectionSignaling(
             pwd = pwds[ufrag]
         )
         callStep.newCandidate(request, token).execute()
+    }
+
+    override fun onDtmf(digits: String) {
+        val callStep = checkNotNull(callStep) { "callStep is not set." }
+        val request = DtmfRequest(digits)
+        val token = store.get()
+        callStep.dtmf(request, token).execute()
     }
 
     override fun onAudioMuted() {

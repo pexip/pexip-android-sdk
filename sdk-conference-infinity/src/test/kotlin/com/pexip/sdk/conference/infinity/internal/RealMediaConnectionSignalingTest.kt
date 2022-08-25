@@ -3,6 +3,7 @@ package com.pexip.sdk.conference.infinity.internal
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.CallsResponse
+import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.TokenStore
@@ -145,6 +146,32 @@ internal class RealMediaConnectionSignalingTest {
         }
         signaling.pwds = mapOf(ufrag to pwd)
         signaling.onCandidate(candidate, mid)
+        assertTrue(called)
+    }
+
+    @Test
+    fun `onDtmf() returns`() {
+        var called = false
+        val digits = Random.nextDigits(8)
+        val result = Random.nextBoolean()
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantTest() {},
+            iceServers = iceServers
+        )
+        signaling.callStep = object : TestCallStep() {
+
+            override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> =
+                object : TestCall<Boolean> {
+
+                    override fun execute(): Boolean {
+                        called = true
+                        assertEquals(digits, request.digits)
+                        return result
+                    }
+                }
+        }
+        signaling.onDtmf(digits)
         assertTrue(called)
     }
 

@@ -29,6 +29,13 @@ public interface MediaConnectionSignaling {
     public fun onCandidate(candidate: String, mid: String)
 
     /**
+     * Invoked when a sequence of DTMF digits must be sent.
+     *
+     * @param digits a sequence of DTMF digits
+     */
+    public fun onDtmf(digits: String)
+
+    /**
      * Invoked when audio is muted.
      */
     public fun onAudioMuted()

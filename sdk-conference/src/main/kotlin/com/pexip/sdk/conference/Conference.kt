@@ -26,6 +26,7 @@ public interface Conference : MediaConnectionSignaling {
      *
      * @param digits a sequence of valid DTMF digits
      */
+    @Deprecated("Use MediaConnection.dtmf() instead.")
     public fun dtmf(digits: String)
 
     /**
