@@ -8,6 +8,6 @@ A set of tools to interact with registrations.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-registration:0.8.0")
+    implementation("com.pexip.sdk:sdk-registration:0.9.0")
 }
 ```

@@ -8,6 +8,6 @@ Coroutines support for sdk-registration.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-registration-coroutines:0.8.0")
+    implementation("com.pexip.sdk:sdk-registration-coroutines:0.9.0")
 }
 ```
