@@ -100,7 +100,7 @@ class ConferenceWorkflow @Inject constructor(
                 dtmfRendering = when (renderState.showingDtmf) {
                     true -> context.renderChild(
                         child = dtmfWorkflow,
-                        props = DtmfProps(renderState.conference),
+                        props = DtmfProps(renderState.connection),
                         handler = ::OnDtmfOutput
                     )
                     else -> null

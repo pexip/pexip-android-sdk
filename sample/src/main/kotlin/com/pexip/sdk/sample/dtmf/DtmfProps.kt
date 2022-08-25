@@ -1,6 +1,6 @@
 package com.pexip.sdk.sample.dtmf
 
-import com.pexip.sdk.conference.Conference
+import com.pexip.sdk.media.MediaConnection
 
 @JvmInline
-value class DtmfProps(val conference: Conference)
+value class DtmfProps(val connection: MediaConnection)

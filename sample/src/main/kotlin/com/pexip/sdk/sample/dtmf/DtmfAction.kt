@@ -24,7 +24,7 @@ class OnToneClick(private val tone: String) : DtmfAction() {
             else -> return
         }
         state.toneGenerator.startTone(toneType, 250)
-        props.conference.dtmf(tone)
+        props.connection.dtmf(tone)
     }
 }
 
