@@ -120,7 +120,7 @@ internal class RealConferenceStep(
             json = json,
             url = HttpUrl(url) {
                 addPathSegment("participants")
-                addPathSegment(participantId.toString())
+                addPathSegment(participantId)
             }
         )
 

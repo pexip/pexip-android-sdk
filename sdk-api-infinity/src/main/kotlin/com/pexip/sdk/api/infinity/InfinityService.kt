@@ -498,6 +498,28 @@ public interface InfinityService {
          * @return a new SDP
          */
         public fun update(request: UpdateRequest, token: Token): Call<UpdateResponse>
+
+        /**
+         * Sends DTMF digits to the participant (gateway call only).
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#call_dtmf).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return true if successful, false otherwise
+         */
+        public fun dtmf(request: DtmfRequest, token: String): Call<Boolean>
+
+        /**
+         * Sends DTMF digits to the participant (gateway call only).
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#call_dtmf).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return true if successful, false otherwise
+         */
+        public fun dtmf(request: DtmfRequest, token: Token): Call<Boolean>
     }
 
     public companion object {

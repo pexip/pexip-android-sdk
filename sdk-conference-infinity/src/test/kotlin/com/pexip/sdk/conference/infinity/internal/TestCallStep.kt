@@ -1,6 +1,7 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Call
+import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.Token
@@ -22,4 +23,9 @@ internal abstract class TestCallStep : InfinityService.CallStep {
 
     final override fun update(request: UpdateRequest, token: Token): Call<UpdateResponse> =
         update(request, token.token)
+
+    override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> = TODO()
+
+    final override fun dtmf(request: DtmfRequest, token: Token): Call<Boolean> =
+        dtmf(request, token.token)
 }

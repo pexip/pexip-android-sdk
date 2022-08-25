@@ -1,5 +1,6 @@
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.api.infinity.internal.addPathSegment
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -199,6 +200,63 @@ internal class CallStepTest {
         server.verifyUpdate(request, token)
     }
 
+    @Test
+    fun `dtmf throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        assertFailsWith<IllegalStateException> { step.dtmf(request, token).execute() }
+        server.verifyDtmf(request, token)
+    }
+
+    @Test
+    fun `dtmf throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.dtmf(request, token).execute() }
+        server.verifyDtmf(request, token)
+    }
+
+    @Test
+    fun `dtmf throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchConferenceException> { step.dtmf(request, token).execute() }
+        server.verifyDtmf(request, token)
+    }
+
+    @Test
+    fun `dtmf throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.dtmf(request, token).execute() }
+        server.verifyDtmf(request, token)
+    }
+
+    @Test
+    fun `dtmf returns`() {
+        val response = Random.nextBoolean()
+        server.enqueue {
+            setResponseCode(200)
+            setBody(json.encodeToString(Box(response)))
+        }
+        val request = DtmfRequest(Random.nextDigits(8))
+        val token = Random.nextString(8)
+        assertEquals(response, step.dtmf(request, token).execute())
+        server.verifyDtmf(request, token)
+    }
+
     private fun MockWebServer.verifyNewCandidate(
         request: NewCandidateRequest,
         token: String,
@@ -208,9 +266,9 @@ internal class CallStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("calls")
-            addPathSegment(callId.toString())
+            addPathSegment(callId)
             addPathSegment("new_candidate")
         }
         assertToken(token)
@@ -223,9 +281,9 @@ internal class CallStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("calls")
-            addPathSegment(callId.toString())
+            addPathSegment(callId)
             addPathSegment("ack")
         }
         assertToken(token)
@@ -238,10 +296,25 @@ internal class CallStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("calls")
-            addPathSegment(callId.toString())
+            addPathSegment(callId)
             addPathSegment("update")
+        }
+        assertToken(token)
+        assertPost(json, request)
+    }
+
+    private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId)
+            addPathSegments("calls")
+            addPathSegment(callId)
+            addPathSegment("dtmf")
         }
         assertToken(token)
         assertPost(json, request)

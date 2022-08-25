@@ -1,6 +1,7 @@
 package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.Call
+import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidTokenException
 import com.pexip.sdk.api.infinity.NewCandidateRequest
@@ -70,6 +71,22 @@ internal class RealCallStep(
     override fun update(request: UpdateRequest, token: Token): Call<UpdateResponse> =
         update(request, token.token)
 
+    override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(HttpUrl(url) { addPathSegment("dtmf") })
+                .header("token", token)
+                .build(),
+            mapper = ::parseDtmf
+        )
+    }
+
+    override fun dtmf(request: DtmfRequest, token: Token): Call<Boolean> =
+        dtmf(request, token.token)
+
     private fun parseNewCandidate(response: Response) = when (response.code) {
         200 -> Unit
         403 -> response.parse403()
@@ -86,6 +103,13 @@ internal class RealCallStep(
 
     private fun parseUpdate(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(UpdateResponseSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseDtmf(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

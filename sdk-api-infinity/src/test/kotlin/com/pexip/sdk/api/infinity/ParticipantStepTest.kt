@@ -1,5 +1,6 @@
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.api.infinity.internal.addPathSegment
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -149,7 +150,7 @@ internal class ParticipantStepTest {
         }
         val request = DtmfRequest(Random.nextDigits(8))
         val token = Random.nextString(8)
-        step.dtmf(request, token).execute()
+        assertEquals(response, step.dtmf(request, token).execute())
         server.verifyDtmf(request, token)
     }
 
@@ -447,7 +448,7 @@ internal class ParticipantStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("calls")
         }
         assertToken(token)
@@ -460,7 +461,7 @@ internal class ParticipantStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("dtmf")
         }
         assertToken(token)
@@ -473,7 +474,7 @@ internal class ParticipantStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("mute")
         }
         assertToken(token)
@@ -486,7 +487,7 @@ internal class ParticipantStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("unmute")
         }
         assertToken(token)
@@ -499,7 +500,7 @@ internal class ParticipantStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("video_muted")
         }
         assertToken(token)
@@ -512,7 +513,7 @@ internal class ParticipantStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("video_unmuted")
         }
         assertToken(token)
@@ -525,7 +526,7 @@ internal class ParticipantStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("take_floor")
         }
         assertToken(token)
@@ -538,7 +539,7 @@ internal class ParticipantStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("participants")
-            addPathSegment(participantId.toString())
+            addPathSegment(participantId)
             addPathSegment("release_floor")
         }
         assertToken(token)

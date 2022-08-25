@@ -152,7 +152,7 @@ internal class RealParticipantStep(
             json = json,
             url = HttpUrl(url) {
                 addPathSegment("calls")
-                addPathSegment(callId.toString())
+                addPathSegment(callId)
             }
         )
 

@@ -11,6 +11,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import okhttp3.sse.EventSources
 import java.net.URL
+import java.util.UUID
 
 internal inline fun <reified T> Json.encodeToRequestBody(value: T) =
     encodeToString(value).toRequestBody(ApplicationJson)
@@ -30,5 +31,7 @@ internal inline fun HttpUrl(url: URL, block: HttpUrl.Builder.() -> Unit) =
 
 internal inline fun HttpUrl(url: HttpUrl, block: HttpUrl.Builder.() -> Unit) =
     url.newBuilder().apply(block).build()
+
+internal fun HttpUrl.Builder.addPathSegment(uuid: UUID) = addPathSegment(uuid.toString())
 
 private val ApplicationJson by lazy { "application/json; charset=utf-8".toMediaType() }
