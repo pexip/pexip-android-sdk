@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.9.0] - 2022-08-25
+
+### Added
+
+- `CallStep.dtmf()`
+- `MediaConnection.dtmf()` as a replacement for `Conference.dtmf()`, best suited for gateway calls
+
 ## [0.8.0] - 2022-08-16
 
 ### Added
@@ -117,7 +124,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.8.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.9.0...HEAD
+[0.9.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.9.0
 [0.8.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.8.0
 [0.7.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.7.1
 [0.7.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.7.0

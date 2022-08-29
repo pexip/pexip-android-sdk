@@ -21,7 +21,7 @@ class DtmfWorkflow @Inject constructor() :
     override fun render(
         renderProps: DtmfProps,
         renderState: DtmfState,
-        context: RenderContext
+        context: RenderContext,
     ): DtmfRendering {
         context.runningSideEffect(renderState.toString()) {
             try {
