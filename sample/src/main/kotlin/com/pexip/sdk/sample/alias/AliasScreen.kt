@@ -31,19 +31,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AliasScreen(
-    alias: String,
-    host: String,
-    presentationInMain: Boolean,
-    resolveEnabled: Boolean,
-    onAliasChange: (String) -> Unit,
-    onHostChange: (String) -> Unit,
-    onPresentationInMainChange: (Boolean) -> Unit,
-    onResolveClick: () -> Unit,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    BackHandler(onBack = onBackClick)
+fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
+    BackHandler(onBack = rendering.onBackClick)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,7 +40,7 @@ fun AliasScreen(
                     Text(text = "Pexip Video SDK")
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = rendering.onBackClick) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = null
@@ -80,8 +69,8 @@ fun AliasScreen(
                     )
                 }
                 OutlinedTextField(
-                    value = alias,
-                    onValueChange = onAliasChange,
+                    value = rendering.alias,
+                    onValueChange = rendering.onAliasChange,
                     label = {
                         Text(text = "Alias")
                     },
@@ -99,13 +88,13 @@ fun AliasScreen(
                         imeAction = ImeAction.Go
                     )
                 }
-                val currentOnResolveClick by rememberUpdatedState(onResolveClick)
+                val currentOnResolveClick by rememberUpdatedState(rendering.onResolveClick)
                 val hostKeyboardActions = remember {
                     KeyboardActions(onGo = { currentOnResolveClick() })
                 }
                 OutlinedTextField(
-                    value = host,
-                    onValueChange = onHostChange,
+                    value = rendering.host,
+                    onValueChange = rendering.onHostChange,
                     label = {
                         Text(text = "Host")
                     },
@@ -124,14 +113,14 @@ fun AliasScreen(
                 ) {
                     Text(text = "Presentation in main")
                     Switch(
-                        checked = presentationInMain,
-                        onCheckedChange = onPresentationInMainChange
+                        checked = rendering.presentationInMain,
+                        onCheckedChange = rendering.onPresentationInMainChange
                     )
                 }
             }
             Button(
-                onClick = onResolveClick,
-                enabled = resolveEnabled,
+                onClick = rendering.onResolveClick,
+                enabled = rendering.resolveEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

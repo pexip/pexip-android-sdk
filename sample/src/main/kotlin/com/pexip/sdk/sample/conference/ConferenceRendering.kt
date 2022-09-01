@@ -29,8 +29,8 @@ data class ConferenceCallRendering(
 data class ConferenceEventsRendering(
     val conferenceEvents: List<ConferenceEvent>,
     val message: String,
-    val onMessageChange: (String) -> Unit,
     val submitEnabled: Boolean,
+    val onMessageChange: (String) -> Unit,
     val onSubmitClick: () -> Unit,
     override val onBackClick: () -> Unit,
 ) : ConferenceRendering

@@ -12,12 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import com.pexip.sdk.media.webrtc.compose.LocalEglBase
-import com.pexip.sdk.sample.alias.AliasViewFactory
-import com.pexip.sdk.sample.conference.ConferenceViewFactory
-import com.pexip.sdk.sample.pinchallenge.PinChallengeViewFactory
-import com.pexip.sdk.sample.welcome.WelcomeViewFactory
 import com.squareup.workflow1.ui.ViewEnvironment
-import com.squareup.workflow1.ui.ViewRegistry
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -31,16 +26,11 @@ class SampleActivity : AppCompatActivity() {
     @Inject
     lateinit var eglBase: EglBase
 
+    @Inject
+    lateinit var viewEnvironment: ViewEnvironment
+
     private val sampleViewModel by viewModels<SampleViewModel>()
 
-    private val viewRegistry = ViewRegistry(
-        WelcomeViewFactory,
-        AliasViewFactory,
-        PinChallengeViewFactory,
-        ConferenceViewFactory.ConferenceCallViewFactory,
-        ConferenceViewFactory.ConferenceEventsViewFactory
-    )
-    private val viewEnvironment = ViewEnvironment(mapOf(ViewRegistry to viewRegistry))
     private val launcher = registerForActivityResult(RequestMultiplePermissions()) {
         if (it.any { (_, granted) -> !granted }) finish()
     }
