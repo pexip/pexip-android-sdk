@@ -20,9 +20,11 @@ import androidx.compose.ui.window.Dialog
 
 @Composable
 fun DtmfDialog(rendering: DtmfRendering) {
-    Dialog(onDismissRequest = rendering.onBackClick) {
-        Surface(shape = TonePadShape) {
-            TonePad(rendering = rendering)
+    if (rendering.visible) {
+        Dialog(onDismissRequest = rendering.onBackClick) {
+            Surface(shape = TonePadShape) {
+                TonePad(rendering = rendering)
+            }
         }
     }
 }

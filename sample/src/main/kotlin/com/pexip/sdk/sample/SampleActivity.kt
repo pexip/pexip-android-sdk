@@ -53,7 +53,12 @@ class SampleActivity : AppCompatActivity() {
         sampleViewModel.output
             .onEach(::onSampleOutput)
             .launchIn(lifecycleScope)
-        launcher.launch(arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA))
+        val permissions = arrayOf(
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CAMERA,
+            Manifest.permission.BLUETOOTH_CONNECT
+        )
+        launcher.launch(permissions)
     }
 
     private fun onSampleOutput(output: SampleOutput) = when (output) {

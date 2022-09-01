@@ -23,7 +23,10 @@ import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
+import com.pexip.sdk.sample.audio.AudioDeviceProps
+import com.pexip.sdk.sample.audio.AudioDeviceWorkflow
 import com.pexip.sdk.sample.composer.ComposerWorkflow
+import com.pexip.sdk.sample.dtmf.DtmfProps
 import com.pexip.sdk.sample.dtmf.DtmfWorkflow
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
@@ -44,6 +47,7 @@ class ConferenceWorkflow @Inject constructor(
     private val localAudioTrackFactory: LocalAudioTrackFactory,
     private val cameraVideoTrackFactory: CameraVideoTrackFactory,
     private val mediaProjectionVideoTrackFactory: MediaProjectionVideoTrackFactory,
+    private val audioDeviceWorkflow: AudioDeviceWorkflow,
     private val dtmfWorkflow: DtmfWorkflow,
     private val composerWorkflow: ComposerWorkflow,
 ) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
@@ -75,6 +79,11 @@ class ConferenceWorkflow @Inject constructor(
         renderState: ConferenceState,
         context: RenderContext,
     ): ConferenceRendering {
+        val audioDeviceRendering = context.renderChild(
+            child = audioDeviceWorkflow,
+            props = AudioDeviceProps(renderState.showingAudioDevices),
+            handler = ::OnAudioDeviceOutput
+        )
         context.bindConferenceServiceSideEffect()
         context.leaveSideEffect(renderState)
         context.localAudioCapturingSideEffect(renderState.localAudioTrack)
@@ -99,12 +108,15 @@ class ConferenceWorkflow @Inject constructor(
                 cameraVideoTrack = renderState.cameraVideoTrack,
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
-                dtmfRendering = when (renderState.showingDtmf) {
-                    true -> context.renderChild(dtmfWorkflow, handler = ::OnDtmfOutput)
-                    else -> null
-                },
+                audioDeviceRendering = audioDeviceRendering,
+                dtmfRendering = context.renderChild(
+                    child = dtmfWorkflow,
+                    props = DtmfProps(renderState.showingDtmf),
+                    handler = ::OnDtmfOutput
+                ),
                 screenCapturing = renderState.screenCapturing,
                 onScreenCapture = context.send(::OnScreenCapture),
+                onToggleAudioDevicesClick = context.send(::OnToggleAudioDevices),
                 onToggleDtmfClick = context.send(::OnToggleDtmf),
                 onToggleLocalAudioCapturing = context.send(::OnToggleLocalAudioCapturing),
                 onToggleCameraCapturing = context.send(::OnToggleCameraCapturing),

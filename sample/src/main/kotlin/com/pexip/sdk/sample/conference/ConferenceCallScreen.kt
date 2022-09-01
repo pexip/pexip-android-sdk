@@ -49,7 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.pexip.sdk.media.AudioDevice
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
+import com.pexip.sdk.sample.audio.AudioDeviceIcon
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 
@@ -127,6 +129,10 @@ fun ConferenceCallScreen(
                         mirror = true
                     )
                 }
+                MoreButton(
+                    rendering = rendering,
+                    modifier = Modifier.align(Alignment.TopStart)
+                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(
@@ -141,16 +147,18 @@ fun ConferenceCallScreen(
                     CameraButton(rendering)
                     EndCallButton(rendering)
                     MicrophoneButton(rendering)
-                    MoreButton(rendering)
+                    AudioDevicesButton(rendering)
                 }
             }
         }
-        if (rendering.dtmfRendering != null) {
-            WorkflowRendering(
-                rendering = rendering.dtmfRendering,
-                viewEnvironment = environment
-            )
-        }
+        WorkflowRendering(
+            rendering = rendering.dtmfRendering,
+            viewEnvironment = environment
+        )
+        WorkflowRendering(
+            rendering = rendering.audioDeviceRendering,
+            viewEnvironment = environment
+        )
     }
 }
 
@@ -218,6 +226,18 @@ private fun MicrophoneButton(rendering: ConferenceCallRendering, modifier: Modif
             }
         }
         Icon(imageVector = imageVector, contentDescription = null)
+    }
+}
+
+@Composable
+private fun AudioDevicesButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+    SmallFloatingActionButton(
+        onClick = rendering.onToggleAudioDevicesClick,
+        modifier = modifier
+    ) {
+        val type = rendering.audioDeviceRendering.selectedAudioDevice?.type
+            ?: AudioDevice.Type.BUILTIN_SPEAKER
+        AudioDeviceIcon(type = type)
     }
 }
 
@@ -307,8 +327,8 @@ private fun ConferenceEventsItem(
 
 @Composable
 private fun rememberMediaProjectionManager(): MediaProjectionManager {
-    val context = LocalContext.current
-    return remember(context.applicationContext) { context.applicationContext.getSystemService()!! }
+    val context = LocalContext.current.applicationContext
+    return remember(context) { context.getSystemService()!! }
 }
 
 private const val ASPECT_RATIO_PORTRAIT = 9 / 16f
