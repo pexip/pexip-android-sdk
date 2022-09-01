@@ -24,7 +24,6 @@ import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
 import com.pexip.sdk.sample.composer.ComposerWorkflow
-import com.pexip.sdk.sample.dtmf.DtmfProps
 import com.pexip.sdk.sample.dtmf.DtmfWorkflow
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
@@ -101,11 +100,7 @@ class ConferenceWorkflow @Inject constructor(
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
                 dtmfRendering = when (renderState.showingDtmf) {
-                    true -> context.renderChild(
-                        child = dtmfWorkflow,
-                        props = DtmfProps(renderState.connection),
-                        handler = ::OnDtmfOutput
-                    )
+                    true -> context.renderChild(dtmfWorkflow, handler = ::OnDtmfOutput)
                     else -> null
                 },
                 screenCapturing = renderState.screenCapturing,

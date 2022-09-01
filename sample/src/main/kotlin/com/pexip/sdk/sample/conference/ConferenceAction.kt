@@ -57,7 +57,8 @@ class OnDtmfOutput(private val output: DtmfOutput) : ConferenceAction() {
 
     override fun Updater.apply() {
         when (output) {
-            DtmfOutput.Back -> state = state.copy(showingDtmf = false)
+            is DtmfOutput.Tone -> state.connection.dtmf(output.tone)
+            is DtmfOutput.Back -> state = state.copy(showingDtmf = false)
         }
     }
 }
