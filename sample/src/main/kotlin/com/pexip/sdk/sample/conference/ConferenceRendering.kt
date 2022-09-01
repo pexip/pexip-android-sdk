@@ -3,6 +3,7 @@ package com.pexip.sdk.sample.conference
 import android.content.Intent
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.media.VideoTrack
+import com.pexip.sdk.sample.composer.ComposerRendering
 import com.pexip.sdk.sample.dtmf.DtmfRendering
 
 sealed interface ConferenceRendering {
@@ -28,9 +29,6 @@ data class ConferenceCallRendering(
 
 data class ConferenceEventsRendering(
     val conferenceEvents: List<ConferenceEvent>,
-    val message: String,
-    val submitEnabled: Boolean,
-    val onMessageChange: (String) -> Unit,
-    val onSubmitClick: () -> Unit,
+    val composerRendering: ComposerRendering,
     override val onBackClick: () -> Unit,
 ) : ConferenceRendering

@@ -9,6 +9,7 @@ import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
+import com.pexip.sdk.sample.composer.ComposerOutput
 import com.pexip.sdk.sample.dtmf.DtmfOutput
 import com.squareup.workflow1.WorkflowAction
 
@@ -166,25 +167,18 @@ class OnConferenceEvent(private val conferenceEvent: ConferenceEvent) : Conferen
     }
 }
 
-class OnMessageChange(private val message: String) : ConferenceAction() {
-
-    override fun Updater.apply() {
-        state = state.copy(message = message)
-    }
-}
-
-class OnSubmitClick : ConferenceAction() {
-
-    override fun Updater.apply() {
-        val message = state.message.takeIf { it.isNotBlank() }?.trim() ?: return
-        state.conference.message(message)
-        state = state.copy(message = "")
-    }
-}
-
 class OnPresentationRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAction() {
 
     override fun Updater.apply() {
         state = state.copy(presentationRemoteVideoTrack = videoTrack)
+    }
+}
+
+class OnComposerOutput(private val output: ComposerOutput) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        when (output) {
+            is ComposerOutput.Submit -> state.conference.message(output.message)
+        }
     }
 }

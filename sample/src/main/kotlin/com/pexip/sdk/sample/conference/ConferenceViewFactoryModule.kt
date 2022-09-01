@@ -17,15 +17,15 @@ object ConferenceViewFactoryModule {
     @Singleton
     @IntoSet
     fun provideConferenceCallViewFactory(): ViewFactory<*> =
-        composeViewFactory<ConferenceCallRendering> { rendering, _ ->
-            ConferenceCallScreen(rendering)
+        composeViewFactory<ConferenceCallRendering> { rendering, environment ->
+            ConferenceCallScreen(rendering, environment)
         }
 
     @Provides
     @Singleton
     @IntoSet
     fun provideConferenceEventsViewFactory(): ViewFactory<*> =
-        composeViewFactory<ConferenceEventsRendering> { rendering, _ ->
-            ConferenceEventsScreen(rendering)
+        composeViewFactory<ConferenceEventsRendering> { rendering, environment ->
+            ConferenceEventsScreen(rendering, environment)
         }
 }

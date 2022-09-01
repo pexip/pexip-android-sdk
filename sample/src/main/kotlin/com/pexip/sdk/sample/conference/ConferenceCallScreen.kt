@@ -36,10 +36,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
-import com.pexip.sdk.sample.dtmf.DtmfDialog
+import com.squareup.workflow1.ui.ViewEnvironment
+import com.squareup.workflow1.ui.compose.WorkflowRendering
 
 @Composable
-fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+fun ConferenceCallScreen(
+    rendering: ConferenceCallRendering,
+    environment: ViewEnvironment,
+    modifier: Modifier = Modifier,
+) {
     BackHandler(onBack = rendering.onBackClick)
     Box(
         contentAlignment = Alignment.Center,
@@ -151,7 +156,10 @@ fun ConferenceCallScreen(rendering: ConferenceCallRendering, modifier: Modifier 
         }
     }
     if (rendering.dtmfRendering != null) {
-        DtmfDialog(rendering = rendering.dtmfRendering)
+        WorkflowRendering(
+            rendering = rendering.dtmfRendering,
+            viewEnvironment = environment
+        )
     }
 }
 

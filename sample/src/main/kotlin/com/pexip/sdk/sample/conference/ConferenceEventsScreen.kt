@@ -28,10 +28,16 @@ import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
+import com.squareup.workflow1.ui.ViewEnvironment
+import com.squareup.workflow1.ui.compose.WorkflowRendering
 import java.util.Date
 
 @Composable
-fun ConferenceEventsScreen(rendering: ConferenceEventsRendering, modifier: Modifier = Modifier) {
+fun ConferenceEventsScreen(
+    rendering: ConferenceEventsRendering,
+    environment: ViewEnvironment,
+    modifier: Modifier = Modifier,
+) {
     BackHandler(onBack = rendering.onBackClick)
     Column(modifier = modifier) {
         TopAppBar(
@@ -62,7 +68,10 @@ fun ConferenceEventsScreen(rendering: ConferenceEventsRendering, modifier: Modif
             }
         }
         Divider()
-        Composer(rendering = rendering)
+        WorkflowRendering(
+            rendering = rendering.composerRendering,
+            viewEnvironment = environment
+        )
     }
 }
 
