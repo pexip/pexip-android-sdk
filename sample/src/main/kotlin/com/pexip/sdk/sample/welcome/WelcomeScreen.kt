@@ -23,14 +23,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WelcomeScreen(
-    displayName: String,
-    onDisplayNameChange: (String) -> Unit,
-    onNextClick: () -> Unit,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    BackHandler(onBack = onBackClick)
+fun WelcomeScreen(rendering: WelcomeRendering, modifier: Modifier = Modifier) {
+    BackHandler(onBack = rendering.onBackClick)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -55,13 +49,13 @@ fun WelcomeScreen(
                     imeAction = ImeAction.Go
                 )
             }
-            val currentOnNextClick by rememberUpdatedState(onNextClick)
+            val currentOnNextClick by rememberUpdatedState(rendering.onNextClick)
             val keyboardActions = remember {
                 KeyboardActions(onGo = { currentOnNextClick() })
             }
             OutlinedTextField(
-                value = displayName,
-                onValueChange = onDisplayNameChange,
+                value = rendering.displayName,
+                onValueChange = rendering.onDisplayNameChange,
                 label = {
                     Text(text = "Display name")
                 },
@@ -74,8 +68,8 @@ fun WelcomeScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Button(
-                onClick = onNextClick,
-                enabled = displayName.isNotBlank(),
+                onClick = rendering.onNextClick,
+                enabled = rendering.displayName.isNotBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

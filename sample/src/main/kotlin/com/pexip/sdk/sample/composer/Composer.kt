@@ -1,4 +1,4 @@
-package com.pexip.sdk.sample.conference
+package com.pexip.sdk.sample.composer
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
@@ -21,7 +21,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun Composer(rendering: ConferenceEventsRendering, modifier: Modifier = Modifier) {
+fun Composer(rendering: ComposerRendering, modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.Bottom) {
         ComposerTextField(rendering = rendering, modifier = Modifier.weight(1f))
         ComposerButton(rendering = rendering)
@@ -29,7 +29,7 @@ internal fun Composer(rendering: ConferenceEventsRendering, modifier: Modifier =
 }
 
 @Composable
-private fun ComposerTextField(rendering: ConferenceEventsRendering, modifier: Modifier = Modifier) {
+private fun ComposerTextField(rendering: ComposerRendering, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colors
     val textColor by animateColorAsState(colors.onSurface)
     val mergedTextStyle = LocalTextStyle.current.merge(TextStyle(color = textColor))
@@ -59,7 +59,7 @@ private fun ComposerTextField(rendering: ConferenceEventsRendering, modifier: Mo
 }
 
 @Composable
-private fun ComposerButton(rendering: ConferenceEventsRendering, modifier: Modifier = Modifier) {
+private fun ComposerButton(rendering: ComposerRendering, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .clip(MaterialTheme.shapes.small)

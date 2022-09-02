@@ -23,11 +23,12 @@ import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
-import com.pexip.sdk.sample.dtmf.DtmfProps
+import com.pexip.sdk.sample.composer.ComposerWorkflow
 import com.pexip.sdk.sample.dtmf.DtmfWorkflow
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.renderChild
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.collectLatest
@@ -44,6 +45,7 @@ class ConferenceWorkflow @Inject constructor(
     private val cameraVideoTrackFactory: CameraVideoTrackFactory,
     private val mediaProjectionVideoTrackFactory: MediaProjectionVideoTrackFactory,
     private val dtmfWorkflow: DtmfWorkflow,
+    private val composerWorkflow: ComposerWorkflow,
 ) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState {
@@ -85,10 +87,10 @@ class ConferenceWorkflow @Inject constructor(
         return when (renderState.showingConferenceEvents) {
             true -> ConferenceEventsRendering(
                 conferenceEvents = renderState.conferenceEvents,
-                message = renderState.message,
-                onMessageChange = context.send(::OnMessageChange),
-                submitEnabled = renderState.submitEnabled,
-                onSubmitClick = context.send(::OnSubmitClick),
+                composerRendering = context.renderChild(
+                    child = composerWorkflow,
+                    handler = ::OnComposerOutput
+                ),
                 onBackClick = context.send(::OnBackClick)
             )
             else -> ConferenceCallRendering(
@@ -98,11 +100,7 @@ class ConferenceWorkflow @Inject constructor(
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
                 dtmfRendering = when (renderState.showingDtmf) {
-                    true -> context.renderChild(
-                        child = dtmfWorkflow,
-                        props = DtmfProps(renderState.connection),
-                        handler = ::OnDtmfOutput
-                    )
+                    true -> context.renderChild(dtmfWorkflow, handler = ::OnDtmfOutput)
                     else -> null
                 },
                 screenCapturing = renderState.screenCapturing,

@@ -3,7 +3,7 @@ package com.pexip.sdk.sample.dtmf
 import android.media.ToneGenerator
 import com.squareup.workflow1.WorkflowAction
 
-typealias DtmfAction = WorkflowAction<DtmfProps, DtmfState, DtmfOutput>
+typealias DtmfAction = WorkflowAction<Unit, DtmfState, DtmfOutput>
 
 class OnToneClick(private val tone: String) : DtmfAction() {
 
@@ -24,7 +24,7 @@ class OnToneClick(private val tone: String) : DtmfAction() {
             else -> return
         }
         state.toneGenerator.startTone(toneType, 250)
-        props.connection.dtmf(tone)
+        setOutput(DtmfOutput.Tone(tone))
     }
 }
 
