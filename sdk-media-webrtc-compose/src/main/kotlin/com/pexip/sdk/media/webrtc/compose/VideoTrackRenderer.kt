@@ -12,11 +12,25 @@ import com.pexip.sdk.media.webrtc.SurfaceViewRenderer
 import org.webrtc.EglBase
 import org.webrtc.GlRectDrawer
 
+/**
+ * Composes [SurfaceViewRenderer] and renders a [VideoTrack].
+ *
+ * Please note that changing [zOrderMediaOverlay] or [zOrderOnTop] after this
+ * function was called has no effect.
+ *
+ * @param videoTrack an instance of video track or null
+ * @param modifier optional [Modifier] to be applied to the video
+ * @param mirror defines if the video should rendered mirrored
+ * @param zOrderMediaOverlay control whether the video is rendered on top of another video
+ * @param zOrderOnTop control whether the video is rendered on top of its window. This overrides [zOrderMediaOverlay] if set
+ */
 @Composable
 public fun VideoTrackRenderer(
     videoTrack: VideoTrack?,
     modifier: Modifier = Modifier,
     mirror: Boolean = false,
+    zOrderMediaOverlay: Boolean = false,
+    zOrderOnTop: Boolean = false,
 ) {
     val eglBase = LocalEglBase.current
     val eglBaseContext = remember(eglBase) { eglBase?.eglBaseContext }
@@ -25,6 +39,8 @@ public fun VideoTrackRenderer(
         videoTrack = videoTrack,
         modifier = modifier,
         mirror = mirror,
+        zOrderMediaOverlay = zOrderMediaOverlay,
+        zOrderOnTop = zOrderOnTop,
     )
 }
 
@@ -41,6 +57,8 @@ public fun VideoTrackRenderer(
     videoTrack: VideoTrack?,
     modifier: Modifier = Modifier,
     mirror: Boolean = false,
+    zOrderMediaOverlay: Boolean = false,
+    zOrderOnTop: Boolean = false,
     configAttributes: IntArray = LocalEglBaseConfigAttributes.current,
 ) {
     val context = LocalContext.current
@@ -63,7 +81,13 @@ public fun VideoTrackRenderer(
         }
     }
     AndroidView(
-        factory = { renderer.apply { keepScreenOn = true } },
+        factory = {
+            renderer.apply {
+                keepScreenOn = true
+                if (zOrderMediaOverlay) setZOrderMediaOverlay(zOrderMediaOverlay)
+                if (zOrderOnTop) setZOrderOnTop(zOrderOnTop)
+            }
+        },
         modifier = modifier
     )
 }
