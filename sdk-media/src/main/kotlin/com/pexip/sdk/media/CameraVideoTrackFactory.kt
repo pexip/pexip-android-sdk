@@ -3,6 +3,34 @@ package com.pexip.sdk.media
 public interface CameraVideoTrackFactory {
 
     /**
+     * Returns all available device names.
+     *
+     * @return a list of available device names
+     */
+    public fun getDeviceNames(): List<String>
+
+    /**
+     * Checks whether the provided device name belongs to a front-facing camera.
+     *
+     * @return true if the camera is front-facing, false otherwise
+     */
+    public fun isFrontFacing(deviceName: String): Boolean
+
+    /**
+     * Checks whether the provided device name belongs to a back-facing camera.
+     *
+     * @return true if the camera is back-facing, false otherwise
+     */
+    public fun isBackFacing(deviceName: String): Boolean
+
+    /**
+     * Returns a list of supported quality profiles for a specific camera.
+     *
+     * @return a list of supported quality profiles
+     */
+    public fun getQualityProfiles(deviceName: String): List<QualityProfile>
+
+    /**
      * Creates a [CameraVideoTrack] for the best available camera.
      *
      * Best available camera is determined by the following order:

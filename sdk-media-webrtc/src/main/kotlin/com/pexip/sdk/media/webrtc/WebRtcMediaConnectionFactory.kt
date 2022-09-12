@@ -10,6 +10,7 @@ import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
+import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.android.AndroidMediaConnectionFactory
 import com.pexip.sdk.media.webrtc.internal.RealAudioHandler
 import com.pexip.sdk.media.webrtc.internal.SimpleCameraEventsHandler
@@ -17,6 +18,7 @@ import com.pexip.sdk.media.webrtc.internal.WebRtcCameraVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcMediaConnection
+import com.pexip.sdk.media.webrtc.internal.from
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerator
@@ -68,6 +70,23 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     private val workerExecutor = Executors.newSingleThreadExecutor()
     private val networkExecutor = Executors.newSingleThreadExecutor()
     private val signalingExecutor = ContextCompat.getMainExecutor(applicationContext)
+
+    override fun getDeviceNames(): List<String> = cameraEnumerator.deviceNames.toList()
+
+    override fun isFrontFacing(deviceName: String): Boolean {
+        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
+        return cameraEnumerator.isFrontFacing(deviceName)
+    }
+
+    override fun isBackFacing(deviceName: String): Boolean {
+        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
+        return cameraEnumerator.isBackFacing(deviceName)
+    }
+
+    override fun getQualityProfiles(deviceName: String): List<QualityProfile> {
+        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
+        return cameraEnumerator.getSupportedFormats(deviceName).map(QualityProfile::from)
+    }
 
     override fun createLocalAudioTrack(): LocalAudioTrack {
         check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }

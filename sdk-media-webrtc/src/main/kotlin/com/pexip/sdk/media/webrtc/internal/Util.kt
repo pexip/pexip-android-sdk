@@ -3,7 +3,9 @@ package com.pexip.sdk.media.webrtc.internal
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.MediaConnection
+import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
+import org.webrtc.CameraEnumerationAndroid.CaptureFormat
 import java.util.concurrent.Executor
 import java.util.concurrent.RejectedExecutionException
 
@@ -43,3 +45,9 @@ internal fun MediaConnection.RemoteVideoTrackListener.safeOnRemoteVideoTrack(vid
     } catch (t: Throwable) {
         // noop
     }
+
+internal fun QualityProfile.Companion.from(format: CaptureFormat) = QualityProfile(
+    width = format.width,
+    height = format.height,
+    fps = format.framerate.max / 1000
+)
