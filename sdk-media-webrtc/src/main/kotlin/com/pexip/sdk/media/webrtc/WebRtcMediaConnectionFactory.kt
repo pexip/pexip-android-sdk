@@ -6,12 +6,15 @@ import android.media.AudioAttributes
 import android.media.projection.MediaProjection
 import androidx.core.content.ContextCompat
 import com.pexip.sdk.media.CameraVideoTrack
+import com.pexip.sdk.media.CameraVideoTrackFactory
 import com.pexip.sdk.media.LocalAudioTrack
+import com.pexip.sdk.media.LocalAudioTrackFactory
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
+import com.pexip.sdk.media.MediaConnectionFactory
 import com.pexip.sdk.media.QualityProfile
-import com.pexip.sdk.media.android.AndroidMediaConnectionFactory
+import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
 import com.pexip.sdk.media.webrtc.internal.RealAudioHandler
 import com.pexip.sdk.media.webrtc.internal.SimpleCameraEventsHandler
 import com.pexip.sdk.media.webrtc.internal.WebRtcCameraVideoTrack
@@ -50,7 +53,10 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         false,
         false
     ),
-) : AndroidMediaConnectionFactory {
+) : MediaConnectionFactory,
+    LocalAudioTrackFactory,
+    CameraVideoTrackFactory,
+    MediaProjectionVideoTrackFactory {
 
     private val disposed = AtomicBoolean()
     private val applicationContext = context.applicationContext

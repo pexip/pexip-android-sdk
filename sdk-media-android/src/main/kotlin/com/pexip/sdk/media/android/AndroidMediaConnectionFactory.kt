@@ -5,6 +5,9 @@ import com.pexip.sdk.media.MediaConnectionFactory
 /**
  * Android variant of [MediaConnectionFactory].
  */
-@Deprecated("Use MediaConnectionFactory, MediaProjectionVideoTrackFactory directly instead.")
+@Deprecated(
+    message = "Use MediaConnectionFactory, MediaProjectionVideoTrackFactory directly instead.",
+    level = DeprecationLevel.ERROR
+)
 public interface AndroidMediaConnectionFactory :
     MediaConnectionFactory, MediaProjectionVideoTrackFactory

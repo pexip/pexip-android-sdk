@@ -34,37 +34,11 @@ public fun VideoTrackRenderer(
 ) {
     val eglBase = LocalEglBase.current
     val eglBaseContext = remember(eglBase) { eglBase?.eglBaseContext }
-    VideoTrackRenderer(
-        sharedContext = eglBaseContext,
-        videoTrack = videoTrack,
-        modifier = modifier,
-        mirror = mirror,
-        zOrderMediaOverlay = zOrderMediaOverlay,
-        zOrderOnTop = zOrderOnTop,
-    )
-}
-
-@Deprecated(
-    message = "Use EglBase.Context-less version and use LocalEglBase to provide an EglBase instance.",
-    replaceWith = ReplaceWith(
-        expression = "VideoTrackRenderer(videoTrack, modifier, mirror)",
-        imports = ["com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer"]
-    )
-)
-@Composable
-public fun VideoTrackRenderer(
-    sharedContext: EglBase.Context?,
-    videoTrack: VideoTrack?,
-    modifier: Modifier = Modifier,
-    mirror: Boolean = false,
-    zOrderMediaOverlay: Boolean = false,
-    zOrderOnTop: Boolean = false,
-    configAttributes: IntArray = LocalEglBaseConfigAttributes.current,
-) {
+    val eglBaseConfigAttributes = LocalEglBaseConfigAttributes.current
     val context = LocalContext.current
     val renderer = remember(context) { SurfaceViewRenderer(context) }
-    DisposableEffect(renderer, sharedContext) {
-        renderer.init(sharedContext, null, configAttributes, GlRectDrawer())
+    DisposableEffect(renderer, eglBaseContext) {
+        renderer.init(eglBaseContext, null, eglBaseConfigAttributes, GlRectDrawer())
         onDispose {
             renderer.clearImage()
             renderer.release()
@@ -84,10 +58,30 @@ public fun VideoTrackRenderer(
         factory = {
             renderer.apply {
                 keepScreenOn = true
-                if (zOrderMediaOverlay) setZOrderMediaOverlay(zOrderMediaOverlay)
-                if (zOrderOnTop) setZOrderOnTop(zOrderOnTop)
+                if (zOrderMediaOverlay) setZOrderMediaOverlay(true)
+                if (zOrderOnTop) setZOrderOnTop(true)
             }
         },
         modifier = modifier
     )
+}
+
+@Deprecated(
+    message = "Use EglBase.Context-less version and use LocalEglBase to provide an EglBase instance.",
+    replaceWith = ReplaceWith(
+        expression = "VideoTrackRenderer(videoTrack, modifier, mirror)",
+        imports = ["com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer"]
+    ),
+    level = DeprecationLevel.ERROR
+)
+@Composable
+public fun VideoTrackRenderer(
+    sharedContext: EglBase.Context?,
+    videoTrack: VideoTrack?,
+    modifier: Modifier = Modifier,
+    mirror: Boolean = false,
+    zOrderMediaOverlay: Boolean = false,
+    zOrderOnTop: Boolean = false,
+    configAttributes: IntArray = LocalEglBaseConfigAttributes.current,
+) {
 }

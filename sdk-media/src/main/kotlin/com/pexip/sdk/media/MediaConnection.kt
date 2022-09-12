@@ -17,20 +17,6 @@ public interface MediaConnection {
      */
     public fun dispose()
 
-    @Deprecated(
-        message = "Use setMainAudioTrack instead.",
-        replaceWith = ReplaceWith("setMainAudioTrack(localAudioTrack)"),
-        level = DeprecationLevel.ERROR
-    )
-    public fun sendMainAudio(localAudioTrack: LocalAudioTrack)
-
-    @Deprecated(
-        message = "Use setMainVideoTrack instead.",
-        replaceWith = ReplaceWith("setMainVideoTrack(localVideoTrack)"),
-        level = DeprecationLevel.ERROR
-    )
-    public fun sendMainVideo(localVideoTrack: LocalVideoTrack)
-
     /**
      * Sets the main audio track.
      *

@@ -96,24 +96,6 @@ internal class WebRtcMediaConnection(
         if (it) onVideoUnmuted() else onVideoMuted()
     }
 
-    @Deprecated(
-        message = "Use setMainAudioTrack instead.",
-        replaceWith = ReplaceWith("setMainAudioTrack(localAudioTrack)"),
-        level = DeprecationLevel.ERROR
-    )
-    override fun sendMainAudio(localAudioTrack: LocalAudioTrack) {
-        setMainAudioTrack(localAudioTrack)
-    }
-
-    @Deprecated(
-        "Use setMainVideoTrack instead.",
-        replaceWith = ReplaceWith("setMainVideoTrack(localVideoTrack)"),
-        level = DeprecationLevel.ERROR
-    )
-    override fun sendMainVideo(localVideoTrack: LocalVideoTrack) {
-        setMainVideoTrack(localVideoTrack)
-    }
-
     override fun setMainAudioTrack(localAudioTrack: LocalAudioTrack?) {
         val lat = when (localAudioTrack) {
             is WebRtcLocalAudioTrack -> localAudioTrack
