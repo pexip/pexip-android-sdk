@@ -4,11 +4,16 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -22,7 +27,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Composer(rendering: ComposerRendering, modifier: Modifier = Modifier) {
-    Row(modifier = modifier, verticalAlignment = Alignment.Bottom) {
+    val paddingValues = WindowInsets.safeDrawing
+        .only(WindowInsetsSides.Bottom)
+        .asPaddingValues()
+    Row(
+        modifier = modifier.padding(paddingValues),
+        verticalAlignment = Alignment.Bottom
+    ) {
         ComposerTextField(rendering = rendering, modifier = Modifier.weight(1f))
         ComposerButton(rendering = rendering)
     }
@@ -30,7 +41,7 @@ fun Composer(rendering: ComposerRendering, modifier: Modifier = Modifier) {
 
 @Composable
 private fun ComposerTextField(rendering: ComposerRendering, modifier: Modifier = Modifier) {
-    val colors = MaterialTheme.colors
+    val colors = MaterialTheme.colorScheme
     val textColor by animateColorAsState(colors.onSurface)
     val mergedTextStyle = LocalTextStyle.current.merge(TextStyle(color = textColor))
     val cursorColor by animateColorAsState(colors.onSurface.copy(alpha = 0.5f))
@@ -72,10 +83,10 @@ private fun ComposerButton(rendering: ComposerRendering, modifier: Modifier = Mo
         Text(
             text = "Send",
             color = when (rendering.submitEnabled) {
-                true -> MaterialTheme.colors.primary
-                else -> MaterialTheme.colors.primary.copy(alpha = 0.5f)
+                true -> MaterialTheme.colorScheme.primary
+                else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             },
-            style = MaterialTheme.typography.button,
+            style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(16.dp)
         )
     }

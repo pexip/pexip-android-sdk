@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.pexip.sdk.media.webrtc.compose.LocalEglBase
 import com.squareup.workflow1.ui.ViewEnvironment
@@ -37,6 +38,7 @@ class SampleActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             CompositionLocalProvider(LocalEglBase provides eglBase) {
                 SampleTheme {

@@ -2,26 +2,33 @@ package com.pexip.sdk.sample.welcome
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WelcomeScreen(rendering: WelcomeRendering, modifier: Modifier = Modifier) {
     BackHandler(onBack = rendering.onBackClick)
@@ -33,6 +40,7 @@ fun WelcomeScreen(rendering: WelcomeRendering, modifier: Modifier = Modifier) {
                 }
             )
         },
+        contentWindowInsets = WindowInsets.safeDrawing,
         modifier = modifier
     ) {
         Box(
@@ -53,7 +61,12 @@ fun WelcomeScreen(rendering: WelcomeRendering, modifier: Modifier = Modifier) {
             val keyboardActions = remember {
                 KeyboardActions(onGo = { currentOnNextClick() })
             }
-            OutlinedTextField(
+            val focusRequester = remember { FocusRequester() }
+            DisposableEffect(focusRequester) {
+                focusRequester.requestFocus()
+                onDispose { focusRequester.freeFocus() }
+            }
+            TextField(
                 value = rendering.displayName,
                 onValueChange = rendering.onDisplayNameChange,
                 label = {
@@ -65,7 +78,9 @@ fun WelcomeScreen(rendering: WelcomeRendering, modifier: Modifier = Modifier) {
                 maxLines = 1,
                 keyboardOptions = keyboardOptions,
                 keyboardActions = keyboardActions,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
             )
             Button(
                 onClick = rendering.onNextClick,

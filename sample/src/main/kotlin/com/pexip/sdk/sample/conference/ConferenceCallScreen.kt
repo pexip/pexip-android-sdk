@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Message
 import androidx.compose.material.icons.rounded.Mic
@@ -28,6 +28,10 @@ import androidx.compose.material.icons.rounded.ScreenShare
 import androidx.compose.material.icons.rounded.StopScreenShare
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.VideocamOff
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,6 +43,7 @@ import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConferenceCallScreen(
     rendering: ConferenceCallRendering,
@@ -46,120 +51,130 @@ fun ConferenceCallScreen(
     modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = rendering.onBackClick)
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier.fillMaxSize(),
+    Scaffold(
+        contentWindowInsets = WindowInsets.safeDrawing,
+        modifier = modifier
     ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
         ) {
-            VideoTrackRenderer(
-                videoTrack = rendering.mainRemoteVideoTrack,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(ASPECT_RATIO_LANDSCAPE)
-            )
-            if (rendering.presentationRemoteVideoTrack != null) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
                 VideoTrackRenderer(
-                    videoTrack = rendering.presentationRemoteVideoTrack,
+                    videoTrack = rendering.mainRemoteVideoTrack,
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(ASPECT_RATIO_LANDSCAPE)
                 )
-            }
-        }
-        BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            val aspectRatio = remember(maxWidth, maxHeight) {
-                when {
-                    maxWidth > maxHeight -> ASPECT_RATIO_LANDSCAPE
-                    else -> ASPECT_RATIO_PORTRAIT
-                }
-            }
-            AnimatedVisibility(
-                visible = rendering.cameraCapturing,
-                enter = slideInHorizontally { it * 2 },
-                exit = slideOutHorizontally { it * 2 },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .fillMaxWidth(0.2f)
-                    .aspectRatio(aspectRatio)
-            ) {
-                VideoTrackRenderer(
-                    videoTrack = rendering.cameraVideoTrack,
-                    mirror = true
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-            ) {
-                Button(onClick = rendering.onToggleLocalAudioCapturing) {
-                    Icon(
-                        imageVector = when (rendering.localAudioCapturing) {
-                            true -> Icons.Rounded.Mic
-                            false -> Icons.Rounded.MicOff
-                        },
-                        contentDescription = null
+                if (rendering.presentationRemoteVideoTrack != null) {
+                    VideoTrackRenderer(
+                        videoTrack = rendering.presentationRemoteVideoTrack,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(ASPECT_RATIO_LANDSCAPE)
                     )
                 }
-                Button(onClick = rendering.onToggleCameraCapturing) {
-                    Icon(
-                        imageVector = when (rendering.cameraCapturing) {
-                            true -> Icons.Rounded.Videocam
-                            false -> Icons.Rounded.VideocamOff
-                        },
-                        contentDescription = null
-                    )
-                }
-                val manager = rememberMediaProjectionManager()
-                val launcher = rememberLauncherForActivityResult(StartActivityForResult()) {
-                    val data = it.data
-                    if (it.resultCode == Activity.RESULT_OK && data != null) {
-                        rendering.onScreenCapture(data)
+            }
+            BoxWithConstraints(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxSize()
+            ) {
+                val aspectRatio = remember(maxWidth, maxHeight) {
+                    when {
+                        maxWidth > maxHeight -> ASPECT_RATIO_LANDSCAPE
+                        else -> ASPECT_RATIO_PORTRAIT
                     }
                 }
-                val onToggleScreenCapture = when (rendering.screenCapturing) {
-                    true -> rendering.onStopScreenCapture
-                    else -> {
-                        { launcher.launch(manager.createScreenCaptureIntent()) }
+                AnimatedVisibility(
+                    visible = rendering.cameraCapturing,
+                    enter = slideInHorizontally { it * 2 },
+                    exit = slideOutHorizontally { it * 2 },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxWidth(0.2f)
+                        .aspectRatio(aspectRatio)
+                ) {
+                    VideoTrackRenderer(
+                        videoTrack = rendering.cameraVideoTrack,
+                        mirror = true
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = 8.dp,
+                        alignment = Alignment.CenterHorizontally
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                ) {
+                    Button(onClick = rendering.onToggleLocalAudioCapturing) {
+                        Icon(
+                            imageVector = when (rendering.localAudioCapturing) {
+                                true -> Icons.Rounded.Mic
+                                false -> Icons.Rounded.MicOff
+                            },
+                            contentDescription = null
+                        )
                     }
-                }
-                Button(onClick = onToggleScreenCapture) {
-                    Icon(
-                        imageVector = when (rendering.screenCapturing) {
-                            true -> Icons.Rounded.StopScreenShare
-                            false -> Icons.Rounded.ScreenShare
-                        },
-                        contentDescription = null
-                    )
-                }
-                Button(onClick = rendering.onConferenceEventsClick) {
-                    Icon(
-                        imageVector = Icons.Rounded.Message,
-                        contentDescription = null
-                    )
-                }
-                Button(onClick = rendering.onToggleDtmfClick) {
-                    Icon(
-                        imageVector = Icons.Rounded.Pin,
-                        contentDescription = null
-                    )
+                    Button(onClick = rendering.onToggleCameraCapturing) {
+                        Icon(
+                            imageVector = when (rendering.cameraCapturing) {
+                                true -> Icons.Rounded.Videocam
+                                false -> Icons.Rounded.VideocamOff
+                            },
+                            contentDescription = null
+                        )
+                    }
+                    val manager = rememberMediaProjectionManager()
+                    val launcher = rememberLauncherForActivityResult(StartActivityForResult()) {
+                        val data = it.data
+                        if (it.resultCode == Activity.RESULT_OK && data != null) {
+                            rendering.onScreenCapture(data)
+                        }
+                    }
+                    val onToggleScreenCapture = when (rendering.screenCapturing) {
+                        true -> rendering.onStopScreenCapture
+                        else -> {
+                            { launcher.launch(manager.createScreenCaptureIntent()) }
+                        }
+                    }
+                    Button(onClick = onToggleScreenCapture) {
+                        Icon(
+                            imageVector = when (rendering.screenCapturing) {
+                                true -> Icons.Rounded.StopScreenShare
+                                false -> Icons.Rounded.ScreenShare
+                            },
+                            contentDescription = null
+                        )
+                    }
+                    Button(onClick = rendering.onConferenceEventsClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.Message,
+                            contentDescription = null
+                        )
+                    }
+                    Button(onClick = rendering.onToggleDtmfClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.Pin,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
         }
-    }
-    if (rendering.dtmfRendering != null) {
-        WorkflowRendering(
-            rendering = rendering.dtmfRendering,
-            viewEnvironment = environment
-        )
+        if (rendering.dtmfRendering != null) {
+            WorkflowRendering(
+                rendering = rendering.dtmfRendering,
+                viewEnvironment = environment
+            )
+        }
     }
 }
 

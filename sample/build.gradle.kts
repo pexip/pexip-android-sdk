@@ -33,10 +33,11 @@ wire {
 dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.startup.runtime)
+    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.dagger.hilt.android.runtime)
     kapt(libs.dagger.hilt.compiler)
     implementation(libs.minidns.android21)
