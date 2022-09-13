@@ -10,6 +10,9 @@ android {
 
 dependencies {
     api(projects.sdkMedia)
+
+    api(libs.androidx.core.ktx)
+    api(libs.androidx.media)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
