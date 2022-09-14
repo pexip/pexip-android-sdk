@@ -33,15 +33,18 @@ public fun LocalMediaTrack.getCapturing(): Flow<Boolean> = callbackFlow {
  *
  * @param deviceName a name of the camera to switch to, null to switch to opposite camera
  * @return true if the switched camera is front-facing, false otherwise
- * @throws IllegalStateException if device name doesn't exist
  * @throws SwitchCameraException if the operation failed
  */
-public suspend fun CameraVideoTrack.switchCamera(deviceName: String? = null): Boolean =
+public suspend fun CameraVideoTrack.switchCamera(deviceName: String? = null): String =
     suspendCoroutine {
         val callback = object : CameraVideoTrack.SwitchCameraCallback {
 
+            override fun onSuccess(deviceName: String) {
+                it.resume(deviceName)
+            }
+
+            @Deprecated("Use onSuccess that contains deviceName as an argument.")
             override fun onSuccess(front: Boolean) {
-                it.resume(front)
             }
 
             override fun onFailure(error: String) {

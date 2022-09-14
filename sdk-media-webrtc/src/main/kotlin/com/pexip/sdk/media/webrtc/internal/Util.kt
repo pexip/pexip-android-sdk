@@ -27,8 +27,15 @@ internal fun CameraVideoTrack.Callback.safeOnCameraDisconnected() = try {
     // noop
 }
 
+@Deprecated("Use safeOnSuccess that contains deviceName as an argument.")
 internal fun CameraVideoTrack.SwitchCameraCallback.safeOnSuccess(front: Boolean) = try {
     onSuccess(front)
+} catch (t: Throwable) {
+    // noop
+}
+
+internal fun CameraVideoTrack.SwitchCameraCallback.safeOnSuccess(deviceName: String) = try {
+    onSuccess(deviceName)
 } catch (t: Throwable) {
     // noop
 }

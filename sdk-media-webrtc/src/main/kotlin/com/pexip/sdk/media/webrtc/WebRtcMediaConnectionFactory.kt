@@ -124,14 +124,15 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         val videoCapturer = cameraEnumerator.createCapturer(deviceName, null)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         return WebRtcCameraVideoTrack(
+            factory = this,
             applicationContext = applicationContext,
             textureHelper = createSurfaceTextureHelper("CaptureThread:$deviceName"),
+            deviceName = deviceName,
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
             workerExecutor = workerExecutor,
-            signalingExecutor = signalingExecutor,
-            checkDeviceName = ::checkDeviceName
+            signalingExecutor = signalingExecutor
         )
     }
 
@@ -154,14 +155,15 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         val videoCapturer = cameraEnumerator.createCapturer(deviceName, handler)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         return WebRtcCameraVideoTrack(
+            factory = this,
             applicationContext = applicationContext,
             textureHelper = createSurfaceTextureHelper("CaptureThread:$deviceName"),
+            deviceName = deviceName,
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
             workerExecutor = workerExecutor,
-            signalingExecutor = signalingExecutor,
-            checkDeviceName = ::checkDeviceName
+            signalingExecutor = signalingExecutor
         )
     }
 

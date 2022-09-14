@@ -6,7 +6,7 @@ package com.pexip.sdk.media
 public interface CameraVideoTrack : LocalVideoTrack {
 
     /**
-     * Attempts to switch a camera to the opposite one (i.e. from front to back and vice versa).
+     * Attempts to switch a camera to the next one in the list of cameras.
      *
      * @param callback a callback that will be invoked on either success or failure
      */
@@ -33,8 +33,16 @@ public interface CameraVideoTrack : LocalVideoTrack {
         /**
          * Invoked when camera switch completed successfully.
          *
+         * @param deviceName new camera name
+         */
+        public fun onSuccess(deviceName: String)
+
+        /**
+         * Invoked when camera switch completed successfully.
+         *
          * @param front true if the newly switched camera is front-facing, false otherwise
          */
+        @Deprecated("Use onSuccess that contains deviceName as an argument.")
         public fun onSuccess(front: Boolean)
 
         /**
