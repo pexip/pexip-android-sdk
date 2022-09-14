@@ -15,7 +15,6 @@ import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionFactory
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
-import com.pexip.sdk.media.webrtc.internal.RealAudioHandler
 import com.pexip.sdk.media.webrtc.internal.SimpleCameraEventsHandler
 import com.pexip.sdk.media.webrtc.internal.WebRtcCameraVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
@@ -64,7 +63,6 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
         .build()
-    private val audioHandler = RealAudioHandler(applicationContext, audioAttributes)
     private val audioDeviceModule = JavaAudioDeviceModule.builder(applicationContext)
         .setAudioAttributes(audioAttributes)
         .createAudioDeviceModule()
@@ -99,7 +97,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         val audioSource = factory.createAudioSource(MediaConstraints())
         val audioTrack = factory.createAudioTrack(createMediaTrackId(), audioSource)
         return WebRtcLocalAudioTrack(
-            audioHandler = audioHandler,
+            context = applicationContext,
             audioSource = audioSource,
             audioTrack = audioTrack,
             workerExecutor = workerExecutor,
