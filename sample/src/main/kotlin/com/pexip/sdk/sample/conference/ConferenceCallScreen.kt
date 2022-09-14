@@ -208,8 +208,8 @@ private fun ScreenShareButton(rendering: ConferenceCallRendering, modifier: Modi
 private fun MoreButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val onDismissRequest = { expanded = false }
-    Box {
-        SmallCallButton(onClick = { expanded = true }, modifier = modifier) {
+    Box(modifier = modifier) {
+        SmallCallButton(onClick = { expanded = true }) {
             Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = null)
         }
         DropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
