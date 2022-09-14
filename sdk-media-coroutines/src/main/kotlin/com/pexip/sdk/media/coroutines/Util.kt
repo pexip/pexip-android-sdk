@@ -2,6 +2,7 @@ package com.pexip.sdk.media.coroutines
 
 import com.pexip.sdk.media.AudioDevice
 import com.pexip.sdk.media.AudioDeviceManager
+import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.VideoTrack
@@ -12,6 +13,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Converts this [LocalMediaTrack] capturing state to a [Flow].
@@ -23,6 +27,32 @@ public fun LocalMediaTrack.getCapturing(): Flow<Boolean> = callbackFlow {
     registerCapturingListener(listener)
     awaitClose { unregisterCapturingListener(listener) }
 }
+
+/**
+ * Attempts to switch a camera to the specified one or to the opposite one.
+ *
+ * @param deviceName a name of the camera to switch to, null to switch to opposite camera
+ * @return true if the switched camera is front-facing, false otherwise
+ * @throws IllegalStateException if device name doesn't exist
+ * @throws SwitchCameraException if the operation failed
+ */
+public suspend fun CameraVideoTrack.switchCamera(deviceName: String? = null): Boolean =
+    suspendCoroutine {
+        val callback = object : CameraVideoTrack.SwitchCameraCallback {
+
+            override fun onSuccess(front: Boolean) {
+                it.resume(front)
+            }
+
+            override fun onFailure(error: String) {
+                it.resumeWithException(SwitchCameraException(error))
+            }
+        }
+        when (deviceName) {
+            null -> switchCamera(callback)
+            else -> switchCamera(deviceName, callback)
+        }
+    }
 
 /**
  * Converts this [MediaConnection] to a main remote video track [Flow].

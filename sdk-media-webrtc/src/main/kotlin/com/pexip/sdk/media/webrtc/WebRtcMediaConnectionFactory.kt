@@ -80,22 +80,22 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     override fun getDeviceNames(): List<String> = cameraEnumerator.deviceNames.toList()
 
     override fun isFrontFacing(deviceName: String): Boolean {
-        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
+        checkDeviceName(deviceName)
         return cameraEnumerator.isFrontFacing(deviceName)
     }
 
     override fun isBackFacing(deviceName: String): Boolean {
-        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
+        checkDeviceName(deviceName)
         return cameraEnumerator.isBackFacing(deviceName)
     }
 
     override fun getQualityProfiles(deviceName: String): List<QualityProfile> {
-        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
+        checkDeviceName(deviceName)
         return cameraEnumerator.getSupportedFormats(deviceName).map(QualityProfile::from)
     }
 
     override fun createLocalAudioTrack(): LocalAudioTrack {
-        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+        checkNotDisposed()
         val audioSource = factory.createAudioSource(MediaConstraints())
         val audioTrack = factory.createAudioTrack(createMediaTrackId(), audioSource)
         return WebRtcLocalAudioTrack(
@@ -109,7 +109,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
 
     @Deprecated("Use createCameraVideoTrack() that also accepts a Callback.")
     override fun createCameraVideoTrack(): CameraVideoTrack {
-        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+        checkNotDisposed()
         val deviceNames = cameraEnumerator.deviceNames
         val deviceName = deviceNames.firstOrNull(cameraEnumerator::isFrontFacing)
             ?: deviceNames.firstOrNull(cameraEnumerator::isBackFacing)
@@ -119,8 +119,8 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
 
     @Deprecated("Use createCameraVideoTrack() that also accepts a Callback.")
     override fun createCameraVideoTrack(deviceName: String): CameraVideoTrack {
-        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
-        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
+        checkNotDisposed()
+        checkDeviceName(deviceName)
         val videoCapturer = cameraEnumerator.createCapturer(deviceName, null)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         return WebRtcCameraVideoTrack(
@@ -130,12 +130,13 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
             workerExecutor = workerExecutor,
-            signalingExecutor = signalingExecutor
+            signalingExecutor = signalingExecutor,
+            checkDeviceName = ::checkDeviceName
         )
     }
 
     override fun createCameraVideoTrack(callback: CameraVideoTrack.Callback): CameraVideoTrack {
-        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+        checkNotDisposed()
         val deviceNames = cameraEnumerator.deviceNames
         val deviceName = deviceNames.firstOrNull(cameraEnumerator::isFrontFacing)
             ?: deviceNames.firstOrNull(cameraEnumerator::isBackFacing)
@@ -147,8 +148,8 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         deviceName: String,
         callback: CameraVideoTrack.Callback,
     ): CameraVideoTrack {
-        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
-        check(deviceName in cameraEnumerator.deviceNames) { "No available camera: $deviceName." }
+        checkNotDisposed()
+        checkDeviceName(deviceName)
         val handler = SimpleCameraEventsHandler(callback, signalingExecutor)
         val videoCapturer = cameraEnumerator.createCapturer(deviceName, handler)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
@@ -159,7 +160,8 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
             workerExecutor = workerExecutor,
-            signalingExecutor = signalingExecutor
+            signalingExecutor = signalingExecutor,
+            checkDeviceName = ::checkDeviceName
         )
     }
 
@@ -167,7 +169,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         intent: Intent,
         callback: MediaProjection.Callback,
     ): LocalVideoTrack {
-        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+        checkNotDisposed()
         val videoCapturer = ScreenCapturerAndroid(intent, callback)
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         return WebRtcLocalVideoTrack(
@@ -182,7 +184,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     }
 
     override fun createMediaConnection(config: MediaConnectionConfig): MediaConnection {
-        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+        checkNotDisposed()
         return WebRtcMediaConnection(
             factory = this,
             config = config,
@@ -214,6 +216,12 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
 
     private fun createSurfaceTextureHelper(threadName: String) =
         SurfaceTextureHelper.create(threadName, eglBase.eglBaseContext)
+
+    private fun checkNotDisposed() =
+        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+
+    private fun checkDeviceName(deviceName: String) =
+        check(deviceName in getDeviceNames()) { "No available camera: $deviceName." }
 
     public companion object {
 

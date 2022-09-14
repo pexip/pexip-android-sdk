@@ -12,6 +12,14 @@ public interface CameraVideoTrack : LocalVideoTrack {
      */
     public fun switchCamera(callback: SwitchCameraCallback)
 
+    /**
+     * Attempts to switch a camera to the specified one.
+     *
+     * @param deviceName a name of the camera to switch to
+     * @param callback a callback that will be invoked on either success or failure
+     */
+    public fun switchCamera(deviceName: String, callback: SwitchCameraCallback)
+
     public interface Callback {
 
         /**

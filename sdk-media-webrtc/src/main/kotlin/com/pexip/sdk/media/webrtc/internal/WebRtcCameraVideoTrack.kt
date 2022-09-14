@@ -16,6 +16,7 @@ internal class WebRtcCameraVideoTrack(
     videoTrack: VideoTrack,
     workerExecutor: Executor,
     signalingExecutor: Executor,
+    private val checkDeviceName: (String) -> Unit,
 ) : CameraVideoTrack, WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
     textureHelper = textureHelper,
@@ -27,22 +28,31 @@ internal class WebRtcCameraVideoTrack(
 ) {
 
     override fun switchCamera(callback: CameraVideoTrack.SwitchCameraCallback) {
-        val handler = object : CameraVideoCapturer.CameraSwitchHandler {
+        workerExecutor.maybeExecute {
+            videoCapturer.switchCamera(callback.toCameraSwitchHandler())
+        }
+    }
+
+    override fun switchCamera(deviceName: String, callback: CameraVideoTrack.SwitchCameraCallback) {
+        checkDeviceName(deviceName)
+        workerExecutor.maybeExecute {
+            videoCapturer.switchCamera(callback.toCameraSwitchHandler(), deviceName)
+        }
+    }
+
+    private fun CameraVideoTrack.SwitchCameraCallback.toCameraSwitchHandler() =
+        object : CameraVideoCapturer.CameraSwitchHandler {
 
             override fun onCameraSwitchDone(front: Boolean) {
                 signalingExecutor.maybeExecute {
-                    callback.safeOnSuccess(front)
+                    safeOnSuccess(front)
                 }
             }
 
             override fun onCameraSwitchError(error: String) {
                 signalingExecutor.maybeExecute {
-                    callback.safeOnFailure(error)
+                    safeOnFailure(error)
                 }
             }
         }
-        workerExecutor.maybeExecute {
-            videoCapturer.switchCamera(handler)
-        }
-    }
 }
