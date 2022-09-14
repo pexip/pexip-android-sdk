@@ -4,7 +4,7 @@ import android.app.Activity
 import android.media.projection.MediaProjectionManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -20,20 +20,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CallEnd
 import androidx.compose.material.icons.rounded.Message
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.MicOff
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Pin
 import androidx.compose.material.icons.rounded.ScreenShare
 import androidx.compose.material.icons.rounded.StopScreenShare
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.VideocamOff
-import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -106,6 +114,7 @@ fun ConferenceCallScreen(
                     )
                 }
                 Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(
                         space = 8.dp,
                         alignment = Alignment.CenterHorizontally
@@ -114,58 +123,11 @@ fun ConferenceCallScreen(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                 ) {
-                    Button(onClick = rendering.onToggleLocalAudioCapturing) {
-                        Icon(
-                            imageVector = when (rendering.localAudioCapturing) {
-                                true -> Icons.Rounded.Mic
-                                false -> Icons.Rounded.MicOff
-                            },
-                            contentDescription = null
-                        )
-                    }
-                    Button(onClick = rendering.onToggleCameraCapturing) {
-                        Icon(
-                            imageVector = when (rendering.cameraCapturing) {
-                                true -> Icons.Rounded.Videocam
-                                false -> Icons.Rounded.VideocamOff
-                            },
-                            contentDescription = null
-                        )
-                    }
-                    val manager = rememberMediaProjectionManager()
-                    val launcher = rememberLauncherForActivityResult(StartActivityForResult()) {
-                        val data = it.data
-                        if (it.resultCode == Activity.RESULT_OK && data != null) {
-                            rendering.onScreenCapture(data)
-                        }
-                    }
-                    val onToggleScreenCapture = when (rendering.screenCapturing) {
-                        true -> rendering.onStopScreenCapture
-                        else -> {
-                            { launcher.launch(manager.createScreenCaptureIntent()) }
-                        }
-                    }
-                    Button(onClick = onToggleScreenCapture) {
-                        Icon(
-                            imageVector = when (rendering.screenCapturing) {
-                                true -> Icons.Rounded.StopScreenShare
-                                false -> Icons.Rounded.ScreenShare
-                            },
-                            contentDescription = null
-                        )
-                    }
-                    Button(onClick = rendering.onConferenceEventsClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.Message,
-                            contentDescription = null
-                        )
-                    }
-                    Button(onClick = rendering.onToggleDtmfClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.Pin,
-                            contentDescription = null
-                        )
-                    }
+                    ScreenShareButton(rendering)
+                    CameraButton(rendering)
+                    EndCallButton(rendering)
+                    MicrophoneButton(rendering)
+                    MoreButton(rendering)
                 }
             }
         }
@@ -176,6 +138,127 @@ fun ConferenceCallScreen(
             )
         }
     }
+}
+
+@Composable
+private fun EndCallButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+    CallButton(
+        onClick = rendering.onBackClick,
+        containerColor = MaterialTheme.colorScheme.errorContainer,
+        modifier = modifier
+    ) {
+        Icon(imageVector = Icons.Rounded.CallEnd, contentDescription = null)
+    }
+}
+
+@Composable
+private fun CameraButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+    SmallCallButton(onClick = rendering.onToggleCameraCapturing, modifier = modifier) {
+        val imageVector = remember(rendering.cameraCapturing) {
+            when (rendering.cameraCapturing) {
+                true -> Icons.Rounded.Videocam
+                false -> Icons.Rounded.VideocamOff
+            }
+        }
+        Icon(imageVector = imageVector, contentDescription = null)
+    }
+}
+
+@Composable
+private fun MicrophoneButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+    SmallCallButton(onClick = rendering.onToggleLocalAudioCapturing, modifier = modifier) {
+        val imageVector = remember(rendering.localAudioCapturing) {
+            when (rendering.localAudioCapturing) {
+                true -> Icons.Rounded.Mic
+                false -> Icons.Rounded.MicOff
+            }
+        }
+        Icon(imageVector = imageVector, contentDescription = null)
+    }
+}
+
+@Composable
+private fun ScreenShareButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+    val manager = rememberMediaProjectionManager()
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            val data = it.data
+            if (it.resultCode == Activity.RESULT_OK && data != null) {
+                rendering.onScreenCapture(data)
+            }
+        }
+    val onToggleScreenCapture = when (rendering.screenCapturing) {
+        true -> rendering.onStopScreenCapture
+        else -> {
+            { launcher.launch(manager.createScreenCaptureIntent()) }
+        }
+    }
+    SmallCallButton(onClick = onToggleScreenCapture, modifier = modifier) {
+        val imageVector = remember(rendering.screenCapturing) {
+            when (rendering.screenCapturing) {
+                true -> Icons.Rounded.StopScreenShare
+                false -> Icons.Rounded.ScreenShare
+            }
+        }
+        Icon(imageVector = imageVector, contentDescription = null)
+    }
+}
+
+@Composable
+private fun MoreButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+    var expanded by remember { mutableStateOf(false) }
+    val onDismissRequest = { expanded = false }
+    Box {
+        SmallCallButton(onClick = { expanded = true }, modifier = modifier) {
+            Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = null)
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
+            DtmfItem(rendering = rendering, onDismissRequest = onDismissRequest)
+            ConferenceEventsItem(rendering = rendering, onDismissRequest = onDismissRequest)
+        }
+    }
+}
+
+@Composable
+private fun DtmfItem(
+    rendering: ConferenceCallRendering,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    DropdownMenuItem(
+        text = {
+            Text(text = "DTMF")
+        },
+        onClick = {
+            onDismissRequest()
+            rendering.onToggleDtmfClick()
+        },
+        leadingIcon = {
+            Icon(imageVector = Icons.Rounded.Pin, contentDescription = null)
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun ConferenceEventsItem(
+    rendering: ConferenceCallRendering,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    DropdownMenuItem(
+        text = {
+            Text(text = "Events")
+        },
+        onClick = {
+            onDismissRequest()
+            rendering.onConferenceEventsClick()
+        },
+        leadingIcon = {
+            Icon(imageVector = Icons.Rounded.Message, contentDescription = null)
+        },
+        modifier = modifier
+    )
 }
 
 @Composable
