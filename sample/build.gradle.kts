@@ -9,6 +9,7 @@ plugins {
 }
 
 android {
+    namespace = "com.pexip.sdk.sample"
     defaultConfig {
         applicationId = "com.pexip.sdk.sample"
         versionCode = 1
