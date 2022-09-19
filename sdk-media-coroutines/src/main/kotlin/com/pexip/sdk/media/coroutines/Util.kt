@@ -29,6 +29,16 @@ public fun LocalMediaTrack.getCapturing(): Flow<Boolean> = callbackFlow {
 }
 
 /**
+ * Converts this [LocalMediaTrack] capturing state to a [StateFlow].
+ *
+ * @return a state flow of changes to capturing state
+ */
+public fun LocalMediaTrack.capturingIn(
+    scope: CoroutineScope,
+    started: SharingStarted,
+): StateFlow<Boolean> = getCapturing().stateIn(scope, started, capturing)
+
+/**
  * Attempts to switch a camera to the specified one or to the opposite one.
  *
  * @param deviceName a name of the camera to switch to, null to switch to opposite camera

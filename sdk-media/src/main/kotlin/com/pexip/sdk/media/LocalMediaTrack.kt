@@ -2,8 +2,12 @@ package com.pexip.sdk.media
 
 /**
  * A local media track.
+ *
+ * @property capturing true if capturing, false otherwise
  */
 public interface LocalMediaTrack {
+
+    public val capturing: Boolean
 
     /**
      * Start the capture.

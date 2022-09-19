@@ -32,31 +32,32 @@ internal open class WebRtcLocalVideoTrack(
             videoSource.capturerObserver.onCapturerStarted(success)
             if (capturing == success) return
             capturing = success
-            signalingExecutor.maybeExecute {
-                capturingListeners.forEach {
-                    it.safeOnCapturing(success)
-                }
-            }
+            notify(success)
         }
 
         override fun onCapturerStopped() {
             videoSource.capturerObserver.onCapturerStopped()
             if (!capturing) return
             capturing = false
-            signalingExecutor.maybeExecute {
-                capturingListeners.forEach {
-                    it.safeOnCapturing(false)
-                }
-            }
+            notify(false)
         }
 
         override fun onFrameCaptured(frame: VideoFrame?) {
             videoSource.capturerObserver.onFrameCaptured(frame)
         }
+
+        private fun notify(capturing: Boolean) {
+            signalingExecutor.maybeExecute {
+                capturingListeners.forEach {
+                    it.safeOnCapturing(capturing)
+                }
+            }
+        }
     }
 
     @Volatile
-    private var capturing = false
+    final override var capturing = false
+        private set
 
     init {
         workerExecutor.maybeExecute {
@@ -81,9 +82,6 @@ internal open class WebRtcLocalVideoTrack(
     }
 
     override fun registerCapturingListener(listener: LocalMediaTrack.CapturingListener) {
-        signalingExecutor.maybeExecute {
-            listener.safeOnCapturing(capturing)
-        }
         capturingListeners += listener
     }
 

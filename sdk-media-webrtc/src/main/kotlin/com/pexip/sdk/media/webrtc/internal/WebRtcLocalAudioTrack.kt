@@ -27,6 +27,9 @@ internal class WebRtcLocalAudioTrack(
         }
     }
 
+    override val capturing: Boolean
+        get() = !microphoneMuteObserver.microphoneMute
+
     override fun startCapture() {
         workerExecutor.maybeExecute {
             microphoneMuteObserver.microphoneMute = false
@@ -40,9 +43,6 @@ internal class WebRtcLocalAudioTrack(
     }
 
     override fun registerCapturingListener(listener: LocalMediaTrack.CapturingListener) {
-        signalingExecutor.maybeExecute {
-            listener.safeOnCapturing(!microphoneMuteObserver.microphoneMute)
-        }
         capturingListeners += listener
     }
 

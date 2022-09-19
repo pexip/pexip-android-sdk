@@ -50,6 +50,7 @@ internal class WebRtcMediaConnection(
     // Rename due to platform declaration clash
     @set:JvmName("setMainAudioTrackInternal")
     private var mainAudioTrack: LocalAudioTrack? by Delegates.observable(null) { _, old, new ->
+        if (started.get() && old != new && new != null) onMainAudioCapturingChange(new.capturing)
         old?.unregisterCapturingListener(mainAudioTrackCapturingListener)
         new?.registerCapturingListener(mainAudioTrackCapturingListener)
     }
@@ -57,6 +58,7 @@ internal class WebRtcMediaConnection(
     // Rename due to platform declaration clash
     @set:JvmName("setMainVideoTrackInternal")
     private var mainVideoTrack: LocalVideoTrack? by Delegates.observable(null) { _, old, new ->
+        if (started.get() && old != new && new != null) onMainVideoCapturingChange(new.capturing)
         old?.unregisterCapturingListener(mainVideoTrackCapturingListener)
         new?.registerCapturingListener(mainVideoTrackCapturingListener)
     }
@@ -84,16 +86,22 @@ internal class WebRtcMediaConnection(
             onSetLocalDescriptionSuccess()
         }
     }
-    private val remoteSdpObserver = object : SimpleSdpObserver {}
+    private val remoteSdpObserver = object : SimpleSdpObserver {
+
+        override fun onSetSuccess() {
+            mainAudioTrack?.let { onMainAudioCapturingChange(it.capturing) }
+            mainVideoTrack?.let { onMainVideoCapturingChange(it.capturing) }
+        }
+    }
     private val mainRemoteVideoTrackListeners =
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
     private val presentationRemoteVideoTrackListeners =
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
     private val mainAudioTrackCapturingListener = LocalMediaTrack.CapturingListener {
-        if (it) onAudioUnmuted() else onAudioMuted()
+        if (started.get()) onMainAudioCapturingChange(it)
     }
     private val mainVideoTrackCapturingListener = LocalMediaTrack.CapturingListener {
-        if (it) onVideoUnmuted() else onVideoMuted()
+        if (started.get()) onMainVideoCapturingChange(it)
     }
 
     override fun setMainAudioTrack(localAudioTrack: LocalAudioTrack?) {
@@ -289,27 +297,23 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    private fun onAudioMuted() {
+    private fun onMainAudioCapturingChange(capturing: Boolean) {
         networkExecutor.maybeExecute {
-            runCatching(config.signaling::onAudioMuted)
+            val f = when (capturing) {
+                true -> config.signaling::onAudioUnmuted
+                else -> config.signaling::onAudioMuted
+            }
+            runCatching(f)
         }
     }
 
-    private fun onAudioUnmuted() {
+    private fun onMainVideoCapturingChange(capturing: Boolean) {
         networkExecutor.maybeExecute {
-            runCatching(config.signaling::onAudioUnmuted)
-        }
-    }
-
-    private fun onVideoMuted() {
-        networkExecutor.maybeExecute {
-            runCatching(config.signaling::onVideoMuted)
-        }
-    }
-
-    private fun onVideoUnmuted() {
-        networkExecutor.maybeExecute {
-            runCatching(config.signaling::onVideoUnmuted)
+            val f = when (capturing) {
+                true -> config.signaling::onVideoUnmuted
+                else -> config.signaling::onVideoMuted
+            }
+            runCatching(f)
         }
     }
 
