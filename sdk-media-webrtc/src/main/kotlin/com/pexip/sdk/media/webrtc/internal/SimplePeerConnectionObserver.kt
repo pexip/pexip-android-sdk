@@ -3,6 +3,7 @@ package com.pexip.sdk.media.webrtc.internal
 import org.webrtc.CandidatePairChangeEvent
 import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
+import org.webrtc.IceCandidateErrorEvent
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import org.webrtc.RtpReceiver
@@ -17,6 +18,9 @@ internal interface SimplePeerConnectionObserver : PeerConnection.Observer {
     }
 
     override fun onIceCandidate(candidate: IceCandidate) {
+    }
+
+    override fun onIceCandidateError(event: IceCandidateErrorEvent?) {
     }
 
     override fun onIceCandidatesRemoved(candidates: Array<out IceCandidate>) {

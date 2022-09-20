@@ -4,12 +4,12 @@ import android.content.Context
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
+import com.pexip.sdk.media.VideoTrack
 import org.webrtc.CapturerObserver
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoFrame
 import org.webrtc.VideoSource
-import org.webrtc.VideoTrack
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicBoolean
@@ -19,10 +19,10 @@ internal open class WebRtcLocalVideoTrack(
     private val textureHelper: SurfaceTextureHelper,
     private val videoCapturer: VideoCapturer,
     private val videoSource: VideoSource,
-    videoTrack: VideoTrack,
+    internal val videoTrack: org.webrtc.VideoTrack,
     protected val workerExecutor: Executor,
     protected val signalingExecutor: Executor,
-) : LocalVideoTrack, WebRtcVideoTrack(videoTrack) {
+) : LocalVideoTrack, VideoTrack by WebRtcVideoTrack(videoTrack) {
 
     private val disposed = AtomicBoolean()
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()

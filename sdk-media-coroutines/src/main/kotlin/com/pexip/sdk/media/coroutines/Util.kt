@@ -79,6 +79,16 @@ public fun MediaConnection.getMainRemoteVideoTrack(): Flow<VideoTrack?> = callba
 }
 
 /**
+ * Converts this [MediaConnection] to a main remote video track [StateFlow].
+ *
+ * @return a state flow of main remote video track
+ */
+public fun MediaConnection.mainRemoteVideoTrackIn(
+    scope: CoroutineScope,
+    started: SharingStarted,
+): StateFlow<VideoTrack?> = getMainRemoteVideoTrack().stateIn(scope, started, mainRemoteVideoTrack)
+
+/**
  * Converts this [MediaConnection] to a presentation remote video track [Flow].
  *
  * @return a flow of presentation remote video track changes
@@ -88,6 +98,17 @@ public fun MediaConnection.getPresentationRemoteVideoTrack(): Flow<VideoTrack?> 
     registerPresentationRemoteVideoTrackListener(listener)
     awaitClose { unregisterPresentationRemoteVideoTrackListener(listener) }
 }
+
+/**
+ * Converts this [MediaConnection] to a presentation remote video track [StateFlow].
+ *
+ * @return a flow of presentation remote video track
+ */
+public fun MediaConnection.presentationRemoteVideoTrackIn(
+    scope: CoroutineScope,
+    started: SharingStarted,
+): StateFlow<VideoTrack?> =
+    getPresentationRemoteVideoTrack().stateIn(scope, started, presentationRemoteVideoTrack)
 
 /**
  * Converts this [AudioDeviceManager] to available audio devices [Flow].

@@ -8,13 +8,14 @@ import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
+import org.webrtc.MediaStream
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
+import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription
-import org.webrtc.VideoTrack
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicBoolean
@@ -26,26 +27,12 @@ internal class WebRtcMediaConnection(
     private val workerExecutor: Executor,
     private val networkExecutor: Executor,
     private val signalingExecutor: Executor,
-) : MediaConnection {
+) : MediaConnection, SimplePeerConnectionObserver {
 
     private val started = AtomicBoolean()
     private val disposed = AtomicBoolean()
-    private val observer = object : SimplePeerConnectionObserver {
-
-        private val shouldRenegotiate = AtomicBoolean()
-
-        override fun onIceCandidate(candidate: IceCandidate) {
-            onCandidate(candidate.sdp, candidate.sdpMid)
-        }
-
-        override fun onRenegotiationNeeded() {
-            // Skip the first call to onRenegotiationNeeded() since it's called right after
-            // PeerConnection creation and we're still not ready to use createOffer()
-            if (shouldRenegotiate.compareAndSet(false, true)) return
-            createOffer()
-        }
-    }
-    private val connection = factory.createPeerConnection(createRTCConfiguration(), observer)
+    private val shouldRenegotiate = AtomicBoolean()
+    private val connection = factory.createPeerConnection(createRTCConfiguration(), this)
 
     // Rename due to platform declaration clash
     @set:JvmName("setMainAudioTrackInternal")
@@ -63,6 +50,7 @@ internal class WebRtcMediaConnection(
         new?.registerCapturingListener(mainVideoTrackCapturingListener)
     }
 
+    // Rename due to platform declaration clash
     @set:JvmName("setPresentationVideoTrackInternal")
     private var presentationVideoTrack: LocalVideoTrack? by Delegates.observable(null) { _, old, new ->
         if (old == new) return@observable
@@ -71,10 +59,11 @@ internal class WebRtcMediaConnection(
 
     private var mainAudioTransceiver: RtpTransceiver? = null
     private var mainVideoTransceiver: RtpTransceiver? = null
-    private val presentationVideoTransceiver = connection.addTransceiver(
+    private val presentationVideoTransceiver: RtpTransceiver = connection.addTransceiver(
         MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
         RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
     )
+    private val mainAudioTransceiverLock = Any()
     private val mainVideoTransceiverLock = Any()
     private val localSdpObserver = object : SimpleSdpObserver {
 
@@ -104,6 +93,22 @@ internal class WebRtcMediaConnection(
         if (started.get()) onMainVideoCapturingChange(it)
     }
 
+    override val mainRemoteVideoTrack: com.pexip.sdk.media.VideoTrack?
+        get() = synchronized(mainVideoTransceiverLock) {
+            mainVideoTransceiver?.takeIf { it.direction == RtpTransceiverDirection.SEND_RECV }
+                ?.receiver
+                ?.videoTrack
+                ?.let(::WebRtcVideoTrack)
+        }
+
+    override val presentationRemoteVideoTrack: com.pexip.sdk.media.VideoTrack?
+        get() = synchronized(presentationVideoTransceiver) {
+            presentationVideoTransceiver.takeIf { it.direction == RtpTransceiverDirection.RECV_ONLY || it.direction == RtpTransceiverDirection.SEND_RECV }
+                ?.receiver
+                ?.videoTrack
+                ?.let(::WebRtcVideoTrack)
+        }
+
     override fun setMainAudioTrack(localAudioTrack: LocalAudioTrack?) {
         val lat = when (localAudioTrack) {
             is WebRtcLocalAudioTrack -> localAudioTrack
@@ -111,12 +116,14 @@ internal class WebRtcMediaConnection(
             else -> throw IllegalArgumentException("localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.")
         }
         workerExecutor.maybeExecute {
-            val transceiver = when (val transceiver = mainAudioTransceiver) {
-                null -> connection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
-                else -> transceiver
+            synchronized(mainAudioTransceiverLock) {
+                val transceiver = when (val transceiver = mainAudioTransceiver) {
+                    null -> connection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
+                    else -> transceiver
+                }
+                transceiver.sender.setTrack(lat?.audioTrack, false)
+                mainAudioTransceiver = transceiver
             }
-            transceiver.sender.setTrack(lat?.audioTrack, false)
-            mainAudioTransceiver = transceiver
             mainAudioTrack = lat
         }
     }
@@ -148,10 +155,19 @@ internal class WebRtcMediaConnection(
         }
         workerExecutor.maybeExecute {
             synchronized(presentationVideoTransceiver) {
-                presentationVideoTransceiver.direction = when (lvt) {
-                    null -> RtpTransceiverDirection.INACTIVE
-                    else -> RtpTransceiverDirection.SEND_RECV
+                val newDirection = when (lvt) {
+                    null -> when (presentationVideoTransceiver.direction) {
+                        RtpTransceiverDirection.SEND_ONLY -> RtpTransceiverDirection.INACTIVE
+                        RtpTransceiverDirection.SEND_RECV -> RtpTransceiverDirection.RECV_ONLY
+                        else -> null
+                    }
+                    else -> when (presentationVideoTransceiver.direction) {
+                        RtpTransceiverDirection.INACTIVE -> RtpTransceiverDirection.SEND_ONLY
+                        RtpTransceiverDirection.RECV_ONLY -> RtpTransceiverDirection.SEND_RECV
+                        else -> null
+                    }
                 }
+                newDirection?.let(presentationVideoTransceiver::setDirection)
                 presentationVideoTransceiver.sender.setTrack(lvt?.videoTrack, false)
             }
             presentationVideoTrack = lvt
@@ -161,10 +177,12 @@ internal class WebRtcMediaConnection(
     override fun startPresentationReceive() {
         if (!config.presentationInMain) workerExecutor.maybeExecute {
             synchronized(presentationVideoTransceiver) {
-                presentationVideoTransceiver.direction = RtpTransceiverDirection.SEND_RECV
-                val videoTrack =
-                    (presentationVideoTransceiver.receiver.track() as? VideoTrack)?.let(::WebRtcVideoTrack)
-                presentationRemoteVideoTrackListeners.notify(videoTrack)
+                val newDirection = when (presentationVideoTransceiver.direction) {
+                    RtpTransceiverDirection.INACTIVE -> RtpTransceiverDirection.RECV_ONLY
+                    RtpTransceiverDirection.SEND_ONLY -> RtpTransceiverDirection.SEND_RECV
+                    else -> null
+                }
+                newDirection?.let(presentationVideoTransceiver::setDirection)
             }
         }
     }
@@ -172,10 +190,12 @@ internal class WebRtcMediaConnection(
     override fun stopPresentationReceive() {
         if (!config.presentationInMain) workerExecutor.maybeExecute {
             synchronized(presentationVideoTransceiver) {
-                if (presentationVideoTransceiver.sender.track() == null) {
-                    presentationVideoTransceiver.direction = RtpTransceiverDirection.INACTIVE
+                val newDirection = when (presentationVideoTransceiver.direction) {
+                    RtpTransceiverDirection.RECV_ONLY -> RtpTransceiverDirection.INACTIVE
+                    RtpTransceiverDirection.SEND_RECV -> RtpTransceiverDirection.SEND_ONLY
+                    else -> null
                 }
-                presentationRemoteVideoTrackListeners.notify(null)
+                newDirection?.let(presentationVideoTransceiver::setDirection)
             }
         }
     }
@@ -198,7 +218,9 @@ internal class WebRtcMediaConnection(
                 mainAudioTrack = null
                 mainVideoTrack = null
                 presentationVideoTrack = null
-                mainAudioTransceiver?.sender?.setTrack(null, false)
+                synchronized(mainAudioTransceiverLock) {
+                    mainAudioTransceiver?.sender?.setTrack(null, false)
+                }
                 synchronized(mainVideoTransceiverLock) {
                     mainVideoTransceiver?.sender?.setTrack(null, false)
                 }
@@ -213,13 +235,6 @@ internal class WebRtcMediaConnection(
     }
 
     override fun registerMainRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
-        signalingExecutor.maybeExecute {
-            synchronized(mainVideoTransceiverLock) {
-                val t = mainVideoTransceiver ?: return@synchronized
-                val videoTrack = (t.receiver?.track() as? VideoTrack)?.let(::WebRtcVideoTrack)
-                listener.notify(videoTrack)
-            }
-        }
         mainRemoteVideoTrackListeners += listener
     }
 
@@ -228,20 +243,45 @@ internal class WebRtcMediaConnection(
     }
 
     override fun registerPresentationRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
-        if (!config.presentationInMain) signalingExecutor.maybeExecute {
-            synchronized(presentationVideoTransceiver) {
-                val t = presentationVideoTransceiver
-                    .takeIf { it.currentDirection == RtpTransceiverDirection.SEND_RECV }
-                    ?: return@synchronized
-                val videoTrack = (t.receiver?.track() as? VideoTrack)?.let(::WebRtcVideoTrack)
-                listener.notify(videoTrack)
-            }
-        }
         presentationRemoteVideoTrackListeners += listener
     }
 
     override fun unregisterPresentationRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
         presentationRemoteVideoTrackListeners -= listener
+    }
+
+    override fun onIceCandidate(candidate: IceCandidate) {
+        onCandidate(candidate.sdp, candidate.sdpMid)
+    }
+
+    override fun onRenegotiationNeeded() {
+        // Skip the first call to onRenegotiationNeeded() since it's called right after
+        // PeerConnection creation and we're still not ready to use createOffer()
+        if (shouldRenegotiate.compareAndSet(false, true)) return
+        createOffer()
+    }
+
+    override fun onAddTrack(receiver: RtpReceiver, streams: Array<out MediaStream>) {
+        val videoTrack = receiver.videoTrack?.let(::WebRtcVideoTrack)
+        when (receiver.id()) {
+            synchronized(mainVideoTransceiverLock) { mainVideoTransceiver?.receiver?.id() } -> {
+                mainRemoteVideoTrackListeners.notify(videoTrack)
+            }
+            synchronized(presentationVideoTransceiver) { presentationVideoTransceiver.receiver.id() } -> {
+                presentationRemoteVideoTrackListeners.notify(videoTrack)
+            }
+        }
+    }
+
+    override fun onRemoveTrack(receiver: RtpReceiver) {
+        when (receiver.id()) {
+            synchronized(mainVideoTransceiverLock) { mainVideoTransceiver?.receiver?.id() } -> {
+                mainRemoteVideoTrackListeners.notify(null)
+            }
+            synchronized(presentationVideoTransceiver) { presentationVideoTransceiver.receiver.id() } -> {
+                presentationRemoteVideoTrackListeners.notify(null)
+            }
+        }
     }
 
     private fun createOffer() {
@@ -265,7 +305,9 @@ internal class WebRtcMediaConnection(
     private fun onSetLocalDescriptionSuccess() {
         workerExecutor.maybeExecute {
             val mangledDescription = connection.localDescription.mangle(
-                mainAudioMid = mainAudioTransceiver?.mid,
+                mainAudioMid = synchronized(mainAudioTransceiverLock) {
+                    mainAudioTransceiver?.mid
+                },
                 mainVideoMid = synchronized(mainVideoTransceiverLock) {
                     mainVideoTransceiver?.mid
                 },
@@ -317,12 +359,6 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    private fun MediaConnection.RemoteVideoTrackListener.notify(videoTrack: WebRtcVideoTrack?) {
-        signalingExecutor.maybeExecute {
-            safeOnRemoteVideoTrack(videoTrack)
-        }
-    }
-
     private fun Collection<MediaConnection.RemoteVideoTrackListener>.notify(videoTrack: WebRtcVideoTrack?) {
         signalingExecutor.maybeExecute {
             forEach {
@@ -356,4 +392,7 @@ internal class WebRtcMediaConnection(
         c.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
         return c
     }
+
+    private val RtpReceiver.videoTrack
+        get() = track() as? org.webrtc.VideoTrack
 }

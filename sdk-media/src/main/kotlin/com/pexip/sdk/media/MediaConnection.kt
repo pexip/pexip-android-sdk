@@ -2,8 +2,15 @@ package com.pexip.sdk.media
 
 /**
  * A media connection.
+ *
+ * @property mainRemoteVideoTrack current main remote video track or null
+ * @property presentationRemoteVideoTrack current presentation remote video track or null
  */
 public interface MediaConnection {
+
+    public val mainRemoteVideoTrack: VideoTrack?
+
+    public val presentationRemoteVideoTrack: VideoTrack?
 
     /**
      * Starts the negotiation process.
