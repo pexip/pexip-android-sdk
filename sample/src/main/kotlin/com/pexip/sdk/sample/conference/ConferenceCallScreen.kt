@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CallEnd
 import androidx.compose.material.icons.rounded.Message
@@ -32,12 +30,11 @@ import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.VideocamOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,7 +50,6 @@ import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConferenceCallScreen(
     rendering: ConferenceCallRendering,
@@ -61,45 +57,47 @@ fun ConferenceCallScreen(
     modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = rendering.onBackClick)
-    Scaffold(
-        contentWindowInsets = WindowInsets.safeDrawing,
-        modifier = modifier
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize()
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                VideoTrackRenderer(
-                    videoTrack = rendering.mainRemoteVideoTrack,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(ASPECT_RATIO_LANDSCAPE)
-                )
-                if (rendering.presentationRemoteVideoTrack != null) {
-                    VideoTrackRenderer(
-                        videoTrack = rendering.presentationRemoteVideoTrack,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(ASPECT_RATIO_LANDSCAPE)
+    Surface(modifier = modifier) {
+        BoxWithConstraints {
+            val landscape = remember(maxWidth, maxHeight) { maxWidth > maxHeight }
+            if (landscape) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    MainVideoTrackRenderer(
+                        rendering = rendering,
+                        modifier = Modifier.weight(1f, false)
+                    )
+                    PresentationVideoTrackRenderer(
+                        rendering = rendering,
+                        modifier = Modifier.weight(1f, false)
+                    )
+                }
+            } else {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    MainVideoTrackRenderer(
+                        rendering = rendering,
+                        modifier = Modifier.weight(1f, false)
+                    )
+                    PresentationVideoTrackRenderer(
+                        rendering = rendering,
+                        modifier = Modifier.weight(1f, false)
                     )
                 }
             }
             BoxWithConstraints(
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxSize()
+                    .safeContentPadding()
             ) {
-                val aspectRatio = remember(maxWidth, maxHeight) {
-                    when {
-                        maxWidth > maxHeight -> ASPECT_RATIO_LANDSCAPE
-                        else -> ASPECT_RATIO_PORTRAIT
-                    }
+                val aspectRatio = remember(landscape) {
+                    if (landscape) ASPECT_RATIO_LANDSCAPE else ASPECT_RATIO_PORTRAIT
                 }
                 AnimatedVisibility(
                     visible = rendering.cameraCapturing,
@@ -143,6 +141,30 @@ fun ConferenceCallScreen(
 }
 
 @Composable
+private fun MainVideoTrackRenderer(
+    rendering: ConferenceCallRendering,
+    modifier: Modifier = Modifier,
+) {
+    VideoTrackRenderer(
+        videoTrack = rendering.mainRemoteVideoTrack,
+        modifier = modifier.aspectRatio(ASPECT_RATIO_LANDSCAPE)
+    )
+}
+
+@Composable
+private fun PresentationVideoTrackRenderer(
+    rendering: ConferenceCallRendering,
+    modifier: Modifier = Modifier,
+) {
+    if (rendering.presentationRemoteVideoTrack != null) {
+        VideoTrackRenderer(
+            videoTrack = rendering.presentationRemoteVideoTrack,
+            modifier = modifier.aspectRatio(ASPECT_RATIO_LANDSCAPE)
+        )
+    }
+}
+
+@Composable
 private fun EndCallButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
     FloatingActionButton(
         onClick = rendering.onBackClick,
@@ -171,8 +193,10 @@ private fun CameraButton(rendering: ConferenceCallRendering, modifier: Modifier 
 
 @Composable
 private fun MicrophoneButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
-    SmallFloatingActionButton(onClick = rendering.onToggleLocalAudioCapturing,
-        modifier = modifier) {
+    SmallFloatingActionButton(
+        onClick = rendering.onToggleLocalAudioCapturing,
+        modifier = modifier
+    ) {
         val imageVector = remember(rendering.localAudioCapturing) {
             when (rendering.localAudioCapturing) {
                 true -> Icons.Rounded.Mic
