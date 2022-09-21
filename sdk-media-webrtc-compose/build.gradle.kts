@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace = "com.pexip.sdk.media.webrtc.compose"
     buildFeatures.compose = true
     kotlinOptions {
         freeCompilerArgs += "-Xexplicit-api=strict"
