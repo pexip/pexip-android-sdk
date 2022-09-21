@@ -33,9 +33,11 @@ import androidx.compose.material.icons.rounded.VideocamOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -142,7 +144,7 @@ fun ConferenceCallScreen(
 
 @Composable
 private fun EndCallButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
-    CallButton(
+    FloatingActionButton(
         onClick = rendering.onBackClick,
         containerColor = MaterialTheme.colorScheme.errorContainer,
         modifier = modifier
@@ -153,7 +155,10 @@ private fun EndCallButton(rendering: ConferenceCallRendering, modifier: Modifier
 
 @Composable
 private fun CameraButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
-    SmallCallButton(onClick = rendering.onToggleCameraCapturing, modifier = modifier) {
+    SmallFloatingActionButton(
+        onClick = rendering.onToggleCameraCapturing,
+        modifier = modifier
+    ) {
         val imageVector = remember(rendering.cameraCapturing) {
             when (rendering.cameraCapturing) {
                 true -> Icons.Rounded.Videocam
@@ -166,7 +171,8 @@ private fun CameraButton(rendering: ConferenceCallRendering, modifier: Modifier 
 
 @Composable
 private fun MicrophoneButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
-    SmallCallButton(onClick = rendering.onToggleLocalAudioCapturing, modifier = modifier) {
+    SmallFloatingActionButton(onClick = rendering.onToggleLocalAudioCapturing,
+        modifier = modifier) {
         val imageVector = remember(rendering.localAudioCapturing) {
             when (rendering.localAudioCapturing) {
                 true -> Icons.Rounded.Mic
@@ -193,7 +199,7 @@ private fun ScreenShareButton(rendering: ConferenceCallRendering, modifier: Modi
             { launcher.launch(manager.createScreenCaptureIntent()) }
         }
     }
-    SmallCallButton(onClick = onToggleScreenCapture, modifier = modifier) {
+    SmallFloatingActionButton(onClick = onToggleScreenCapture, modifier = modifier) {
         val imageVector = remember(rendering.screenCapturing) {
             when (rendering.screenCapturing) {
                 true -> Icons.Rounded.StopScreenShare
@@ -209,7 +215,7 @@ private fun MoreButton(rendering: ConferenceCallRendering, modifier: Modifier = 
     var expanded by remember { mutableStateOf(false) }
     val onDismissRequest = { expanded = false }
     Box(modifier = modifier) {
-        SmallCallButton(onClick = { expanded = true }) {
+        SmallFloatingActionButton(onClick = { expanded = true }) {
             Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = null)
         }
         DropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
