@@ -37,6 +37,7 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
+import androidx.core.view.WindowInsetsControllerCompat
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
@@ -57,6 +60,17 @@ fun ConferenceCallScreen(
     modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = rendering.onBackClick)
+    val systemUiController = rememberSystemUiController()
+    DisposableEffect(systemUiController) {
+        val systemBarsBehavior = systemUiController.systemBarsBehavior
+        systemUiController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        systemUiController.isSystemBarsVisible = false
+        onDispose {
+            systemUiController.systemBarsBehavior = systemBarsBehavior
+            systemUiController.isSystemBarsVisible = true
+        }
+    }
     Surface(modifier = modifier) {
         BoxWithConstraints {
             val landscape = remember(maxWidth, maxHeight) { maxWidth > maxHeight }
