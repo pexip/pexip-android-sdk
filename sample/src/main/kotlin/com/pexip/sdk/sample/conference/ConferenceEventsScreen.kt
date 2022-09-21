@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.pexip.sdk.sample.conference
 
@@ -6,18 +6,20 @@ import android.text.format.DateFormat
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.ListItem
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -39,39 +41,45 @@ fun ConferenceEventsScreen(
     modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = rendering.onBackClick)
-    Column(modifier = modifier) {
-        TopAppBar(
-            title = {
-                Text(text = "Events")
-            },
-            navigationIcon = {
-                IconButton(onClick = rendering.onBackClick) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = null
-                    )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "Events")
+                },
+                navigationIcon = {
+                    IconButton(onClick = rendering.onBackClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                }
+            )
+        },
+        modifier = modifier
+    ) {
+        Column(modifier = Modifier.padding(it)) {
+            val state = rememberLazyListState()
+            LaunchedEffect(state, rendering.conferenceEvents.size) {
+                state.animateScrollToItem(0)
+            }
+            LazyColumn(
+                state = state,
+                reverseLayout = true,
+                contentPadding = PaddingValues(vertical = 8.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                items(rendering.conferenceEvents.asReversed()) {
+                    ConferenceEvent(conferenceEvent = it)
                 }
             }
-        )
-        val state = rememberLazyListState()
-        LaunchedEffect(state, rendering.conferenceEvents.size) {
-            state.animateScrollToItem(0)
+            Divider()
+            WorkflowRendering(
+                rendering = rendering.composerRendering,
+                viewEnvironment = environment
+            )
         }
-        LazyColumn(
-            state = state,
-            reverseLayout = true,
-            contentPadding = PaddingValues(vertical = 8.dp),
-            modifier = Modifier.weight(1f)
-        ) {
-            items(rendering.conferenceEvents.asReversed()) {
-                ConferenceEvent(conferenceEvent = it)
-            }
-        }
-        Divider()
-        WorkflowRendering(
-            rendering = rendering.composerRendering,
-            viewEnvironment = environment
-        )
     }
 }
 
@@ -106,10 +114,10 @@ private fun MessageReceivedConferenceEvent(
         overlineText = {
             Text(text = conferenceEvent.participantName)
         },
-        text = {
+        headlineText = {
             Text(text = conferenceEvent.payload)
         },
-        trailing = {
+        trailingContent = {
             Text(text = format.format(date))
         },
         modifier = modifier
@@ -128,10 +136,10 @@ private fun PresentationStartConferenceEvent(
         overlineText = {
             Text(text = conferenceEvent.presenterName)
         },
-        text = {
+        headlineText = {
             Text(text = "Presentation started")
         },
-        trailing = {
+        trailingContent = {
             Text(text = format.format(date))
         },
         modifier = modifier
@@ -147,10 +155,10 @@ private fun PresentationStopConferenceEvent(
     val format = remember(context) { DateFormat.getTimeFormat(context) }
     val date = remember(conferenceEvent.at) { Date(conferenceEvent.at) }
     ListItem(
-        text = {
+        headlineText = {
             Text(text = "Presentation stopped")
         },
-        trailing = {
+        trailingContent = {
             Text(text = format.format(date))
         },
         modifier = modifier

@@ -5,31 +5,38 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
     BackHandler(onBack = rendering.onBackClick)
@@ -49,6 +56,7 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                 }
             )
         },
+        contentWindowInsets = WindowInsets.safeDrawing,
         modifier = modifier
     ) {
         Box(
@@ -68,18 +76,25 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                         imeAction = ImeAction.Next
                     )
                 }
-                OutlinedTextField(
+                val focusRequester = remember { FocusRequester() }
+                DisposableEffect(focusRequester) {
+                    focusRequester.requestFocus()
+                    onDispose { focusRequester.freeFocus() }
+                }
+                TextField(
                     value = rendering.alias,
                     onValueChange = rendering.onAliasChange,
                     label = {
                         Text(text = "Alias")
                     },
                     placeholder = {
-                        Text(text = "alias")
+                        Text(text = "john.doe.vmr@example.com")
                     },
                     maxLines = 1,
                     keyboardOptions = aliasKeyboardOptions,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
                 )
                 val hostKeyboardOptions = remember {
                     KeyboardOptions(
@@ -92,7 +107,7 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                 val hostKeyboardActions = remember {
                     KeyboardActions(onGo = { currentOnResolveClick() })
                 }
-                OutlinedTextField(
+                TextField(
                     value = rendering.host,
                     onValueChange = rendering.onHostChange,
                     label = {

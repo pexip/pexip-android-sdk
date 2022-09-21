@@ -8,10 +8,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,14 +45,14 @@ private fun TonePad(rendering: DtmfRendering, modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ToneButton(tone: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
         onClick = onClick,
         shape = ToneButtonShape,
-        color = MaterialTheme.colors.primary,
-        elevation = 4.dp,
+        color = MaterialTheme.colorScheme.primary,
+        shadowElevation = 4.dp,
         modifier = modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {
