@@ -34,6 +34,9 @@ public fun interface NodeResolver {
         @JvmStatic
         @JvmOverloads
         public fun create(dnssec: Boolean = false): NodeResolver =
-            RealNodeResolver(if (dnssec) DnssecResolverApi.INSTANCE else ResolverApi.INSTANCE)
+            create(if (dnssec) DnssecResolverApi.INSTANCE else ResolverApi.INSTANCE)
+
+        @JvmStatic
+        public fun create(api: ResolverApi): NodeResolver = RealNodeResolver(api)
     }
 }

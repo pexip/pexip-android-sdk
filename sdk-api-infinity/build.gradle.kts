@@ -12,12 +12,12 @@ kotlin {
 dependencies {
     api(projects.sdkApi)
 
+    api(libs.minidns.hla)
     api(libs.okhttp)
     api(libs.okio)
 
     implementation(libs.okhttp.sse)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.minidns.hla)
 
     testImplementation(libs.okhttp.mockwebserver)
 }
