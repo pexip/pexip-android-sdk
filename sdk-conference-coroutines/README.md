@@ -8,6 +8,6 @@ Coroutines support for sdk-conference.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-conference-coroutines:0.9.0")
+    implementation("com.pexip.sdk:sdk-conference-coroutines:0.10.0")
 }
 ```
