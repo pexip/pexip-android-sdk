@@ -7,6 +7,41 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.10.0] - 2022-09-23
+
+### Added
+
+- `AudioDeviceManager` that provides available audio devices, selected audio device and allows you
+  to switch to a different one. Implementations of this interface will also manage audio focus
+  request in place of `LocalAudioTrack`
+- Support for `zOrderMediaOverlay` and `zOrderOnTop` in `VideoTrackRenderer`
+- Methods to list available device names (`getDeviceNames()`), available quality profiles for a
+  specific device (`getQualityProfiles(String)`) and whether the device is
+  front-facing (`isFrontFacing(String)`) or back-facing (`isBackFacing(String)`)
+- `CameraVideoTrack.switchCamera(String, CameraVideoTrack.SwitchCameraCallback)` that allows you to
+  switch to a specific device
+- Suspending `CameraVideoTrack.switchCamera(String?)`
+- `NodeResolver.create(ResolverApi)` that allows to pass a custom `ResolverApi` instance
+- `MediaConnection.mainRemoteVideoTrack` and `MediaConnection.presentationRemoteVideoTrack`
+  properties
+- `MediaConnection.mainRemoteVideoTrackIn(CoroutineScope, SharingStarted)`
+  and `MediaConnection.mainRemoteVideoTrackIn(CoroutineScope, SharingStarted)`
+- `LocalMediaTrack.capturing` property
+- `LocalMediaTrack.captureIn(CoroutineScope, SharingStarted)`
+
+### Changed
+
+- **BREAKING**: Various listeners will no longer be notified upon registration. Components that
+  followed this pattern now provide respective properties that let you read the current
+  value. `MediaConnection`, `LocalMediaTrack` were affected by this change
+- `CameraVideoTrack.switchCamera()` docs to mention that it will attempt to switch to the next
+  device name in the available devices list, rather than to opposite-facing device
+- `CameraVideoTrack.SwitchCameraCallback.onSuccess(String)` to return device name instead of whether
+  the camera is front-facing; `onSuccess(Boolean)` is deprecated and will still be called until it
+  is removed
+- Various deprecated methods with `DeprecationLevel.ERROR` were removed
+- Various deprecated methods `DeprecationLevel` to `DeprecationLevel.ERROR`
+
 ## [0.9.0] - 2022-08-25
 
 ### Added
@@ -124,7 +159,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.9.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.10.0...HEAD
+[0.10.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.10.0
 [0.9.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.9.0
 [0.8.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.8.0
 [0.7.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.7.1
