@@ -22,6 +22,7 @@ data class ConferenceState(
     val mainRemoteVideoTrack: VideoTrack? = connection.mainRemoteVideoTrack,
     val presentation: Boolean = false,
     val presentationRemoteVideoTrack: VideoTrack? = connection.presentationRemoteVideoTrack,
+    val showingAudioDevices: Boolean = false,
     val showingDtmf: Boolean = false,
     val showingConferenceEvents: Boolean = false,
     val conferenceEvents: List<ConferenceEvent> = emptyList(),

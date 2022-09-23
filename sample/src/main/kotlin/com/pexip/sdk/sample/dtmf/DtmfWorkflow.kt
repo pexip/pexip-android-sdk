@@ -11,15 +11,15 @@ import javax.inject.Singleton
 
 @Singleton
 class DtmfWorkflow @Inject constructor() :
-    StatefulWorkflow<Unit, DtmfState, DtmfOutput, DtmfRendering>() {
+    StatefulWorkflow<DtmfProps, DtmfState, DtmfOutput, DtmfRendering>() {
 
-    override fun initialState(props: Unit, snapshot: Snapshot?): DtmfState =
+    override fun initialState(props: DtmfProps, snapshot: Snapshot?): DtmfState =
         DtmfState(ToneGenerator(AudioManager.STREAM_DTMF, 80))
 
     override fun snapshotState(state: DtmfState): Snapshot? = null
 
     override fun render(
-        renderProps: Unit,
+        renderProps: DtmfProps,
         renderState: DtmfState,
         context: RenderContext,
     ): DtmfRendering {
@@ -34,6 +34,7 @@ class DtmfWorkflow @Inject constructor() :
             }
         }
         return DtmfRendering(
+            visible = renderProps.visible,
             onToneClick = context.send(::OnToneClick),
             onBackClick = context.send(::OnBackClick)
         )

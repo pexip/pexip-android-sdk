@@ -9,6 +9,7 @@ import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
+import com.pexip.sdk.sample.audio.AudioDeviceOutput
 import com.pexip.sdk.sample.composer.ComposerOutput
 import com.pexip.sdk.sample.dtmf.DtmfOutput
 import com.squareup.workflow1.WorkflowAction
@@ -43,6 +44,13 @@ class OnStopScreenCapture : ConferenceAction() {
             screenCapturing = false,
             screenCaptureVideoTrack = null
         )
+    }
+}
+
+class OnToggleAudioDevices : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(showingAudioDevices = !state.showingAudioDevices)
     }
 }
 
@@ -172,6 +180,15 @@ class OnPresentationRemoteVideoTrack(private val videoTrack: VideoTrack?) : Conf
 
     override fun Updater.apply() {
         state = state.copy(presentationRemoteVideoTrack = videoTrack)
+    }
+}
+
+class OnAudioDeviceOutput(private val output: AudioDeviceOutput) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        when (output) {
+            is AudioDeviceOutput.Back -> state = state.copy(showingAudioDevices = false)
+        }
     }
 }
 
