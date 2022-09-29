@@ -41,14 +41,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     context: Context,
-    private val eglBase: EglBase,
+    private val eglBase: EglBase?,
     private val cameraEnumerator: CameraEnumerator = when (Camera2Enumerator.isSupported(context)) {
         true -> Camera2Enumerator(context.applicationContext)
         else -> Camera1Enumerator()
     },
-    videoDecoderFactory: VideoDecoderFactory = DefaultVideoDecoderFactory(eglBase.eglBaseContext),
+    videoDecoderFactory: VideoDecoderFactory = DefaultVideoDecoderFactory(eglBase?.eglBaseContext),
     videoEncoderFactory: VideoEncoderFactory = DefaultVideoEncoderFactory(
-        eglBase.eglBaseContext,
+        eglBase?.eglBaseContext,
         false,
         false
     ),
@@ -215,13 +215,94 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     private fun createMediaTrackId() = UUID.randomUUID().toString()
 
     private fun createSurfaceTextureHelper(threadName: String) =
-        SurfaceTextureHelper.create(threadName, eglBase.eglBaseContext)
+        SurfaceTextureHelper.create(threadName, eglBase?.eglBaseContext)
 
     private fun checkNotDisposed() =
         check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
 
     private fun checkDeviceName(deviceName: String) =
         check(deviceName in getDeviceNames()) { "No available camera: $deviceName." }
+
+    /**
+     * A builder for [WebRtcMediaConnectionFactory].
+     *
+     * The created instance of [WebRtcMediaConnectionFactory] will use [DefaultVideoDecoderFactory],
+     * [DefaultVideoEncoderFactory] and either [Camera2Enumerator] if the OS supports it or
+     * [Camera1Enumerator] otherwise if corresponding methods were not used during before calling
+     * [build].
+     *
+     * @property context an instance of application context
+     */
+    public class Builder(context: Context) {
+
+        private val context = context.applicationContext
+
+        private var eglBase: EglBase? = null
+        private var cameraEnumerator: CameraEnumerator? = null
+        private var videoDecoderFactory: VideoDecoderFactory? = null
+        private var videoEncoderFactory: VideoEncoderFactory? = null
+
+        /**
+         * Sets an [EglBase].
+         *
+         * @param eglBase a shared [EglBase] instance
+         * @return this builder
+         */
+        public fun eglBase(eglBase: EglBase): Builder = apply {
+            this.eglBase = eglBase
+        }
+
+        /**
+         * Sets a [CameraEnumerator].
+         *
+         * @param cameraEnumerator an instance of [CameraEnumerator]
+         * @return this builder
+         */
+        public fun cameraEnumerator(cameraEnumerator: CameraEnumerator): Builder = apply {
+            this.cameraEnumerator = cameraEnumerator
+        }
+
+        /**
+         * Sets a [VideoDecoderFactory].
+         *
+         * @param videoDecoderFactory an instance of [VideoDecoderFactory]
+         * @return this builder
+         */
+        public fun videoDecoderFactory(videoDecoderFactory: VideoDecoderFactory): Builder = apply {
+            this.videoDecoderFactory = videoDecoderFactory
+        }
+
+        /**
+         * Sets a [VideoEncoderFactory].
+         *
+         * @param videoEncoderFactory an instance of [VideoEncoderFactory]
+         * @return this builder
+         */
+        public fun videoEncoderFactory(videoEncoderFactory: VideoEncoderFactory): Builder = apply {
+            this.videoEncoderFactory = videoEncoderFactory
+        }
+
+        /**
+         * Builds [WebRtcMediaConnectionFactory].
+         *
+         * @return an instance of [WebRtcMediaConnectionFactory]
+         */
+        public fun build(): WebRtcMediaConnectionFactory = WebRtcMediaConnectionFactory(
+            context = context,
+            eglBase = eglBase,
+            cameraEnumerator = cameraEnumerator ?: when (Camera2Enumerator.isSupported(context)) {
+                true -> Camera2Enumerator(context)
+                else -> Camera1Enumerator()
+            },
+            videoDecoderFactory = videoDecoderFactory
+                ?: DefaultVideoDecoderFactory(eglBase?.eglBaseContext),
+            videoEncoderFactory = videoEncoderFactory ?: DefaultVideoEncoderFactory(
+                eglBase?.eglBaseContext,
+                false,
+                false
+            )
+        )
+    }
 
     public companion object {
 
