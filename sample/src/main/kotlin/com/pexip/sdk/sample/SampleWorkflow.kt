@@ -3,9 +3,9 @@ package com.pexip.sdk.sample
 import com.pexip.sdk.sample.alias.AliasWorkflow
 import com.pexip.sdk.sample.conference.ConferenceProps
 import com.pexip.sdk.sample.conference.ConferenceWorkflow
+import com.pexip.sdk.sample.displayname.DisplayNameWorkflow
 import com.pexip.sdk.sample.pinchallenge.PinChallengeProps
 import com.pexip.sdk.sample.pinchallenge.PinChallengeWorkflow
-import com.pexip.sdk.sample.welcome.WelcomeWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.renderChild
@@ -16,14 +16,14 @@ import javax.inject.Singleton
 
 @Singleton
 class SampleWorkflow @Inject constructor(
-    private val welcomeWorkflow: WelcomeWorkflow,
+    private val displayNameWorkflow: DisplayNameWorkflow,
     private val aliasWorkflow: AliasWorkflow,
     private val pinChallengeWorkflow: PinChallengeWorkflow,
     private val conferenceWorkflow: ConferenceWorkflow,
 ) : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>() {
 
     override fun initialState(props: Unit, snapshot: Snapshot?): SampleState =
-        snapshot?.toParcelable() ?: SampleState.Welcome
+        snapshot?.toParcelable() ?: SampleState.DisplayName
 
     override fun snapshotState(state: SampleState): Snapshot = state.toSnapshot()
 
@@ -32,9 +32,9 @@ class SampleWorkflow @Inject constructor(
         renderState: SampleState,
         context: RenderContext,
     ): Any = when (renderState) {
-        is SampleState.Welcome -> context.renderChild(
-            child = welcomeWorkflow,
-            handler = ::OnWelcomeOutput
+        is SampleState.DisplayName -> context.renderChild(
+            child = displayNameWorkflow,
+            handler = ::OnDisplayNameOutput
         )
         is SampleState.Alias -> context.renderChild(
             child = aliasWorkflow,

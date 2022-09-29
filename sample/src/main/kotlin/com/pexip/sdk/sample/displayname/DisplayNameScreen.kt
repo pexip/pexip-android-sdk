@@ -1,4 +1,4 @@
-package com.pexip.sdk.sample.welcome
+package com.pexip.sdk.sample.displayname
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WelcomeScreen(rendering: WelcomeRendering, modifier: Modifier = Modifier) {
+fun DisplayNameScreen(rendering: DisplayNameRendering, modifier: Modifier = Modifier) {
     BackHandler(onBack = rendering.onBackClick)
     Scaffold(
         topBar = {

@@ -9,7 +9,7 @@ import java.net.URL
 sealed class SampleState : Parcelable {
 
     @Parcelize
-    object Welcome : SampleState()
+    object DisplayName : SampleState()
 
     @Parcelize
     object Alias : SampleState()

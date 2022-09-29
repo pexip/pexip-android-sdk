@@ -2,18 +2,18 @@ package com.pexip.sdk.sample
 
 import com.pexip.sdk.sample.alias.AliasOutput
 import com.pexip.sdk.sample.conference.ConferenceOutput
+import com.pexip.sdk.sample.displayname.DisplayNameOutput
 import com.pexip.sdk.sample.pinchallenge.PinChallengeOutput
-import com.pexip.sdk.sample.welcome.WelcomeOutput
 import com.squareup.workflow1.WorkflowAction
 
 typealias SampleAction = WorkflowAction<Unit, SampleState, SampleOutput>
 
-data class OnWelcomeOutput(val output: WelcomeOutput) : SampleAction() {
+data class OnDisplayNameOutput(val output: DisplayNameOutput) : SampleAction() {
 
     override fun Updater.apply() {
         when (output) {
-            is WelcomeOutput.Next -> state = SampleState.Alias
-            is WelcomeOutput.Back -> setOutput(SampleOutput.Finish)
+            is DisplayNameOutput.Next -> state = SampleState.Alias
+            is DisplayNameOutput.Back -> setOutput(SampleOutput.Finish)
         }
     }
 }
@@ -35,7 +35,7 @@ data class OnAliasOutput(val output: AliasOutput) : SampleAction() {
                 required = output.required
             )
             is AliasOutput.Toast -> setOutput(SampleOutput.Toast(output.message))
-            is AliasOutput.Back -> state = SampleState.Welcome
+            is AliasOutput.Back -> state = SampleState.DisplayName
         }
     }
 }

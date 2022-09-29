@@ -1,4 +1,4 @@
-package com.pexip.sdk.sample.welcome
+package com.pexip.sdk.sample.displayname
 
 import com.squareup.workflow1.ui.ViewFactory
 import com.squareup.workflow1.ui.compose.composeViewFactory
@@ -11,13 +11,13 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object WelcomeViewFactoryModule {
+object DisplayNameViewFactoryModule {
 
     @Provides
     @Singleton
     @IntoSet
-    fun provideWelcomeViewFactory(): ViewFactory<*> =
-        composeViewFactory<WelcomeRendering> { rendering, _ ->
-            WelcomeScreen(rendering)
+    fun provideDisplayNameViewFactory(): ViewFactory<*> =
+        composeViewFactory<DisplayNameRendering> { rendering, _ ->
+            DisplayNameScreen(rendering)
         }
 }
