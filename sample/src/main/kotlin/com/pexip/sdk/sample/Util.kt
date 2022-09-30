@@ -1,6 +1,9 @@
 package com.pexip.sdk.sample
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.squareup.workflow1.BaseRenderContext
 import com.squareup.workflow1.WorkflowAction
 
@@ -13,3 +16,6 @@ fun <Props, State, Output, T> BaseRenderContext<Props, State, Output>.send(actio
 inline fun log(tag: String, priority: Int = Log.INFO, block: () -> String) {
     if (Log.isLoggable(tag, priority)) Log.println(priority, tag, block())
 }
+
+fun Context.isPermissionGranted(permission: String) =
+    ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED

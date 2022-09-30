@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">"Video SDK"</string>
+    <string name="app_name_full">"Pexip Video SDK"</string>
     <!-- CONFERENCE -->
     <string name="conference_notification_channel_id" translatable="false">conference</string>
     <string name="conference_notification_channel_name">Conference</string>
     <string name="conference_notification_content_title">Conference</string>
+    <!-- PERMISSIONS -->
+    <string name="permissions_title">Grant permissions</string>
+    <string name="permissions_description">Granting permission in the next screen will make sure other participants are able to see and hear you if you’ve enabled your camera and microphone</string>
+    <string name="permissions_denied_title">What if I previously denied permissions?</string>
+    <string name="permissions_denied_description">We’ll open your phone’s settings where you can grant access manually</string>
+    <string name="permissions_continue">Continue</string>
 </resources>

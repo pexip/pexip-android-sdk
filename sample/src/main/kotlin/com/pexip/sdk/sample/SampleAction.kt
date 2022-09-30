@@ -3,10 +3,22 @@ package com.pexip.sdk.sample
 import com.pexip.sdk.sample.alias.AliasOutput
 import com.pexip.sdk.sample.conference.ConferenceOutput
 import com.pexip.sdk.sample.displayname.DisplayNameOutput
+import com.pexip.sdk.sample.permissions.PermissionsOutput
 import com.pexip.sdk.sample.pinchallenge.PinChallengeOutput
 import com.squareup.workflow1.WorkflowAction
 
 typealias SampleAction = WorkflowAction<Unit, SampleState, SampleOutput>
+
+data class OnPermissionsOutput(val output: PermissionsOutput) : SampleAction() {
+
+    override fun Updater.apply() {
+        when (output) {
+            is PermissionsOutput.ApplicationDetailsSettings -> setOutput(SampleOutput.ApplicationDetailsSettings)
+            is PermissionsOutput.Next -> state = SampleState.DisplayName
+            is PermissionsOutput.Back -> setOutput(SampleOutput.Finish)
+        }
+    }
+}
 
 data class OnDisplayNameOutput(val output: DisplayNameOutput) : SampleAction() {
 

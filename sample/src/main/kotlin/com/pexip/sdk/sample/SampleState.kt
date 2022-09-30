@@ -9,6 +9,9 @@ import java.net.URL
 sealed class SampleState : Parcelable {
 
     @Parcelize
+    object Permissions : SampleState()
+
+    @Parcelize
     object DisplayName : SampleState()
 
     @Parcelize
