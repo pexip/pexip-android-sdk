@@ -10,7 +10,9 @@ class OnPermissionsRequestResult(private val result: PermissionsRequestResult) :
     override fun Updater.apply() {
         val output = when {
             result.grants.all() -> PermissionsOutput.Next
-            result.rationales.none() && state.rationales.none() -> PermissionsOutput.ApplicationDetailsSettings
+            result.rationales.none() && state.rationales?.none() == true -> {
+                PermissionsOutput.ApplicationDetailsSettings
+            }
             else -> null
         }
         output?.let(::setOutput)
