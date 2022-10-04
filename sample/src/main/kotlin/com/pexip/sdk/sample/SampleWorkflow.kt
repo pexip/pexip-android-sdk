@@ -1,29 +1,41 @@
 package com.pexip.sdk.sample
 
+import android.Manifest
+import android.content.Context
+import android.os.Build
 import com.pexip.sdk.sample.alias.AliasWorkflow
 import com.pexip.sdk.sample.conference.ConferenceProps
 import com.pexip.sdk.sample.conference.ConferenceWorkflow
+import com.pexip.sdk.sample.displayname.DisplayNameWorkflow
+import com.pexip.sdk.sample.permissions.PermissionsProps
+import com.pexip.sdk.sample.permissions.PermissionsWorkflow
 import com.pexip.sdk.sample.pinchallenge.PinChallengeProps
 import com.pexip.sdk.sample.pinchallenge.PinChallengeWorkflow
-import com.pexip.sdk.sample.welcome.WelcomeWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.renderChild
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SampleWorkflow @Inject constructor(
-    private val welcomeWorkflow: WelcomeWorkflow,
+    @ApplicationContext private val context: Context,
+    private val permissionsWorkflow: PermissionsWorkflow,
+    private val displayNameWorkflow: DisplayNameWorkflow,
     private val aliasWorkflow: AliasWorkflow,
     private val pinChallengeWorkflow: PinChallengeWorkflow,
     private val conferenceWorkflow: ConferenceWorkflow,
 ) : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>() {
 
-    override fun initialState(props: Unit, snapshot: Snapshot?): SampleState =
-        snapshot?.toParcelable() ?: SampleState.Welcome
+    override fun initialState(props: Unit, snapshot: Snapshot?): SampleState {
+        if (Permissions.all(context::isPermissionGranted)) {
+            return snapshot?.toParcelable() ?: SampleState.DisplayName
+        }
+        return SampleState.Permissions
+    }
 
     override fun snapshotState(state: SampleState): Snapshot = state.toSnapshot()
 
@@ -32,9 +44,14 @@ class SampleWorkflow @Inject constructor(
         renderState: SampleState,
         context: RenderContext,
     ): Any = when (renderState) {
-        is SampleState.Welcome -> context.renderChild(
-            child = welcomeWorkflow,
-            handler = ::OnWelcomeOutput
+        is SampleState.Permissions -> context.renderChild(
+            child = permissionsWorkflow,
+            props = PermissionsProps(Permissions),
+            handler = ::OnPermissionsOutput
+        )
+        is SampleState.DisplayName -> context.renderChild(
+            child = displayNameWorkflow,
+            handler = ::OnDisplayNameOutput
         )
         is SampleState.Alias -> context.renderChild(
             child = aliasWorkflow,
@@ -59,5 +76,16 @@ class SampleWorkflow @Inject constructor(
             ),
             handler = ::OnConferenceOutput
         )
+    }
+
+    companion object {
+
+        private val Permissions = buildSet {
+            add(Manifest.permission.RECORD_AUDIO)
+            add(Manifest.permission.CAMERA)
+            if (Build.VERSION.SDK_INT >= 31) {
+                add(Manifest.permission.BLUETOOTH_CONNECT)
+            }
+        }
     }
 }

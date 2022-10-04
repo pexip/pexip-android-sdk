@@ -1,6 +1,6 @@
-package com.pexip.sdk.sample.welcome
+package com.pexip.sdk.sample.displayname
 
-data class WelcomeRendering(
+data class DisplayNameRendering(
     val displayName: String,
     val onDisplayNameChange: (String) -> Unit,
     val onNextClick: () -> Unit,

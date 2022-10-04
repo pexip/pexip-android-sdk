@@ -1,10 +1,11 @@
 package com.pexip.sdk.sample
 
-import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
@@ -13,6 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.pexip.sdk.media.webrtc.compose.LocalEglBase
+import com.pexip.sdk.sample.permissions.LocalPermissionRationaleHelper
+import com.pexip.sdk.sample.permissions.PermissionRationaleHelper
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,17 +33,19 @@ class SampleActivity : AppCompatActivity() {
     @Inject
     lateinit var viewEnvironment: ViewEnvironment
 
-    private val sampleViewModel by viewModels<SampleViewModel>()
+    @Inject
+    lateinit var permissionRationaleHelper: PermissionRationaleHelper
 
-    private val launcher = registerForActivityResult(RequestMultiplePermissions()) {
-        if (it.any { (_, granted) -> !granted }) finish()
-    }
+    private val sampleViewModel by viewModels<SampleViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            CompositionLocalProvider(LocalEglBase provides eglBase) {
+            CompositionLocalProvider(
+                LocalEglBase provides eglBase,
+                LocalPermissionRationaleHelper provides permissionRationaleHelper
+            ) {
                 SampleTheme {
                     val rendering by sampleViewModel.rendering.collectAsState()
                     WorkflowRendering(
@@ -53,16 +58,17 @@ class SampleActivity : AppCompatActivity() {
         sampleViewModel.output
             .onEach(::onSampleOutput)
             .launchIn(lifecycleScope)
-        val permissions = arrayOf(
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.CAMERA,
-            Manifest.permission.BLUETOOTH_CONNECT
-        )
-        launcher.launch(permissions)
     }
 
     private fun onSampleOutput(output: SampleOutput) = when (output) {
         is SampleOutput.Toast -> Toast.makeText(this, output.message, Toast.LENGTH_SHORT).show()
+        is SampleOutput.ApplicationDetailsSettings -> {
+            val intent = Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+            )
+            startActivity(intent)
+        }
         is SampleOutput.Finish -> finish()
     }
 }

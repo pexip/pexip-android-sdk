@@ -1,4 +1,4 @@
-package com.pexip.sdk.sample.welcome
+package com.pexip.sdk.sample.displayname
 
 import com.pexip.sdk.sample.send
 import com.pexip.sdk.sample.settings.SettingsStore
@@ -11,22 +11,22 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WelcomeWorkflow @Inject constructor(private val store: SettingsStore) :
-    StatefulWorkflow<Unit, WelcomeState, WelcomeOutput, WelcomeRendering>() {
+class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) :
+    StatefulWorkflow<Unit, DisplayNameState, DisplayNameOutput, DisplayNameRendering>() {
 
-    override fun initialState(props: Unit, snapshot: Snapshot?): WelcomeState =
-        snapshot?.toParcelable() ?: WelcomeState()
+    override fun initialState(props: Unit, snapshot: Snapshot?): DisplayNameState =
+        snapshot?.toParcelable() ?: DisplayNameState()
 
-    override fun snapshotState(state: WelcomeState): Snapshot = state.toSnapshot()
+    override fun snapshotState(state: DisplayNameState): Snapshot = state.toSnapshot()
 
     override fun render(
         renderProps: Unit,
-        renderState: WelcomeState,
+        renderState: DisplayNameState,
         context: RenderContext,
-    ): WelcomeRendering {
+    ): DisplayNameRendering {
         context.getDisplayNameSideEffect()
         context.setDisplayNameSideEffect(renderState.displayNameToSet)
-        return WelcomeRendering(
+        return DisplayNameRendering(
             displayName = renderState.displayName,
             onDisplayNameChange = context.send(::OnDisplayNameChange),
             onNextClick = context.send(::OnNextClick),

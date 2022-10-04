@@ -1,4 +1,4 @@
-package com.pexip.sdk.sample.welcome
+package com.pexip.sdk.sample.permissions
 
 import com.squareup.workflow1.ui.ViewFactory
 import com.squareup.workflow1.ui.compose.composeViewFactory
@@ -11,13 +11,13 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object WelcomeViewFactoryModule {
+object PermissionsViewFactoryModule {
 
     @Provides
     @Singleton
     @IntoSet
-    fun provideWelcomeViewFactory(): ViewFactory<*> =
-        composeViewFactory<WelcomeRendering> { rendering, _ ->
-            WelcomeScreen(rendering)
+    fun providePermissionsViewFactory(): ViewFactory<*> =
+        composeViewFactory<PermissionsRendering> { rendering, _ ->
+            PermissionsScreen(rendering)
         }
 }
