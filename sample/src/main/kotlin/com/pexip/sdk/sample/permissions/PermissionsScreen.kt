@@ -1,5 +1,6 @@
 package com.pexip.sdk.sample.permissions
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -51,9 +52,12 @@ fun PermissionsScreen(rendering: PermissionsRendering, modifier: Modifier = Modi
             val contract = ActivityResultContracts.RequestMultiplePermissions()
             val currentOnPermissionsRequestResult by rememberUpdatedState(rendering.onPermissionsRequestResult)
             val launcher = rememberLauncherForActivityResult(contract) {
+                Log.e("PermissionsScreen", it.toString())
+                val rationales = it.keys.associateWith(helper::shouldShowRequestPermissionRationale)
+                Log.e("PermissionsScreen", rationales.toString())
                 val result = PermissionsRequestResult(
                     grants = it,
-                    rationales = it.keys.associateWith(helper::shouldShowRequestPermissionRationale)
+                    rationales = rationales
                 )
                 currentOnPermissionsRequestResult(result)
             }

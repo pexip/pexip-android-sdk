@@ -3,20 +3,22 @@ package com.pexip.sdk.sample
 import android.Manifest
 import android.content.Context
 import android.os.Build
-import com.pexip.sdk.sample.alias.AliasWorkflow
+import com.pexip.sdk.media.CameraVideoTrack
+import com.pexip.sdk.media.CameraVideoTrackFactory
+import com.pexip.sdk.media.LocalAudioTrack
+import com.pexip.sdk.media.LocalAudioTrackFactory
 import com.pexip.sdk.sample.conference.ConferenceProps
 import com.pexip.sdk.sample.conference.ConferenceWorkflow
-import com.pexip.sdk.sample.displayname.DisplayNameWorkflow
 import com.pexip.sdk.sample.permissions.PermissionsProps
 import com.pexip.sdk.sample.permissions.PermissionsWorkflow
-import com.pexip.sdk.sample.pinchallenge.PinChallengeProps
-import com.pexip.sdk.sample.pinchallenge.PinChallengeWorkflow
+import com.pexip.sdk.sample.preflight.PreflightProps
+import com.pexip.sdk.sample.preflight.PreflightWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
-import com.squareup.workflow1.renderChild
 import com.squareup.workflow1.ui.toParcelable
 import com.squareup.workflow1.ui.toSnapshot
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.awaitCancellation
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,58 +26,107 @@ import javax.inject.Singleton
 class SampleWorkflow @Inject constructor(
     @ApplicationContext private val context: Context,
     private val permissionsWorkflow: PermissionsWorkflow,
-    private val displayNameWorkflow: DisplayNameWorkflow,
-    private val aliasWorkflow: AliasWorkflow,
-    private val pinChallengeWorkflow: PinChallengeWorkflow,
+    private val preflightWorkflow: PreflightWorkflow,
     private val conferenceWorkflow: ConferenceWorkflow,
+    private val localAudioTrackFactory: LocalAudioTrackFactory,
+    private val cameraVideoTrackFactory: CameraVideoTrackFactory,
 ) : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>() {
 
     override fun initialState(props: Unit, snapshot: Snapshot?): SampleState {
-        if (Permissions.all(context::isPermissionGranted)) {
-            return snapshot?.toParcelable() ?: SampleState.DisplayName
+        val screen = when (Permissions.all(context::isPermissionGranted)) {
+            true -> snapshot?.toParcelable() ?: SampleDestination.Preflight
+            else -> SampleDestination.Permissions
         }
-        return SampleState.Permissions
+        return SampleState(screen)
     }
 
-    override fun snapshotState(state: SampleState): Snapshot = state.toSnapshot()
+    override fun snapshotState(state: SampleState): Snapshot = state.destination.toSnapshot()
 
     override fun render(
         renderProps: Unit,
         renderState: SampleState,
         context: RenderContext,
-    ): Any = when (renderState) {
-        is SampleState.Permissions -> context.renderChild(
-            child = permissionsWorkflow,
-            props = PermissionsProps(Permissions),
-            handler = ::OnPermissionsOutput
-        )
-        is SampleState.DisplayName -> context.renderChild(
-            child = displayNameWorkflow,
-            handler = ::OnDisplayNameOutput
-        )
-        is SampleState.Alias -> context.renderChild(
-            child = aliasWorkflow,
-            handler = ::OnAliasOutput
-        )
-        is SampleState.PinChallenge -> context.renderChild(
-            child = pinChallengeWorkflow,
-            props = PinChallengeProps(
-                node = renderState.node,
-                conferenceAlias = renderState.conferenceAlias,
-                required = renderState.required
-            ),
-            handler = ::OnPinChallengeOutput
-        )
-        is SampleState.Conference -> context.renderChild(
-            child = conferenceWorkflow,
-            props = ConferenceProps(
-                node = renderState.node,
-                conferenceAlias = renderState.conferenceAlias,
-                presentationInMain = renderState.presentationInMain,
-                response = renderState.response
-            ),
-            handler = ::OnConferenceOutput
-        )
+    ): Any {
+        context.createCameraVideoTrackSideEffect(renderState.destination)
+        context.createMicrophoneAudioTrackSideEffect(renderState.destination)
+        context.cameraVideoTrackSideEffect(renderState.cameraVideoTrack)
+        context.microphoneAudioTrackSideEffect(renderState.microphoneAudioTrack)
+        return when (val destination = renderState.destination) {
+            is SampleDestination.Permissions -> context.renderChild(
+                child = permissionsWorkflow,
+                props = PermissionsProps(Permissions),
+                handler = ::OnPermissionsOutput
+            )
+            is SampleDestination.Preflight -> context.renderChild(
+                child = preflightWorkflow,
+                props = PreflightProps(
+                    cameraVideoTrack = renderState.cameraVideoTrack,
+                    microphoneAudioTrack = renderState.microphoneAudioTrack,
+                ),
+                handler = ::OnPreflightOutput
+            )
+            is SampleDestination.Conference -> context.renderChild(
+                child = conferenceWorkflow,
+                props = ConferenceProps(
+                    node = destination.node,
+                    conferenceAlias = destination.conferenceAlias,
+                    presentationInMain = destination.presentationInMain,
+                    response = destination.response,
+                    cameraVideoTrack = renderState.cameraVideoTrack,
+                    microphoneAudioTrack = renderState.microphoneAudioTrack
+                ),
+                handler = ::OnConferenceOutput
+            )
+        }
+    }
+
+    private fun RenderContext.createCameraVideoTrackSideEffect(screen: SampleDestination) {
+        if (screen != SampleDestination.Permissions) runningSideEffect("createCameraVideoTrackSideEffect") {
+            val callback = object : CameraVideoTrack.Callback {
+
+                override fun onCameraDisconnected() {
+                    val action = OnCameraVideoTrackChange(null)
+                    actionSink.send(action)
+                }
+            }
+            val track = cameraVideoTrackFactory.createCameraVideoTrack(callback)
+            val action = OnCameraVideoTrackChange(track)
+            actionSink.send(action)
+        }
+    }
+
+    private fun RenderContext.createMicrophoneAudioTrackSideEffect(screen: SampleDestination) {
+        if (screen != SampleDestination.Permissions) runningSideEffect("createMicrophoneAudioTrackSideEffect") {
+            val track = localAudioTrackFactory.createLocalAudioTrack()
+            val action = OnMicrophoneAudioTrackChange(track)
+            actionSink.send(action)
+        }
+    }
+
+    private fun RenderContext.cameraVideoTrackSideEffect(track: CameraVideoTrack?) {
+        if (track != null) runningSideEffect("cameraVideoTrackSideEffect($track)") {
+            try {
+                track.startCapture()
+                awaitCancellation()
+            } finally {
+                actionSink.send(OnCameraVideoTrackChange(null))
+                track.stopCapture()
+                track.dispose()
+            }
+        }
+    }
+
+    private fun RenderContext.microphoneAudioTrackSideEffect(track: LocalAudioTrack?) {
+        if (track != null) runningSideEffect("microphoneAudioTrackSideEffect($track)") {
+            try {
+                track.startCapture()
+                awaitCancellation()
+            } finally {
+                actionSink.send(OnMicrophoneAudioTrackChange(null))
+                track.stopCapture()
+                track.dispose()
+            }
+        }
     }
 
     companion object {

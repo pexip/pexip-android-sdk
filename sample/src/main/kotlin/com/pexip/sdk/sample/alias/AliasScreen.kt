@@ -1,28 +1,19 @@
 package com.pexip.sdk.sample.alias
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -35,40 +26,21 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
-    BackHandler(onBack = rendering.onBackClick)
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Pexip Video SDK")
-                },
-                navigationIcon = {
-                    IconButton(onClick = rendering.onBackClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-        },
-        contentWindowInsets = WindowInsets.safeDrawing,
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(it)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .fillMaxSize()
-        ) {
+    Dialog(onDismissRequest = rendering.onBackClick) {
+        Surface(shape = MaterialTheme.shapes.large, modifier = modifier) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.padding(16.dp)
             ) {
+                Text(
+                    text = "Pexip Video SDK",
+                    style = MaterialTheme.typography.titleLarge
+                )
                 val aliasKeyboardOptions = remember {
                     KeyboardOptions(
                         autoCorrect = false,
@@ -132,15 +104,13 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                         onCheckedChange = rendering.onPresentationInMainChange
                     )
                 }
-            }
-            Button(
-                onClick = rendering.onResolveClick,
-                enabled = rendering.resolveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-            ) {
-                Text(text = "Join")
+                Button(
+                    onClick = rendering.onResolveClick,
+                    enabled = rendering.resolveEnabled,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Join")
+                }
             }
         }
     }
