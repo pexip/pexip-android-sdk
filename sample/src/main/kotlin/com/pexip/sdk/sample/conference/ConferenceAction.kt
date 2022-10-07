@@ -47,17 +47,17 @@ class OnStopScreenCapture : ConferenceAction() {
     }
 }
 
-class OnToggleAudioDevices : ConferenceAction() {
+class OnAudioDevicesChange(private val visible: Boolean) : ConferenceAction() {
 
     override fun Updater.apply() {
-        state = state.copy(showingAudioDevices = !state.showingAudioDevices)
+        state = state.copy(audioDevicesVisible = visible)
     }
 }
 
-class OnToggleDtmf : ConferenceAction() {
+class OnDtmfChange(private val visible: Boolean) : ConferenceAction() {
 
     override fun Updater.apply() {
-        state = state.copy(showingDtmf = !state.showingDtmf)
+        state = state.copy(dtmfVisible = visible)
     }
 }
 
@@ -66,29 +66,7 @@ class OnDtmfOutput(private val output: DtmfOutput) : ConferenceAction() {
     override fun Updater.apply() {
         when (output) {
             is DtmfOutput.Tone -> state.connection.dtmf(output.tone)
-            is DtmfOutput.Back -> state = state.copy(showingDtmf = false)
-        }
-    }
-}
-
-class OnToggleLocalAudioCapturing : ConferenceAction() {
-
-    override fun Updater.apply() = with(state) {
-        if (localAudioCapturing) {
-            localAudioTrack.stopCapture()
-        } else {
-            localAudioTrack.startCapture()
-        }
-    }
-}
-
-class OnToggleCameraCapturing : ConferenceAction() {
-
-    override fun Updater.apply() = with(state) {
-        if (cameraCapturing) {
-            cameraVideoTrack.stopCapture()
-        } else {
-            cameraVideoTrack.startCapture(QualityProfile.High)
+            is DtmfOutput.Back -> state = state.copy(dtmfVisible = false)
         }
     }
 }
@@ -115,20 +93,6 @@ class OnMainRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAc
 
     override fun Updater.apply() {
         state = state.copy(mainRemoteVideoTrack = videoTrack)
-    }
-}
-
-class OnMicrophoneCapturing(private val capturing: Boolean) : ConferenceAction() {
-
-    override fun Updater.apply() {
-        state = state.copy(localAudioCapturing = capturing)
-    }
-}
-
-class OnCameraCapturing(private val capturing: Boolean) : ConferenceAction() {
-
-    override fun Updater.apply() {
-        state = state.copy(cameraCapturing = capturing)
     }
 }
 
@@ -187,7 +151,7 @@ class OnAudioDeviceOutput(private val output: AudioDeviceOutput) : ConferenceAct
 
     override fun Updater.apply() {
         when (output) {
-            is AudioDeviceOutput.Back -> state = state.copy(showingAudioDevices = false)
+            is AudioDeviceOutput.Back -> state = state.copy(audioDevicesVisible = false)
         }
     }
 }

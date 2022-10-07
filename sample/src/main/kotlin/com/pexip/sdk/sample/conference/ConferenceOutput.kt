@@ -1,8 +1,8 @@
 package com.pexip.sdk.sample.conference
 
-sealed class ConferenceOutput {
+sealed interface ConferenceOutput {
 
-    object Back : ConferenceOutput() {
+    object Back : ConferenceOutput {
 
         override fun toString(): String = "Back"
     }

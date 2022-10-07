@@ -10,11 +10,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
 import com.pexip.sdk.conference.infinity.InfinityConference
-import com.pexip.sdk.media.CameraVideoTrack
-import com.pexip.sdk.media.CameraVideoTrackFactory
 import com.pexip.sdk.media.IceServer
-import com.pexip.sdk.media.LocalAudioTrack
-import com.pexip.sdk.media.LocalAudioTrackFactory
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
@@ -28,6 +24,8 @@ import com.pexip.sdk.sample.audio.AudioDeviceWorkflow
 import com.pexip.sdk.sample.composer.ComposerWorkflow
 import com.pexip.sdk.sample.dtmf.DtmfProps
 import com.pexip.sdk.sample.dtmf.DtmfWorkflow
+import com.pexip.sdk.sample.media.LocalMediaTrackProps
+import com.pexip.sdk.sample.media.LocalMediaTrackWorkflow
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -44,12 +42,11 @@ class ConferenceWorkflow @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     private val service: InfinityService,
     private val mediaConnectionFactory: MediaConnectionFactory,
-    private val localAudioTrackFactory: LocalAudioTrackFactory,
-    private val cameraVideoTrackFactory: CameraVideoTrackFactory,
     private val mediaProjectionVideoTrackFactory: MediaProjectionVideoTrackFactory,
     private val audioDeviceWorkflow: AudioDeviceWorkflow,
     private val dtmfWorkflow: DtmfWorkflow,
     private val composerWorkflow: ComposerWorkflow,
+    private val localMediaTrackWorkflow: LocalMediaTrackWorkflow,
 ) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState {
@@ -67,8 +64,6 @@ class ConferenceWorkflow @Inject constructor(
         return ConferenceState(
             conference = conference,
             connection = mediaConnectionFactory.createMediaConnection(config),
-            localAudioTrack = localAudioTrackFactory.createLocalAudioTrack(),
-            cameraVideoTrack = cameraVideoTrackFactory.createCameraVideoTrack()
         )
     }
 
@@ -81,13 +76,11 @@ class ConferenceWorkflow @Inject constructor(
     ): ConferenceRendering {
         val audioDeviceRendering = context.renderChild(
             child = audioDeviceWorkflow,
-            props = AudioDeviceProps(renderState.showingAudioDevices),
+            props = AudioDeviceProps(renderState.audioDevicesVisible),
             handler = ::OnAudioDeviceOutput
         )
         context.bindConferenceServiceSideEffect()
-        context.leaveSideEffect(renderState)
-        context.localAudioCapturingSideEffect(renderState.localAudioTrack)
-        context.cameraCapturingSideEffect(renderState.cameraVideoTrack)
+        context.leaveSideEffect(renderProps, renderState)
         context.screenCapturingSideEffect(renderState.screenCaptureVideoTrack)
         context.screenCaptureVideoTrackSideEffect(renderState.screenCaptureData)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
@@ -103,23 +96,35 @@ class ConferenceWorkflow @Inject constructor(
                 onBackClick = context.send(::OnBackClick)
             )
             else -> ConferenceCallRendering(
-                localAudioCapturing = renderState.localAudioCapturing,
-                cameraCapturing = renderState.cameraCapturing,
-                cameraVideoTrack = renderState.cameraVideoTrack,
+                cameraVideoTrack = renderProps.cameraVideoTrack,
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
                 audioDeviceRendering = audioDeviceRendering,
                 dtmfRendering = context.renderChild(
                     child = dtmfWorkflow,
-                    props = DtmfProps(renderState.showingDtmf),
+                    props = DtmfProps(renderState.dtmfVisible),
                     handler = ::OnDtmfOutput
                 ),
+                cameraVideoTrackRendering = when (renderProps.cameraVideoTrack) {
+                    null -> null
+                    else -> context.renderChild(
+                        child = localMediaTrackWorkflow,
+                        key = "cameraVideoTrack",
+                        props = LocalMediaTrackProps(renderProps.cameraVideoTrack)
+                    )
+                },
+                microphoneAudioTrackRendering = when (renderProps.microphoneAudioTrack) {
+                    null -> null
+                    else -> context.renderChild(
+                        child = localMediaTrackWorkflow,
+                        key = "microphoneAudioTrack",
+                        props = LocalMediaTrackProps(renderProps.microphoneAudioTrack)
+                    )
+                },
                 screenCapturing = renderState.screenCapturing,
                 onScreenCapture = context.send(::OnScreenCapture),
-                onToggleAudioDevicesClick = context.send(::OnToggleAudioDevices),
-                onToggleDtmfClick = context.send(::OnToggleDtmf),
-                onToggleLocalAudioCapturing = context.send(::OnToggleLocalAudioCapturing),
-                onToggleCameraCapturing = context.send(::OnToggleCameraCapturing),
+                onAudioDevicesChange = context.send(::OnAudioDevicesChange),
+                onDtmfChange = context.send(::OnDtmfChange),
                 onStopScreenCapture = context.send(::OnStopScreenCapture),
                 onConferenceEventsClick = context.send(::OnConferenceEventsClick),
                 onBackClick = context.send(::OnBackClick)
@@ -147,41 +152,25 @@ class ConferenceWorkflow @Inject constructor(
             }
         }
 
-    private fun RenderContext.leaveSideEffect(renderState: ConferenceState) =
-        runningSideEffect("${renderState.conference}Leave") {
-            try {
-                renderState.localAudioTrack.startCapture()
-                renderState.cameraVideoTrack.startCapture()
-                renderState.connection.setMainAudioTrack(renderState.localAudioTrack)
-                renderState.connection.setMainVideoTrack(renderState.cameraVideoTrack)
-                renderState.connection.start()
-                awaitCancellation()
-            } finally {
-                renderState.connection.dispose()
-                renderState.conference.leave()
-                renderState.localAudioTrack.dispose()
-                renderState.cameraVideoTrack.dispose()
-                renderState.screenCaptureVideoTrack?.dispose()
-            }
+    private fun RenderContext.leaveSideEffect(
+        renderProps: ConferenceProps,
+        renderState: ConferenceState,
+    ) = runningSideEffect("${renderState.conference}Leave") {
+        try {
+            renderState.connection.setMainVideoTrack(renderProps.cameraVideoTrack)
+            renderState.connection.setMainAudioTrack(renderProps.microphoneAudioTrack)
+            renderState.connection.start()
+            awaitCancellation()
+        } finally {
+            renderState.connection.dispose()
+            renderState.conference.leave()
+            renderState.screenCaptureVideoTrack?.dispose()
         }
+    }
 
-    private fun RenderContext.localAudioCapturingSideEffect(localAudioTrack: LocalAudioTrack) =
-        runningSideEffect("${localAudioTrack}Capturing") {
-            localAudioTrack.getCapturing()
-                .map(::OnMicrophoneCapturing)
-                .collectLatest(actionSink::send)
-        }
-
-    private fun RenderContext.cameraCapturingSideEffect(cameraVideoTrack: CameraVideoTrack) =
-        runningSideEffect("${cameraVideoTrack}Capturing") {
-            cameraVideoTrack.getCapturing()
-                .map(::OnCameraCapturing)
-                .collectLatest(actionSink::send)
-        }
-
-    private fun RenderContext.screenCapturingSideEffect(localVideoTrack: LocalVideoTrack?) {
-        if (localVideoTrack != null) runningSideEffect("${localVideoTrack}Capturing") {
-            localVideoTrack.getCapturing()
+    private fun RenderContext.screenCapturingSideEffect(track: LocalVideoTrack?) {
+        if (track != null) runningSideEffect("${track}Capturing") {
+            track.getCapturing()
                 .map(::OnScreenCapturing)
                 .collectLatest(actionSink::send)
         }

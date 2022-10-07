@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,20 +21,14 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CallEnd
 import androidx.compose.material.icons.rounded.Message
-import androidx.compose.material.icons.rounded.Mic
-import androidx.compose.material.icons.rounded.MicOff
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Pin
 import androidx.compose.material.icons.rounded.ScreenShare
 import androidx.compose.material.icons.rounded.StopScreenShare
-import androidx.compose.material.icons.rounded.Videocam
-import androidx.compose.material.icons.rounded.VideocamOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
@@ -51,6 +47,11 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.pexip.sdk.media.AudioDevice
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
+import com.pexip.sdk.sample.CameraIconButton
+import com.pexip.sdk.sample.IconButton
+import com.pexip.sdk.sample.IconButtonDefaults
+import com.pexip.sdk.sample.IconToggleButton
+import com.pexip.sdk.sample.MicrophoneIconButton
 import com.pexip.sdk.sample.audio.AudioDeviceIcon
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
@@ -73,7 +74,7 @@ fun ConferenceCallScreen(
             systemUiController.isSystemBarsVisible = true
         }
     }
-    Surface(modifier = modifier) {
+    Surface(color = Color.Black, modifier = modifier) {
         BoxWithConstraints {
             val landscape = remember(maxWidth, maxHeight) { maxWidth > maxHeight }
             if (landscape) {
@@ -116,12 +117,12 @@ fun ConferenceCallScreen(
                     if (landscape) ASPECT_RATIO_LANDSCAPE else ASPECT_RATIO_PORTRAIT
                 }
                 AnimatedVisibility(
-                    visible = rendering.cameraCapturing,
+                    visible = rendering.cameraVideoTrackRendering?.capturing == true,
                     enter = slideInHorizontally { it * 2 },
                     exit = slideOutHorizontally { it * 2 },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .fillMaxWidth(0.2f)
+                        .fillMaxWidth(0.25f)
                         .aspectRatio(aspectRatio)
                 ) {
                     VideoTrackRenderer(
@@ -129,25 +130,30 @@ fun ConferenceCallScreen(
                         mirror = true
                     )
                 }
-                MoreButton(
-                    rendering = rendering,
-                    modifier = Modifier.align(Alignment.TopStart)
-                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(
                         space = 8.dp,
                         alignment = Alignment.CenterHorizontally
                     ),
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
+                    modifier = Modifier.align(Alignment.TopStart)
                 ) {
-                    ScreenShareButton(rendering)
-                    CameraButton(rendering)
-                    EndCallButton(rendering)
-                    MicrophoneButton(rendering)
-                    AudioDevicesButton(rendering)
+                    MoreIconButton(rendering = rendering)
+                    ScreenShareIconButton(rendering = rendering)
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = 8.dp,
+                        alignment = Alignment.CenterHorizontally
+                    ),
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                ) {
+                    CameraIconButton(rendering = rendering.cameraVideoTrackRendering)
+                    MicrophoneIconButton(rendering = rendering.microphoneAudioTrackRendering)
+                    AudioDevicesIconButton(rendering)
+                    Spacer(Modifier.weight(1f))
+                    EndCallIconButton(rendering)
                 }
             }
         }
@@ -187,10 +193,13 @@ private fun PresentationVideoTrackRenderer(
 }
 
 @Composable
-private fun EndCallButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
-    FloatingActionButton(
+private fun EndCallIconButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+    IconButton(
         onClick = rendering.onBackClick,
-        containerColor = MaterialTheme.colorScheme.errorContainer,
+        colors = IconButtonDefaults.iconButtonColors(
+            color = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer
+        ),
         modifier = modifier
     ) {
         Icon(imageVector = Icons.Rounded.CallEnd, contentDescription = null)
@@ -198,41 +207,13 @@ private fun EndCallButton(rendering: ConferenceCallRendering, modifier: Modifier
 }
 
 @Composable
-private fun CameraButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
-    SmallFloatingActionButton(
-        onClick = rendering.onToggleCameraCapturing,
-        modifier = modifier
-    ) {
-        val imageVector = remember(rendering.cameraCapturing) {
-            when (rendering.cameraCapturing) {
-                true -> Icons.Rounded.Videocam
-                false -> Icons.Rounded.VideocamOff
-            }
-        }
-        Icon(imageVector = imageVector, contentDescription = null)
-    }
-}
-
-@Composable
-private fun MicrophoneButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
-    SmallFloatingActionButton(
-        onClick = rendering.onToggleLocalAudioCapturing,
-        modifier = modifier
-    ) {
-        val imageVector = remember(rendering.localAudioCapturing) {
-            when (rendering.localAudioCapturing) {
-                true -> Icons.Rounded.Mic
-                false -> Icons.Rounded.MicOff
-            }
-        }
-        Icon(imageVector = imageVector, contentDescription = null)
-    }
-}
-
-@Composable
-private fun AudioDevicesButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
-    SmallFloatingActionButton(
-        onClick = rendering.onToggleAudioDevicesClick,
+private fun AudioDevicesIconButton(
+    rendering: ConferenceCallRendering,
+    modifier: Modifier = Modifier,
+) {
+    IconToggleButton(
+        checked = rendering.audioDeviceRendering.visible,
+        onCheckedChange = rendering.onAudioDevicesChange,
         modifier = modifier
     ) {
         val type = rendering.audioDeviceRendering.selectedAudioDevice?.type
@@ -242,7 +223,10 @@ private fun AudioDevicesButton(rendering: ConferenceCallRendering, modifier: Mod
 }
 
 @Composable
-private fun ScreenShareButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+private fun ScreenShareIconButton(
+    rendering: ConferenceCallRendering,
+    modifier: Modifier = Modifier,
+) {
     val manager = rememberMediaProjectionManager()
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -257,23 +241,27 @@ private fun ScreenShareButton(rendering: ConferenceCallRendering, modifier: Modi
             { launcher.launch(manager.createScreenCaptureIntent()) }
         }
     }
-    SmallFloatingActionButton(onClick = onToggleScreenCapture, modifier = modifier) {
-        val imageVector = remember(rendering.screenCapturing) {
-            when (rendering.screenCapturing) {
+    IconToggleButton(
+        checked = rendering.screenCapturing,
+        onCheckedChange = { onToggleScreenCapture() },
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = when (rendering.screenCapturing) {
                 true -> Icons.Rounded.StopScreenShare
                 false -> Icons.Rounded.ScreenShare
-            }
-        }
-        Icon(imageVector = imageVector, contentDescription = null)
+            },
+            contentDescription = null
+        )
     }
 }
 
 @Composable
-private fun MoreButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+private fun MoreIconButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val onDismissRequest = { expanded = false }
     Box(modifier = modifier) {
-        SmallFloatingActionButton(onClick = { expanded = true }) {
+        IconButton(onClick = { expanded = true }) {
             Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = null)
         }
         DropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
@@ -295,7 +283,7 @@ private fun DtmfItem(
         },
         onClick = {
             onDismissRequest()
-            rendering.onToggleDtmfClick()
+            rendering.onDtmfChange(true)
         },
         leadingIcon = {
             Icon(imageVector = Icons.Rounded.Pin, contentDescription = null)

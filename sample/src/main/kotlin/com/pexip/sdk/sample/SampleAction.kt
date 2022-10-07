@@ -1,78 +1,73 @@
 package com.pexip.sdk.sample
 
-import com.pexip.sdk.sample.alias.AliasOutput
+import com.pexip.sdk.media.CameraVideoTrack
+import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.sample.conference.ConferenceOutput
-import com.pexip.sdk.sample.displayname.DisplayNameOutput
 import com.pexip.sdk.sample.permissions.PermissionsOutput
-import com.pexip.sdk.sample.pinchallenge.PinChallengeOutput
+import com.pexip.sdk.sample.preflight.PreflightOutput
 import com.squareup.workflow1.WorkflowAction
 
 typealias SampleAction = WorkflowAction<Unit, SampleState, SampleOutput>
 
-data class OnPermissionsOutput(val output: PermissionsOutput) : SampleAction() {
+class OnCameraVideoTrackChange(private val track: CameraVideoTrack?) : SampleAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(cameraVideoTrack = track)
+    }
+}
+
+class OnMicrophoneAudioTrackChange(private val track: LocalAudioTrack?) : SampleAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(microphoneAudioTrack = track)
+    }
+}
+
+class OnPermissionsOutput(private val output: PermissionsOutput) : SampleAction() {
 
     override fun Updater.apply() {
         when (output) {
             is PermissionsOutput.ApplicationDetailsSettings -> setOutput(SampleOutput.ApplicationDetailsSettings)
-            is PermissionsOutput.Next -> state = SampleState.DisplayName
+            is PermissionsOutput.Next -> {
+                state = state.copy(
+                    destination = SampleDestination.Preflight,
+                    createCameraVideoTrackCount = 1u,
+                    createMicrophoneAudioTrackCount = 1u
+                )
+            }
             is PermissionsOutput.Back -> setOutput(SampleOutput.Finish)
         }
     }
 }
 
-data class OnDisplayNameOutput(val output: DisplayNameOutput) : SampleAction() {
+class OnPreflightOutput(private val output: PreflightOutput) : SampleAction() {
 
     override fun Updater.apply() {
         when (output) {
-            is DisplayNameOutput.Next -> state = SampleState.Alias
-            is DisplayNameOutput.Back -> setOutput(SampleOutput.Finish)
+            is PreflightOutput.Conference -> state = state.copy(
+                destination = SampleDestination.Conference(
+                    node = output.node,
+                    conferenceAlias = output.conferenceAlias,
+                    presentationInMain = output.presentationInMain,
+                    response = output.response
+                )
+            )
+            is PreflightOutput.Toast -> setOutput(SampleOutput.Toast(output.message))
+            is PreflightOutput.CreateCameraVideoTrack -> state = state.copy(
+                createCameraVideoTrackCount = state.createCameraVideoTrackCount + 1u
+            )
+            is PreflightOutput.Back -> setOutput(SampleOutput.Finish)
         }
     }
 }
 
-data class OnAliasOutput(val output: AliasOutput) : SampleAction() {
+class OnConferenceOutput(private val output: ConferenceOutput) : SampleAction() {
 
     override fun Updater.apply() {
         when (output) {
-            is AliasOutput.Conference -> state = SampleState.Conference(
-                node = output.node,
-                conferenceAlias = output.conferenceAlias,
-                presentationInMain = output.presentationInMain,
-                response = output.response
-            )
-            is AliasOutput.PinChallenge -> state = SampleState.PinChallenge(
-                node = output.node,
-                conferenceAlias = output.conferenceAlias,
-                presentationInMain = output.presentationInMain,
-                required = output.required
-            )
-            is AliasOutput.Toast -> setOutput(SampleOutput.Toast(output.message))
-            is AliasOutput.Back -> state = SampleState.DisplayName
-        }
-    }
-}
-
-data class OnPinChallengeOutput(val output: PinChallengeOutput) : SampleAction() {
-
-    override fun Updater.apply() {
-        val s = checkNotNull(state as? SampleState.PinChallenge) { "Invalid state: $state" }
-        state = when (output) {
-            is PinChallengeOutput.Response -> SampleState.Conference(
-                node = s.node,
-                conferenceAlias = s.conferenceAlias,
-                presentationInMain = s.presentationInMain,
-                response = output.response
-            )
-            is PinChallengeOutput.Back -> SampleState.Alias
-        }
-    }
-}
-
-data class OnConferenceOutput(val output: ConferenceOutput) : SampleAction() {
-
-    override fun Updater.apply() {
-        state = when (output) {
-            is ConferenceOutput.Back -> SampleState.Alias
+            is ConferenceOutput.Back -> {
+                state = state.copy(destination = SampleDestination.Preflight)
+            }
         }
     }
 }
