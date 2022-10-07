@@ -33,11 +33,15 @@ class SampleWorkflow @Inject constructor(
 ) : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>() {
 
     override fun initialState(props: Unit, snapshot: Snapshot?): SampleState {
-        val screen = when (Permissions.all(context::isPermissionGranted)) {
-            true -> snapshot?.toParcelable() ?: SampleDestination.Preflight
-            else -> SampleDestination.Permissions
-        }
-        return SampleState(screen)
+        val allGranted = Permissions.all(context::isPermissionGranted)
+        return SampleState(
+            destination = when (allGranted) {
+                true -> snapshot?.toParcelable() ?: SampleDestination.Preflight
+                else -> SampleDestination.Permissions
+            },
+            createCameraVideoTrackCount = if (allGranted) 1u else 0u,
+            createMicrophoneAudioTrackCount = if (allGranted) 1u else 0u
+        )
     }
 
     override fun snapshotState(state: SampleState): Snapshot = state.destination.toSnapshot()
@@ -47,8 +51,8 @@ class SampleWorkflow @Inject constructor(
         renderState: SampleState,
         context: RenderContext,
     ): Any {
-        context.createCameraVideoTrackSideEffect(renderState.destination)
-        context.createMicrophoneAudioTrackSideEffect(renderState.destination)
+        context.createCameraVideoTrackSideEffect(renderState.createCameraVideoTrackCount)
+        context.createMicrophoneAudioTrackSideEffect(renderState.createMicrophoneAudioTrackCount)
         context.cameraVideoTrackSideEffect(renderState.cameraVideoTrack)
         context.microphoneAudioTrackSideEffect(renderState.microphoneAudioTrack)
         return when (val destination = renderState.destination) {
@@ -80,8 +84,8 @@ class SampleWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.createCameraVideoTrackSideEffect(screen: SampleDestination) {
-        if (screen != SampleDestination.Permissions) runningSideEffect("createCameraVideoTrackSideEffect") {
+    private fun RenderContext.createCameraVideoTrackSideEffect(count: UInt) {
+        if (count > 0u) runningSideEffect("createCameraVideoTrackSideEffect($count)") {
             val callback = object : CameraVideoTrack.Callback {
 
                 override fun onCameraDisconnected() {
@@ -95,8 +99,8 @@ class SampleWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.createMicrophoneAudioTrackSideEffect(screen: SampleDestination) {
-        if (screen != SampleDestination.Permissions) runningSideEffect("createMicrophoneAudioTrackSideEffect") {
+    private fun RenderContext.createMicrophoneAudioTrackSideEffect(count: UInt) {
+        if (count > 0u) runningSideEffect("createMicrophoneAudioTrackSideEffect($count)") {
             val track = localAudioTrackFactory.createLocalAudioTrack()
             val action = OnMicrophoneAudioTrackChange(track)
             actionSink.send(action)

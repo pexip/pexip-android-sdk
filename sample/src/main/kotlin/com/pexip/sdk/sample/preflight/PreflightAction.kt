@@ -14,6 +14,13 @@ class OnCallClick : PreflightAction() {
     }
 }
 
+class OnCreateCameraVideoTrackClick : PreflightAction() {
+
+    override fun Updater.apply() {
+        setOutput(PreflightOutput.CreateCameraVideoTrack)
+    }
+}
+
 class OnBackClick : PreflightAction() {
 
     override fun Updater.apply() {

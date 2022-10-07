@@ -15,6 +15,11 @@ sealed interface PreflightOutput {
         val response: RequestTokenResponse,
     ) : PreflightOutput
 
+    object CreateCameraVideoTrack : PreflightOutput {
+
+        override fun toString(): String = "CreateCameraVideoTrack"
+    }
+
     object Back : PreflightOutput {
 
         override fun toString(): String = "Back"

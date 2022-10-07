@@ -14,6 +14,8 @@ data class SampleState(
     val microphoneAudioTrack: LocalAudioTrack? = null,
     val cameraCapturing: Boolean? = null,
     val microphoneCapturing: Boolean? = null,
+    val createCameraVideoTrackCount: UInt = 0u,
+    val createMicrophoneAudioTrackCount: UInt = 0u,
 )
 
 sealed interface SampleDestination : Parcelable {

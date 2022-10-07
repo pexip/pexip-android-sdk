@@ -51,7 +51,9 @@ class PreflightWorkflow @Inject constructor(
             null -> null
         },
         cameraVideoTrack = renderProps.cameraVideoTrack,
+        callEnabled = with(renderProps) { cameraVideoTrack != null && microphoneAudioTrack != null },
         onCallClick = context.send(::OnCallClick),
+        onCreateCameraVideoTrackClick = context.send(::OnCreateCameraVideoTrackClick),
         cameraVideoTrackRendering = when (renderProps.cameraVideoTrack) {
             null -> null
             else -> context.renderChild(
