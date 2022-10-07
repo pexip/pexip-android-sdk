@@ -14,7 +14,7 @@ kotlinx-coroutines = "1.6.4"
 ktlint = "11.0.0"
 minidns = "1.0.3"
 okhttp = "4.10.0"
-turbine = "0.8.0"
+turbine = "0.11.0"
 wire = "4.4.1"
 workflow = "1.7.1"
 
