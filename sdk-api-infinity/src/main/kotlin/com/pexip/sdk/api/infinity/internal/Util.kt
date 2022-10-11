@@ -1,8 +1,10 @@
 package com.pexip.sdk.api.infinity.internal
 
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.okio.decodeFromBufferedSource
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
@@ -16,10 +18,11 @@ import java.util.UUID
 internal inline fun <reified T> Json.encodeToRequestBody(value: T) =
     encodeToString(value).toRequestBody(ApplicationJson)
 
+@OptIn(ExperimentalSerializationApi::class)
 internal inline fun <reified T> Json.decodeFromResponseBody(
     deserializer: DeserializationStrategy<T>,
     body: ResponseBody,
-) = decodeFromString(deserializer, body.string())
+) = decodeFromBufferedSource(deserializer, body.source())
 
 internal inline fun EventSources.createFactory(
     client: OkHttpClient,
