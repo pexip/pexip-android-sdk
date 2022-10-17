@@ -31,7 +31,6 @@ import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.ScreenCapturerAndroid
-import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoDecoderFactory
 import org.webrtc.VideoEncoderFactory
 import org.webrtc.audio.JavaAudioDeviceModule
@@ -124,7 +123,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         return WebRtcCameraVideoTrack(
             factory = this,
             applicationContext = applicationContext,
-            textureHelper = createSurfaceTextureHelper("CaptureThread:$deviceName"),
+            eglBase = eglBase,
             deviceName = deviceName,
             videoCapturer = videoCapturer,
             videoSource = videoSource,
@@ -155,7 +154,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         return WebRtcCameraVideoTrack(
             factory = this,
             applicationContext = applicationContext,
-            textureHelper = createSurfaceTextureHelper("CaptureThread:$deviceName"),
+            eglBase = eglBase,
             deviceName = deviceName,
             videoCapturer = videoCapturer,
             videoSource = videoSource,
@@ -174,7 +173,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         return WebRtcLocalVideoTrack(
             applicationContext = applicationContext,
-            textureHelper = createSurfaceTextureHelper("CaptureThread:MediaProjection"),
+            eglBase = eglBase,
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
@@ -213,9 +212,6 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     ) = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
 
     private fun createMediaTrackId() = UUID.randomUUID().toString()
-
-    private fun createSurfaceTextureHelper(threadName: String) =
-        SurfaceTextureHelper.create(threadName, eglBase?.eglBaseContext)
 
     private fun checkNotDisposed() =
         check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }

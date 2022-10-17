@@ -6,6 +6,7 @@ import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
 import org.webrtc.CapturerObserver
+import org.webrtc.EglBase
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoFrame
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 internal open class WebRtcLocalVideoTrack(
     applicationContext: Context,
-    private val textureHelper: SurfaceTextureHelper,
+    eglBase: EglBase?,
     private val videoCapturer: VideoCapturer,
     private val videoSource: VideoSource,
     internal val videoTrack: org.webrtc.VideoTrack,
@@ -26,6 +27,8 @@ internal open class WebRtcLocalVideoTrack(
 
     private val disposed = AtomicBoolean()
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
+    private val textureHelper =
+        SurfaceTextureHelper.create("CaptureThread:${videoTrack.id()}", eglBase?.eglBaseContext)
     private val capturerObserver = object : CapturerObserver {
 
         override fun onCapturerStarted(success: Boolean) {

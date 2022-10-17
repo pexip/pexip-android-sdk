@@ -4,7 +4,7 @@ import android.content.Context
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.CameraVideoTrackFactory
 import org.webrtc.CameraVideoCapturer
-import org.webrtc.SurfaceTextureHelper
+import org.webrtc.EglBase
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import java.util.concurrent.Executor
@@ -12,7 +12,7 @@ import java.util.concurrent.Executor
 internal class WebRtcCameraVideoTrack(
     private val factory: CameraVideoTrackFactory,
     applicationContext: Context,
-    textureHelper: SurfaceTextureHelper,
+    eglBase: EglBase?,
     @Volatile private var deviceName: String,
     private val videoCapturer: CameraVideoCapturer,
     videoSource: VideoSource,
@@ -21,7 +21,7 @@ internal class WebRtcCameraVideoTrack(
     signalingExecutor: Executor,
 ) : CameraVideoTrack, WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
-    textureHelper = textureHelper,
+    eglBase = eglBase,
     videoCapturer = videoCapturer,
     videoSource = videoSource,
     videoTrack = videoTrack,
