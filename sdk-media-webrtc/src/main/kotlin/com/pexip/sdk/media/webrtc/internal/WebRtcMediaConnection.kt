@@ -9,7 +9,7 @@ import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStream
-import org.webrtc.MediaStreamTrack
+import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
 import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
@@ -60,7 +60,7 @@ internal class WebRtcMediaConnection(
     private var mainAudioTransceiver: RtpTransceiver? = null
     private var mainVideoTransceiver: RtpTransceiver? = null
     private val presentationVideoTransceiver: RtpTransceiver = connection.addTransceiver(
-        MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
+        MediaType.MEDIA_TYPE_VIDEO,
         RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
     )
     private val mainAudioTransceiverLock = Any()
@@ -117,12 +117,10 @@ internal class WebRtcMediaConnection(
         }
         workerExecutor.maybeExecute {
             synchronized(mainAudioTransceiverLock) {
-                val transceiver = when (val transceiver = mainAudioTransceiver) {
-                    null -> connection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
-                    else -> transceiver
-                }
-                transceiver.sender.setTrack(lat?.audioTrack, false)
-                mainAudioTransceiver = transceiver
+                val t = mainAudioTransceiver ?: connection.maybeAddTransceiver(lat)
+                t?.maybeSetNewDirection(lat)
+                t?.setTrack(lat)
+                mainAudioTransceiver = t
             }
             mainAudioTrack = lat
         }
@@ -136,12 +134,10 @@ internal class WebRtcMediaConnection(
         }
         workerExecutor.maybeExecute {
             synchronized(mainVideoTransceiverLock) {
-                val transceiver = when (val transceiver = mainVideoTransceiver) {
-                    null -> connection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
-                    else -> transceiver
-                }
-                transceiver.sender.setTrack(lvt?.videoTrack, false)
-                mainVideoTransceiver = transceiver
+                val t = mainVideoTransceiver ?: connection.maybeAddTransceiver(lvt)
+                t?.maybeSetNewDirection(lvt)
+                t?.setTrack(lvt)
+                mainVideoTransceiver = t
             }
             mainVideoTrack = lvt
         }
@@ -155,41 +151,33 @@ internal class WebRtcMediaConnection(
         }
         workerExecutor.maybeExecute {
             synchronized(presentationVideoTransceiver) {
-                val newDirection = when (lvt) {
-                    null -> when (presentationVideoTransceiver.direction) {
-                        RtpTransceiverDirection.SEND_ONLY -> RtpTransceiverDirection.INACTIVE
-                        RtpTransceiverDirection.SEND_RECV -> RtpTransceiverDirection.RECV_ONLY
-                        else -> null
-                    }
-                    else -> when (presentationVideoTransceiver.direction) {
-                        RtpTransceiverDirection.INACTIVE -> RtpTransceiverDirection.SEND_ONLY
-                        RtpTransceiverDirection.RECV_ONLY -> RtpTransceiverDirection.SEND_RECV
-                        else -> null
-                    }
-                }
-                newDirection?.let(presentationVideoTransceiver::setDirection)
-                presentationVideoTransceiver.sender.setTrack(lvt?.videoTrack, false)
+                presentationVideoTransceiver.maybeSetNewDirection(lvt)
+                presentationVideoTransceiver.setTrack(lvt)
             }
             presentationVideoTrack = lvt
         }
     }
 
+    override fun setMainRemoteAudioTrackEnabled(enabled: Boolean) = workerExecutor.maybeExecute {
+        mainAudioTransceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(
+            mediaType = MediaType.MEDIA_TYPE_AUDIO,
+            receive = enabled
+        )
+        mainAudioTransceiver?.maybeSetNewDirection(enabled)
+    }
+
+    override fun setMainRemoteVideoTrackEnabled(enabled: Boolean) = workerExecutor.maybeExecute {
+        mainVideoTransceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(
+            mediaType = MediaType.MEDIA_TYPE_VIDEO,
+            receive = enabled
+        )
+        mainVideoTransceiver?.maybeSetNewDirection(enabled)
+    }
+
     override fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean) {
         if (!config.presentationInMain) workerExecutor.maybeExecute {
             synchronized(presentationVideoTransceiver) {
-                val newDirection = when (enabled) {
-                    true -> when (presentationVideoTransceiver.direction) {
-                        RtpTransceiverDirection.INACTIVE -> RtpTransceiverDirection.RECV_ONLY
-                        RtpTransceiverDirection.SEND_ONLY -> RtpTransceiverDirection.SEND_RECV
-                        else -> null
-                    }
-                    else -> when (presentationVideoTransceiver.direction) {
-                        RtpTransceiverDirection.RECV_ONLY -> RtpTransceiverDirection.INACTIVE
-                        RtpTransceiverDirection.SEND_RECV -> RtpTransceiverDirection.SEND_ONLY
-                        else -> null
-                    }
-                }
-                newDirection?.let(presentationVideoTransceiver::setDirection)
+                presentationVideoTransceiver.maybeSetNewDirection(enabled)
             }
         }
     }

@@ -6,6 +6,9 @@ import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
+import org.webrtc.MediaStreamTrack
+import org.webrtc.PeerConnection
+import org.webrtc.RtpTransceiver
 import java.util.concurrent.Executor
 import java.util.concurrent.RejectedExecutionException
 
@@ -58,3 +61,65 @@ internal fun QualityProfile.Companion.from(format: CaptureFormat) = QualityProfi
     height = format.height,
     fps = format.framerate.max / 1000
 )
+
+internal fun RtpTransceiver.maybeSetNewDirection(track: LocalMediaTrack?) {
+    val newDirection = when (track) {
+        null -> when (direction) {
+            RtpTransceiver.RtpTransceiverDirection.SEND_ONLY -> RtpTransceiver.RtpTransceiverDirection.INACTIVE
+            RtpTransceiver.RtpTransceiverDirection.SEND_RECV -> RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+            else -> null
+        }
+        else -> when (direction) {
+            RtpTransceiver.RtpTransceiverDirection.INACTIVE -> RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
+            RtpTransceiver.RtpTransceiverDirection.RECV_ONLY -> RtpTransceiver.RtpTransceiverDirection.SEND_RECV
+            else -> null
+        }
+    }
+    newDirection?.let(::setDirection)
+}
+
+internal fun RtpTransceiver.maybeSetNewDirection(receive: Boolean) {
+    val newDirection = when (receive) {
+        true -> when (direction) {
+            RtpTransceiver.RtpTransceiverDirection.INACTIVE -> RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+            RtpTransceiver.RtpTransceiverDirection.SEND_ONLY -> RtpTransceiver.RtpTransceiverDirection.SEND_RECV
+            else -> null
+        }
+        else -> when (direction) {
+            RtpTransceiver.RtpTransceiverDirection.RECV_ONLY -> RtpTransceiver.RtpTransceiverDirection.INACTIVE
+            RtpTransceiver.RtpTransceiverDirection.SEND_RECV -> RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
+            else -> null
+        }
+    }
+    newDirection?.let(::setDirection)
+}
+
+internal fun PeerConnection.maybeAddTransceiver(track: LocalMediaTrack?): RtpTransceiver? {
+    track ?: return null
+    val mediaType = when (track) {
+        is WebRtcLocalVideoTrack -> MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO
+        is WebRtcLocalAudioTrack -> MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO
+        else -> throw IllegalArgumentException("Unknown LocalMediaTrack: $track.")
+    }
+    val init = RtpTransceiver.RtpTransceiverInit(RtpTransceiver.RtpTransceiverDirection.SEND_ONLY)
+    return addTransceiver(mediaType, init)
+}
+
+internal fun PeerConnection.maybeAddTransceiver(
+    mediaType: MediaStreamTrack.MediaType,
+    receive: Boolean,
+): RtpTransceiver? {
+    if (!receive) return null
+    val init = RtpTransceiver.RtpTransceiverInit(RtpTransceiver.RtpTransceiverDirection.RECV_ONLY)
+    return addTransceiver(mediaType, init)
+}
+
+internal fun RtpTransceiver.setTrack(track: LocalMediaTrack?) {
+    val t = when (track) {
+        is WebRtcLocalVideoTrack -> track.videoTrack
+        is WebRtcLocalAudioTrack -> track.audioTrack
+        null -> null
+        else -> throw IllegalArgumentException("Unknown LocalMediaTrack: $track.")
+    }
+    sender.setTrack(t, false)
+}

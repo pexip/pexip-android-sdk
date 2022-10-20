@@ -27,16 +27,12 @@ public interface MediaConnection {
     /**
      * Sets the main audio track.
      *
-     * This call also enables incoming audio.
-     *
      * @param localAudioTrack a local audio track to transmit
      */
     public fun setMainAudioTrack(localAudioTrack: LocalAudioTrack?)
 
     /**
      * Sets the main video track.
-     *
-     * This call also enables incoming video.
      *
      * @param localVideoTrack a local video track to transmit
      */
@@ -51,6 +47,20 @@ public interface MediaConnection {
      * @param localVideoTrack a local video track to transmit
      */
     public fun setPresentationVideoTrack(localVideoTrack: LocalVideoTrack?)
+
+    /**
+     * Enables or disables the receive of remote audio.
+     *
+     * @param enabled true if this [MediaConnection] should receive remote main audio, false otherwise
+     */
+    public fun setMainRemoteAudioTrackEnabled(enabled: Boolean)
+
+    /**
+     * Enables or disables the receive of remote video.
+     *
+     * @param enabled true if this [MediaConnection] should receive remote video audio, false otherwise
+     */
+    public fun setMainRemoteVideoTrackEnabled(enabled: Boolean)
 
     /**
      * Enables or disables the receive of ongoing remote presentation video.
