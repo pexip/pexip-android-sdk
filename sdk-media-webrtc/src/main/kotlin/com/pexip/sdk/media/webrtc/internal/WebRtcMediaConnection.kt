@@ -174,31 +174,37 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    override fun startPresentationReceive() {
+    override fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean) {
         if (!config.presentationInMain) workerExecutor.maybeExecute {
             synchronized(presentationVideoTransceiver) {
-                val newDirection = when (presentationVideoTransceiver.direction) {
-                    RtpTransceiverDirection.INACTIVE -> RtpTransceiverDirection.RECV_ONLY
-                    RtpTransceiverDirection.SEND_ONLY -> RtpTransceiverDirection.SEND_RECV
-                    else -> null
+                val newDirection = when (enabled) {
+                    true -> when (presentationVideoTransceiver.direction) {
+                        RtpTransceiverDirection.INACTIVE -> RtpTransceiverDirection.RECV_ONLY
+                        RtpTransceiverDirection.SEND_ONLY -> RtpTransceiverDirection.SEND_RECV
+                        else -> null
+                    }
+                    else -> when (presentationVideoTransceiver.direction) {
+                        RtpTransceiverDirection.RECV_ONLY -> RtpTransceiverDirection.INACTIVE
+                        RtpTransceiverDirection.SEND_RECV -> RtpTransceiverDirection.SEND_ONLY
+                        else -> null
+                    }
                 }
                 newDirection?.let(presentationVideoTransceiver::setDirection)
             }
         }
     }
 
-    override fun stopPresentationReceive() {
-        if (!config.presentationInMain) workerExecutor.maybeExecute {
-            synchronized(presentationVideoTransceiver) {
-                val newDirection = when (presentationVideoTransceiver.direction) {
-                    RtpTransceiverDirection.RECV_ONLY -> RtpTransceiverDirection.INACTIVE
-                    RtpTransceiverDirection.SEND_RECV -> RtpTransceiverDirection.SEND_ONLY
-                    else -> null
-                }
-                newDirection?.let(presentationVideoTransceiver::setDirection)
-            }
-        }
-    }
+    @Deprecated(
+        message = "Use setPresentationVideoReceive(true) instead.",
+        replaceWith = ReplaceWith("setPresentationVideoReceive(true)")
+    )
+    override fun startPresentationReceive() = setPresentationRemoteVideoTrackEnabled(true)
+
+    @Deprecated(
+        message = "Use setPresentationVideoReceive(false) instead.",
+        replaceWith = ReplaceWith("setPresentationVideoReceive(false)")
+    )
+    override fun stopPresentationReceive() = setPresentationRemoteVideoTrackEnabled(false)
 
     override fun dtmf(digits: String) {
         networkExecutor.maybeExecute {

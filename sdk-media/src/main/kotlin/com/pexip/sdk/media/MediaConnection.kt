@@ -53,13 +53,30 @@ public interface MediaConnection {
     public fun setPresentationVideoTrack(localVideoTrack: LocalVideoTrack?)
 
     /**
+     * Enables or disables the receive of ongoing remote presentation video.
+     *
+     * Doesn't have any effect if [MediaConnectionConfig.presentationInMain] is true.
+     *
+     * @param enabled true if this [MediaConnection] should receive remote presentation video, false otherwise
+     */
+    public fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean)
+
+    /**
      * Allows this [MediaConnection] to receive ongoing remote presentation.
      */
+    @Deprecated(
+        message = "Use setPresentationRemoteVideoTrackEnabled(true) instead.",
+        replaceWith = ReplaceWith("setPresentationRemoteVideoTrackEnabled(true)")
+    )
     public fun startPresentationReceive()
 
     /**
      * Disables the ability to receive ongoing remote presentation.
      */
+    @Deprecated(
+        message = "Use setPresentationRemoteVideoTrackEnabled(false) instead.",
+        replaceWith = ReplaceWith("setPresentationRemoteVideoTrackEnabled(false)")
+    )
     public fun stopPresentationReceive()
 
     /**
