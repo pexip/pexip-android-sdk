@@ -528,7 +528,10 @@ public interface InfinityService {
         @JvmOverloads
         public fun create(client: OkHttpClient = OkHttpClient()): InfinityService = create(
             client = client,
-            json = Json { ignoreUnknownKeys = true }
+            json = Json {
+                ignoreUnknownKeys = true
+                coerceInputValues = true
+            }
         )
 
         internal fun create(client: OkHttpClient, json: Json): InfinityService =

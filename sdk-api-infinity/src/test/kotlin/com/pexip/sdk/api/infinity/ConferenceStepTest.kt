@@ -140,10 +140,14 @@ internal class ConferenceStepTest {
     fun `requestToken returns`() {
         val response = RequestTokenResponse(
             token = Random.nextString(8),
+            conferenceName = Random.nextString(8),
             participantId = UUID.randomUUID(),
             participantName = Random.nextString(8),
             expires = 120,
             analyticsEnabled = Random.nextBoolean(),
+            chatEnabled = Random.nextBoolean(),
+            guestsCanPresent = Random.nextBoolean(),
+            serviceType = ServiceType.values().random(),
             version = VersionResponse(
                 versionId = Random.nextString(8),
                 pseudoVersion = Random.nextString(8)
@@ -174,13 +178,59 @@ internal class ConferenceStepTest {
     }
 
     @Test
-    fun `requestToken returns if the pin is blank`() {
+    fun `requestToken returns if service type is not set`() {
         val response = RequestTokenResponse(
             token = Random.nextString(8),
+            conferenceName = Random.nextString(8),
             participantId = UUID.randomUUID(),
             participantName = Random.nextString(8),
             expires = 120,
             analyticsEnabled = Random.nextBoolean(),
+            chatEnabled = Random.nextBoolean(),
+            guestsCanPresent = Random.nextBoolean(),
+            version = VersionResponse(
+                versionId = Random.nextString(8),
+                pseudoVersion = Random.nextString(8)
+            ),
+            stun = List(10) {
+                StunResponse("stun:stun$it.example.com:19302")
+            },
+            turn = List(10) {
+                TurnResponse(
+                    urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
+                    username = "${it shl 1}",
+                    credential = "${it shr 1}"
+                )
+            }
+        )
+        val requests = setOf(
+            RequestTokenRequest(ssoToken = Random.nextString(8)),
+            RequestTokenRequest(incomingToken = Random.nextString(8))
+        )
+        requests.forEach {
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(response)))
+            }
+            val actualResponse = step.requestToken(it).execute()
+            assertEquals(response, actualResponse)
+            assertEquals(ServiceType.UNKNOWN, actualResponse.serviceType)
+            server.verifyRequestToken(it)
+        }
+    }
+
+    @Test
+    fun `requestToken returns if the pin is blank`() {
+        val response = RequestTokenResponse(
+            token = Random.nextString(8),
+            conferenceName = Random.nextString(8),
+            participantId = UUID.randomUUID(),
+            participantName = Random.nextString(8),
+            expires = 120,
+            analyticsEnabled = Random.nextBoolean(),
+            chatEnabled = Random.nextBoolean(),
+            guestsCanPresent = Random.nextBoolean(),
+            serviceType = ServiceType.values().random(),
             version = VersionResponse(
                 versionId = Random.nextString(8),
                 pseudoVersion = Random.nextString(8)

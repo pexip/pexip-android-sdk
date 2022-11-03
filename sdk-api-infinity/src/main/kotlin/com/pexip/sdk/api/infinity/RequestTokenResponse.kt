@@ -11,6 +11,8 @@ public data class RequestTokenResponse(
     override val token: String,
     @Serializable(with = LongAsStringSerializer::class)
     override val expires: Long,
+    @SerialName("conference_name")
+    public val conferenceName: String,
     @Serializable(with = UUIDSerializer::class)
     @SerialName("participant_uuid")
     public val participantId: UUID,
@@ -19,6 +21,12 @@ public data class RequestTokenResponse(
     public val version: VersionResponse,
     @SerialName("analytics_enabled")
     public val analyticsEnabled: Boolean = false,
+    @SerialName("chat_enabled")
+    public val chatEnabled: Boolean = false,
+    @SerialName("guests_can_present")
+    public val guestsCanPresent: Boolean = false,
+    @SerialName("service_type")
+    public val serviceType: ServiceType = ServiceType.UNKNOWN,
     public val stun: List<StunResponse> = emptyList(),
     public val turn: List<TurnResponse> = emptyList(),
 ) : Token
