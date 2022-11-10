@@ -8,16 +8,12 @@ import java.net.URL
 
 internal class RealInfinityService(
     private val client: OkHttpClient,
-    private val json: Json = Json { ignoreUnknownKeys = true },
+    private val json: Json,
 ) : InfinityService {
 
     override fun newRequest(node: URL): RequestBuilder = RealRequestBuilder(
         client = client,
         json = json,
-        url = HttpUrl(node) {
-            addPathSegment("api")
-            addPathSegment("client")
-            addPathSegment("v2")
-        }
+        node = node
     )
 }

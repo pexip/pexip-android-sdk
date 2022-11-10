@@ -9,6 +9,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import okhttp3.sse.EventSources
@@ -29,12 +30,33 @@ internal inline fun EventSources.createFactory(
     block: OkHttpClient.Builder.() -> Unit,
 ) = createFactory(client.newBuilder().apply(block).build())
 
-internal inline fun HttpUrl(url: URL, block: HttpUrl.Builder.() -> Unit) =
-    HttpUrl(checkNotNull(url.toHttpUrlOrNull()), block)
-
-internal inline fun HttpUrl(url: HttpUrl, block: HttpUrl.Builder.() -> Unit) =
-    url.newBuilder().apply(block).build()
-
 internal fun HttpUrl.Builder.addPathSegment(uuid: UUID) = addPathSegment(uuid.toString())
+
+internal fun HttpUrl.Builder.conference(conferenceAlias: String): HttpUrl.Builder = apply {
+    require(conferenceAlias.isNotBlank()) { "conferenceAlias is blank." }
+    addPathSegment("conferences")
+    addPathSegment(conferenceAlias)
+}
+
+internal fun HttpUrl.Builder.participant(participantId: UUID) =
+    addPathSegment("participants").addPathSegment(participantId)
+
+internal fun HttpUrl.Builder.call(callId: UUID) =
+    addPathSegment("calls").addPathSegment(callId)
+
+internal fun HttpUrl.Builder.registration(deviceAlias: String): HttpUrl.Builder = apply {
+    require(deviceAlias.isNotBlank()) { "deviceAlias is blank." }
+    addPathSegment("registrations")
+    addPathSegment(deviceAlias)
+}
+
+internal inline fun Request.Builder.url(
+    url: URL,
+    block: HttpUrl.Builder.() -> Unit,
+): Request.Builder {
+    val httpUrl = checkNotNull(url.toHttpUrlOrNull())
+    val builder = checkNotNull(httpUrl.newBuilder("/api/client/v2"))
+    return url(builder.apply(block).build())
+}
 
 private val ApplicationJson by lazy { "application/json; charset=utf-8".toMediaType() }

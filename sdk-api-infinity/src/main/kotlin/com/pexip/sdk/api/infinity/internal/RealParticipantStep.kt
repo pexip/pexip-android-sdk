@@ -11,17 +11,19 @@ import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
+import java.net.URL
 import java.util.UUID
 
 internal class RealParticipantStep(
     private val client: OkHttpClient,
     private val json: Json,
-    private val url: HttpUrl,
+    private val node: URL,
+    private val conferenceAlias: String,
+    private val participantId: UUID,
 ) : InfinityService.ParticipantStep {
 
     override fun calls(request: CallsRequest, token: String): Call<CallsResponse> {
@@ -30,7 +32,11 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(HttpUrl(url) { addPathSegment("calls") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("calls")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseCalls
@@ -46,7 +52,11 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(HttpUrl(url) { addPathSegment("dtmf") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("dtmf")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseDtmf
@@ -62,7 +72,11 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("mute") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("mute")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseMuteUnmute
@@ -77,7 +91,11 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("unmute") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("unmute")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseMuteUnmute
@@ -92,7 +110,11 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("video_muted") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("video_muted")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseVideoMutedVideoUnmuted
@@ -107,7 +129,11 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("video_unmuted") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("video_unmuted")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseVideoMutedVideoUnmuted
@@ -122,7 +148,11 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("take_floor") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("take_floor")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseTakeReleaseFloor
@@ -137,7 +167,11 @@ internal class RealParticipantStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("release_floor") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("release_floor")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseTakeReleaseFloor
@@ -150,10 +184,10 @@ internal class RealParticipantStep(
         RealCallStep(
             client = client,
             json = json,
-            url = HttpUrl(url) {
-                addPathSegment("calls")
-                addPathSegment(callId)
-            }
+            node = node,
+            conferenceAlias = conferenceAlias,
+            participantId = participantId,
+            callId = callId
         )
 
     private fun parseCalls(response: Response) = when (response.code) {

@@ -12,16 +12,20 @@ import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
+import java.net.URL
+import java.util.UUID
 
 internal class RealCallStep(
     private val client: OkHttpClient,
     private val json: Json,
-    private val url: HttpUrl,
+    private val node: URL,
+    private val conferenceAlias: String,
+    private val participantId: UUID,
+    private val callId: UUID,
 ) : InfinityService.CallStep {
 
     override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> {
@@ -30,7 +34,12 @@ internal class RealCallStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(HttpUrl(url) { addPathSegment("new_candidate") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    call(callId)
+                    addPathSegment("new_candidate")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseNewCandidate
@@ -46,7 +55,12 @@ internal class RealCallStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("ack") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    call(callId)
+                    addPathSegment("ack")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseAck
@@ -61,7 +75,12 @@ internal class RealCallStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(HttpUrl(url) { addPathSegment("update") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    call(callId)
+                    addPathSegment("update")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseUpdate
@@ -77,7 +96,12 @@ internal class RealCallStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(HttpUrl(url) { addPathSegment("dtmf") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    call(callId)
+                    addPathSegment("dtmf")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseDtmf

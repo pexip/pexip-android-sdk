@@ -12,17 +12,18 @@ import com.pexip.sdk.api.infinity.RequestRegistrationTokenResponse
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import okio.ByteString.Companion.encodeUtf8
+import java.net.URL
 
 internal class RealRegistrationStep(
     private val client: OkHttpClient,
     private val json: Json,
-    private val url: HttpUrl,
+    private val node: URL,
+    private val deviceAlias: String,
 ) : InfinityService.RegistrationStep {
 
     override fun requestToken(
@@ -36,7 +37,10 @@ internal class RealRegistrationStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("request_token") })
+                .url(node) {
+                    registration(deviceAlias)
+                    addPathSegment("request_token")
+                }
                 .header("Authorization", "x-pexip-basic $base64")
                 .build(),
             mapper = ::parseRequestToken
@@ -49,7 +53,10 @@ internal class RealRegistrationStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("refresh_token") })
+                .url(node) {
+                    registration(deviceAlias)
+                    addPathSegment("refresh_token")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseRefreshToken
@@ -65,7 +72,10 @@ internal class RealRegistrationStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("release_token") })
+                .url(node) {
+                    registration(deviceAlias)
+                    addPathSegment("release_token")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseReleaseToken
@@ -80,7 +90,10 @@ internal class RealRegistrationStep(
             client = client,
             request = Request.Builder()
                 .get()
-                .url(HttpUrl(url) { addPathSegment("events") })
+                .url(node) {
+                    registration(deviceAlias)
+                    addPathSegment("events")
+                }
                 .header("token", token)
                 .build(),
             json = json

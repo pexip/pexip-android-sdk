@@ -17,23 +17,27 @@ import com.pexip.sdk.api.infinity.SsoRedirectException
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
+import java.net.URL
 import java.util.UUID
 
 internal class RealConferenceStep(
     private val client: OkHttpClient,
     private val json: Json,
-    private val url: HttpUrl,
+    private val node: URL,
+    private val conferenceAlias: String,
 ) : InfinityService.ConferenceStep {
 
     override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
         val builder = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(HttpUrl(url) { addPathSegment("request_token") })
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("request_token")
+            }
         if (request.incomingToken?.isNotBlank() == true) {
             builder.header("token", request.incomingToken)
         }
@@ -47,7 +51,10 @@ internal class RealConferenceStep(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(HttpUrl(url) { addPathSegment("request_token") })
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("request_token")
+            }
             .header("pin", if (pin.isBlank()) "none" else pin.trim())
             .build(),
         mapper = ::parseRequestToken
@@ -59,7 +66,10 @@ internal class RealConferenceStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("refresh_token") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("refresh_token")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseRefreshToken
@@ -74,7 +84,10 @@ internal class RealConferenceStep(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(HttpUrl(url) { addPathSegment("release_token") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("release_token")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseReleaseToken
@@ -89,7 +102,10 @@ internal class RealConferenceStep(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(request))
-                .url(HttpUrl(url) { addPathSegment("message") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("message")
+                }
                 .header("token", token)
                 .build(),
             mapper = ::parseMessage
@@ -105,7 +121,10 @@ internal class RealConferenceStep(
             client = client,
             request = Request.Builder()
                 .get()
-                .url(HttpUrl(url) { addPathSegment("events") })
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("events")
+                }
                 .header("token", token)
                 .build(),
             json = json
@@ -118,10 +137,9 @@ internal class RealConferenceStep(
         RealParticipantStep(
             client = client,
             json = json,
-            url = HttpUrl(url) {
-                addPathSegment("participants")
-                addPathSegment(participantId)
-            }
+            node = node,
+            conferenceAlias = conferenceAlias,
+            participantId = participantId
         )
 
     private fun parseRequestToken(response: Response) = when (response.code) {
