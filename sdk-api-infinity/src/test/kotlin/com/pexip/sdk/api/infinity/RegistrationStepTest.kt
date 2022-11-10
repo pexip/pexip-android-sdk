@@ -19,7 +19,7 @@ internal class RegistrationStepTest {
     val server = MockWebServer()
 
     private lateinit var node: URL
-    private lateinit var registrationAlias: String
+    private lateinit var deviceAlias: String
     private lateinit var username: String
     private lateinit var password: String
     private lateinit var json: Json
@@ -28,12 +28,12 @@ internal class RegistrationStepTest {
     @BeforeTest
     fun setUp() {
         node = server.url("/").toUrl()
-        registrationAlias = Random.nextString(8)
+        deviceAlias = Random.nextString(8)
         username = Random.nextString(8)
         password = Random.nextString(8)
         json = Json { ignoreUnknownKeys = true }
         val service = InfinityService.create(OkHttpClient(), json)
-        step = service.newRequest(node).registration(registrationAlias)
+        step = service.newRequest(node).registration(deviceAlias)
     }
 
     @Test
@@ -192,11 +192,74 @@ internal class RegistrationStepTest {
         server.verifyReleaseToken(token)
     }
 
+    @Test
+    fun `registrations throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailsWith<IllegalStateException> { step.registrations(token).execute() }
+        server.verifyRegistrations(token)
+    }
+
+    @Test
+    fun `registrations throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailsWith<NoSuchNodeException> { step.registrations(token).execute() }
+        server.verifyRegistrations(token)
+    }
+
+    @Test
+    fun `registrations throws NoSuchRegistrationException`() {
+        val message = "Unauthorized"
+        server.enqueue {
+            setResponseCode(401)
+            setBody(message)
+        }
+        val token = Random.nextString(8)
+        val e = assertFailsWith<NoSuchRegistrationException> { step.registrations(token).execute() }
+        assertEquals(message, e.message)
+        server.verifyRegistrations(token)
+    }
+
+    @Test
+    fun `registrations throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailsWith<InvalidTokenException> { step.registrations(token).execute() }
+        server.verifyRegistrations(token)
+    }
+
+    @Test
+    fun `registrations returns a list of registrations on 200`() {
+        val queries = List(10) { if (it == 0) "" else Random.nextString(8) }
+        queries.forEach { query ->
+            val result = List(10) {
+                val username = "device$it"
+                RegistrationResponse(
+                    alias = "$username@example.com",
+                    description = "Device #$it",
+                    username = username
+                )
+            }
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            val token = Random.nextString(8)
+            assertEquals(result, step.registrations(token, query).execute())
+            server.verifyRegistrations(token, query)
+        }
+    }
+
     private fun MockWebServer.verifyRequestToken() = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("registrations")
-            addPathSegment(registrationAlias)
+            addPathSegment(deviceAlias)
             addPathSegment("request_token")
         }
         assertAuthorization(username, password)
@@ -207,7 +270,7 @@ internal class RegistrationStepTest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("registrations")
-            addPathSegment(registrationAlias)
+            addPathSegment(deviceAlias)
             addPathSegment("refresh_token")
         }
         assertToken(token)
@@ -218,10 +281,22 @@ internal class RegistrationStepTest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("registrations")
-            addPathSegment(registrationAlias)
+            addPathSegment(deviceAlias)
             addPathSegment("release_token")
         }
         assertToken(token)
         assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyRegistrations(token: String, query: String = "") = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("registrations")
+            if (query.isNotBlank()) {
+                addQueryParameter("q", query)
+            }
+        }
+        assertToken(token)
+        assertGet()
     }
 }

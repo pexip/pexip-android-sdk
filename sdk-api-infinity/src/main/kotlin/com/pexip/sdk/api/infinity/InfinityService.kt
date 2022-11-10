@@ -257,6 +257,29 @@ public interface InfinityService {
          * @return an event source factory
          */
         public fun events(token: Token): EventSourceFactory
+
+        /**
+         * Returns a list of registrations.
+         *
+         * @param token a valid token
+         * @param query a search query
+         * @throws IllegalArgumentException if token is blank
+         * @return a list of registrations
+         */
+        public fun registrations(
+            token: String,
+            query: String = "",
+        ): Call<List<RegistrationResponse>>
+
+        /**
+         * Returns a list of registrations.
+         *
+         * @param token a valid token
+         * @param query a search query
+         * @throws IllegalArgumentException if token is blank
+         * @return a list of registrations
+         */
+        public fun registrations(token: Token, query: String = ""): Call<List<RegistrationResponse>>
     }
 
     /**

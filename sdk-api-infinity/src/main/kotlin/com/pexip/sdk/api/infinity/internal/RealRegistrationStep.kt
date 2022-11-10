@@ -8,6 +8,7 @@ import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.NoSuchRegistrationException
 import com.pexip.sdk.api.infinity.RefreshRegistrationTokenResponse
+import com.pexip.sdk.api.infinity.RegistrationResponse
 import com.pexip.sdk.api.infinity.RequestRegistrationTokenResponse
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
@@ -102,6 +103,27 @@ internal class RealRegistrationStep(
 
     override fun events(token: Token): EventSourceFactory = events(token.token)
 
+    override fun registrations(token: String, query: String): Call<List<RegistrationResponse>> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .get()
+                .url(node) {
+                    registration()
+                    if (query.isNotBlank()) {
+                        addQueryParameter("q", query.trim())
+                    }
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseRegistrations
+        )
+    }
+
+    override fun registrations(token: Token, query: String): Call<List<RegistrationResponse>> =
+        registrations(token.token, query)
+
     private fun parseRequestToken(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(
             deserializer = RequestRegistrationTokenResponseSerializer,
@@ -126,6 +148,14 @@ internal class RealRegistrationStep(
 
     private fun parseReleaseToken(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        401 -> response.parse401()
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseRegistrations(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(RegistrationResponseSerializer, response.body!!)
         401 -> response.parse401()
         403 -> response.parse403()
         404 -> response.parse404()

@@ -44,10 +44,10 @@ internal fun HttpUrl.Builder.participant(participantId: UUID) =
 internal fun HttpUrl.Builder.call(callId: UUID) =
     addPathSegment("calls").addPathSegment(callId)
 
-internal fun HttpUrl.Builder.registration(deviceAlias: String): HttpUrl.Builder = apply {
-    require(deviceAlias.isNotBlank()) { "deviceAlias is blank." }
+internal fun HttpUrl.Builder.registration(deviceAlias: String? = null): HttpUrl.Builder = apply {
+    deviceAlias?.let { require(it.isNotBlank()) { "deviceAlias is blank." } }
     addPathSegment("registrations")
-    addPathSegment(deviceAlias)
+    if (deviceAlias != null) addPathSegment(deviceAlias)
 }
 
 internal inline fun Request.Builder.url(
