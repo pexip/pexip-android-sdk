@@ -22,6 +22,8 @@ public class InfinityRegistration private constructor(
     private val fetcher: RegisteredDevicesFetcher,
     private val refresher: TokenRefresher,
     private val executor: ScheduledExecutorService,
+    override val directoryEnabled: Boolean,
+    override val routeViaRegistrar: Boolean,
 ) : Registration {
 
     override fun getRegisteredDevices(query: String, callback: RegisteredDevicesCallback) {
@@ -76,7 +78,9 @@ public class InfinityRegistration private constructor(
                 source = source,
                 fetcher = RealRegisteredDevicesFetcher(step, store),
                 refresher = refresher,
-                executor = executor
+                executor = executor,
+                directoryEnabled = response.directoryEnabled,
+                routeViaRegistrar = response.routeViaRegistrar
             )
         }
     }
