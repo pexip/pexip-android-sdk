@@ -33,6 +33,7 @@ import org.webrtc.PeerConnectionFactory
 import org.webrtc.ScreenCapturerAndroid
 import org.webrtc.VideoDecoderFactory
 import org.webrtc.VideoEncoderFactory
+import org.webrtc.audio.AudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule
 import java.util.UUID
 import java.util.concurrent.Executors
@@ -45,6 +46,9 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
         true -> Camera2Enumerator(context.applicationContext)
         else -> Camera1Enumerator()
     },
+    private val audioDeviceModule: AudioDeviceModule = JavaAudioDeviceModule.builder(context.applicationContext)
+        .setAudioAttributes(DefaultAudioAttributes)
+        .createAudioDeviceModule(),
     videoDecoderFactory: VideoDecoderFactory = DefaultVideoDecoderFactory(eglBase?.eglBaseContext),
     videoEncoderFactory: VideoEncoderFactory = DefaultVideoEncoderFactory(
         eglBase?.eglBaseContext,
@@ -58,13 +62,6 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
 
     private val disposed = AtomicBoolean()
     private val applicationContext = context.applicationContext
-    private val audioAttributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-        .build()
-    private val audioDeviceModule = JavaAudioDeviceModule.builder(applicationContext)
-        .setAudioAttributes(audioAttributes)
-        .createAudioDeviceModule()
     private val factory = PeerConnectionFactory.builder()
         .setAudioDeviceModule(audioDeviceModule)
         .setVideoDecoderFactory(videoDecoderFactory)
@@ -235,6 +232,7 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
 
         private var eglBase: EglBase? = null
         private var cameraEnumerator: CameraEnumerator? = null
+        private var audioDeviceModule: AudioDeviceModule? = null
         private var videoDecoderFactory: VideoDecoderFactory? = null
         private var videoEncoderFactory: VideoEncoderFactory? = null
 
@@ -256,6 +254,16 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
          */
         public fun cameraEnumerator(cameraEnumerator: CameraEnumerator): Builder = apply {
             this.cameraEnumerator = cameraEnumerator
+        }
+
+        /**
+         * Sets an [AudioDeviceModule].
+         *
+         * @param audioDeviceModule an instance of [AudioDeviceModule]
+         * @return this builder
+         */
+        public fun audioDeviceModule(audioDeviceModule: AudioDeviceModule): Builder = apply {
+            this.audioDeviceModule = audioDeviceModule
         }
 
         /**
@@ -290,6 +298,9 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
                 true -> Camera2Enumerator(context)
                 else -> Camera1Enumerator()
             },
+            audioDeviceModule = audioDeviceModule ?: JavaAudioDeviceModule.builder(context)
+                .setAudioAttributes(DefaultAudioAttributes)
+                .createAudioDeviceModule(),
             videoDecoderFactory = videoDecoderFactory
                 ?: DefaultVideoDecoderFactory(eglBase?.eglBaseContext),
             videoEncoderFactory = videoEncoderFactory ?: DefaultVideoEncoderFactory(
@@ -301,6 +312,11 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
     }
 
     public companion object {
+
+        private val DefaultAudioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+            .build()
 
         @JvmStatic
         public fun initialize(context: Context) {
