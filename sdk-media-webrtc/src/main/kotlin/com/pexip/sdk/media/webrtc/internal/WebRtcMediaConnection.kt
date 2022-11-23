@@ -1,5 +1,7 @@
 package com.pexip.sdk.media.webrtc.internal
 
+import com.pexip.sdk.media.Bitrate
+import com.pexip.sdk.media.Bitrate.Companion.bps
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
@@ -33,6 +35,8 @@ internal class WebRtcMediaConnection(
     private val disposed = AtomicBoolean()
     private val shouldRenegotiate = AtomicBoolean()
     private val connection = factory.createPeerConnection(createRTCConfiguration(), this)
+
+    private var bitrate = 0.bps
 
     // Rename due to platform declaration clash
     @set:JvmName("setMainAudioTrackInternal")
@@ -182,6 +186,13 @@ internal class WebRtcMediaConnection(
         }
     }
 
+    override fun setMaxBitrate(bitrate: Bitrate) {
+        workerExecutor.maybeExecute {
+            this.bitrate = bitrate
+            connection.restartIce()
+        }
+    }
+
     @Deprecated(
         message = "Use setPresentationVideoReceive(true) instead.",
         replaceWith = ReplaceWith("setPresentationVideoReceive(true)")
@@ -292,13 +303,14 @@ internal class WebRtcMediaConnection(
 
     private fun setRemoteDescription(sdp: SessionDescription) {
         workerExecutor.maybeExecute {
-            connection.setRemoteDescription(remoteSdpObserver, sdp)
+            connection.setRemoteDescription(remoteSdpObserver, sdp.mangle(bitrate))
         }
     }
 
     private fun onSetLocalDescriptionSuccess() {
         workerExecutor.maybeExecute {
             val mangledDescription = connection.localDescription.mangle(
+                bitrate = bitrate,
                 mainAudioMid = synchronized(mainAudioTransceiverLock) {
                     mainAudioTransceiver?.mid
                 },

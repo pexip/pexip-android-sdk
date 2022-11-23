@@ -72,6 +72,18 @@ public interface MediaConnection {
     public fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean)
 
     /**
+     * Sets the maximum bitrate for each video stream.
+     *
+     * Passing an instance of [Bitrate] that is equal to zero bits per second will remove the
+     * constraints and let the underlying media engine come up with the best value.
+     *
+     * By default, no maximum bitrate is set.
+     *
+     * @param bitrate a bitrate to set as maximum
+     */
+    public fun setMaxBitrate(bitrate: Bitrate)
+
+    /**
      * Allows this [MediaConnection] to receive ongoing remote presentation.
      */
     @Deprecated(
