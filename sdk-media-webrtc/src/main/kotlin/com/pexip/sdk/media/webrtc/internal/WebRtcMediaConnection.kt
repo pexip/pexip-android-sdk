@@ -36,7 +36,9 @@ internal class WebRtcMediaConnection(
     private val shouldRenegotiate = AtomicBoolean()
     private val connection = factory.createPeerConnection(createRTCConfiguration(), this)
 
-    private var bitrate = 0.bps
+    private var bitrate by Delegates.observable(0.bps) { _, old, new ->
+        if (old != new) connection.restartIce()
+    }
 
     // Rename due to platform declaration clash
     @set:JvmName("setMainAudioTrackInternal")
@@ -189,7 +191,6 @@ internal class WebRtcMediaConnection(
     override fun setMaxBitrate(bitrate: Bitrate) {
         workerExecutor.maybeExecute {
             this.bitrate = bitrate
-            connection.restartIce()
         }
     }
 
