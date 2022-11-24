@@ -39,29 +39,36 @@ import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
-public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
-    context: Context,
+public class WebRtcMediaConnectionFactory private constructor(
+    private val applicationContext: Context,
     private val eglBase: EglBase?,
-    private val cameraEnumerator: CameraEnumerator = when (Camera2Enumerator.isSupported(context)) {
-        true -> Camera2Enumerator(context.applicationContext)
-        else -> Camera1Enumerator()
-    },
-    private val audioDeviceModule: AudioDeviceModule = JavaAudioDeviceModule.builder(context.applicationContext)
-        .setAudioAttributes(DefaultAudioAttributes)
-        .createAudioDeviceModule(),
-    videoDecoderFactory: VideoDecoderFactory = DefaultVideoDecoderFactory(eglBase?.eglBaseContext),
-    videoEncoderFactory: VideoEncoderFactory = DefaultVideoEncoderFactory(
-        eglBase?.eglBaseContext,
-        false,
-        false
-    ),
+    private val cameraEnumerator: CameraEnumerator,
+    private val audioDeviceModule: AudioDeviceModule,
+    videoDecoderFactory: VideoDecoderFactory,
+    videoEncoderFactory: VideoEncoderFactory,
 ) : MediaConnectionFactory,
     LocalAudioTrackFactory,
     CameraVideoTrackFactory,
     MediaProjectionVideoTrackFactory {
 
+    @Deprecated("Use WebRtcMediaConnectionFactory.Builder instead.")
+    @JvmOverloads
+    public constructor(
+        context: Context,
+        eglBase: EglBase,
+        cameraEnumerator: CameraEnumerator = CameraEnumerator(context),
+        videoDecoderFactory: VideoDecoderFactory = DefaultVideoDecoderFactory(eglBase),
+        videoEncoderFactory: VideoEncoderFactory = DefaultVideoEncoderFactory(eglBase),
+    ) : this(
+        applicationContext = context.applicationContext,
+        eglBase = eglBase,
+        cameraEnumerator = cameraEnumerator,
+        audioDeviceModule = JavaAudioDeviceModule(context),
+        videoDecoderFactory = videoDecoderFactory,
+        videoEncoderFactory = videoEncoderFactory
+    )
+
     private val disposed = AtomicBoolean()
-    private val applicationContext = context.applicationContext
     private val factory = PeerConnectionFactory.builder()
         .setAudioDeviceModule(audioDeviceModule)
         .setVideoDecoderFactory(videoDecoderFactory)
@@ -224,11 +231,11 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
      * [Camera1Enumerator] otherwise if corresponding methods were not used during before calling
      * [build].
      *
-     * @property context an instance of application context
+     * @param context an instance of application context
      */
     public class Builder(context: Context) {
 
-        private val context = context.applicationContext
+        private val applicationContext = context.applicationContext
 
         private var eglBase: EglBase? = null
         private var cameraEnumerator: CameraEnumerator? = null
@@ -292,31 +299,38 @@ public class WebRtcMediaConnectionFactory @JvmOverloads constructor(
          * @return an instance of [WebRtcMediaConnectionFactory]
          */
         public fun build(): WebRtcMediaConnectionFactory = WebRtcMediaConnectionFactory(
-            context = context,
+            applicationContext = applicationContext,
             eglBase = eglBase,
-            cameraEnumerator = cameraEnumerator ?: when (Camera2Enumerator.isSupported(context)) {
-                true -> Camera2Enumerator(context)
-                else -> Camera1Enumerator()
-            },
-            audioDeviceModule = audioDeviceModule ?: JavaAudioDeviceModule.builder(context)
-                .setAudioAttributes(DefaultAudioAttributes)
-                .createAudioDeviceModule(),
-            videoDecoderFactory = videoDecoderFactory
-                ?: DefaultVideoDecoderFactory(eglBase?.eglBaseContext),
-            videoEncoderFactory = videoEncoderFactory ?: DefaultVideoEncoderFactory(
-                eglBase?.eglBaseContext,
-                false,
-                false
-            )
+            cameraEnumerator = cameraEnumerator ?: CameraEnumerator(applicationContext),
+            audioDeviceModule = audioDeviceModule ?: JavaAudioDeviceModule(applicationContext),
+            videoDecoderFactory = videoDecoderFactory ?: DefaultVideoDecoderFactory(eglBase),
+            videoEncoderFactory = videoEncoderFactory ?: DefaultVideoEncoderFactory(eglBase)
         )
     }
 
     public companion object {
 
-        private val DefaultAudioAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-            .build()
+        private fun CameraEnumerator(context: Context) =
+            when (Camera2Enumerator.isSupported(context.applicationContext)) {
+                true -> Camera2Enumerator(context.applicationContext)
+                else -> Camera1Enumerator()
+            }
+
+        private fun JavaAudioDeviceModule(context: Context): JavaAudioDeviceModule {
+            val audioAttributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                .build()
+            return JavaAudioDeviceModule.builder(context.applicationContext)
+                .setAudioAttributes(audioAttributes)
+                .createAudioDeviceModule()
+        }
+
+        private fun DefaultVideoDecoderFactory(eglBase: EglBase?) =
+            DefaultVideoDecoderFactory(eglBase?.eglBaseContext)
+
+        private fun DefaultVideoEncoderFactory(eglBase: EglBase?) =
+            DefaultVideoEncoderFactory(eglBase?.eglBaseContext, false, false)
 
         @JvmStatic
         public fun initialize(context: Context) {
