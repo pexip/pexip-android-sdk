@@ -34,6 +34,13 @@ public data class MessageReceivedEvent(
 ) : Event
 
 @Serializable
+public data class FeccEvent(
+    public val action: FeccAction = FeccAction.UNKNOWN,
+    public val timeout: Long,
+    public val movement: List<FeccMovement>,
+) : Event
+
+@Serializable
 public data class DisconnectEvent(val reason: String) : Event
 
 public object ByeEvent : Event {
@@ -57,6 +64,7 @@ internal fun Event(json: Json, id: String?, type: String?, data: String) = when 
     "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
     "presentation_stop" -> PresentationStopEvent
     "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
+    "fecc" -> json.decodeFromString<FeccEvent>(data)
     "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
     "bye" -> ByeEvent
     "incoming" -> json.decodeFromString<IncomingEvent>(data)

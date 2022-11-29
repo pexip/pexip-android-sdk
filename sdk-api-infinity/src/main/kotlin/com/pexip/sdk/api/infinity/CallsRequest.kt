@@ -9,4 +9,6 @@ public data class CallsRequest(
     public val callType: String,
     public val sdp: String,
     public val present: String? = null,
+    @SerialName("fecc_supported")
+    public val fecc: Boolean = false,
 )

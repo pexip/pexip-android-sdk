@@ -1,0 +1,14 @@
+{
+  "action": "start",
+  "timeout": 1000,
+  "movement": [
+    {
+      "axis": "pan",
+      "direction": "left"
+    },
+    {
+      "axis": "tilt",
+      "direction": "up"
+    }
+  ]
+}

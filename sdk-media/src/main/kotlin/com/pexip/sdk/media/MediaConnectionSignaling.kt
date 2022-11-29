@@ -16,9 +16,15 @@ public interface MediaConnectionSignaling {
      * @param callType a call type (currently only "WEBRTC" is supported)
      * @param description an offer, usually represented by an SDP
      * @param presentationInMain whether presentation should be embedded in main video feed
+     * @param fecc whether far end camera control should be enabled
      * @return an answer
      */
-    public fun onOffer(callType: String, description: String, presentationInMain: Boolean): String
+    public fun onOffer(
+        callType: String,
+        description: String,
+        presentationInMain: Boolean,
+        fecc: Boolean,
+    ): String
 
     /**
      * Invoked when a new ICE candidate is available.

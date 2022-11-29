@@ -549,6 +549,7 @@ internal class ParticipantStepTest {
     private fun Random.nextCallsRequest() = CallsRequest(
         sdp = nextString(8),
         present = nextString(8),
-        callType = nextString(8)
+        callType = nextString(8),
+        fecc = nextBoolean()
     )
 }

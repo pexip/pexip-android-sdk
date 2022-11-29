@@ -1,0 +1,14 @@
+{
+  "action": "continue",
+  "timeout": 200,
+  "movement": [
+    {
+      "axis": "zoom",
+      "direction": "in"
+    },
+    {
+      "axis": "pan",
+      "direction": "right"
+    }
+  ]
+}

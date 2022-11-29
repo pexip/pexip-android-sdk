@@ -51,6 +51,7 @@ internal class RealMediaConnectionSignalingTest {
         val callType = Random.nextString(8)
         val sdp = read("session_description_original")
         val presentationInMix = Random.nextBoolean()
+        val fecc = Random.nextBoolean()
         val response = CallsResponse(
             callId = UUID.randomUUID(),
             sdp = Random.nextString(8)
@@ -87,7 +88,15 @@ internal class RealMediaConnectionSignalingTest {
             }
         }
         val signaling = RealMediaConnectionSignaling(store, participantStep, iceServers)
-        assertEquals(signaling.onOffer(callType, sdp, presentationInMix), response.sdp)
+        assertEquals(
+            expected = signaling.onOffer(
+                callType = callType,
+                description = sdp,
+                presentationInMain = presentationInMix,
+                fecc = fecc
+            ),
+            actual = response.sdp
+        )
         assertEquals(callStep, signaling.callStep)
         assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
         assertTrue(ackCalled)
@@ -98,6 +107,7 @@ internal class RealMediaConnectionSignalingTest {
         val callType = Random.nextString(8)
         val sdp = read("session_description_original")
         val presentationInMix = Random.nextBoolean()
+        val fecc = Random.nextBoolean()
         val response = UpdateResponse(Random.nextString(8))
         val signaling = RealMediaConnectionSignaling(
             store = store,
@@ -114,7 +124,15 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 }
         }
-        assertEquals(signaling.onOffer(callType, sdp, presentationInMix), response.sdp)
+        assertEquals(
+            expected = signaling.onOffer(
+                callType = callType,
+                description = sdp,
+                presentationInMain = presentationInMix,
+                fecc = fecc
+            ),
+            actual = response.sdp
+        )
         assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
     }
 

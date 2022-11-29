@@ -23,6 +23,7 @@ internal class RealMediaConnectionSignaling(
         callType: String,
         description: String,
         presentationInMain: Boolean,
+        fecc: Boolean,
     ): String {
         val token = store.get()
         pwds = getUfragPwd(description)
@@ -31,7 +32,8 @@ internal class RealMediaConnectionSignaling(
                 val request = CallsRequest(
                     callType = callType,
                     sdp = description,
-                    present = if (presentationInMain) "main" else null
+                    present = if (presentationInMain) "main" else null,
+                    fecc = fecc
                 )
                 val response = participantStep.calls(request, token).execute()
                 callStep = participantStep.call(response.callId)
@@ -39,7 +41,10 @@ internal class RealMediaConnectionSignaling(
                 response.sdp
             }
             else -> {
-                val request = UpdateRequest(description)
+                val request = UpdateRequest(
+                    sdp = description,
+                    fecc = fecc
+                )
                 val response = step.update(request, token).execute()
                 response.sdp
             }

@@ -1,0 +1,18 @@
+{
+  "action": "wait",
+  "timeout": 0,
+  "movement": [
+    {
+      "axis": "pan",
+      "direction": "reset"
+    },
+    {
+      "axis": "tilt",
+      "direction": "reset"
+    },
+    {
+      "axis": "zoom",
+      "direction": "reset"
+    }
+  ]
+}

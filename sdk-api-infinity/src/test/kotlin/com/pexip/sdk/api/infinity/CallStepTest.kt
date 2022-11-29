@@ -145,7 +145,7 @@ internal class CallStepTest {
     fun `update throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
-        val request = UpdateRequest(Random.nextString(8))
+        val request = Random.nextUpdateRequest()
         assertFailsWith<IllegalStateException> { step.update(request, token).execute() }
         server.verifyUpdate(request, token)
     }
@@ -154,7 +154,7 @@ internal class CallStepTest {
     fun `update throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
         val token = Random.nextString(8)
-        val request = UpdateRequest(Random.nextString(8))
+        val request = Random.nextUpdateRequest()
         assertFailsWith<NoSuchNodeException> { step.update(request, token).execute() }
         server.verifyUpdate(request, token)
     }
@@ -167,7 +167,7 @@ internal class CallStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
-        val request = UpdateRequest(Random.nextString(8))
+        val request = Random.nextUpdateRequest()
         val e = assertFailsWith<NoSuchConferenceException> { step.update(request, token).execute() }
         assertEquals(message, e.message)
         server.verifyUpdate(request, token)
@@ -181,7 +181,7 @@ internal class CallStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
-        val request = UpdateRequest(Random.nextString(8))
+        val request = Random.nextUpdateRequest()
         val e = assertFailsWith<InvalidTokenException> { step.update(request, token).execute() }
         assertEquals(message, e.message)
         server.verifyUpdate(request, token)
@@ -195,7 +195,7 @@ internal class CallStepTest {
             setBody(json.encodeToString(Box(response)))
         }
         val token = Random.nextString(8)
-        val request = UpdateRequest(Random.nextString(8))
+        val request = Random.nextUpdateRequest()
         assertEquals(response, step.update(request, token).execute())
         server.verifyUpdate(request, token)
     }
@@ -325,5 +325,10 @@ internal class CallStepTest {
         mid = nextString(8),
         ufrag = nextString(8),
         pwd = nextString(8)
+    )
+
+    private fun Random.nextUpdateRequest() = UpdateRequest(
+        sdp = nextString(8),
+        fecc = nextBoolean()
     )
 }

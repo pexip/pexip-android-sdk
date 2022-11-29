@@ -329,7 +329,8 @@ internal class WebRtcMediaConnection(
                         config.signaling.onOffer(
                             callType = "WEBRTC",
                             description = mangledDescription.description,
-                            presentationInMain = config.presentationInMain
+                            presentationInMain = config.presentationInMain,
+                            fecc = config.farEndCameraControl
                         )
                     )
                     setRemoteDescription(sdp)

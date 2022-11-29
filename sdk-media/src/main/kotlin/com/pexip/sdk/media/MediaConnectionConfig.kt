@@ -7,12 +7,14 @@ package com.pexip.sdk.media
  * @property iceServers a list of [IceServer]s that [MediaConnection] will use
  * @property dscp true if DSCP is enabled, false otherwise
  * @property presentationInMain true if presentation will be mixed with main video feed, false otherwise
+ * @property farEndCameraControl true if far end camera control is supported, false otherwise
  */
 public class MediaConnectionConfig private constructor(
     public val signaling: MediaConnectionSignaling,
     public val iceServers: List<IceServer>,
     public val dscp: Boolean,
     public val presentationInMain: Boolean,
+    public val farEndCameraControl: Boolean,
 ) {
 
     /**
@@ -25,6 +27,7 @@ public class MediaConnectionConfig private constructor(
         private val iceServers = ArrayList(signaling.iceServers)
         private var dscp = false
         private var presentationInMain = false
+        private var farEndCameraControl = false
 
         /**
          * Adds an [IceServer] to this builder.
@@ -62,6 +65,16 @@ public class MediaConnectionConfig private constructor(
         }
 
         /**
+         * Sets whether far end camera control will be enabled.
+         *
+         * @param farEndCameraControl true if far end camera control is supported, false otherwise
+         * @return this builder
+         */
+        public fun farEndCameraControl(farEndCameraControl: Boolean): Builder = apply {
+            this.farEndCameraControl = farEndCameraControl
+        }
+
+        /**
          * Builds [MediaConnectionConfig].
          *
          * @return an instance of [MediaConnectionConfig]
@@ -70,7 +83,8 @@ public class MediaConnectionConfig private constructor(
             signaling = signaling,
             iceServers = iceServers,
             dscp = dscp,
-            presentationInMain = presentationInMain
+            presentationInMain = presentationInMain,
+            farEndCameraControl = farEndCameraControl
         )
     }
 }

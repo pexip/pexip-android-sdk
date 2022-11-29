@@ -547,14 +547,16 @@ public interface InfinityService {
 
     public companion object {
 
+        internal val Json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
+
         @JvmStatic
         @JvmOverloads
         public fun create(client: OkHttpClient = OkHttpClient()): InfinityService = create(
             client = client,
-            json = Json {
-                ignoreUnknownKeys = true
-                coerceInputValues = true
-            }
+            json = Json
         )
 
         internal fun create(client: OkHttpClient, json: Json): InfinityService =
