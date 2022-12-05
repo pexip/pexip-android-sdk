@@ -12,13 +12,13 @@ internal abstract class MicrophoneMuteObserver(context: Context) {
         fun onMicrophoneMuteChange(microphoneMute: Boolean)
     }
 
-    private val initialMicrophoneMute = microphoneMute
-
     protected val audioManager = context.getSystemService<AudioManager>()!!
 
     var microphoneMute: Boolean
         get() = audioManager.isMicrophoneMute
         set(value) = doSetMicrophoneMute(value)
+
+    private val initialMicrophoneMute = microphoneMute
 
     fun dispose() {
         doDispose()
