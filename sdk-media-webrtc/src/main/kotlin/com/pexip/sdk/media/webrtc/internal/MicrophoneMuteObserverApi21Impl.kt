@@ -13,7 +13,7 @@ internal class MicrophoneMuteObserverApi21Impl(context: Context, private val cal
         if (newValue == microphoneMute) callback.onMicrophoneMuteChange(microphoneMute)
     }
 
-    override fun dispose() {
+    override fun doDispose() {
         // noop
     }
 }

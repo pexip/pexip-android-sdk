@@ -29,7 +29,7 @@ internal class MicrophoneMuteObserverApi28Impl(
         audioManager.isMicrophoneMute = microphoneMute
     }
 
-    override fun dispose() {
+    override fun doDispose() {
         try {
             context.unregisterReceiver(receiver)
         } catch (e: IllegalArgumentException) {
