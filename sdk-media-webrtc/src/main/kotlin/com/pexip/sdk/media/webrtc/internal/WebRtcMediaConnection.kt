@@ -101,7 +101,8 @@ internal class WebRtcMediaConnection(
 
     override val mainRemoteVideoTrack: com.pexip.sdk.media.VideoTrack?
         get() = synchronized(mainVideoTransceiverLock) {
-            mainVideoTransceiver?.takeIf { it.direction == RtpTransceiverDirection.SEND_RECV }
+            mainVideoTransceiver?.takeUnless { disposed.get() }
+                ?.takeIf { it.direction == RtpTransceiverDirection.SEND_RECV }
                 ?.receiver
                 ?.videoTrack
                 ?.let(::WebRtcVideoTrack)
@@ -109,7 +110,8 @@ internal class WebRtcMediaConnection(
 
     override val presentationRemoteVideoTrack: com.pexip.sdk.media.VideoTrack?
         get() = synchronized(presentationVideoTransceiver) {
-            presentationVideoTransceiver.takeIf { it.direction == RtpTransceiverDirection.RECV_ONLY || it.direction == RtpTransceiverDirection.SEND_RECV }
+            presentationVideoTransceiver.takeUnless { disposed.get() }
+                ?.takeIf { it.direction == RtpTransceiverDirection.RECV_ONLY || it.direction == RtpTransceiverDirection.SEND_RECV }
                 ?.receiver
                 ?.videoTrack
                 ?.let(::WebRtcVideoTrack)
@@ -121,7 +123,7 @@ internal class WebRtcMediaConnection(
             null -> null
             else -> throw IllegalArgumentException("localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.")
         }
-        workerExecutor.maybeExecute {
+        workerExecutor.maybeExecuteUnlessDisposed {
             synchronized(mainAudioTransceiverLock) {
                 val t = mainAudioTransceiver ?: connection.maybeAddTransceiver(lat)
                 t?.maybeSetNewDirection(lat)
@@ -138,7 +140,7 @@ internal class WebRtcMediaConnection(
             null -> null
             else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
         }
-        workerExecutor.maybeExecute {
+        workerExecutor.maybeExecuteUnlessDisposed {
             synchronized(mainVideoTransceiverLock) {
                 val t = mainVideoTransceiver ?: connection.maybeAddTransceiver(lvt)
                 t?.maybeSetNewDirection(lvt)
@@ -155,7 +157,7 @@ internal class WebRtcMediaConnection(
             null -> null
             else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
         }
-        workerExecutor.maybeExecute {
+        workerExecutor.maybeExecuteUnlessDisposed {
             synchronized(presentationVideoTransceiver) {
                 presentationVideoTransceiver.maybeSetNewDirection(lvt)
                 presentationVideoTransceiver.setTrack(lvt)
@@ -164,24 +166,28 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    override fun setMainRemoteAudioTrackEnabled(enabled: Boolean) = workerExecutor.maybeExecute {
-        mainAudioTransceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(
-            mediaType = MediaType.MEDIA_TYPE_AUDIO,
-            receive = enabled
-        )
-        mainAudioTransceiver?.maybeSetNewDirection(enabled)
+    override fun setMainRemoteAudioTrackEnabled(enabled: Boolean) {
+        workerExecutor.maybeExecuteUnlessDisposed {
+            mainAudioTransceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(
+                mediaType = MediaType.MEDIA_TYPE_AUDIO,
+                receive = enabled
+            )
+            mainAudioTransceiver?.maybeSetNewDirection(enabled)
+        }
     }
 
-    override fun setMainRemoteVideoTrackEnabled(enabled: Boolean) = workerExecutor.maybeExecute {
-        mainVideoTransceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(
-            mediaType = MediaType.MEDIA_TYPE_VIDEO,
-            receive = enabled
-        )
-        mainVideoTransceiver?.maybeSetNewDirection(enabled)
+    override fun setMainRemoteVideoTrackEnabled(enabled: Boolean) {
+        workerExecutor.maybeExecuteUnlessDisposed {
+            mainVideoTransceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(
+                mediaType = MediaType.MEDIA_TYPE_VIDEO,
+                receive = enabled
+            )
+            mainVideoTransceiver?.maybeSetNewDirection(enabled)
+        }
     }
 
     override fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean) {
-        if (!config.presentationInMain) workerExecutor.maybeExecute {
+        if (!config.presentationInMain) workerExecutor.maybeExecuteUnlessDisposed {
             synchronized(presentationVideoTransceiver) {
                 presentationVideoTransceiver.maybeSetNewDirection(enabled)
             }
@@ -189,7 +195,7 @@ internal class WebRtcMediaConnection(
     }
 
     override fun setMaxBitrate(bitrate: Bitrate) {
-        workerExecutor.maybeExecute {
+        workerExecutor.maybeExecuteUnlessDisposed {
             this.bitrate = bitrate
         }
     }
@@ -207,7 +213,7 @@ internal class WebRtcMediaConnection(
     override fun stopPresentationReceive() = setPresentationRemoteVideoTrackEnabled(false)
 
     override fun dtmf(digits: String) {
-        networkExecutor.maybeExecute {
+        networkExecutor.maybeExecuteUnlessDisposed {
             runCatching { config.signaling.onDtmf(digits) }
         }
     }
@@ -291,25 +297,25 @@ internal class WebRtcMediaConnection(
     }
 
     private fun createOffer() {
-        workerExecutor.maybeExecute {
+        workerExecutor.maybeExecuteUnlessDisposed {
             connection.createOffer(localSdpObserver, MediaConstraints())
         }
     }
 
     private fun setLocalDescription(observer: SdpObserver, description: SessionDescription) {
-        workerExecutor.maybeExecute {
+        workerExecutor.maybeExecuteUnlessDisposed {
             connection.setLocalDescription(observer, description)
         }
     }
 
     private fun setRemoteDescription(sdp: SessionDescription) {
-        workerExecutor.maybeExecute {
+        workerExecutor.maybeExecuteUnlessDisposed {
             connection.setRemoteDescription(remoteSdpObserver, sdp.mangle(bitrate))
         }
     }
 
     private fun onSetLocalDescriptionSuccess() {
-        workerExecutor.maybeExecute {
+        workerExecutor.maybeExecuteUnlessDisposed {
             val mangledDescription = connection.localDescription.mangle(
                 bitrate = bitrate,
                 mainAudioMid = synchronized(mainAudioTransceiverLock) {
@@ -403,4 +409,10 @@ internal class WebRtcMediaConnection(
 
     private val RtpReceiver.videoTrack
         get() = track() as? org.webrtc.VideoTrack
+
+    private inline fun Executor.maybeExecuteUnlessDisposed(crossinline block: () -> Unit) {
+        if (!disposed.get()) maybeExecute {
+            if (!disposed.get()) block()
+        }
+    }
 }
