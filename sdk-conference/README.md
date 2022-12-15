@@ -8,6 +8,6 @@ A set of tools to interact with conferences.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-conference:0.10.0")
+    implementation("com.pexip.sdk:sdk-conference:0.11.0")
 }
 ```
