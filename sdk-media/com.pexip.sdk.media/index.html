@@ -3,12 +3,19 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>com.pexip.sdk.media</title>
-<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">
-    <script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
 <link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -19,14 +26,15 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
     <div class="library-name">
 <a href="../../index.html">
 <span>sdk</span>            </a>    </div>
-    <div>0.10.0
+    <div>0.11.0
     </div>
     <div class="pull-right d-flex">
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
@@ -39,9 +47,9 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="sdk-media::com.pexip.sdk.media////PointingToDeclaration//185842665">
-  <div class="breadcrumbs"><a href="../index.html">sdk-media</a><span class="delimiter">/</span><a href="index.html">com.pexip.sdk.media</a></div>
+  <div class="breadcrumbs"><a href="../index.html">sdk-media</a><span class="delimiter">/</span><span class="current">com.pexip.sdk.media</span></div>
   <div class="cover ">
-    <h1 class="cover"><span><span>Package</span></span> <span>com.</span><wbr><span>pexip.</span><wbr><span>sdk.</span><wbr><span>media</span></h1>
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button></div>
@@ -57,7 +65,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-audio-device/index.html">AudioDevice</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">An audio device.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-audio-device/index.html">AudioDevice</a></div><div class="brief "><p class="paragraph">An audio device.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -72,7 +80,37 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-audio-device-manager/index.html">AudioDeviceManager</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">An audio device manager.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-audio-device-manager/index.html">AudioDeviceManager</a></div><div class="brief "><p class="paragraph">An audio device manager.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1464263628%2FClasslikes%2F185842665" anchor-label="Bitrate" id="-1464263628%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-bitrate/index.html"><span><span>Bitrate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1464263628%2FClasslikes%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-inline/index.html"><span class="token annotation builtin">JvmInline</span></a></div></div><span class="token keyword">value </span><span class="token keyword">class </span><a href="-bitrate/index.html">Bitrate</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-bitrate/index.html">Bitrate</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Represents the number of bits that are conveyed or processed per unit of time.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="35779984%2FClasslikes%2F185842665" anchor-label="BitrateUnit" id="35779984%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-bitrate-unit/index.html"><span>Bitrate</span><wbr><span><span>Unit</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="35779984%2FClasslikes%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-bitrate-unit/index.html">BitrateUnit</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-bitrate-unit/index.html">BitrateUnit</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">The list of possible bitrate measurement units, in which a bitrate can be expressed.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -87,7 +125,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-camera-video-track/index.html">CameraVideoTrack</a> : <a href="-local-video-track/index.html">LocalVideoTrack</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">A camera video track.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-camera-video-track/index.html">CameraVideoTrack</a> : <a href="-local-video-track/index.html">LocalVideoTrack</a></div><div class="brief "><p class="paragraph">A camera video track.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -102,7 +140,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-camera-video-track-factory/index.html">CameraVideoTrackFactory</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-camera-video-track-factory/index.html">CameraVideoTrackFactory</a></div></div></div>
               </div>
             </div>
           </div>
@@ -117,7 +155,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-ice-server/index.html">IceServer</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">An Interactive Connectivity Establishment (ICE) server and credentials to access it.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-ice-server/index.html">IceServer</a></div><div class="brief "><p class="paragraph">An Interactive Connectivity Establishment (ICE) server and credentials to access it.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -132,7 +170,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-local-audio-track/index.html">LocalAudioTrack</a> : <a href="-local-media-track/index.html">LocalMediaTrack</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">A local audio track.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-local-audio-track/index.html">LocalAudioTrack</a> : <a href="-local-media-track/index.html">LocalMediaTrack</a></div><div class="brief "><p class="paragraph">A local audio track.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -147,7 +185,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-local-audio-track-factory/index.html">LocalAudioTrackFactory</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-local-audio-track-factory/index.html">LocalAudioTrackFactory</a></div></div></div>
               </div>
             </div>
           </div>
@@ -162,7 +200,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-local-media-track/index.html">LocalMediaTrack</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">A local media track.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-local-media-track/index.html">LocalMediaTrack</a></div><div class="brief "><p class="paragraph">A local media track.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -177,7 +215,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-local-video-track/index.html">LocalVideoTrack</a> : <a href="-local-media-track/index.html">LocalMediaTrack</a>, <a href="-video-track/index.html">VideoTrack</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">A local video track.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-local-video-track/index.html">LocalVideoTrack</a> : <a href="-local-media-track/index.html">LocalMediaTrack</a>, <a href="-video-track/index.html">VideoTrack</a></div><div class="brief "><p class="paragraph">A local video track.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -192,7 +230,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-media-connection/index.html">MediaConnection</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">A media connection.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-media-connection/index.html">MediaConnection</a></div><div class="brief "><p class="paragraph">A media connection.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -207,7 +245,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-media-connection-config/index.html">MediaConnectionConfig</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph"><a href="-media-connection/index.html">MediaConnection</a> configuration.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-media-connection-config/index.html">MediaConnectionConfig</a></div><div class="brief "><p class="paragraph"><a href="-media-connection/index.html">MediaConnection</a> configuration.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -222,7 +260,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-media-connection-factory/index.html">MediaConnectionFactory</a> : <a href="-local-audio-track-factory/index.html">LocalAudioTrackFactory</a>, <a href="-camera-video-track-factory/index.html">CameraVideoTrackFactory</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Main entry point to the <a href="-media-connection/index.html">MediaConnection</a> API for clients.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-media-connection-factory/index.html">MediaConnectionFactory</a> : <a href="-local-audio-track-factory/index.html">LocalAudioTrackFactory</a>, <a href="-camera-video-track-factory/index.html">CameraVideoTrackFactory</a></div><div class="brief "><p class="paragraph">Main entry point to the <a href="-media-connection/index.html">MediaConnection</a> API for clients.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -237,7 +275,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-media-connection-signaling/index.html">MediaConnectionSignaling</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Represents a signaling component of <a href="-media-connection/index.html">MediaConnection</a>.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-media-connection-signaling/index.html">MediaConnectionSignaling</a></div><div class="brief "><p class="paragraph">Represents a signaling component of <a href="-media-connection/index.html">MediaConnection</a>.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -252,7 +290,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-quality-profile/index.html">QualityProfile</a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>width<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>height<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>fps<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">A quality profile used to capture the video.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-quality-profile/index.html">QualityProfile</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>width<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>height<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fps<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A quality profile used to capture the video.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -267,7 +305,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-renderer/index.html">Renderer</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">A marker interface that denotes an entity that can render a <a href="-video-track/index.html">VideoTrack</a>.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-renderer/index.html">Renderer</a></div><div class="brief "><p class="paragraph">A marker interface that denotes an entity that can render a <a href="-video-track/index.html">VideoTrack</a>.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -282,7 +320,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-video-track/index.html">VideoTrack</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">A video track that may be rendered onto a <a href="-renderer/index.html">Renderer</a>.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-video-track/index.html">VideoTrack</a></div><div class="brief "><p class="paragraph">A video track that may be rendered onto a <a href="-renderer/index.html">Renderer</a>.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -291,8 +329,9 @@ if(savedDarkMode === true){
     </div>
   </div>
 </div>
-        <div class="footer"><span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2022 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-        </div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2022 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
     </div>
 </div>
 

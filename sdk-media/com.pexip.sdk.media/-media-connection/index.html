@@ -3,12 +3,19 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>MediaConnection</title>
-<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
-    <script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
 <link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -19,14 +26,15 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
     <div class="library-name">
 <a href="../../../index.html">
 <span>sdk</span>            </a>    </div>
-    <div>0.10.0
+    <div>0.11.0
     </div>
     <div class="pull-right d-flex">
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
@@ -39,10 +47,10 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="sdk-media::com.pexip.sdk.media/MediaConnection///PointingToDeclaration//185842665">
-  <div class="breadcrumbs"><a href="../../index.html">sdk-media</a><span class="delimiter">/</span><a href="../index.html">com.pexip.sdk.media</a><span class="delimiter">/</span><a href="index.html">MediaConnection</a></div>
+  <div class="breadcrumbs"><a href="../../index.html">sdk-media</a><span class="delimiter">/</span><a href="../index.html">com.pexip.sdk.media</a><span class="delimiter">/</span><span class="current">MediaConnection</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Media</span><wbr><span><span>Connection</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">MediaConnection</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">A media connection.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">MediaConnection</a></div><p class="paragraph">A media connection.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
@@ -58,7 +66,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a></div></div></div>
               </div>
             </div>
           </div>
@@ -69,13 +77,13 @@ if(savedDarkMode === true){
         <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="main-remote-video-track.html">mainRemoteVideoTrack</a></div>
+                <div><a href="main-remote-video-track.html"><span>main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-469249007%2FProperties%2F185842665"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><a data-name="-469249007%2FProperties%2F185842665" anchor-label="mainRemoteVideoTrack" id="-469249007%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">val </span><a href="main-remote-video-track.html">mainRemoteVideoTrack</a><span class="token operator">: </span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="-469249007%2FProperties%2F185842665" anchor-label="mainRemoteVideoTrack" id="-469249007%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><p class="paragraph">current main remote video track or null</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><a data-name="-469249007%2FProperties%2F185842665" anchor-label="mainRemoteVideoTrack" id="-469249007%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">val </span><a href="main-remote-video-track.html">mainRemoteVideoTrack</a><span class="token operator">: </span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span></div><div class="brief "><a data-name="-469249007%2FProperties%2F185842665" anchor-label="mainRemoteVideoTrack" id="-469249007%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><p class="paragraph">current main remote video track or null</p></div></div></div>
               </div>
             </div>
           </div>
@@ -84,13 +92,13 @@ if(savedDarkMode === true){
         <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="presentation-remote-video-track.html">presentationRemoteVideoTrack</a></div>
+                <div><a href="presentation-remote-video-track.html"><span>presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="118401232%2FProperties%2F185842665"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><a data-name="118401232%2FProperties%2F185842665" anchor-label="presentationRemoteVideoTrack" id="118401232%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">val </span><a href="presentation-remote-video-track.html">presentationRemoteVideoTrack</a><span class="token operator">: </span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="118401232%2FProperties%2F185842665" anchor-label="presentationRemoteVideoTrack" id="118401232%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><p class="paragraph">current presentation remote video track or null</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><a data-name="118401232%2FProperties%2F185842665" anchor-label="presentationRemoteVideoTrack" id="118401232%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">val </span><a href="presentation-remote-video-track.html">presentationRemoteVideoTrack</a><span class="token operator">: </span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span></div><div class="brief "><a data-name="118401232%2FProperties%2F185842665" anchor-label="presentationRemoteVideoTrack" id="118401232%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><p class="paragraph">current presentation remote video track or null</p></div></div></div>
               </div>
             </div>
           </div>
@@ -107,7 +115,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="dispose.html"><span class="token function">dispose</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Disposes this <a href="index.html">MediaConnection</a> and frees all held resources associated with it.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="dispose.html"><span class="token function">dispose</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disposes this <a href="index.html">MediaConnection</a> and frees all held resources associated with it.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -122,7 +130,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="dtmf.html"><span class="token function">dtmf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">digits<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Sends DTMF digits to this <a href="index.html">MediaConnection</a>.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="dtmf.html"><span class="token function">dtmf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">digits<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sends DTMF digits to this <a href="index.html">MediaConnection</a>.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -137,7 +145,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="register-main-remote-video-track-listener.html"><span class="token function">registerMainRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Registers a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for main video.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="register-main-remote-video-track-listener.html"><span class="token function">registerMainRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Registers a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for main video.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -152,7 +160,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="register-presentation-remote-video-track-listener.html"><span class="token function">registerPresentationRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Registers a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for presentation video.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="register-presentation-remote-video-track-listener.html"><span class="token function">registerPresentationRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Registers a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for presentation video.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -167,7 +175,37 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-main-audio-track.html"><span class="token function">setMainAudioTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localAudioTrack<span class="token operator">: </span><a href="../-local-audio-track/index.html">LocalAudioTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Sets the main audio track.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-main-audio-track.html"><span class="token function">setMainAudioTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localAudioTrack<span class="token operator">: </span><a href="../-local-audio-track/index.html">LocalAudioTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the main audio track.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="634253722%2FFunctions%2F185842665" anchor-label="setMainRemoteAudioTrackEnabled" id="634253722%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="set-main-remote-audio-track-enabled.html"><span>set</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Audio</span><wbr><span>Track</span><wbr><span><span>Enabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="634253722%2FFunctions%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-main-remote-audio-track-enabled.html"><span class="token function">setMainRemoteAudioTrackEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables or disables the receive of remote audio.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="442759381%2FFunctions%2F185842665" anchor-label="setMainRemoteVideoTrackEnabled" id="442759381%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="set-main-remote-video-track-enabled.html"><span>set</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Enabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="442759381%2FFunctions%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-main-remote-video-track-enabled.html"><span class="token function">setMainRemoteVideoTrackEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables or disables the receive of remote video.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -182,7 +220,37 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-main-video-track.html"><span class="token function">setMainVideoTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localVideoTrack<span class="token operator">: </span><a href="../-local-video-track/index.html">LocalVideoTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Sets the main video track.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-main-video-track.html"><span class="token function">setMainVideoTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localVideoTrack<span class="token operator">: </span><a href="../-local-video-track/index.html">LocalVideoTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the main video track.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-552253547%2FFunctions%2F185842665" anchor-label="setMaxBitrate" id="-552253547%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="set-max-bitrate.html"><span>set</span><wbr><span>Max</span><wbr><span><span>Bitrate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-552253547%2FFunctions%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-max-bitrate.html"><span class="token function">setMaxBitrate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bitrate<span class="token operator">: </span><a href="../-bitrate/index.html">Bitrate</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the maximum bitrate for each video stream.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1448262006%2FFunctions%2F185842665" anchor-label="setPresentationRemoteVideoTrackEnabled" id="1448262006%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="set-presentation-remote-video-track-enabled.html"><span>set</span><wbr><span>Presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Enabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1448262006%2FFunctions%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-presentation-remote-video-track-enabled.html"><span class="token function">setPresentationRemoteVideoTrackEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables or disables the receive of ongoing remote presentation video.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -197,7 +265,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-presentation-video-track.html"><span class="token function">setPresentationVideoTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localVideoTrack<span class="token operator">: </span><a href="../-local-video-track/index.html">LocalVideoTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Sets the presentation video track.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-presentation-video-track.html"><span class="token function">setPresentationVideoTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localVideoTrack<span class="token operator">: </span><a href="../-local-video-track/index.html">LocalVideoTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the presentation video track.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -212,7 +280,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="start.html"><span class="token function">start</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Starts the negotiation process.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="start.html"><span class="token function">start</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Starts the negotiation process.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -227,7 +295,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="start-presentation-receive.html"><span class="token function">startPresentationReceive</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Allows this <a href="index.html">MediaConnection</a> to receive ongoing remote presentation.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="start-presentation-receive.html"><span class="token function"><strike>startPresentationReceive</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Allows this <a href="index.html">MediaConnection</a> to receive ongoing remote presentation.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -242,7 +310,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="stop-presentation-receive.html"><span class="token function">stopPresentationReceive</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Disables the ability to receive ongoing remote presentation.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="stop-presentation-receive.html"><span class="token function"><strike>stopPresentationReceive</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disables the ability to receive ongoing remote presentation.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -257,7 +325,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="unregister-main-remote-video-track-listener.html"><span class="token function">unregisterMainRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Unregisters a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for main video.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="unregister-main-remote-video-track-listener.html"><span class="token function">unregisterMainRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unregisters a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for main video.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -272,7 +340,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="unregister-presentation-remote-video-track-listener.html"><span class="token function">unregisterPresentationRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Unregisters a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for presentation video.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="unregister-presentation-remote-video-track-listener.html"><span class="token function">unregisterPresentationRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unregisters a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for presentation video.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -281,8 +349,9 @@ if(savedDarkMode === true){
     </div>
   </div>
 </div>
-        <div class="footer"><span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2022 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-        </div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2022 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
     </div>
 </div>
 

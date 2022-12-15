@@ -3,12 +3,19 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>Type</title>
-<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg">
-    <script>var pathToRoot = "../../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../../styles/style.css" rel="Stylesheet">
 <link href="../../../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -19,14 +26,15 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
     <div class="library-name">
 <a href="../../../../index.html">
 <span>sdk</span>            </a>    </div>
-    <div>0.10.0
+    <div>0.11.0
     </div>
     <div class="pull-right d-flex">
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
@@ -39,56 +47,26 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="sdk-media::com.pexip.sdk.media/AudioDevice.Type///PointingToDeclaration//185842665">
-  <div class="breadcrumbs"><a href="../../../index.html">sdk-media</a><span class="delimiter">/</span><a href="../../index.html">com.pexip.sdk.media</a><span class="delimiter">/</span><a href="../index.html">AudioDevice</a><span class="delimiter">/</span><a href="index.html">Type</a></div>
+  <div class="breadcrumbs"><a href="../../../index.html">sdk-media</a><span class="delimiter">/</span><a href="../../index.html">com.pexip.sdk.media</a><span class="delimiter">/</span><a href="../index.html">AudioDevice</a><span class="delimiter">/</span><span class="current">Type</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Type</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">enum </span><a href="index.html">Type</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">AudioDevice.Type</a><span class="token operator">&gt; </span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">enum </span><a href="index.html">Type</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">AudioDevice.Type</a><span class="token operator">&gt; </span></div></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Entries">Entries</button><button class="section-tab" data-togglable="Inherited properties">Inherited properties</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Entries">Entries</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Inherited properties">Inherited properties</button></div>
     <div class="tabs-section-body">
       <h2 class="tabbedcontent">Entries</h2>
-      <div class="table" data-togglable="Entries"><a data-name="408933888%2FClasslikes%2F185842665" anchor-label="BLUETOOTH_SCO" id="408933888%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+      <div class="table" data-togglable="Entries"><a data-name="-1259441003%2FClasslikes%2F185842665" anchor-label="BUILTIN_SPEAKER" id="-1259441003%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
         <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="-b-l-u-e-t-o-o-t-h_-s-c-o/index.html">BLUETOOTH_SCO</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="408933888%2FClasslikes%2F185842665"></span>
+                <div><a href="-b-u-i-l-t-i-n_-s-p-e-a-k-e-r/index.html">BUILTIN_SPEAKER</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1259441003%2FClasslikes%2F185842665"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-b-l-u-e-t-o-o-t-h_-s-c-o/index.html">BLUETOOTH_SCO</a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">An audio device type describing a Bluetooth device typically used for telephony.</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-141478364%2FClasslikes%2F185842665" anchor-label="BLUETOOTH_A2DP" id="-141478364%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-b-l-u-e-t-o-o-t-h_-a2-d-p/index.html">BLUETOOTH_A2DP</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-141478364%2FClasslikes%2F185842665"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-b-l-u-e-t-o-o-t-h_-a2-d-p/index.html">BLUETOOTH_A2DP</a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">An audio device type describing a Bluetooth device supporting the A2DP profile.</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="1974671028%2FClasslikes%2F185842665" anchor-label="WIRED_HEADSET" id="1974671028%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-w-i-r-e-d_-h-e-a-d-s-e-t/index.html">WIRED_HEADSET</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1974671028%2FClasslikes%2F185842665"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-w-i-r-e-d_-h-e-a-d-s-e-t/index.html">WIRED_HEADSET</a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">An audio device type describing a headset, which is the combination of a headphones and microphone.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-b-u-i-l-t-i-n_-s-p-e-a-k-e-r/index.html">BUILTIN_SPEAKER</a></div></div><div class="brief "><p class="paragraph">An audio device type describing the speaker system (i.e. a mono speaker or stereo speakers) built in a device.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -103,22 +81,52 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-b-u-i-l-t-i-n_-e-a-r-p-i-e-c-e/index.html">BUILTIN_EARPIECE</a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">An audio device type describing the attached earphone speaker.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-b-u-i-l-t-i-n_-e-a-r-p-i-e-c-e/index.html">BUILTIN_EARPIECE</a></div></div><div class="brief "><p class="paragraph">An audio device type describing the attached earphone speaker.</p></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="-1259441003%2FClasslikes%2F185842665" anchor-label="BUILTIN_SPEAKER" id="-1259441003%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+<a data-name="1974671028%2FClasslikes%2F185842665" anchor-label="WIRED_HEADSET" id="1974671028%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
         <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="-b-u-i-l-t-i-n_-s-p-e-a-k-e-r/index.html">BUILTIN_SPEAKER</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1259441003%2FClasslikes%2F185842665"></span>
+                <div><a href="-w-i-r-e-d_-h-e-a-d-s-e-t/index.html">WIRED_HEADSET</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1974671028%2FClasslikes%2F185842665"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-b-u-i-l-t-i-n_-s-p-e-a-k-e-r/index.html">BUILTIN_SPEAKER</a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">An audio device type describing the speaker system (i.e. a mono speaker or stereo speakers) built in a device.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-w-i-r-e-d_-h-e-a-d-s-e-t/index.html">WIRED_HEADSET</a></div></div><div class="brief "><p class="paragraph">An audio device type describing a headset, which is the combination of a headphones and microphone.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-141478364%2FClasslikes%2F185842665" anchor-label="BLUETOOTH_A2DP" id="-141478364%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-b-l-u-e-t-o-o-t-h_-a2-d-p/index.html">BLUETOOTH_A2DP</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-141478364%2FClasslikes%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-b-l-u-e-t-o-o-t-h_-a2-d-p/index.html">BLUETOOTH_A2DP</a></div></div><div class="brief "><p class="paragraph">An audio device type describing a Bluetooth device supporting the A2DP profile.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="408933888%2FClasslikes%2F185842665" anchor-label="BLUETOOTH_SCO" id="408933888%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="-b-l-u-e-t-o-o-t-h_-s-c-o/index.html">BLUETOOTH_SCO</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="408933888%2FClasslikes%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><a href="-b-l-u-e-t-o-o-t-h_-s-c-o/index.html">BLUETOOTH_SCO</a></div></div><div class="brief "><p class="paragraph">An audio device type describing a Bluetooth device typically used for telephony.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -129,13 +137,13 @@ if(savedDarkMode === true){
         <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="-b-u-i-l-t-i-n_-s-p-e-a-k-e-r/index.html#-372974862%2FProperties%2F185842665">name</a></div>
+                <div><a href="../../-bitrate-unit/-m-b-p-s/index.html#-372974862%2FProperties%2F185842665"><span><span>name</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-372974862%2FProperties%2F185842665"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Inherited properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><a data-name="-372974862%2FProperties%2F185842665" anchor-label="name" id="-372974862%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-b-u-i-l-t-i-n_-s-p-e-a-k-e-r/index.html#-372974862%2FProperties%2F185842665">name</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Inherited properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><a data-name="-372974862%2FProperties%2F185842665" anchor-label="name" id="-372974862%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../../-bitrate-unit/-m-b-p-s/index.html#-372974862%2FProperties%2F185842665">name</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
               </div>
             </div>
           </div>
@@ -144,13 +152,45 @@ if(savedDarkMode === true){
         <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="-b-u-i-l-t-i-n_-s-p-e-a-k-e-r/index.html#-739389684%2FProperties%2F185842665">ordinal</a></div>
+                <div><a href="../../-bitrate-unit/-m-b-p-s/index.html#-739389684%2FProperties%2F185842665"><span><span>ordinal</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-739389684%2FProperties%2F185842665"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Inherited properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><a data-name="-739389684%2FProperties%2F185842665" anchor-label="ordinal" id="-739389684%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-b-u-i-l-t-i-n_-s-p-e-a-k-e-r/index.html#-739389684%2FProperties%2F185842665">ordinal</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Inherited properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><a data-name="-739389684%2FProperties%2F185842665" anchor-label="ordinal" id="-739389684%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../../-bitrate-unit/-m-b-p-s/index.html#-739389684%2FProperties%2F185842665">ordinal</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="1823359948%2FFunctions%2F185842665" anchor-label="valueOf" id="1823359948%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="value-of.html"><span>value</span><wbr><span><span>Of</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1823359948%2FFunctions%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="value-of.html"><span class="token function">valueOf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">AudioDevice.Type</a></div><div class="brief "><p class="paragraph">Returns the enum constant of this type with the specified name. The string must match exactly an identifier used to declare an enum constant in this type. (Extraneous whitespace characters are not permitted.)</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-307403304%2FFunctions%2F185842665" anchor-label="values" id="-307403304%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="values.html"><span><span>values</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-307403304%2FFunctions%2F185842665"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="values.html"><span class="token function">values</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">AudioDevice.Type</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Returns an array containing the constants of this enum type, in the order they're declared.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -159,8 +199,9 @@ if(savedDarkMode === true){
     </div>
   </div>
 </div>
-        <div class="footer"><span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2022 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-        </div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2022 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
     </div>
 </div>
 

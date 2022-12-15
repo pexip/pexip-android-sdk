@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Builder</title>
+<link href="../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../../index.html">
+<span>sdk</span>            </a>    </div>
+    <div>0.11.0
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="sdk-media-webrtc::com.pexip.sdk.media.webrtc/WebRtcMediaConnectionFactory.Builder///PointingToDeclaration//-1699851286">
+  <div class="breadcrumbs"><a href="../../../index.html">sdk-media-webrtc</a><span class="delimiter">/</span><a href="../../index.html">com.pexip.sdk.media.webrtc</a><span class="delimiter">/</span><a href="../index.html">WebRtcMediaConnectionFactory</a><span class="delimiter">/</span><span class="current">Builder</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Builder</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media-webrtc:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">Builder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">A builder for <a href="../index.html">WebRtcMediaConnectionFactory</a>.</p><p class="paragraph">The created instance of <a href="../index.html">WebRtcMediaConnectionFactory</a> will use <span data-unresolved-link="org.webrtc/DefaultVideoDecoderFactory///PointingToDeclaration/">DefaultVideoDecoderFactory</span>, <span data-unresolved-link="org.webrtc/DefaultVideoEncoderFactory///PointingToDeclaration/">DefaultVideoEncoderFactory</span> and either <span data-unresolved-link="org.webrtc/Camera2Enumerator///PointingToDeclaration/">Camera2Enumerator</span> if the OS supports it or <span data-unresolved-link="org.webrtc/Camera1Enumerator///PointingToDeclaration/">Camera1Enumerator</span> otherwise if corresponding methods were not used during before calling <a href="build.html">build</a>.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Parameters">Parameters</button></div>
+    <div class="tabs-section-body">
+      <h4 class="">Parameters</h4>
+      <div data-togglable="Parameters">
+        <div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="Parameters"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media-webrtc:dokkaHtmlPartial/release"><div data-togglable="Parameters"><div class="table" data-togglable="Parameters"><div class="table-row" data-filterable-current=":sdk-media-webrtc:dokkaHtmlPartial/release" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><u><span><span>context</span></span></u></div></span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">an instance of application context</p></div></div></div></div></div></div></div></div></div>
+      </div>
+      <h2 class="tabbedcontent">Constructors</h2>
+      <div class="table" data-togglable="Constructors"><a data-name="965857995%2FConstructors%2F-1699851286" anchor-label="Builder" id="965857995%2FConstructors%2F-1699851286" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":sdk-media-webrtc:dokkaHtmlPartial/release" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-builder.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="965857995%2FConstructors%2F-1699851286"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media-webrtc:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-builder.html"><span class="token function">Builder</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="1686305942%2FFunctions%2F-1699851286" anchor-label="audioDeviceModule" id="1686305942%2FFunctions%2F-1699851286" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":sdk-media-webrtc:dokkaHtmlPartial/release" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="audio-device-module.html"><span>audio</span><wbr><span>Device</span><wbr><span><span>Module</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1686305942%2FFunctions%2F-1699851286"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media-webrtc:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="audio-device-module.html"><span class="token function">audioDeviceModule</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">audioDeviceModule<span class="token operator">: </span><span data-unresolved-link="org.webrtc.audio/AudioDeviceModule///PointingToDeclaration/">AudioDeviceModule</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">WebRtcMediaConnectionFactory.Builder</a></div><div class="brief "><p class="paragraph">Sets an <span data-unresolved-link="org.webrtc.audio/AudioDeviceModule///PointingToDeclaration/">AudioDeviceModule</span>.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1504280041%2FFunctions%2F-1699851286" anchor-label="build" id="1504280041%2FFunctions%2F-1699851286" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":sdk-media-webrtc:dokkaHtmlPartial/release" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="build.html"><span><span>build</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1504280041%2FFunctions%2F-1699851286"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media-webrtc:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="build.html"><span class="token function">build</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../index.html">WebRtcMediaConnectionFactory</a></div><div class="brief "><p class="paragraph">Builds <a href="../index.html">WebRtcMediaConnectionFactory</a>.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-259585176%2FFunctions%2F-1699851286" anchor-label="cameraEnumerator" id="-259585176%2FFunctions%2F-1699851286" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":sdk-media-webrtc:dokkaHtmlPartial/release" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="camera-enumerator.html"><span>camera</span><wbr><span><span>Enumerator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-259585176%2FFunctions%2F-1699851286"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media-webrtc:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="camera-enumerator.html"><span class="token function">cameraEnumerator</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cameraEnumerator<span class="token operator">: </span><span data-unresolved-link="org.webrtc/CameraEnumerator///PointingToDeclaration/">CameraEnumerator</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">WebRtcMediaConnectionFactory.Builder</a></div><div class="brief "><p class="paragraph">Sets a <span data-unresolved-link="org.webrtc/CameraEnumerator///PointingToDeclaration/">CameraEnumerator</span>.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1609290616%2FFunctions%2F-1699851286" anchor-label="eglBase" id="1609290616%2FFunctions%2F-1699851286" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":sdk-media-webrtc:dokkaHtmlPartial/release" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="egl-base.html"><span>egl</span><wbr><span><span>Base</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1609290616%2FFunctions%2F-1699851286"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media-webrtc:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="egl-base.html"><span class="token function">eglBase</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">eglBase<span class="token operator">: </span><span data-unresolved-link="org.webrtc/EglBase///PointingToDeclaration/">EglBase</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">WebRtcMediaConnectionFactory.Builder</a></div><div class="brief "><p class="paragraph">Sets an <span data-unresolved-link="org.webrtc/EglBase///PointingToDeclaration/">EglBase</span>.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="45163756%2FFunctions%2F-1699851286" anchor-label="videoDecoderFactory" id="45163756%2FFunctions%2F-1699851286" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":sdk-media-webrtc:dokkaHtmlPartial/release" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="video-decoder-factory.html"><span>video</span><wbr><span>Decoder</span><wbr><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="45163756%2FFunctions%2F-1699851286"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media-webrtc:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="video-decoder-factory.html"><span class="token function">videoDecoderFactory</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">videoDecoderFactory<span class="token operator">: </span><span data-unresolved-link="org.webrtc/VideoDecoderFactory///PointingToDeclaration/">VideoDecoderFactory</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">WebRtcMediaConnectionFactory.Builder</a></div><div class="brief "><p class="paragraph">Sets a <span data-unresolved-link="org.webrtc/VideoDecoderFactory///PointingToDeclaration/">VideoDecoderFactory</span>.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1648270692%2FFunctions%2F-1699851286" anchor-label="videoEncoderFactory" id="-1648270692%2FFunctions%2F-1699851286" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":sdk-media-webrtc:dokkaHtmlPartial/release" data-filterable-set=":sdk-media-webrtc:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="video-encoder-factory.html"><span>video</span><wbr><span>Encoder</span><wbr><span><span>Factory</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1648270692%2FFunctions%2F-1699851286"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media-webrtc:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="video-encoder-factory.html"><span class="token function">videoEncoderFactory</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">videoEncoderFactory<span class="token operator">: </span><span data-unresolved-link="org.webrtc/VideoEncoderFactory///PointingToDeclaration/">VideoEncoderFactory</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">WebRtcMediaConnectionFactory.Builder</a></div><div class="brief "><p class="paragraph">Sets a <span data-unresolved-link="org.webrtc/VideoEncoderFactory///PointingToDeclaration/">VideoEncoderFactory</span>.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2022 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+
+</body></html>
+
