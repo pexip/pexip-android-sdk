@@ -118,9 +118,9 @@ class OnConferenceEvent(private val conferenceEvent: ConferenceEvent) : Conferen
         if (conferenceEvent is PresentationStartConferenceEvent) {
             state.connection.setPresentationVideoTrack(null)
             state.screenCaptureVideoTrack?.dispose()
-            state.connection.startPresentationReceive()
+            state.connection.setPresentationRemoteVideoTrackEnabled(true)
         } else if (conferenceEvent is PresentationStopConferenceEvent) {
-            state.connection.stopPresentationReceive()
+            state.connection.setPresentationRemoteVideoTrackEnabled(false)
         }
         state = state.copy(
             presentation = presentation,
