@@ -1,18 +1,13 @@
 package com.pexip.sdk.sample.preflight
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import java.net.URL
 
-sealed interface PreflightDestination : Parcelable {
+sealed interface PreflightDestination {
 
-    @Parcelize
     object DisplayName : PreflightDestination
 
-    @Parcelize
     object Alias : PreflightDestination
 
-    @Parcelize
     data class PinChallenge(
         val node: URL,
         val conferenceAlias: String,

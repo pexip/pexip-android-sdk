@@ -16,7 +16,6 @@ import com.pexip.sdk.sample.preflight.PreflightWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.ui.toParcelable
-import com.squareup.workflow1.ui.toSnapshot
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.awaitCancellation
 import javax.inject.Inject
@@ -44,7 +43,7 @@ class SampleWorkflow @Inject constructor(
         )
     }
 
-    override fun snapshotState(state: SampleState): Snapshot = state.destination.toSnapshot()
+    override fun snapshotState(state: SampleState): Snapshot? = null
 
     override fun render(
         renderProps: Unit,

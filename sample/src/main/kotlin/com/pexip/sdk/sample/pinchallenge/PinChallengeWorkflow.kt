@@ -8,8 +8,6 @@ import com.pexip.sdk.sample.send
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
-import com.squareup.workflow1.ui.toParcelable
-import com.squareup.workflow1.ui.toSnapshot
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,9 +19,9 @@ class PinChallengeWorkflow @Inject constructor(
 ) : StatefulWorkflow<PinChallengeProps, PinChallengeState, PinChallengeOutput, PinChallengeRendering>() {
 
     override fun initialState(props: PinChallengeProps, snapshot: Snapshot?): PinChallengeState =
-        snapshot?.toParcelable() ?: PinChallengeState()
+        PinChallengeState()
 
-    override fun snapshotState(state: PinChallengeState): Snapshot = state.toSnapshot()
+    override fun snapshotState(state: PinChallengeState): Snapshot? = null
 
     override fun render(
         renderProps: PinChallengeProps,

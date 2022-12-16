@@ -5,8 +5,6 @@ import com.pexip.sdk.sample.pinrequirement.PinRequirementWorkflow
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
-import com.squareup.workflow1.ui.toParcelable
-import com.squareup.workflow1.ui.toSnapshot
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,10 +12,9 @@ import javax.inject.Singleton
 class AliasWorkflow @Inject constructor(private val pinRequirementWorkflow: PinRequirementWorkflow) :
     StatefulWorkflow<Unit, AliasState, AliasOutput, AliasRendering>() {
 
-    override fun initialState(props: Unit, snapshot: Snapshot?): AliasState =
-        snapshot?.toParcelable() ?: AliasState()
+    override fun initialState(props: Unit, snapshot: Snapshot?): AliasState = AliasState()
 
-    override fun snapshotState(state: AliasState): Snapshot = state.toSnapshot()
+    override fun snapshotState(state: AliasState): Snapshot? = null
 
     override fun render(
         renderProps: Unit,

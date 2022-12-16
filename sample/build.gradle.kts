@@ -4,7 +4,6 @@ plugins {
     id("com.pexip.sdk.kotlin.android.application")
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.wire)
 }
 

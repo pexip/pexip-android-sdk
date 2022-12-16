@@ -4,8 +4,6 @@ import com.pexip.sdk.sample.send
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
-import com.squareup.workflow1.ui.toParcelable
-import com.squareup.workflow1.ui.toSnapshot
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,9 +13,9 @@ class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) 
     StatefulWorkflow<Unit, DisplayNameState, DisplayNameOutput, DisplayNameRendering>() {
 
     override fun initialState(props: Unit, snapshot: Snapshot?): DisplayNameState =
-        snapshot?.toParcelable() ?: DisplayNameState()
+        DisplayNameState()
 
-    override fun snapshotState(state: DisplayNameState): Snapshot = state.toSnapshot()
+    override fun snapshotState(state: DisplayNameState): Snapshot? = null
 
     override fun render(
         renderProps: Unit,

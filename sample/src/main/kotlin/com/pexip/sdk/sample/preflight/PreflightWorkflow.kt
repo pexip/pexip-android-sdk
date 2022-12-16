@@ -10,7 +10,6 @@ import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.renderChild
-import com.squareup.workflow1.ui.toSnapshot
 import javax.inject.Inject
 
 class PreflightWorkflow @Inject constructor(
@@ -23,7 +22,7 @@ class PreflightWorkflow @Inject constructor(
     override fun initialState(props: PreflightProps, snapshot: Snapshot?): PreflightState =
         PreflightState()
 
-    override fun snapshotState(state: PreflightState): Snapshot = state.toSnapshot()
+    override fun snapshotState(state: PreflightState): Snapshot? = null
 
     override fun render(
         renderProps: PreflightProps,
