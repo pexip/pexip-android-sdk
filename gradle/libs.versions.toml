@@ -44,5 +44,4 @@ workflow-ui-compose = { module = "com.squareup.workflow1:workflow-ui-compose", v
 [plugins]
 dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 wire = { id = "com.squareup.wire", version.ref = "wire" }

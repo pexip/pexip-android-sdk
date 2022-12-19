@@ -8,8 +8,6 @@ import com.pexip.sdk.api.infinity.RequiredPinException
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
-import com.squareup.workflow1.ui.toParcelable
-import com.squareup.workflow1.ui.toSnapshot
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,9 +22,9 @@ class PinRequirementWorkflow @Inject constructor(
     override fun initialState(
         props: PinRequirementProps,
         snapshot: Snapshot?,
-    ): PinRequirementState = snapshot?.toParcelable() ?: PinRequirementState.ResolvingNode
+    ): PinRequirementState = PinRequirementState.ResolvingNode
 
-    override fun snapshotState(state: PinRequirementState): Snapshot = state.toSnapshot()
+    override fun snapshotState(state: PinRequirementState): Snapshot? = null
 
     override fun render(
         renderProps: PinRequirementProps,
