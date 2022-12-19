@@ -15,8 +15,8 @@ object WebRtcMediaConnectionFactoryModule {
 
     @Provides
     @Singleton
-    fun Application.provideMediaConnectionFactory(eglBase: EglBase) = WebRtcMediaConnectionFactory(
-        context = this,
-        eglBase = eglBase
-    )
+    fun Application.provideMediaConnectionFactory(eglBase: EglBase) =
+        WebRtcMediaConnectionFactory.Builder(this)
+            .eglBase(eglBase)
+            .build()
 }

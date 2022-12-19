@@ -159,6 +159,8 @@ class ConferenceWorkflow @Inject constructor(
         try {
             renderState.connection.setMainVideoTrack(renderProps.cameraVideoTrack)
             renderState.connection.setMainAudioTrack(renderProps.microphoneAudioTrack)
+            renderState.connection.setMainRemoteAudioTrackEnabled(true)
+            renderState.connection.setMainRemoteVideoTrackEnabled(true)
             renderState.connection.start()
             awaitCancellation()
         } finally {
