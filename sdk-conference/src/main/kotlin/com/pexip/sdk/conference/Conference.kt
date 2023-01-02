@@ -4,8 +4,12 @@ import com.pexip.sdk.media.MediaConnectionSignaling
 
 /**
  * Represents a conference.
+ *
+ * @property name a display name of this [Conference]
  */
 public interface Conference : MediaConnectionSignaling {
+
+    public val name: String
 
     /**
      * Registers a [ConferenceEventListener].

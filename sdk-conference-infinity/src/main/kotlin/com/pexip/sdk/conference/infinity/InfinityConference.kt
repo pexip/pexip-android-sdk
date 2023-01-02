@@ -20,6 +20,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
 public class InfinityConference private constructor(
+    override val name: String,
     private val source: ConferenceEventSource,
     private val messenger: Messenger,
     private val refresher: TokenRefresher,
@@ -90,6 +91,7 @@ public class InfinityConference private constructor(
                 addAll(turnIceServers)
             }
             return InfinityConference(
+                name = response.conferenceName,
                 source = source,
                 messenger = RealMessenger(
                     participantId = response.participantId,
