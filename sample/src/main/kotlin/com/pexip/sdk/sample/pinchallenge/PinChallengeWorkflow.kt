@@ -39,7 +39,7 @@ class PinChallengeWorkflow @Inject constructor(
             },
             onPinChange = context.send(::OnPinChange),
             onSubmitClick = context.send(::OnSubmitClick),
-            onBackClick = context.send(::OnBackClick)
+            onBackClick = context.send(::OnBackClick),
         )
     }
 

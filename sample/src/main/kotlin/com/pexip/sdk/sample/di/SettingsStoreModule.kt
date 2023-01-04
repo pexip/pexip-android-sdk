@@ -20,7 +20,7 @@ object SettingsStoreModule {
     fun Application.provideSettingsStore(): SettingsStore {
         val store = DataStoreFactory.create(
             serializer = SettingsSerializer,
-            produceFile = { dataStoreFile("settings.pb") }
+            produceFile = { dataStoreFile("settings.pb") },
         )
         return SettingsStore(store)
     }

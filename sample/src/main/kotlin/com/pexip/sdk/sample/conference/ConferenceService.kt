@@ -21,7 +21,7 @@ class ConferenceService : Service() {
         super.onCreate()
         val notificationChannel = NotificationChannelCompat.Builder(
             getString(R.string.conference_notification_channel_id),
-            NOTIFICATION_CHANNEL_IMPORTANCE
+            NOTIFICATION_CHANNEL_IMPORTANCE,
         )
             .setName(getString(R.string.conference_notification_channel_name))
             .build()

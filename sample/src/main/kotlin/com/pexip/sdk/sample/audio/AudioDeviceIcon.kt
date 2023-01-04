@@ -21,6 +21,6 @@ fun AudioDeviceIcon(type: AudioDevice.Type, modifier: Modifier = Modifier) {
             AudioDevice.Type.WIRED_HEADSET -> Icons.Rounded.HeadsetMic
         },
         contentDescription = null,
-        modifier = modifier
+        modifier = modifier,
     )
 }

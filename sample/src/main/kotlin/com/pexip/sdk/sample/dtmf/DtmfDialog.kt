@@ -36,12 +36,12 @@ private fun TonePad(rendering: DtmfRendering, modifier: Modifier = Modifier) {
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-        modifier = modifier
+        modifier = modifier,
     ) {
         items(Tones) {
             ToneButton(
                 tone = it,
-                onClick = { rendering.onToneClick(it) }
+                onClick = { rendering.onToneClick(it) },
             )
         }
     }
@@ -55,7 +55,7 @@ private fun ToneButton(tone: String, onClick: () -> Unit, modifier: Modifier = M
         shape = ToneButtonShape,
         color = MaterialTheme.colorScheme.primary,
         shadowElevation = 4.dp,
-        modifier = modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+        modifier = modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(text = tone)

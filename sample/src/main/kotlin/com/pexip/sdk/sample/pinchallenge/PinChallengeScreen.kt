@@ -30,17 +30,17 @@ fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Mo
         Surface(shape = MaterialTheme.shapes.large, modifier = modifier) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             ) {
                 Text(
                     text = "Pexip Video SDK",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
                 )
                 val visualTransformation = remember { PasswordVisualTransformation() }
                 val keyboardOptions = remember {
                     KeyboardOptions(
                         keyboardType = KeyboardType.NumberPassword,
-                        imeAction = ImeAction.Done
+                        imeAction = ImeAction.Done,
                     )
                 }
                 val focusRequester = remember { FocusRequester() }
@@ -60,12 +60,12 @@ fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Mo
                     keyboardOptions = keyboardOptions,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester)
+                        .focusRequester(focusRequester),
                 )
                 Button(
                     onClick = rendering.onSubmitClick,
                     enabled = rendering.submitEnabled,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(text = "Join")
                 }

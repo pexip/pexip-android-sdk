@@ -30,7 +30,7 @@ fun SampleTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
     LaunchedEffect(systemUiController, darkTheme) {
         systemUiController.setSystemBarsColor(
             color = Color.Transparent,
-            darkIcons = !darkTheme
+            darkIcons = !darkTheme,
         )
     }
     MaterialTheme(colorScheme = colorScheme, content = content)

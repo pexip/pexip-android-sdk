@@ -36,7 +36,7 @@ class DtmfWorkflow @Inject constructor() :
         return DtmfRendering(
             visible = renderProps.visible,
             onToneClick = context.send(::OnToneClick),
-            onBackClick = context.send(::OnBackClick)
+            onBackClick = context.send(::OnBackClick),
         )
     }
 }

@@ -32,7 +32,7 @@ fun Composer(rendering: ComposerRendering, modifier: Modifier = Modifier) {
         .asPaddingValues()
     Row(
         modifier = modifier.padding(paddingValues),
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.Bottom,
     ) {
         ComposerTextField(rendering = rendering, modifier = Modifier.weight(1f))
         ComposerButton(rendering = rendering)
@@ -54,7 +54,7 @@ private fun ComposerTextField(rendering: ComposerRendering, modifier: Modifier =
         decorationBox = {
             Box(
                 contentAlignment = Alignment.CenterStart,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             ) {
                 if (rendering.message.isEmpty()) {
                     Text(
@@ -65,7 +65,7 @@ private fun ComposerTextField(rendering: ComposerRendering, modifier: Modifier =
                 it()
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -77,8 +77,8 @@ private fun ComposerButton(rendering: ComposerRendering, modifier: Modifier = Mo
             .clickable(
                 enabled = rendering.submitEnabled,
                 onClick = rendering.onSubmitClick,
-                role = Role.Button
-            )
+                role = Role.Button,
+            ),
     ) {
         Text(
             text = "Send",
@@ -87,7 +87,7 @@ private fun ComposerButton(rendering: ComposerRendering, modifier: Modifier = Mo
                 else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             },
             style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         )
     }
 }

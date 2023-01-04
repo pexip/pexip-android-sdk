@@ -21,7 +21,7 @@ fun LocalMediaTrackIconButton(
         checked = !(rendering?.capturing ?: true),
         onCheckedChange = { rendering?.onCapturingChange?.invoke(!it) },
         modifier = modifier,
-        content = content
+        content = content,
     )
 }
 
@@ -33,7 +33,7 @@ fun CameraIconButton(rendering: LocalMediaTrackRendering?, modifier: Modifier = 
                 true -> Icons.Default.Videocam
                 else -> Icons.Default.VideocamOff
             },
-            contentDescription = null
+            contentDescription = null,
         )
     }
 }
@@ -49,7 +49,7 @@ fun MicrophoneIconButton(
                 true -> Icons.Default.Mic
                 else -> Icons.Default.MicOff
             },
-            contentDescription = null
+            contentDescription = null,
         )
     }
 }

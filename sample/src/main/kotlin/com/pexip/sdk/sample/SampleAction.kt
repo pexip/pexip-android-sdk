@@ -32,7 +32,7 @@ class OnPermissionsOutput(private val output: PermissionsOutput) : SampleAction(
                 state = state.copy(
                     destination = SampleDestination.Preflight,
                     createCameraVideoTrackCount = 1u,
-                    createMicrophoneAudioTrackCount = 1u
+                    createMicrophoneAudioTrackCount = 1u,
                 )
             }
             is PermissionsOutput.Back -> setOutput(SampleOutput.Finish)
@@ -49,12 +49,12 @@ class OnPreflightOutput(private val output: PreflightOutput) : SampleAction() {
                     node = output.node,
                     conferenceAlias = output.conferenceAlias,
                     presentationInMain = output.presentationInMain,
-                    response = output.response
-                )
+                    response = output.response,
+                ),
             )
             is PreflightOutput.Toast -> setOutput(SampleOutput.Toast(output.message))
             is PreflightOutput.CreateCameraVideoTrack -> state = state.copy(
-                createCameraVideoTrackCount = state.createCameraVideoTrackCount + 1u
+                createCameraVideoTrackCount = state.createCameraVideoTrackCount + 1u,
             )
             is PreflightOutput.Back -> setOutput(SampleOutput.Finish)
         }

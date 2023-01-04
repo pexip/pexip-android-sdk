@@ -21,7 +21,7 @@ class SettingsStoreTest {
     fun setUp() {
         val dataStore = DataStoreFactory.create(
             serializer = SettingsSerializer,
-            produceFile = rule::newFile
+            produceFile = rule::newFile,
         )
         store = SettingsStore(dataStore)
     }

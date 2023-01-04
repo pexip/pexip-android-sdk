@@ -81,37 +81,37 @@ fun ConferenceCallScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
                 ) {
                     MainVideoTrackRenderer(
                         rendering = rendering,
-                        modifier = Modifier.weight(1f, false)
+                        modifier = Modifier.weight(1f, false),
                     )
                     PresentationVideoTrackRenderer(
                         rendering = rendering,
-                        modifier = Modifier.weight(1f, false)
+                        modifier = Modifier.weight(1f, false),
                     )
                 }
             } else {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
                 ) {
                     MainVideoTrackRenderer(
                         rendering = rendering,
-                        modifier = Modifier.weight(1f, false)
+                        modifier = Modifier.weight(1f, false),
                     )
                     PresentationVideoTrackRenderer(
                         rendering = rendering,
-                        modifier = Modifier.weight(1f, false)
+                        modifier = Modifier.weight(1f, false),
                     )
                 }
             }
             BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxSize()
-                    .safeContentPadding()
+                    .safeContentPadding(),
             ) {
                 val aspectRatio = remember(landscape) {
                     if (landscape) ASPECT_RATIO_LANDSCAPE else ASPECT_RATIO_PORTRAIT
@@ -123,20 +123,20 @@ fun ConferenceCallScreen(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .fillMaxWidth(0.25f)
-                        .aspectRatio(aspectRatio)
+                        .aspectRatio(aspectRatio),
                 ) {
                     VideoTrackRenderer(
                         videoTrack = rendering.cameraVideoTrack,
-                        mirror = true
+                        mirror = true,
                     )
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(
                         space = 8.dp,
-                        alignment = Alignment.CenterHorizontally
+                        alignment = Alignment.CenterHorizontally,
                     ),
-                    modifier = Modifier.align(Alignment.TopStart)
+                    modifier = Modifier.align(Alignment.TopStart),
                 ) {
                     MoreIconButton(rendering = rendering)
                     ScreenShareIconButton(rendering = rendering)
@@ -145,9 +145,9 @@ fun ConferenceCallScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(
                         space = 8.dp,
-                        alignment = Alignment.CenterHorizontally
+                        alignment = Alignment.CenterHorizontally,
                     ),
-                    modifier = Modifier.align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter),
                 ) {
                     CameraIconButton(rendering = rendering.cameraVideoTrackRendering)
                     MicrophoneIconButton(rendering = rendering.microphoneAudioTrackRendering)
@@ -159,11 +159,11 @@ fun ConferenceCallScreen(
         }
         WorkflowRendering(
             rendering = rendering.dtmfRendering,
-            viewEnvironment = environment
+            viewEnvironment = environment,
         )
         WorkflowRendering(
             rendering = rendering.audioDeviceRendering,
-            viewEnvironment = environment
+            viewEnvironment = environment,
         )
     }
 }
@@ -175,7 +175,7 @@ private fun MainVideoTrackRenderer(
 ) {
     VideoTrackRenderer(
         videoTrack = rendering.mainRemoteVideoTrack,
-        modifier = modifier.aspectRatio(ASPECT_RATIO_LANDSCAPE)
+        modifier = modifier.aspectRatio(ASPECT_RATIO_LANDSCAPE),
     )
 }
 
@@ -187,7 +187,7 @@ private fun PresentationVideoTrackRenderer(
     if (rendering.presentationRemoteVideoTrack != null) {
         VideoTrackRenderer(
             videoTrack = rendering.presentationRemoteVideoTrack,
-            modifier = modifier.aspectRatio(ASPECT_RATIO_LANDSCAPE)
+            modifier = modifier.aspectRatio(ASPECT_RATIO_LANDSCAPE),
         )
     }
 }
@@ -198,9 +198,9 @@ private fun EndCallIconButton(rendering: ConferenceCallRendering, modifier: Modi
         onClick = rendering.onBackClick,
         colors = IconButtonDefaults.iconButtonColors(
             color = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.onErrorContainer
+            contentColor = MaterialTheme.colorScheme.onErrorContainer,
         ),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Icon(imageVector = Icons.Rounded.CallEnd, contentDescription = null)
     }
@@ -214,7 +214,7 @@ private fun AudioDevicesIconButton(
     IconToggleButton(
         checked = rendering.audioDeviceRendering.visible,
         onCheckedChange = rendering.onAudioDevicesChange,
-        modifier = modifier
+        modifier = modifier,
     ) {
         val type = rendering.audioDeviceRendering.selectedAudioDevice?.type
             ?: AudioDevice.Type.BUILTIN_SPEAKER
@@ -244,14 +244,14 @@ private fun ScreenShareIconButton(
     IconToggleButton(
         checked = rendering.screenCapturing,
         onCheckedChange = { onToggleScreenCapture() },
-        modifier = modifier
+        modifier = modifier,
     ) {
         Icon(
             imageVector = when (rendering.screenCapturing) {
                 true -> Icons.Rounded.StopScreenShare
                 false -> Icons.Rounded.ScreenShare
             },
-            contentDescription = null
+            contentDescription = null,
         )
     }
 }
@@ -288,7 +288,7 @@ private fun DtmfItem(
         leadingIcon = {
             Icon(imageVector = Icons.Rounded.Pin, contentDescription = null)
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -309,7 +309,7 @@ private fun ConferenceEventsItem(
         leadingIcon = {
             Icon(imageVector = Icons.Rounded.Message, contentDescription = null)
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 

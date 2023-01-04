@@ -31,7 +31,7 @@ class AliasWorkflow @Inject constructor(private val pinRequirementWorkflow: PinR
             onHostChange = context.send(::OnHostChange),
             onPresentationInMainChange = context.send(::OnPresentationInMainChange),
             onResolveClick = context.send(::OnResolveClick),
-            onBackClick = context.send(::OnBackClick)
+            onBackClick = context.send(::OnBackClick),
         )
     }
 

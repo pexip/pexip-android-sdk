@@ -48,7 +48,7 @@ data class OnInvalidPin(val e: InvalidPinException) : PinChallengeAction() {
             pin = "",
             t = e,
             requesting = false,
-            pinToSubmit = null
+            pinToSubmit = null,
         )
     }
 }
@@ -59,7 +59,7 @@ data class OnError(val t: Throwable) : PinChallengeAction() {
         state = state.copy(
             t = t,
             requesting = false,
-            pinToSubmit = null
+            pinToSubmit = null,
         )
     }
 }

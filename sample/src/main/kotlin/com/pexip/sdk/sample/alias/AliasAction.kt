@@ -34,7 +34,7 @@ class OnResolveClick : AliasAction() {
     override fun Updater.apply() {
         val props = PinRequirementProps(
             conferenceAlias = state.conferenceAlias,
-            host = state.host.ifBlank { state.conferenceAlias.split("@").last() }
+            host = state.host.ifBlank { state.conferenceAlias.split("@").last() },
         )
         state = state.copy(pinRequirementProps = props)
     }
@@ -56,13 +56,13 @@ data class OnPinRequirementOutput(val output: PinRequirementOutput) : AliasActio
                 node = output.node,
                 conferenceAlias = output.conferenceAlias,
                 presentationInMain = state.presentationInMain,
-                response = output.response
+                response = output.response,
             )
             is PinRequirementOutput.Some -> AliasOutput.PinChallenge(
                 node = output.node,
                 conferenceAlias = output.conferenceAlias,
                 presentationInMain = state.presentationInMain,
-                required = output.required
+                required = output.required,
             )
             is PinRequirementOutput.Error -> {
                 val message = when (val t = output.t) {

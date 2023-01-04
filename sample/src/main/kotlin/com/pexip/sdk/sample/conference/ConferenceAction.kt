@@ -28,7 +28,7 @@ class OnScreenCaptureVideoTrack(private val localVideoTrack: LocalVideoTrack) : 
     override fun Updater.apply() {
         state = state.copy(
             screenCaptureData = null,
-            screenCaptureVideoTrack = localVideoTrack
+            screenCaptureVideoTrack = localVideoTrack,
         )
         state.connection.setPresentationVideoTrack(localVideoTrack)
         localVideoTrack.startCapture(QualityProfile.High)
@@ -42,7 +42,7 @@ class OnStopScreenCapture : ConferenceAction() {
         state.screenCaptureVideoTrack?.dispose()
         state = state.copy(
             screenCapturing = false,
-            screenCaptureVideoTrack = null
+            screenCaptureVideoTrack = null,
         )
     }
 }
@@ -132,7 +132,7 @@ class OnConferenceEvent(private val conferenceEvent: ConferenceEvent) : Conferen
             screenCaptureVideoTrack = when (conferenceEvent) {
                 is PresentationStartConferenceEvent -> null
                 else -> state.screenCaptureVideoTrack
-            }
+            },
         )
         if (conferenceEvent is DisconnectConferenceEvent || conferenceEvent is FailureConferenceEvent) {
             setOutput(ConferenceOutput.Back)

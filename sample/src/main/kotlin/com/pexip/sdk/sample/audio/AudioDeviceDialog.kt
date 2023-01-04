@@ -31,13 +31,13 @@ fun AudioDeviceDialog(rendering: AudioDeviceRendering) {
     if (rendering.visible) {
         Dialog(
             onDismissRequest = rendering.onBackClick,
-            properties = DialogProperties(usePlatformDefaultWidth = false)
+            properties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
             Surface(shape = Shape, modifier = Modifier.fillMaxWidth(0.8f)) {
                 AudioDeviceList(
                     availableAudioDevices = rendering.availableAudioDevices,
                     selectedAudioDevice = rendering.selectedAudioDevice,
-                    onAudioDeviceClick = rendering.onAudioDeviceClick
+                    onAudioDeviceClick = rendering.onAudioDeviceClick,
                 )
             }
         }
@@ -56,7 +56,7 @@ private fun AudioDeviceList(
             AudioDevice(
                 audioDevice = it,
                 selected = it == selectedAudioDevice,
-                onAudioDeviceClick = onAudioDeviceClick
+                onAudioDeviceClick = onAudioDeviceClick,
             )
         }
     }
@@ -98,7 +98,7 @@ private fun AudioDevice(
         },
         modifier = modifier.selectable(selected = selected) {
             currentOnAudioDeviceClick(audioDevice)
-        }
+        },
     )
 }
 

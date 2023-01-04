@@ -28,7 +28,7 @@ class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) 
             displayName = renderState.displayName,
             onDisplayNameChange = context.send(::OnDisplayNameChange),
             onNextClick = context.send(::OnNextClick),
-            onBackClick = context.send(::OnBackClick)
+            onBackClick = context.send(::OnBackClick),
         )
     }
 

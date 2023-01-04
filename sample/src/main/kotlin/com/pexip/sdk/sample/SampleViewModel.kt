@@ -23,7 +23,7 @@ class SampleViewModel @Inject constructor(
             workflow = sampleWorkflow,
             scope = viewModelScope,
             savedStateHandle = handle,
-            onOutput = _output::emit
+            onOutput = _output::emit,
         )
     }
 }

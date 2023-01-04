@@ -32,17 +32,17 @@ fun DisplayNameScreen(rendering: DisplayNameRendering, modifier: Modifier = Modi
         Surface(shape = MaterialTheme.shapes.large, modifier = modifier) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             ) {
                 Text(
                     text = "Introduce yourself",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
                 )
                 val keyboardOptions = remember {
                     KeyboardOptions(
                         autoCorrect = true,
                         keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Go
+                        imeAction = ImeAction.Go,
                     )
                 }
                 val currentOnNextClick by rememberUpdatedState(rendering.onNextClick)
@@ -68,12 +68,12 @@ fun DisplayNameScreen(rendering: DisplayNameRendering, modifier: Modifier = Modi
                     keyboardActions = keyboardActions,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester)
+                        .focusRequester(focusRequester),
                 )
                 Button(
                     onClick = rendering.onNextClick,
                     enabled = rendering.displayName.isNotBlank(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(text = "Next")
                 }

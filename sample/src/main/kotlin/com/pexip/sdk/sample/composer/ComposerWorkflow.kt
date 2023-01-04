@@ -22,6 +22,6 @@ class ComposerWorkflow @Inject constructor() :
         message = renderState.message,
         submitEnabled = renderState.submitEnabled,
         onMessageChange = context.send(::OnMessageChange),
-        onSubmitClick = context.send(::OnSubmitClick)
+        onSubmitClick = context.send(::OnSubmitClick),
     )
 }
