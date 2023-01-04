@@ -12,5 +12,4 @@ dependencies {
     implementation(libs.android)
     implementation(libs.cachefix)
     implementation(libs.kotlin)
-    implementation(libs.spotless)
 }

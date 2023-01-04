@@ -5,8 +5,16 @@ plugins {
 }
 
 spotless {
+    kotlin {
+        ratchetFrom = "origin/main"
+        target("**/*.kt")
+        targetExclude("**/build/**")
+        ktlint(libs.versions.ktlint.get())
+    }
     kotlinGradle {
-        ktlint()
+        target("**/*.gradle.kts")
+        targetExclude("**/build/**")
+        ktlint(libs.versions.ktlint.get())
     }
     format("misc") {
         target(".gitignore", "*.md")
