@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage", "DSL_SCOPE_VIOLATION")
+@file:Suppress("DSL_SCOPE_VIOLATION")
 
 plugins {
     id("com.pexip.sdk.kotlin.android.application")
