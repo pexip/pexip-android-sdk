@@ -44,13 +44,13 @@ class SampleActivity : AppCompatActivity() {
         setContent {
             CompositionLocalProvider(
                 LocalEglBase provides eglBase,
-                LocalPermissionRationaleHelper provides permissionRationaleHelper
+                LocalPermissionRationaleHelper provides permissionRationaleHelper,
             ) {
                 SampleTheme {
                     val rendering by sampleViewModel.rendering.collectAsState()
                     WorkflowRendering(
                         rendering = rendering,
-                        viewEnvironment = viewEnvironment
+                        viewEnvironment = viewEnvironment,
                     )
                 }
             }
@@ -65,7 +65,7 @@ class SampleActivity : AppCompatActivity() {
         is SampleOutput.ApplicationDetailsSettings -> {
             val intent = Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                Uri.fromParts("package", BuildConfig.APPLICATION_ID, null),
             )
             startActivity(intent)
         }

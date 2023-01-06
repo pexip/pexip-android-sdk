@@ -20,6 +20,6 @@ class PermissionsWorkflow @Inject constructor() :
     ): PermissionsRendering = PermissionsRendering(
         permissions = renderProps.permissions,
         onPermissionsRequestResult = context.send(::OnPermissionsRequestResult),
-        onBackClick = context.send(::OnBackClick)
+        onBackClick = context.send(::OnBackClick),
     )
 }

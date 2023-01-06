@@ -38,11 +38,11 @@ fun IconButton(
         shape = IconButtonDefaults.Shape,
         color = color,
         contentColor = contentColor,
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     ) {
         Box(
             modifier = Modifier.size(IconButtonDefaults.Size),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             content()
         }
@@ -70,11 +70,11 @@ fun IconToggleButton(
         shape = IconButtonDefaults.Shape,
         color = color,
         contentColor = contentColor,
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     ) {
         Box(
             modifier = Modifier.size(IconButtonDefaults.Size),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             content()
         }
@@ -103,7 +103,7 @@ object IconButtonDefaults {
         color = color,
         contentColor = contentColor,
         disabledColor = disabledColor,
-        disabledContentColor = disabledContentColor
+        disabledContentColor = disabledContentColor,
     )
 
     @Composable
@@ -120,7 +120,7 @@ object IconButtonDefaults {
         disabledColor = disabledColor,
         disabledContentColor = disabledContentColor,
         checkedColor = checkedColor,
-        checkedContentColor = checkedContentColor
+        checkedContentColor = checkedContentColor,
     )
 }
 

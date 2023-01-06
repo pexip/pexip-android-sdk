@@ -27,7 +27,7 @@ class LocalMediaTrackWorkflow @Inject constructor() :
         context.capturingSideEffect(renderProps.localMediaTrack)
         return LocalMediaTrackRendering(
             capturing = renderState.capturing,
-            onCapturingChange = context.send(::OnCapturingChange)
+            onCapturingChange = context.send(::OnCapturingChange),
         )
     }
 

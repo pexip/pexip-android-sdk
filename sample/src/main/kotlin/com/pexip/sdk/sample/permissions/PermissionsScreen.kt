@@ -36,17 +36,17 @@ fun PermissionsScreen(rendering: PermissionsRendering, modifier: Modifier = Modi
             TopAppBar(
                 title = {
                     Text(text = stringResource(R.string.app_name_full))
-                }
+                },
             )
         },
         contentWindowInsets = WindowInsets.safeDrawing,
-        modifier = modifier
+        modifier = modifier,
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
             val helper = LocalPermissionRationaleHelper.current
             val contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -57,7 +57,7 @@ fun PermissionsScreen(rendering: PermissionsRendering, modifier: Modifier = Modi
                 Log.e("PermissionsScreen", rationales.toString())
                 val result = PermissionsRequestResult(
                     grants = it,
-                    rationales = rationales
+                    rationales = rationales,
                 )
                 currentOnPermissionsRequestResult(result)
             }
@@ -66,29 +66,29 @@ fun PermissionsScreen(rendering: PermissionsRendering, modifier: Modifier = Modi
             }
             Text(
                 text = stringResource(R.string.permissions_title),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.permissions_description),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.permissions_denied_title),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.permissions_denied_description),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = {
                     launcher.launch(permissions)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = stringResource(R.string.permissions_continue))
             }

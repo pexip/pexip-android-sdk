@@ -65,11 +65,11 @@ class PinRequirementWorkflow @Inject constructor(
                         is RequiredPinException -> OnRequiredPin(
                             node = state.node,
                             conferenceAlias = props.conferenceAlias,
-                            required = it.guestPin
+                            required = it.guestPin,
                         )
                         else -> OnError(it)
                     }
-                }
+                },
             )
         actionSink.send(action)
     }

@@ -39,7 +39,7 @@ class SampleWorkflow @Inject constructor(
                 else -> SampleDestination.Permissions
             },
             createCameraVideoTrackCount = if (allGranted) 1u else 0u,
-            createMicrophoneAudioTrackCount = if (allGranted) 1u else 0u
+            createMicrophoneAudioTrackCount = if (allGranted) 1u else 0u,
         )
     }
 
@@ -58,7 +58,7 @@ class SampleWorkflow @Inject constructor(
             is SampleDestination.Permissions -> context.renderChild(
                 child = permissionsWorkflow,
                 props = PermissionsProps(Permissions),
-                handler = ::OnPermissionsOutput
+                handler = ::OnPermissionsOutput,
             )
             is SampleDestination.Preflight -> context.renderChild(
                 child = preflightWorkflow,
@@ -66,7 +66,7 @@ class SampleWorkflow @Inject constructor(
                     cameraVideoTrack = renderState.cameraVideoTrack,
                     microphoneAudioTrack = renderState.microphoneAudioTrack,
                 ),
-                handler = ::OnPreflightOutput
+                handler = ::OnPreflightOutput,
             )
             is SampleDestination.Conference -> context.renderChild(
                 child = conferenceWorkflow,
@@ -76,58 +76,66 @@ class SampleWorkflow @Inject constructor(
                     presentationInMain = destination.presentationInMain,
                     response = destination.response,
                     cameraVideoTrack = renderState.cameraVideoTrack,
-                    microphoneAudioTrack = renderState.microphoneAudioTrack
+                    microphoneAudioTrack = renderState.microphoneAudioTrack,
                 ),
-                handler = ::OnConferenceOutput
+                handler = ::OnConferenceOutput,
             )
         }
     }
 
     private fun RenderContext.createCameraVideoTrackSideEffect(count: UInt) {
-        if (count > 0u) runningSideEffect("createCameraVideoTrackSideEffect($count)") {
-            val callback = object : CameraVideoTrack.Callback {
+        if (count > 0u) {
+            runningSideEffect("createCameraVideoTrackSideEffect($count)") {
+                val callback = object : CameraVideoTrack.Callback {
 
-                override fun onCameraDisconnected() {
-                    val action = OnCameraVideoTrackChange(null)
-                    actionSink.send(action)
+                    override fun onCameraDisconnected() {
+                        val action = OnCameraVideoTrackChange(null)
+                        actionSink.send(action)
+                    }
                 }
+                val track = cameraVideoTrackFactory.createCameraVideoTrack(callback)
+                val action = OnCameraVideoTrackChange(track)
+                actionSink.send(action)
             }
-            val track = cameraVideoTrackFactory.createCameraVideoTrack(callback)
-            val action = OnCameraVideoTrackChange(track)
-            actionSink.send(action)
         }
     }
 
     private fun RenderContext.createMicrophoneAudioTrackSideEffect(count: UInt) {
-        if (count > 0u) runningSideEffect("createMicrophoneAudioTrackSideEffect($count)") {
-            val track = localAudioTrackFactory.createLocalAudioTrack()
-            val action = OnMicrophoneAudioTrackChange(track)
-            actionSink.send(action)
+        if (count > 0u) {
+            runningSideEffect("createMicrophoneAudioTrackSideEffect($count)") {
+                val track = localAudioTrackFactory.createLocalAudioTrack()
+                val action = OnMicrophoneAudioTrackChange(track)
+                actionSink.send(action)
+            }
         }
     }
 
     private fun RenderContext.cameraVideoTrackSideEffect(track: CameraVideoTrack?) {
-        if (track != null) runningSideEffect("cameraVideoTrackSideEffect($track)") {
-            try {
-                track.startCapture()
-                awaitCancellation()
-            } finally {
-                actionSink.send(OnCameraVideoTrackChange(null))
-                track.stopCapture()
-                track.dispose()
+        if (track != null) {
+            runningSideEffect("cameraVideoTrackSideEffect($track)") {
+                try {
+                    track.startCapture()
+                    awaitCancellation()
+                } finally {
+                    actionSink.send(OnCameraVideoTrackChange(null))
+                    track.stopCapture()
+                    track.dispose()
+                }
             }
         }
     }
 
     private fun RenderContext.microphoneAudioTrackSideEffect(track: LocalAudioTrack?) {
-        if (track != null) runningSideEffect("microphoneAudioTrackSideEffect($track)") {
-            try {
-                track.startCapture()
-                awaitCancellation()
-            } finally {
-                actionSink.send(OnMicrophoneAudioTrackChange(null))
-                track.stopCapture()
-                track.dispose()
+        if (track != null) {
+            runningSideEffect("microphoneAudioTrackSideEffect($track)") {
+                try {
+                    track.startCapture()
+                    awaitCancellation()
+                } finally {
+                    actionSink.send(OnMicrophoneAudioTrackChange(null))
+                    track.stopCapture()
+                    track.dispose()
+                }
             }
         }
     }

@@ -32,20 +32,20 @@ class PreflightWorkflow @Inject constructor(
         childRendering = when (val destination = renderState.destination) {
             is PreflightDestination.DisplayName -> context.renderChild(
                 child = displayNameWorkflow,
-                handler = ::OnDisplayNameOutput
+                handler = ::OnDisplayNameOutput,
             )
             is PreflightDestination.Alias -> context.renderChild(
                 child = aliasWorkflow,
-                handler = ::OnAliasOutput
+                handler = ::OnAliasOutput,
             )
             is PreflightDestination.PinChallenge -> context.renderChild(
                 child = pinChallengeWorkflow,
                 props = PinChallengeProps(
                     node = destination.node,
                     conferenceAlias = destination.conferenceAlias,
-                    required = destination.required
+                    required = destination.required,
                 ),
-                handler = ::OnPinChallengeOutput
+                handler = ::OnPinChallengeOutput,
             )
             null -> null
         },
@@ -58,7 +58,7 @@ class PreflightWorkflow @Inject constructor(
             else -> context.renderChild(
                 child = localMediaTrackWorkflow,
                 key = "cameraVideoTrack",
-                props = LocalMediaTrackProps(renderProps.cameraVideoTrack)
+                props = LocalMediaTrackProps(renderProps.cameraVideoTrack),
             )
         },
         microphoneAudioTrackRendering = when (renderProps.microphoneAudioTrack) {
@@ -66,9 +66,9 @@ class PreflightWorkflow @Inject constructor(
             else -> context.renderChild(
                 child = localMediaTrackWorkflow,
                 key = "microphoneAudioTrack",
-                props = LocalMediaTrackProps(renderProps.microphoneAudioTrack)
+                props = LocalMediaTrackProps(renderProps.microphoneAudioTrack),
             )
         },
-        onBackClick = context.send(::OnBackClick)
+        onBackClick = context.send(::OnBackClick),
     )
 }

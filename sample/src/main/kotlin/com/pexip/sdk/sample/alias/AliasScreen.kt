@@ -35,17 +35,17 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
         Surface(shape = MaterialTheme.shapes.large, modifier = modifier) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             ) {
                 Text(
                     text = "Pexip Video SDK",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
                 )
                 val aliasKeyboardOptions = remember {
                     KeyboardOptions(
                         autoCorrect = false,
                         keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
+                        imeAction = ImeAction.Next,
                     )
                 }
                 val focusRequester = remember { FocusRequester() }
@@ -66,13 +66,13 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                     keyboardOptions = aliasKeyboardOptions,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester)
+                        .focusRequester(focusRequester),
                 )
                 val hostKeyboardOptions = remember {
                     KeyboardOptions(
                         autoCorrect = false,
                         keyboardType = KeyboardType.Uri,
-                        imeAction = ImeAction.Go
+                        imeAction = ImeAction.Go,
                     )
                 }
                 val currentOnResolveClick by rememberUpdatedState(rendering.onResolveClick)
@@ -91,23 +91,23 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                     maxLines = 1,
                     keyboardOptions = hostKeyboardOptions,
                     keyboardActions = hostKeyboardActions,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(text = "Presentation in main")
                     Switch(
                         checked = rendering.presentationInMain,
-                        onCheckedChange = rendering.onPresentationInMainChange
+                        onCheckedChange = rendering.onPresentationInMainChange,
                     )
                 }
                 Button(
                     onClick = rendering.onResolveClick,
                     enabled = rendering.resolveEnabled,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(text = "Join")
                 }

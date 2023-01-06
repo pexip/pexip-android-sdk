@@ -42,17 +42,17 @@ fun PreflightScreen(
                     rendering.cameraVideoTrackRendering?.capturing == true
                 },
                 mirror = true,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
             if (rendering.cameraVideoTrack == null) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
                 ) {
                     Text(
                         text = "Camera has been disconnected",
-                        color = Color.White
+                        color = Color.White,
                     )
                     Button(onClick = rendering.onCreateCameraVideoTrackClick) {
                         Text(text = "Try again")
@@ -63,7 +63,7 @@ fun PreflightScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .safeContentPadding()
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.BottomCenter),
             ) {
                 CameraIconButton(rendering = rendering.cameraVideoTrackRendering)
                 MicrophoneIconButton(rendering = rendering.microphoneAudioTrackRendering)
@@ -73,12 +73,12 @@ fun PreflightScreen(
                     enabled = rendering.callEnabled,
                     colors = IconButtonDefaults.iconButtonColors(
                         color = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Call,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 }
             }

@@ -51,13 +51,13 @@ fun ConferenceEventsScreen(
                     IconButton(onClick = rendering.onBackClick) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
-                }
+                },
             )
         },
-        modifier = modifier
+        modifier = modifier,
     ) {
         Column(modifier = Modifier.padding(it)) {
             val state = rememberLazyListState()
@@ -68,7 +68,7 @@ fun ConferenceEventsScreen(
                 state = state,
                 reverseLayout = true,
                 contentPadding = PaddingValues(vertical = 8.dp),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             ) {
                 items(rendering.conferenceEvents.asReversed()) {
                     ConferenceEvent(conferenceEvent = it)
@@ -77,7 +77,7 @@ fun ConferenceEventsScreen(
             Divider()
             WorkflowRendering(
                 rendering = rendering.composerRendering,
-                viewEnvironment = environment
+                viewEnvironment = environment,
             )
         }
     }
@@ -88,15 +88,15 @@ private fun ConferenceEvent(conferenceEvent: ConferenceEvent, modifier: Modifier
     when (conferenceEvent) {
         is MessageReceivedConferenceEvent -> MessageReceivedConferenceEvent(
             conferenceEvent = conferenceEvent,
-            modifier = modifier
+            modifier = modifier,
         )
         is PresentationStartConferenceEvent -> PresentationStartConferenceEvent(
             conferenceEvent = conferenceEvent,
-            modifier = modifier
+            modifier = modifier,
         )
         is PresentationStopConferenceEvent -> PresentationStopConferenceEvent(
             conferenceEvent = conferenceEvent,
-            modifier = modifier
+            modifier = modifier,
         )
         else -> {}
     }
@@ -120,7 +120,7 @@ private fun MessageReceivedConferenceEvent(
         trailingContent = {
             Text(text = format.format(date))
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -142,7 +142,7 @@ private fun PresentationStartConferenceEvent(
         trailingContent = {
             Text(text = format.format(date))
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -161,6 +161,6 @@ private fun PresentationStopConferenceEvent(
         trailingContent = {
             Text(text = format.format(date))
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }

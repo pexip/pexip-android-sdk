@@ -12,6 +12,6 @@ data class AudioDeviceState(
     constructor(audioDeviceManager: AudioDeviceManager) : this(
         audioDeviceManager = audioDeviceManager,
         availableAudioDevices = audioDeviceManager.availableAudioDevices,
-        selectedAudioDevice = audioDeviceManager.selectedAudioDevice
+        selectedAudioDevice = audioDeviceManager.selectedAudioDevice,
     )
 }

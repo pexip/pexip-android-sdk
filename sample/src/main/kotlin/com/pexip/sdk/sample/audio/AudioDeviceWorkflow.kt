@@ -34,7 +34,7 @@ class AudioDeviceWorkflow @Inject constructor(private val audioDeviceManager: Pr
             availableAudioDevices = renderState.availableAudioDevices,
             selectedAudioDevice = renderState.selectedAudioDevice,
             onAudioDeviceClick = context.send(::OnAudioDeviceClick),
-            onBackClick = context.send(::OnBackClick)
+            onBackClick = context.send(::OnBackClick),
         )
     }
 

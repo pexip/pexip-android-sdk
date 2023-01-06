@@ -54,7 +54,7 @@ class ConferenceWorkflow @Inject constructor(
             service = service,
             node = props.node,
             conferenceAlias = props.conferenceAlias,
-            response = props.response
+            response = props.response,
         )
         val iceServer = IceServer.Builder(GoogleStunUrls).build()
         val config = MediaConnectionConfig.Builder(conference)
@@ -77,7 +77,7 @@ class ConferenceWorkflow @Inject constructor(
         val audioDeviceRendering = context.renderChild(
             child = audioDeviceWorkflow,
             props = AudioDeviceProps(renderState.audioDevicesVisible),
-            handler = ::OnAudioDeviceOutput
+            handler = ::OnAudioDeviceOutput,
         )
         context.bindConferenceServiceSideEffect()
         context.leaveSideEffect(renderProps, renderState)
@@ -91,9 +91,9 @@ class ConferenceWorkflow @Inject constructor(
                 conferenceEvents = renderState.conferenceEvents,
                 composerRendering = context.renderChild(
                     child = composerWorkflow,
-                    handler = ::OnComposerOutput
+                    handler = ::OnComposerOutput,
                 ),
-                onBackClick = context.send(::OnBackClick)
+                onBackClick = context.send(::OnBackClick),
             )
             else -> ConferenceCallRendering(
                 cameraVideoTrack = renderProps.cameraVideoTrack,
@@ -103,14 +103,14 @@ class ConferenceWorkflow @Inject constructor(
                 dtmfRendering = context.renderChild(
                     child = dtmfWorkflow,
                     props = DtmfProps(renderState.dtmfVisible),
-                    handler = ::OnDtmfOutput
+                    handler = ::OnDtmfOutput,
                 ),
                 cameraVideoTrackRendering = when (renderProps.cameraVideoTrack) {
                     null -> null
                     else -> context.renderChild(
                         child = localMediaTrackWorkflow,
                         key = "cameraVideoTrack",
-                        props = LocalMediaTrackProps(renderProps.cameraVideoTrack)
+                        props = LocalMediaTrackProps(renderProps.cameraVideoTrack),
                     )
                 },
                 microphoneAudioTrackRendering = when (renderProps.microphoneAudioTrack) {
@@ -118,7 +118,7 @@ class ConferenceWorkflow @Inject constructor(
                     else -> context.renderChild(
                         child = localMediaTrackWorkflow,
                         key = "microphoneAudioTrack",
-                        props = LocalMediaTrackProps(renderProps.microphoneAudioTrack)
+                        props = LocalMediaTrackProps(renderProps.microphoneAudioTrack),
                     )
                 },
                 screenCapturing = renderState.screenCapturing,
@@ -127,7 +127,7 @@ class ConferenceWorkflow @Inject constructor(
                 onDtmfChange = context.send(::OnDtmfChange),
                 onStopScreenCapture = context.send(::OnStopScreenCapture),
                 onConferenceEventsClick = context.send(::OnConferenceEventsClick),
-                onBackClick = context.send(::OnBackClick)
+                onBackClick = context.send(::OnBackClick),
             )
         }
     }
@@ -171,25 +171,29 @@ class ConferenceWorkflow @Inject constructor(
     }
 
     private fun RenderContext.screenCapturingSideEffect(track: LocalVideoTrack?) {
-        if (track != null) runningSideEffect("${track}Capturing") {
-            track.getCapturing()
-                .map(::OnScreenCapturing)
-                .collectLatest(actionSink::send)
+        if (track != null) {
+            runningSideEffect("${track}Capturing") {
+                track.getCapturing()
+                    .map(::OnScreenCapturing)
+                    .collectLatest(actionSink::send)
+            }
         }
     }
 
     private fun RenderContext.screenCaptureVideoTrackSideEffect(data: Intent?) {
-        if (data != null) runningSideEffect("${data}Data") {
-            val callback = object : MediaProjection.Callback() {
-                override fun onStop() {
-                    actionSink.send(OnStopScreenCapture())
+        if (data != null) {
+            runningSideEffect("${data}Data") {
+                val callback = object : MediaProjection.Callback() {
+                    override fun onStop() {
+                        actionSink.send(OnStopScreenCapture())
+                    }
                 }
+                val localVideoTrack = mediaProjectionVideoTrackFactory.createMediaProjectionVideoTrack(
+                    intent = data,
+                    callback = callback,
+                )
+                actionSink.send(OnScreenCaptureVideoTrack(localVideoTrack))
             }
-            val localVideoTrack = mediaProjectionVideoTrackFactory.createMediaProjectionVideoTrack(
-                intent = data,
-                callback = callback
-            )
-            actionSink.send(OnScreenCaptureVideoTrack(localVideoTrack))
         }
     }
 
@@ -221,7 +225,7 @@ class ConferenceWorkflow @Inject constructor(
             "stun:stun1.l.google.com:19302",
             "stun:stun2.l.google.com:19302",
             "stun:stun3.l.google.com:19302",
-            "stun:stun4.l.google.com:19302"
+            "stun:stun4.l.google.com:19302",
         )
     }
 }
