@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 plugins {
     id("com.pexip.sdk.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jlleitschuh.gradle.ktlint")
 }
 
 pluginManager.withPlugin("org.jetbrains.kotlin.kapt") {
@@ -21,9 +20,6 @@ android {
     kotlinOptions {
         jvmTarget = "${compileOptions.targetCompatibility}"
         freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
-    sourceSets.configureEach {
-        java.srcDirs("src/$name/kotlin")
     }
 }
 
