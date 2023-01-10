@@ -2,6 +2,7 @@
 
 plugins {
     alias(libs.plugins.dokka)
+    alias(libs.plugins.kotlinx.binarycompatibilityvalidator)
     alias(libs.plugins.spotless)
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.jvm) apply false

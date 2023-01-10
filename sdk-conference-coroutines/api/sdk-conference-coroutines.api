@@ -1,0 +1,4 @@
+public final class com/pexip/sdk/conference/coroutines/UtilKt {
+	public static final fun getConferenceEvents (Lcom/pexip/sdk/conference/Conference;)Lkotlinx/coroutines/flow/Flow;
+}
+

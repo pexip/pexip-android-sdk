@@ -1,0 +1,28 @@
+public abstract interface class com/pexip/sdk/api/Call {
+	public abstract fun cancel ()V
+	public abstract fun enqueue (Lcom/pexip/sdk/api/Callback;)V
+	public abstract fun execute ()Ljava/lang/Object;
+}
+
+public abstract interface class com/pexip/sdk/api/Callback {
+	public abstract fun onFailure (Lcom/pexip/sdk/api/Call;Ljava/lang/Throwable;)V
+	public abstract fun onSuccess (Lcom/pexip/sdk/api/Call;Ljava/lang/Object;)V
+}
+
+public abstract interface class com/pexip/sdk/api/Event {
+}
+
+public abstract interface class com/pexip/sdk/api/EventSource {
+	public abstract fun cancel ()V
+}
+
+public abstract interface class com/pexip/sdk/api/EventSourceFactory {
+	public abstract fun create (Lcom/pexip/sdk/api/EventSourceListener;)Lcom/pexip/sdk/api/EventSource;
+}
+
+public abstract interface class com/pexip/sdk/api/EventSourceListener {
+	public abstract fun onClosed (Lcom/pexip/sdk/api/EventSource;Ljava/lang/Throwable;)V
+	public abstract fun onEvent (Lcom/pexip/sdk/api/EventSource;Lcom/pexip/sdk/api/Event;)V
+	public abstract fun onOpen (Lcom/pexip/sdk/api/EventSource;)V
+}
+

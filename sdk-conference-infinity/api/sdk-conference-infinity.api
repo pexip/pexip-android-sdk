@@ -1,0 +1,28 @@
+public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pexip/sdk/conference/Conference, com/pexip/sdk/media/MediaConnectionSignaling {
+	public static final field Companion Lcom/pexip/sdk/conference/infinity/InfinityConference$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/conference/infinity/internal/ConferenceEventSource;Lcom/pexip/sdk/conference/infinity/internal/Messenger;Lcom/pexip/sdk/api/infinity/TokenRefresher;Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/concurrent/ScheduledExecutorService;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
+	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService;Ljava/net/URL;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
+	public fun dtmf (Ljava/lang/String;)V
+	public fun getIceServers ()Ljava/util/List;
+	public fun getName ()Ljava/lang/String;
+	public fun leave ()V
+	public fun message (Ljava/lang/String;)V
+	public fun onAudioMuted ()V
+	public fun onAudioUnmuted ()V
+	public fun onCandidate (Ljava/lang/String;Ljava/lang/String;)V
+	public fun onDtmf (Ljava/lang/String;)V
+	public fun onOffer (Ljava/lang/String;Ljava/lang/String;ZZ)Ljava/lang/String;
+	public fun onReleaseFloor ()V
+	public fun onTakeFloor ()V
+	public fun onVideoMuted ()V
+	public fun onVideoUnmuted ()V
+	public fun registerConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
+	public fun unregisterConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
+}
+
+public final class com/pexip/sdk/conference/infinity/InfinityConference$Companion {
+	public final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
+	public final fun create (Lcom/pexip/sdk/api/infinity/InfinityService;Ljava/net/URL;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
+}
+
