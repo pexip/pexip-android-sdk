@@ -1,3 +1,18 @@
+/*
+ * Copyright 2022 Pexip AS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.infinity.CallsRequest
@@ -33,7 +48,7 @@ internal class RealMediaConnectionSignaling(
                     callType = callType,
                     sdp = description,
                     present = if (presentationInMain) "main" else null,
-                    fecc = fecc
+                    fecc = fecc,
                 )
                 val response = participantStep.calls(request, token).execute()
                 callStep = participantStep.call(response.callId)
@@ -43,7 +58,7 @@ internal class RealMediaConnectionSignaling(
             else -> {
                 val request = UpdateRequest(
                     sdp = description,
-                    fecc = fecc
+                    fecc = fecc,
                 )
                 val response = step.update(request, token).execute()
                 response.sdp
@@ -60,7 +75,7 @@ internal class RealMediaConnectionSignaling(
             candidate = candidate,
             mid = mid,
             ufrag = ufrag,
-            pwd = pwds[ufrag]
+            pwd = pwds[ufrag],
         )
         callStep.newCandidate(request, token).execute()
     }

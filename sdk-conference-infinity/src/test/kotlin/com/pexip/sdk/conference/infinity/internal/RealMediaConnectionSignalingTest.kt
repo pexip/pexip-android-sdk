@@ -1,3 +1,18 @@
+/*
+ * Copyright 2022 Pexip AS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Call
@@ -40,7 +55,7 @@ internal class RealMediaConnectionSignalingTest {
         val signaling = RealMediaConnectionSignaling(
             store = store,
             participantStep = object : TestParticipantTest() {},
-            iceServers = iceServers
+            iceServers = iceServers,
         )
         assertEquals(iceServers, signaling.iceServers)
     }
@@ -54,7 +69,7 @@ internal class RealMediaConnectionSignalingTest {
         val fecc = Random.nextBoolean()
         val response = CallsResponse(
             callId = UUID.randomUUID(),
-            sdp = Random.nextString(8)
+            sdp = Random.nextString(8),
         )
         val callStep = object : TestCallStep() {
 
@@ -93,9 +108,9 @@ internal class RealMediaConnectionSignalingTest {
                 callType = callType,
                 description = sdp,
                 presentationInMain = presentationInMix,
-                fecc = fecc
+                fecc = fecc,
             ),
-            actual = response.sdp
+            actual = response.sdp,
         )
         assertEquals(callStep, signaling.callStep)
         assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
@@ -112,7 +127,7 @@ internal class RealMediaConnectionSignalingTest {
         val signaling = RealMediaConnectionSignaling(
             store = store,
             participantStep = object : TestParticipantTest() {},
-            iceServers = iceServers
+            iceServers = iceServers,
         )
         signaling.callStep = object : TestCallStep() {
             override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> =
@@ -129,9 +144,9 @@ internal class RealMediaConnectionSignalingTest {
                 callType = callType,
                 description = sdp,
                 presentationInMain = presentationInMix,
-                fecc = fecc
+                fecc = fecc,
             ),
-            actual = response.sdp
+            actual = response.sdp,
         )
         assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
     }
@@ -147,7 +162,7 @@ internal class RealMediaConnectionSignalingTest {
         val signaling = RealMediaConnectionSignaling(
             store = store,
             participantStep = object : TestParticipantTest() {},
-            iceServers = iceServers
+            iceServers = iceServers,
         )
         signaling.callStep = object : TestCallStep() {
             override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> =
@@ -175,7 +190,7 @@ internal class RealMediaConnectionSignalingTest {
         val signaling = RealMediaConnectionSignaling(
             store = store,
             participantStep = object : TestParticipantTest() {},
-            iceServers = iceServers
+            iceServers = iceServers,
         )
         signaling.callStep = object : TestCallStep() {
 

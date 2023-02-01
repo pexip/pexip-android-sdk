@@ -1,3 +1,18 @@
+/*
+ * Copyright 2022 Pexip AS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pexip.sdk.media.webrtc.internal
 
 import com.pexip.sdk.media.Bitrate
@@ -67,7 +82,7 @@ internal class WebRtcMediaConnection(
     private var mainVideoTransceiver: RtpTransceiver? = null
     private val presentationVideoTransceiver: RtpTransceiver = connection.addTransceiver(
         MediaType.MEDIA_TYPE_VIDEO,
-        RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
+        RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.INACTIVE),
     )
     private val mainAudioTransceiverLock = Any()
     private val mainVideoTransceiverLock = Any()
@@ -170,7 +185,7 @@ internal class WebRtcMediaConnection(
         workerExecutor.maybeExecuteUnlessDisposed {
             mainAudioTransceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(
                 mediaType = MediaType.MEDIA_TYPE_AUDIO,
-                receive = enabled
+                receive = enabled,
             )
             mainAudioTransceiver?.maybeSetNewDirection(enabled)
         }
@@ -180,16 +195,18 @@ internal class WebRtcMediaConnection(
         workerExecutor.maybeExecuteUnlessDisposed {
             mainVideoTransceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(
                 mediaType = MediaType.MEDIA_TYPE_VIDEO,
-                receive = enabled
+                receive = enabled,
             )
             mainVideoTransceiver?.maybeSetNewDirection(enabled)
         }
     }
 
     override fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean) {
-        if (!config.presentationInMain) workerExecutor.maybeExecuteUnlessDisposed {
-            synchronized(presentationVideoTransceiver) {
-                presentationVideoTransceiver.maybeSetNewDirection(enabled)
+        if (!config.presentationInMain) {
+            workerExecutor.maybeExecuteUnlessDisposed {
+                synchronized(presentationVideoTransceiver) {
+                    presentationVideoTransceiver.maybeSetNewDirection(enabled)
+                }
             }
         }
     }
@@ -202,13 +219,13 @@ internal class WebRtcMediaConnection(
 
     @Deprecated(
         message = "Use setPresentationVideoReceive(true) instead.",
-        replaceWith = ReplaceWith("setPresentationVideoReceive(true)")
+        replaceWith = ReplaceWith("setPresentationVideoReceive(true)"),
     )
     override fun startPresentationReceive() = setPresentationRemoteVideoTrackEnabled(true)
 
     @Deprecated(
         message = "Use setPresentationVideoReceive(false) instead.",
-        replaceWith = ReplaceWith("setPresentationVideoReceive(false)")
+        replaceWith = ReplaceWith("setPresentationVideoReceive(false)"),
     )
     override fun stopPresentationReceive() = setPresentationRemoteVideoTrackEnabled(false)
 
@@ -326,7 +343,7 @@ internal class WebRtcMediaConnection(
                 },
                 presentationVideoMid = synchronized(presentationVideoTransceiver) {
                     presentationVideoTransceiver.mid
-                }
+                },
             )
             networkExecutor.maybeExecute {
                 try {
@@ -336,8 +353,8 @@ internal class WebRtcMediaConnection(
                             callType = "WEBRTC",
                             description = mangledDescription.description,
                             presentationInMain = config.presentationInMain,
-                            fecc = config.farEndCameraControl
-                        )
+                            fecc = config.farEndCameraControl,
+                        ),
                     )
                     setRemoteDescription(sdp)
                 } catch (t: Throwable) {
@@ -411,8 +428,10 @@ internal class WebRtcMediaConnection(
         get() = track() as? org.webrtc.VideoTrack
 
     private inline fun Executor.maybeExecuteUnlessDisposed(crossinline block: () -> Unit) {
-        if (!disposed.get()) maybeExecute {
-            if (!disposed.get()) block()
+        if (!disposed.get()) {
+            maybeExecute {
+                if (!disposed.get()) block()
+            }
         }
     }
 }

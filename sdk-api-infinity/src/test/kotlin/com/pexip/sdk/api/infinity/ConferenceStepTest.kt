@@ -1,3 +1,18 @@
+/*
+ * Copyright 2022 Pexip AS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
@@ -68,7 +83,7 @@ internal class ConferenceStepTest {
     fun `requestToken throws RequiredPinException`() {
         val responses = listOf(
             RequiredPinResponse("required"),
-            RequiredPinResponse("none")
+            RequiredPinResponse("none"),
         )
         for (response in responses) {
             server.enqueue {
@@ -101,7 +116,7 @@ internal class ConferenceStepTest {
         val idps = List(10) {
             IdentityProvider(
                 name = "IdP #$it",
-                id = Random.nextIdentityProviderId()
+                id = Random.nextIdentityProviderId(),
             )
         }
         val response = RequiredSsoResponse(idps)
@@ -119,11 +134,11 @@ internal class ConferenceStepTest {
     fun `requestToken throws SsoRedirectException`() {
         val idp = IdentityProvider(
             name = "IdP #0",
-            id = Random.nextIdentityProviderId()
+            id = Random.nextIdentityProviderId(),
         )
         val response = SsoRedirectResponse(
             redirect_url = "https://example.com",
-            redirect_idp = idp
+            redirect_idp = idp,
         )
         server.enqueue {
             setResponseCode(403)
@@ -150,7 +165,7 @@ internal class ConferenceStepTest {
             serviceType = ServiceType.values().random(),
             version = VersionResponse(
                 versionId = Random.nextString(8),
-                pseudoVersion = Random.nextString(8)
+                pseudoVersion = Random.nextString(8),
             ),
             stun = List(10) {
                 StunResponse("stun:stun$it.example.com:19302")
@@ -159,13 +174,13 @@ internal class ConferenceStepTest {
                 TurnResponse(
                     urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
                     username = "${it shl 1}",
-                    credential = "${it shr 1}"
+                    credential = "${it shr 1}",
                 )
-            }
+            },
         )
         val requests = setOf(
             RequestTokenRequest(ssoToken = Random.nextString(8)),
-            RequestTokenRequest(incomingToken = Random.nextString(8))
+            RequestTokenRequest(incomingToken = Random.nextString(8)),
         )
         requests.forEach {
             server.enqueue {
@@ -190,7 +205,7 @@ internal class ConferenceStepTest {
             guestsCanPresent = Random.nextBoolean(),
             version = VersionResponse(
                 versionId = Random.nextString(8),
-                pseudoVersion = Random.nextString(8)
+                pseudoVersion = Random.nextString(8),
             ),
             stun = List(10) {
                 StunResponse("stun:stun$it.example.com:19302")
@@ -199,13 +214,13 @@ internal class ConferenceStepTest {
                 TurnResponse(
                     urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
                     username = "${it shl 1}",
-                    credential = "${it shr 1}"
+                    credential = "${it shr 1}",
                 )
-            }
+            },
         )
         val requests = setOf(
             RequestTokenRequest(ssoToken = Random.nextString(8)),
-            RequestTokenRequest(incomingToken = Random.nextString(8))
+            RequestTokenRequest(incomingToken = Random.nextString(8)),
         )
         requests.forEach {
             server.enqueue {
@@ -233,7 +248,7 @@ internal class ConferenceStepTest {
             serviceType = ServiceType.values().random(),
             version = VersionResponse(
                 versionId = Random.nextString(8),
-                pseudoVersion = Random.nextString(8)
+                pseudoVersion = Random.nextString(8),
             ),
             stun = List(10) {
                 StunResponse("stun:stun$it.example.com:19302")
@@ -242,9 +257,9 @@ internal class ConferenceStepTest {
                 TurnResponse(
                     urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
                     username = "${it shl 1}",
-                    credential = "${it shr 1}"
+                    credential = "${it shr 1}",
                 )
-            }
+            },
         )
         server.enqueue {
             setResponseCode(200)
@@ -302,7 +317,7 @@ internal class ConferenceStepTest {
     fun `refreshToken returns`() {
         val response = RefreshTokenResponse(
             token = Random.nextString(8),
-            expires = 120
+            expires = 120,
         )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
         val token = Random.nextString(8)
