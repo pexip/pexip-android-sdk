@@ -19,6 +19,7 @@ apiValidation {
 
 spotless {
     kotlin {
+        ratchetFrom = "origin/main"
         target("**/*.kt")
         targetExclude("**/build/**")
         ktlint(libs.versions.ktlint.get())
