@@ -6,18 +6,21 @@ plugins {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = internal.Android.compileSdk
     defaultConfig {
-        minSdk = 21
-        targetSdk = 33
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = internal.Android.minSdk
+        targetSdk = internal.Android.targetSdk
+        testInstrumentationRunner = internal.Android.testInstrumentationRunner
     }
     buildFeatures {
         buildConfig = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = internal.Android.sourceCompatibility
+        targetCompatibility = internal.Android.targetCompatibility
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = internal.Android.composeCompilerExtensionVersion
     }
     testOptions {
         unitTests {
@@ -29,6 +32,10 @@ android {
         ignoreTestSources = true
     }
     packagingOptions {
-        resources.excludes += setOf("META-INF/AL2.0", "META-INF/LGPL2.1")
+        resources.excludes += internal.Android.resourcesExcludes
     }
+}
+
+tasks.withType<Test>().configureEach {
+    testLogging.exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 }

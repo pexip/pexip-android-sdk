@@ -1,18 +1,21 @@
-@file:Suppress("DSL_SCOPE_VIOLATION")
+@file:Suppress("UnstableApiUsage", "DSL_SCOPE_VIOLATION")
 
 plugins {
     id("com.pexip.sdk.kotlin.android.application")
+    id("com.pexip.sdk.kotlin.kapt")
     alias(libs.plugins.dagger.hilt.android)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.wire)
 }
+
+group = checkNotNull(property("group")) { "group == null." }
+version = checkNotNull(property("version")) { "version == null." }
 
 android {
     namespace = "com.pexip.sdk.sample"
     defaultConfig {
-        applicationId = "com.pexip.sdk.sample"
+        applicationId = checkNotNull(namespace) { "namespace is not set." }
         versionCode = 1
-        versionName = "0.1.0"
+        versionName = version.toString()
     }
     buildFeatures {
         compose = true
@@ -31,6 +34,11 @@ wire {
 }
 
 dependencies {
+    implementation(project(":sdk-api-coroutines"))
+    implementation(project(":sdk-conference-infinity"))
+    implementation(project(":sdk-conference-coroutines"))
+    implementation(project(":sdk-media-coroutines"))
+    implementation(project(":sdk-media-webrtc-compose"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     debugImplementation(libs.androidx.compose.ui.tooling)
@@ -46,11 +54,6 @@ dependencies {
     implementation(libs.okhttp.logginginterceptor)
     implementation(libs.workflow.core.jvm)
     implementation(libs.workflow.ui.compose)
-    implementation(pexipSdk.api.coroutines)
-    implementation(pexipSdk.conference.infinity)
-    implementation(pexipSdk.conference.coroutines)
-    implementation(pexipSdk.media.coroutines)
-    implementation(pexipSdk.media.webrtc.compose)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)

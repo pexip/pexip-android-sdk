@@ -1,0 +1,14 @@
+{
+  "action": "stop",
+  "timeout": 100,
+  "movement": [
+    {
+      "axis": "tilt",
+      "direction": "down"
+    },
+    {
+      "axis": "zoom",
+      "direction": "out"
+    }
+  ]
+}

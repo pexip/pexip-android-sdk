@@ -1,0 +1,84 @@
+public final class com/pexip/sdk/registration/FailureRegistrationEvent : com/pexip/sdk/registration/RegistrationEvent {
+	public fun <init> (JLjava/lang/Throwable;)V
+	public final fun component1 ()J
+	public final fun component2 ()Ljava/lang/Throwable;
+	public final fun copy (JLjava/lang/Throwable;)Lcom/pexip/sdk/registration/FailureRegistrationEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/registration/FailureRegistrationEvent;JLjava/lang/Throwable;ILjava/lang/Object;)Lcom/pexip/sdk/registration/FailureRegistrationEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getAt ()J
+	public final fun getT ()Ljava/lang/Throwable;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/registration/IncomingCancelledRegistrationEvent : com/pexip/sdk/registration/RegistrationEvent {
+	public fun <init> (JLjava/lang/String;)V
+	public final fun component1 ()J
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (JLjava/lang/String;)Lcom/pexip/sdk/registration/IncomingCancelledRegistrationEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/registration/IncomingCancelledRegistrationEvent;JLjava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/registration/IncomingCancelledRegistrationEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getAt ()J
+	public final fun getToken ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/registration/IncomingRegistrationEvent : com/pexip/sdk/registration/RegistrationEvent {
+	public fun <init> (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()J
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/registration/IncomingRegistrationEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/registration/IncomingRegistrationEvent;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/registration/IncomingRegistrationEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getAt ()J
+	public final fun getConferenceAlias ()Ljava/lang/String;
+	public final fun getRemoteDisplayName ()Ljava/lang/String;
+	public final fun getToken ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/registration/RegisteredDevice {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/registration/RegisteredDevice;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/registration/RegisteredDevice;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/registration/RegisteredDevice;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlias ()Ljava/lang/String;
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getUsername ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/pexip/sdk/registration/RegisteredDevicesCallback {
+	public abstract fun onFailure (Ljava/lang/Throwable;)V
+	public abstract fun onSuccess (Ljava/util/List;)V
+}
+
+public abstract interface class com/pexip/sdk/registration/Registration {
+	public abstract fun dispose ()V
+	public abstract fun getDirectoryEnabled ()Z
+	public abstract fun getRegisteredDevices (Ljava/lang/String;Lcom/pexip/sdk/registration/RegisteredDevicesCallback;)V
+	public abstract fun getRouteViaRegistrar ()Z
+	public abstract fun registerRegistrationEventListener (Lcom/pexip/sdk/registration/RegistrationEventListener;)V
+	public abstract fun unregisterRegistrationEventListener (Lcom/pexip/sdk/registration/RegistrationEventListener;)V
+}
+
+public final class com/pexip/sdk/registration/Registration$DefaultImpls {
+	public static synthetic fun getRegisteredDevices$default (Lcom/pexip/sdk/registration/Registration;Ljava/lang/String;Lcom/pexip/sdk/registration/RegisteredDevicesCallback;ILjava/lang/Object;)V
+}
+
+public abstract interface class com/pexip/sdk/registration/RegistrationEvent {
+	public abstract fun getAt ()J
+}
+
+public abstract interface class com/pexip/sdk/registration/RegistrationEventListener {
+	public abstract fun onRegistrationEvent (Lcom/pexip/sdk/registration/RegistrationEvent;)V
+}
+

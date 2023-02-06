@@ -98,5 +98,5 @@ repositories {
 
 ## Documentation
 
-- [Recipes](docs/recipes.md)
+- [Recipes](https://github.com/pexip/pexip-android-sdk/blob/main/docs/recipes.md)
 - [API reference](https://pexip.github.io/pexip-android-sdk/)

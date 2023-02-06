@@ -1,0 +1,11 @@
+public abstract interface class com/pexip/sdk/media/android/AndroidMediaConnectionFactory : com/pexip/sdk/media/MediaConnectionFactory, com/pexip/sdk/media/android/MediaProjectionVideoTrackFactory {
+}
+
+public final class com/pexip/sdk/media/android/AudioDeviceManagerKt {
+	public static final fun create (Lcom/pexip/sdk/media/AudioDeviceManager$Companion;Landroid/content/Context;)Lcom/pexip/sdk/media/AudioDeviceManager;
+}
+
+public abstract interface class com/pexip/sdk/media/android/MediaProjectionVideoTrackFactory {
+	public abstract fun createMediaProjectionVideoTrack (Landroid/content/Intent;Landroid/media/projection/MediaProjection$Callback;)Lcom/pexip/sdk/media/LocalVideoTrack;
+}
+

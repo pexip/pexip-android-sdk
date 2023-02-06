@@ -9,6 +9,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":kotlin"))
     implementation(libs.android)
     implementation(libs.cachefix)
     implementation(libs.kotlin)

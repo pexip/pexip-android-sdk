@@ -3,6 +3,7 @@ name: 'pull request'
 on: [pull_request]
 
 env:
+  CI: 'true'
   GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g'
 
 jobs:
@@ -10,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -21,3 +22,7 @@ jobs:
           cache: 'gradle'
 
       - run: ./gradlew build
+      - run: ./gradlew publishToMavenLocal --no-parallel
+        env:
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SONATYPE_GPG_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}

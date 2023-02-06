@@ -6,6 +6,7 @@ on:
       - main
 
 env:
+  CI: 'true'
   GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g'
 
 jobs:
@@ -13,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -24,3 +25,18 @@ jobs:
           cache: 'gradle'
 
       - run: ./gradlew build
+      - run: ./gradlew publish --no-parallel
+        env:
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SONATYPE_GPG_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
+          ORG_GRADLE_PROJECT_MavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_MavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
+
+      - run: ./gradlew dokkaHtmlMultiModule
+        if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
+
+      - uses: peaceiris/actions-gh-pages@v3
+        if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/dokka/htmlMultiModule

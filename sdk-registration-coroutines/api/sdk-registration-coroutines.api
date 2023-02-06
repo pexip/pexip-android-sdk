@@ -1,0 +1,6 @@
+public final class com/pexip/sdk/registration/coroutines/UtilKt {
+	public static final fun getRegisteredDevices (Lcom/pexip/sdk/registration/Registration;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun getRegisteredDevices$default (Lcom/pexip/sdk/registration/Registration;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun getRegistrationEvents (Lcom/pexip/sdk/registration/Registration;)Lkotlinx/coroutines/flow/Flow;
+}
+

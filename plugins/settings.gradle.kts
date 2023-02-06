@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "plugins"
 include(":android")
+include(":kotlin")

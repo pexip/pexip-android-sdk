@@ -1,0 +1,228 @@
+public abstract interface class com/pexip/sdk/media/AudioDevice {
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getType ()Lcom/pexip/sdk/media/AudioDevice$Type;
+}
+
+public final class com/pexip/sdk/media/AudioDevice$Type : java/lang/Enum {
+	public static final field BLUETOOTH_A2DP Lcom/pexip/sdk/media/AudioDevice$Type;
+	public static final field BLUETOOTH_SCO Lcom/pexip/sdk/media/AudioDevice$Type;
+	public static final field BUILTIN_EARPIECE Lcom/pexip/sdk/media/AudioDevice$Type;
+	public static final field BUILTIN_SPEAKER Lcom/pexip/sdk/media/AudioDevice$Type;
+	public static final field WIRED_HEADSET Lcom/pexip/sdk/media/AudioDevice$Type;
+	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/media/AudioDevice$Type;
+	public static fun values ()[Lcom/pexip/sdk/media/AudioDevice$Type;
+}
+
+public abstract interface class com/pexip/sdk/media/AudioDeviceManager {
+	public static final field Companion Lcom/pexip/sdk/media/AudioDeviceManager$Companion;
+	public abstract fun clearAudioDevice ()V
+	public abstract fun dispose ()V
+	public abstract fun getAvailableAudioDevices ()Ljava/util/List;
+	public abstract fun getSelectedAudioDevice ()Lcom/pexip/sdk/media/AudioDevice;
+	public abstract fun registerOnAvailableAudioDevicesChangedListener (Lcom/pexip/sdk/media/AudioDeviceManager$OnAvailableAudioDevicesChangedListener;)V
+	public abstract fun registerOnSelectedAudioDeviceChanged (Lcom/pexip/sdk/media/AudioDeviceManager$OnSelectedAudioDeviceChangedListener;)V
+	public abstract fun selectAudioDevice (Lcom/pexip/sdk/media/AudioDevice;)Z
+	public abstract fun unregisterOnAvailableAudioDevicesChangedListener (Lcom/pexip/sdk/media/AudioDeviceManager$OnAvailableAudioDevicesChangedListener;)V
+	public abstract fun unregisterOnSelectedAudioDeviceChanged (Lcom/pexip/sdk/media/AudioDeviceManager$OnSelectedAudioDeviceChangedListener;)V
+}
+
+public final class com/pexip/sdk/media/AudioDeviceManager$Companion {
+}
+
+public abstract interface class com/pexip/sdk/media/AudioDeviceManager$OnAvailableAudioDevicesChangedListener {
+	public abstract fun onAvailableAudioDevicesChange (Ljava/util/List;)V
+}
+
+public abstract interface class com/pexip/sdk/media/AudioDeviceManager$OnSelectedAudioDeviceChangedListener {
+	public abstract fun onSelectedAudioDeviceChange (Lcom/pexip/sdk/media/AudioDevice;)V
+}
+
+public final class com/pexip/sdk/media/Bitrate : java/lang/Comparable {
+	public static final field Companion Lcom/pexip/sdk/media/Bitrate$Companion;
+	public static final synthetic fun box-impl (I)Lcom/pexip/sdk/media/Bitrate;
+	public synthetic fun compareTo (Ljava/lang/Object;)I
+	public fun compareTo-8YD4EQA (I)I
+	public static fun compareTo-8YD4EQA (II)I
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ILjava/lang/Object;)Z
+	public static final fun equals-impl0 (II)Z
+	public final fun getBps ()I
+	public fun hashCode ()I
+	public static fun hashCode-impl (I)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (I)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()I
+}
+
+public final class com/pexip/sdk/media/Bitrate$Companion {
+	public final fun getBps-GUwwp4Q (I)I
+	public final fun getKbps-GUwwp4Q (I)I
+	public final fun getMbps-GUwwp4Q (I)I
+	public final fun toBitrate-ISNLiwM (ILcom/pexip/sdk/media/BitrateUnit;)I
+}
+
+public final class com/pexip/sdk/media/BitrateUnit : java/lang/Enum {
+	public static final field BPS Lcom/pexip/sdk/media/BitrateUnit;
+	public static final field KBPS Lcom/pexip/sdk/media/BitrateUnit;
+	public static final field MBPS Lcom/pexip/sdk/media/BitrateUnit;
+	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/media/BitrateUnit;
+	public static fun values ()[Lcom/pexip/sdk/media/BitrateUnit;
+}
+
+public abstract interface class com/pexip/sdk/media/CameraVideoTrack : com/pexip/sdk/media/LocalVideoTrack {
+	public abstract fun switchCamera (Lcom/pexip/sdk/media/CameraVideoTrack$SwitchCameraCallback;)V
+	public abstract fun switchCamera (Ljava/lang/String;Lcom/pexip/sdk/media/CameraVideoTrack$SwitchCameraCallback;)V
+}
+
+public abstract interface class com/pexip/sdk/media/CameraVideoTrack$Callback {
+	public abstract fun onCameraDisconnected ()V
+}
+
+public abstract interface class com/pexip/sdk/media/CameraVideoTrack$SwitchCameraCallback {
+	public abstract fun onFailure (Ljava/lang/String;)V
+	public abstract fun onSuccess (Ljava/lang/String;)V
+	public abstract fun onSuccess (Z)V
+}
+
+public abstract interface class com/pexip/sdk/media/CameraVideoTrackFactory {
+	public abstract fun createCameraVideoTrack ()Lcom/pexip/sdk/media/CameraVideoTrack;
+	public abstract fun createCameraVideoTrack (Lcom/pexip/sdk/media/CameraVideoTrack$Callback;)Lcom/pexip/sdk/media/CameraVideoTrack;
+	public abstract fun createCameraVideoTrack (Ljava/lang/String;)Lcom/pexip/sdk/media/CameraVideoTrack;
+	public abstract fun createCameraVideoTrack (Ljava/lang/String;Lcom/pexip/sdk/media/CameraVideoTrack$Callback;)Lcom/pexip/sdk/media/CameraVideoTrack;
+	public abstract fun getDeviceNames ()Ljava/util/List;
+	public abstract fun getQualityProfiles (Ljava/lang/String;)Ljava/util/List;
+	public abstract fun isBackFacing (Ljava/lang/String;)Z
+	public abstract fun isFrontFacing (Ljava/lang/String;)Z
+}
+
+public final class com/pexip/sdk/media/IceServer {
+	public synthetic fun <init> (Ljava/util/Collection;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getPassword ()Ljava/lang/String;
+	public final fun getUrls ()Ljava/util/Collection;
+	public final fun getUsername ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/media/IceServer$Builder {
+	public fun <init> (Ljava/lang/String;)V
+	public fun <init> (Ljava/util/Collection;)V
+	public final fun build ()Lcom/pexip/sdk/media/IceServer;
+	public final fun password (Ljava/lang/String;)Lcom/pexip/sdk/media/IceServer$Builder;
+	public final fun username (Ljava/lang/String;)Lcom/pexip/sdk/media/IceServer$Builder;
+}
+
+public abstract interface class com/pexip/sdk/media/LocalAudioTrack : com/pexip/sdk/media/LocalMediaTrack {
+}
+
+public abstract interface class com/pexip/sdk/media/LocalAudioTrackFactory {
+	public abstract fun createLocalAudioTrack ()Lcom/pexip/sdk/media/LocalAudioTrack;
+}
+
+public abstract interface class com/pexip/sdk/media/LocalMediaTrack {
+	public abstract fun dispose ()V
+	public abstract fun getCapturing ()Z
+	public abstract fun registerCapturingListener (Lcom/pexip/sdk/media/LocalMediaTrack$CapturingListener;)V
+	public abstract fun startCapture ()V
+	public abstract fun stopCapture ()V
+	public abstract fun unregisterCapturingListener (Lcom/pexip/sdk/media/LocalMediaTrack$CapturingListener;)V
+}
+
+public abstract interface class com/pexip/sdk/media/LocalMediaTrack$CapturingListener {
+	public abstract fun onCapturing (Z)V
+}
+
+public abstract interface class com/pexip/sdk/media/LocalVideoTrack : com/pexip/sdk/media/LocalMediaTrack, com/pexip/sdk/media/VideoTrack {
+	public abstract fun startCapture (Lcom/pexip/sdk/media/QualityProfile;)V
+}
+
+public abstract interface class com/pexip/sdk/media/MediaConnection {
+	public abstract fun dispose ()V
+	public abstract fun dtmf (Ljava/lang/String;)V
+	public abstract fun getMainRemoteVideoTrack ()Lcom/pexip/sdk/media/VideoTrack;
+	public abstract fun getPresentationRemoteVideoTrack ()Lcom/pexip/sdk/media/VideoTrack;
+	public abstract fun registerMainRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
+	public abstract fun registerPresentationRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
+	public abstract fun setMainAudioTrack (Lcom/pexip/sdk/media/LocalAudioTrack;)V
+	public abstract fun setMainRemoteAudioTrackEnabled (Z)V
+	public abstract fun setMainRemoteVideoTrackEnabled (Z)V
+	public abstract fun setMainVideoTrack (Lcom/pexip/sdk/media/LocalVideoTrack;)V
+	public abstract fun setMaxBitrate-8YD4EQA (I)V
+	public abstract fun setPresentationRemoteVideoTrackEnabled (Z)V
+	public abstract fun setPresentationVideoTrack (Lcom/pexip/sdk/media/LocalVideoTrack;)V
+	public abstract fun start ()V
+	public abstract fun startPresentationReceive ()V
+	public abstract fun stopPresentationReceive ()V
+	public abstract fun unregisterMainRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
+	public abstract fun unregisterPresentationRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
+}
+
+public abstract interface class com/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener {
+	public abstract fun onRemoteVideoTrack (Lcom/pexip/sdk/media/VideoTrack;)V
+}
+
+public final class com/pexip/sdk/media/MediaConnectionConfig {
+	public synthetic fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/List;ZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getDscp ()Z
+	public final fun getFarEndCameraControl ()Z
+	public final fun getIceServers ()Ljava/util/List;
+	public final fun getPresentationInMain ()Z
+	public final fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
+}
+
+public final class com/pexip/sdk/media/MediaConnectionConfig$Builder {
+	public fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;)V
+	public final fun addIceServer (Lcom/pexip/sdk/media/IceServer;)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
+	public final fun build ()Lcom/pexip/sdk/media/MediaConnectionConfig;
+	public final fun dscp (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
+	public final fun farEndCameraControl (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
+	public final fun presentationInMain (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
+}
+
+public abstract interface class com/pexip/sdk/media/MediaConnectionFactory : com/pexip/sdk/media/CameraVideoTrackFactory, com/pexip/sdk/media/LocalAudioTrackFactory {
+	public abstract fun createMediaConnection (Lcom/pexip/sdk/media/MediaConnectionConfig;)Lcom/pexip/sdk/media/MediaConnection;
+	public abstract fun dispose ()V
+}
+
+public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
+	public abstract fun getIceServers ()Ljava/util/List;
+	public abstract fun onAudioMuted ()V
+	public abstract fun onAudioUnmuted ()V
+	public abstract fun onCandidate (Ljava/lang/String;Ljava/lang/String;)V
+	public abstract fun onDtmf (Ljava/lang/String;)V
+	public abstract fun onOffer (Ljava/lang/String;Ljava/lang/String;ZZ)Ljava/lang/String;
+	public abstract fun onReleaseFloor ()V
+	public abstract fun onTakeFloor ()V
+	public abstract fun onVideoMuted ()V
+	public abstract fun onVideoUnmuted ()V
+}
+
+public final class com/pexip/sdk/media/QualityProfile {
+	public static final field Companion Lcom/pexip/sdk/media/QualityProfile$Companion;
+	public static final field High Lcom/pexip/sdk/media/QualityProfile;
+	public static final field Low Lcom/pexip/sdk/media/QualityProfile;
+	public static final field Medium Lcom/pexip/sdk/media/QualityProfile;
+	public static final field VeryHigh Lcom/pexip/sdk/media/QualityProfile;
+	public fun <init> (III)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun copy (III)Lcom/pexip/sdk/media/QualityProfile;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/media/QualityProfile;IIIILjava/lang/Object;)Lcom/pexip/sdk/media/QualityProfile;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFps ()I
+	public final fun getHeight ()I
+	public final fun getWidth ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/media/QualityProfile$Companion {
+}
+
+public abstract interface class com/pexip/sdk/media/Renderer {
+}
+
+public abstract interface class com/pexip/sdk/media/VideoTrack {
+	public abstract fun addRenderer (Lcom/pexip/sdk/media/Renderer;)V
+	public abstract fun removeRenderer (Lcom/pexip/sdk/media/Renderer;)V
+}
+
