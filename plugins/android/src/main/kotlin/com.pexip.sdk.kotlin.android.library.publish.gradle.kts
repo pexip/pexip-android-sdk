@@ -3,6 +3,7 @@
 plugins {
     id("com.pexip.sdk.kotlin.android.library")
     id("com.pexip.sdk.kotlin.dokka")
+    id("com.pexip.sdk.licensee")
     id("com.pexip.sdk.publish")
 }
 
