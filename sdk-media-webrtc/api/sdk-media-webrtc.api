@@ -16,6 +16,7 @@ public final class com/pexip/sdk/media/webrtc/WebRtcMediaConnectionFactory : com
 	public fun createCameraVideoTrack (Ljava/lang/String;)Lcom/pexip/sdk/media/CameraVideoTrack;
 	public fun createCameraVideoTrack (Ljava/lang/String;Lcom/pexip/sdk/media/CameraVideoTrack$Callback;)Lcom/pexip/sdk/media/CameraVideoTrack;
 	public fun createLocalAudioTrack ()Lcom/pexip/sdk/media/LocalAudioTrack;
+	public final fun createLocalVideoTrack (Lorg/webrtc/VideoCapturer;)Lcom/pexip/sdk/media/LocalVideoTrack;
 	public fun createMediaConnection (Lcom/pexip/sdk/media/MediaConnectionConfig;)Lcom/pexip/sdk/media/MediaConnection;
 	public fun createMediaProjectionVideoTrack (Landroid/content/Intent;Landroid/media/projection/MediaProjection$Callback;)Lcom/pexip/sdk/media/LocalVideoTrack;
 	public fun dispose ()V
