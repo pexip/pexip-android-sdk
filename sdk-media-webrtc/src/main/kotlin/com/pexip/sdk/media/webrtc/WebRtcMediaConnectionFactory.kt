@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.ScreenCapturerAndroid
+import org.webrtc.VideoCapturer
 import org.webrtc.VideoDecoderFactory
 import org.webrtc.VideoEncoderFactory
 import org.webrtc.audio.AudioDeviceModule
@@ -189,6 +190,20 @@ public class WebRtcMediaConnectionFactory private constructor(
     ): LocalVideoTrack {
         checkNotDisposed()
         val videoCapturer = ScreenCapturerAndroid(intent, callback)
+        return createLocalVideoTrack(videoCapturer)
+    }
+
+    /**
+     * Creates a [LocalVideoTrack] backed by the provided [VideoCapturer].
+     *
+     * [VideoCapturer] will be managed by [LocalVideoTrack].
+     *
+     * @param videoCapturer a [VideoCapturer]
+     * @return a [VideoCapturer]-backed [LocalVideoTrack]
+     * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
+     */
+    public fun createLocalVideoTrack(videoCapturer: VideoCapturer): LocalVideoTrack {
+        checkNotDisposed()
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         return WebRtcLocalVideoTrack(
             applicationContext = applicationContext,

@@ -7,23 +7,35 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `Conference.name` property
+- `WebRtcMediaConnectionFactory.createLocalVideoTrack` that accepts `VideoCapturer`
+
 ## [0.11.0] - 2022-12-15
 
 ### Added
+
 - `WebRtcMediaConnectionFactory.Builder` to improve experience for both Java and Kotlin users
-- `MediaConnection.setPresentationRemoteVideoTrackEnabled` that allows to configure whether the `MediaConnection` should be receiving remote presentation
-- `MediaConnection.setMainRemoteAudioTrackEnabled`/`MediaConnection.setMainRemoteVideoTrackEnabled` to control whether the main remote audio/video should be enabled
+- `MediaConnection.setPresentationRemoteVideoTrackEnabled` that allows to configure whether
+  the `MediaConnection` should be receiving remote presentation
+- `MediaConnection.setMainRemoteAudioTrackEnabled`/`MediaConnection.setMainRemoteVideoTrackEnabled`
+  to control whether the main remote audio/video should be enabled
 - `MediaConnection.setMaxBitrate` that controls maximum bitrate for each video stream
 - Several new properties on `RequestTokenResponse` and `Registration`
 - Ability to retrieve registered devices via `Registration.getRegisteredDevices`
 
 ### Changed
+
 - Kotlin to 1.7.20
 - `EglBase` is now nullable
 - Deprecate `WebRtcMediaConnectionFactory` constructor, please migrate to `Builder`
-- **BREAKING**: `MediaConnection.setMainAudioTrack`/`MediaConnection.setMainVideoTrack` no longer enable remote audio/video by default. Please use `MediaConnection.setMainRemoteAudioTrackEnabled`/`MediaConnection.setMainRemoteVideoTrackEnabled` to enable them
+- **BREAKING**: `MediaConnection.setMainAudioTrack`/`MediaConnection.setMainVideoTrack` no longer
+  enable remote audio/video by default. Please use `MediaConnection.setMainRemoteAudioTrackEnabled`
+  /`MediaConnection.setMainRemoteVideoTrackEnabled` to enable them
 
 ### Fixed
+
 - Microphone mute state not being restored after `LocalAudioTrack.dispose` call
 
 ## [0.10.0] - 2022-09-23
