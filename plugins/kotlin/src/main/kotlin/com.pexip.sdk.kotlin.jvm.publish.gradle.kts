@@ -1,6 +1,7 @@
 plugins {
     id("com.pexip.sdk.kotlin.jvm")
     id("com.pexip.sdk.kotlin.dokka")
+    id("com.pexip.sdk.licensee")
     id("com.pexip.sdk.publish")
 }
 

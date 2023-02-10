@@ -9,6 +9,7 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.kotlin)
     implementation(libs.dokka)
+    implementation(libs.kotlin)
+    implementation(libs.licensee)
 }
