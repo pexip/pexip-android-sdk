@@ -381,6 +381,8 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Parti
 	public abstract fun calls (Lcom/pexip/sdk/api/infinity/CallsRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public abstract fun message (Lcom/pexip/sdk/api/infinity/MessageRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public abstract fun message (Lcom/pexip/sdk/api/infinity/MessageRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun mute (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun mute (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun releaseFloor (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
@@ -470,7 +472,6 @@ public final class com/pexip/sdk/api/infinity/MessageRequest {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/MessageRequest$Companion;
 	public synthetic fun <init> (ILjava/lang/String;Ljava/lang/String;Lkotlinx/serialization/internal/SerializationConstructorMarker;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/MessageRequest;

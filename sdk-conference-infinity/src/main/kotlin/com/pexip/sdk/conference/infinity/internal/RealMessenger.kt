@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,10 @@ internal class RealMessenger(
 ) : Messenger {
 
     override fun message(payload: String) {
-        val request = MessageRequest(payload)
+        val request = MessageRequest(
+            payload = payload,
+            type = "text/plain",
+        )
         val token = store.get()
         val success = try {
             conferenceStep.message(request, token).execute()

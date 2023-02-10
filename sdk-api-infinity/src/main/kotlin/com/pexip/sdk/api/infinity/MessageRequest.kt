@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,5 +17,11 @@ package com.pexip.sdk.api.infinity
 
 import kotlinx.serialization.Serializable
 
+/**
+ * Represents a message request to an Infinity conference or participant.
+ *
+ * @property payload a payload to send
+ * @property type a MIME type of the [payload]
+ */
 @Serializable
-public data class MessageRequest(val payload: String, val type: String = "text/plain")
+public data class MessageRequest(val payload: String, val type: String)
