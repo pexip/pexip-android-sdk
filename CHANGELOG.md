@@ -12,6 +12,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `Conference.name` property
 - `WebRtcMediaConnectionFactory.createLocalVideoTrack` that accepts `VideoCapturer`
 
+### Changed
+
+- WebRTC to M110
+
 ## [0.11.0] - 2022-12-15
 
 ### Added
