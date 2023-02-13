@@ -12,6 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `Conference.name` property
 - `WebRtcMediaConnectionFactory.createLocalVideoTrack` that accepts `VideoCapturer`
 - `ParticipantStep.message` that allows sending direct messages
+- `MessageReceivedEvent.direct` that indicates whether it's direct message
 
 ### Changed
 
