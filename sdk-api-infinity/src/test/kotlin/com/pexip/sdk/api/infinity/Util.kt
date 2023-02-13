@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,11 @@ internal fun Random.nextDigits(length: Int) =
 internal fun Random.nextIdentityProviderId() = IdentityProviderId(nextUuid())
 
 internal fun Random.nextPin(): String = "${nextInt(1000..9999)}"
+
+internal fun Random.nextMessageRequest() = MessageRequest(
+    payload = nextString(8),
+    type = nextString(8),
+)
 
 internal inline fun MockWebServer.enqueue(block: MockResponse.() -> Unit) =
     enqueue(MockResponse().apply(block))

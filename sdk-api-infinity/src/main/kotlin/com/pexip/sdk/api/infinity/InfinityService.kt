@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -445,6 +445,28 @@ public interface InfinityService {
          * @param token a valid token
          */
         public fun releaseFloor(token: Token): Call<Unit>
+
+        /**
+         * Sends a message to this participant.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#message).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun message(request: MessageRequest, token: String): Call<Boolean>
+
+        /**
+         * Sends a message to this participant.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#message).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun message(request: MessageRequest, token: Token): Call<Boolean>
 
         /**
          * Sets the call ID.

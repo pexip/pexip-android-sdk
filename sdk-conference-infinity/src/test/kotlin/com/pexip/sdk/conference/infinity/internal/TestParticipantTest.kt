@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.CallsResponse
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.Token
 import java.util.UUID
 
@@ -58,6 +59,11 @@ internal abstract class TestParticipantTest : InfinityService.ParticipantStep {
     override fun releaseFloor(token: String): Call<Unit> = TODO()
 
     final override fun releaseFloor(token: Token): Call<Unit> = releaseFloor(token.token)
+
+    override fun message(request: MessageRequest, token: String): Call<Boolean> = TODO()
+
+    final override fun message(request: MessageRequest, token: Token): Call<Boolean> =
+        message(request, token.token)
 
     override fun call(callId: UUID): InfinityService.CallStep = TODO()
 }

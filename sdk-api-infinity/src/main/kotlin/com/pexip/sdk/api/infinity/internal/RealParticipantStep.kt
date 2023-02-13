@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.pexip.sdk.api.infinity.CallsResponse
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidTokenException
+import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.Token
@@ -195,6 +196,26 @@ internal class RealParticipantStep(
 
     override fun releaseFloor(token: Token): Call<Unit> = releaseFloor(token.token)
 
+    override fun message(request: MessageRequest, token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("message")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseMessage,
+        )
+    }
+
+    override fun message(request: MessageRequest, token: Token): Call<Boolean> =
+        message(request, token.token)
+
     override fun call(callId: UUID): InfinityService.CallStep =
         RealCallStep(
             client = client,
@@ -230,6 +251,13 @@ internal class RealParticipantStep(
 
     private fun parseTakeReleaseFloor(response: Response) = when (response.code) {
         200 -> Unit
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseMessage(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

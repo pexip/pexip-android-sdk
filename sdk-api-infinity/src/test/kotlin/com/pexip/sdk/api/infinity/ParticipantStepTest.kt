@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -457,6 +457,65 @@ internal class ParticipantStepTest {
         server.verifyReleaseFloor(token)
     }
 
+    @Test
+    fun `message throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        val request = Random.nextMessageRequest()
+        assertFailsWith<IllegalStateException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        val request = Random.nextMessageRequest()
+        assertFailsWith<NoSuchNodeException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        val request = Random.nextMessageRequest()
+        assertFailsWith<NoSuchConferenceException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        val request = Random.nextMessageRequest()
+        assertFailsWith<InvalidTokenException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message returns result on 200`() {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            val token = Random.nextString(8)
+            val request = Random.nextMessageRequest()
+            assertEquals(result, step.message(request, token).execute())
+            server.verifyMessage(request, token)
+        }
+    }
+
     private fun MockWebServer.verifyCalls(request: CallsRequest, token: String) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
@@ -560,6 +619,20 @@ internal class ParticipantStepTest {
         assertToken(token)
         assertPostEmptyBody()
     }
+
+    private fun MockWebServer.verifyMessage(request: MessageRequest, token: String) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("message")
+            }
+            assertToken(token)
+            assertPost(json, request)
+        }
 
     private fun Random.nextCallsRequest() = CallsRequest(
         sdp = nextString(8),

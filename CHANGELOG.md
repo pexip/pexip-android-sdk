@@ -11,10 +11,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - `Conference.name` property
 - `WebRtcMediaConnectionFactory.createLocalVideoTrack` that accepts `VideoCapturer`
+- `ParticipantStep.message` that allows sending direct messages
+- `MessageReceivedEvent.direct` that indicates whether it's direct message
 
 ### Changed
 
 - WebRTC to M110
+- **BREAKING**: `MessageRequest` no longer has a default `type` set
 
 ## [0.11.0] - 2022-12-15
 
