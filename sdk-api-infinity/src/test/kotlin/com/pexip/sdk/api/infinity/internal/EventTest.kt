@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ internal class EventTest {
                     participantId = UUID.fromString("dc46269f-5b39-4356-93fd-94d31b890bd5"),
                     type = "text/plain",
                     payload = "hello",
+                    direct = true,
                 ),
             ),
             TestCase(
