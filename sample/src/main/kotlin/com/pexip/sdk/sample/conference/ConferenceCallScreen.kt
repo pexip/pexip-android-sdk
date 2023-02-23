@@ -39,6 +39,7 @@ import androidx.compose.material.icons.rounded.Message
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Pin
 import androidx.compose.material.icons.rounded.ScreenShare
+import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.StopScreenShare
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -155,6 +156,7 @@ fun ConferenceCallScreen(
                 ) {
                     MoreIconButton(rendering = rendering)
                     ScreenShareIconButton(rendering = rendering)
+                    BandwidthIconButton(rendering = rendering)
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -178,6 +180,10 @@ fun ConferenceCallScreen(
         )
         WorkflowRendering(
             rendering = rendering.audioDeviceRendering,
+            viewEnvironment = environment,
+        )
+        WorkflowRendering(
+            rendering = rendering.bandwidthRendering,
             viewEnvironment = environment,
         )
     }
@@ -234,6 +240,24 @@ private fun AudioDevicesIconButton(
         val type = rendering.audioDeviceRendering.selectedAudioDevice?.type
             ?: AudioDevice.Type.BUILTIN_SPEAKER
         AudioDeviceIcon(type = type)
+    }
+}
+
+@Composable
+private fun BandwidthIconButton(
+    rendering: ConferenceCallRendering,
+    modifier: Modifier = Modifier,
+) {
+    IconToggleButton(
+        checked = rendering.bandwidthRendering.visible,
+        onCheckedChange = rendering.onBandwidthChange,
+        modifier = modifier,
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Speed,
+            contentDescription = null,
+            modifier = modifier,
+        )
     }
 }
 

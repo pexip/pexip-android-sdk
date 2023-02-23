@@ -36,6 +36,8 @@ import com.pexip.sdk.media.coroutines.getMainRemoteVideoTrack
 import com.pexip.sdk.media.coroutines.getPresentationRemoteVideoTrack
 import com.pexip.sdk.sample.audio.AudioDeviceProps
 import com.pexip.sdk.sample.audio.AudioDeviceWorkflow
+import com.pexip.sdk.sample.bandwidth.BandwidthProps
+import com.pexip.sdk.sample.bandwidth.BandwidthWorkflow
 import com.pexip.sdk.sample.composer.ComposerWorkflow
 import com.pexip.sdk.sample.dtmf.DtmfProps
 import com.pexip.sdk.sample.dtmf.DtmfWorkflow
@@ -59,6 +61,7 @@ class ConferenceWorkflow @Inject constructor(
     private val mediaConnectionFactory: MediaConnectionFactory,
     private val mediaProjectionVideoTrackFactory: MediaProjectionVideoTrackFactory,
     private val audioDeviceWorkflow: AudioDeviceWorkflow,
+    private val bandwidthWorkflow: BandwidthWorkflow,
     private val dtmfWorkflow: DtmfWorkflow,
     private val composerWorkflow: ComposerWorkflow,
     private val localMediaTrackWorkflow: LocalMediaTrackWorkflow,
@@ -115,6 +118,11 @@ class ConferenceWorkflow @Inject constructor(
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
                 audioDeviceRendering = audioDeviceRendering,
+                bandwidthRendering = context.renderChild(
+                    child = bandwidthWorkflow,
+                    props = BandwidthProps(renderState.bandwidthVisible),
+                    handler = ::OnBandwidthOutput,
+                ),
                 dtmfRendering = context.renderChild(
                     child = dtmfWorkflow,
                     props = DtmfProps(renderState.dtmfVisible),
@@ -139,6 +147,7 @@ class ConferenceWorkflow @Inject constructor(
                 screenCapturing = renderState.screenCapturing,
                 onScreenCapture = context.send(::OnScreenCapture),
                 onAudioDevicesChange = context.send(::OnAudioDevicesChange),
+                onBandwidthChange = context.send(::OnBandwidthChange),
                 onDtmfChange = context.send(::OnDtmfChange),
                 onStopScreenCapture = context.send(::OnStopScreenCapture),
                 onConferenceEventsClick = context.send(::OnConferenceEventsClick),
