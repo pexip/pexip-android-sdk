@@ -5,22 +5,16 @@ plugins {
 
 catalog {
     versionCatalog {
-        val aliases = listOf(
-            "api",
-            "api-coroutines",
-            "api-infinity",
-            "conference",
-            "conference-coroutines",
-            "conference-infinity",
-            "registration",
-            "registration-coroutines",
-            "registration-infinity",
-            "media",
-            "media-coroutines",
-            "media-webrtc",
-            "media-webrtc-compose",
-        )
-        aliases.forEach { alias -> library(alias, "$group:sdk-$alias:$version") }
+        val prefix = "sdk-"
+        rootProject.childProjects.values.asSequence()
+            .filter { it != project && it.name.startsWith(prefix) }
+            .forEach {
+                val artifact = it.name
+                val alias = artifact.removePrefix(prefix)
+                val group = group.toString()
+                val version = version.toString()
+                library(alias, group, artifact).version(version)
+            }
     }
 }
 

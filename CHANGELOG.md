@@ -19,6 +19,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - WebRTC to M110
 - **BREAKING**: `MessageRequest` no longer has a default `type` set
 
+### Fixed
+
+- Gradle Version Catalog missing a few entries
+
 ## [0.11.0] - 2022-12-15
 
 ### Added
