@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ internal class RealConferenceEventSource(
     private val store: TokenStore,
     private val conferenceStep: InfinityService.ConferenceStep,
     private val executor: ScheduledExecutorService,
+    private vararg val eventSourceListeners: EventSourceListener,
 ) : ConferenceEventSource, EventSourceListener {
 
     private val attempts = AtomicLong()
@@ -53,11 +54,13 @@ internal class RealConferenceEventSource(
     private var source: EventSource? = null
 
     override fun onOpen(eventSource: EventSource) {
+        eventSourceListeners.forEach { it.onOpen(eventSource) }
         attempts.set(0)
         skipPresentationStop.set(true)
     }
 
     override fun onEvent(eventSource: EventSource, event: Event) {
+        eventSourceListeners.forEach { it.onEvent(eventSource, event) }
         if (event is PresentationStopEvent && skipPresentationStop.compareAndSet(true, false)) {
             return
         }
@@ -66,6 +69,7 @@ internal class RealConferenceEventSource(
     }
 
     override fun onClosed(eventSource: EventSource, t: Throwable?) {
+        eventSourceListeners.forEach { it.onClosed(eventSource, t) }
         if (executor.isShutdown || t !is IOException) return
         val attempts = attempts.incrementAndGet()
         val delay = (attempts * 1000).coerceAtMost(5000)

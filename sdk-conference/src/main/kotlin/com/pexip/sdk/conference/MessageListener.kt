@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.conference.infinity.internal
+package com.pexip.sdk.conference
 
-internal interface Messenger {
+public fun interface MessageListener {
 
-    fun message(payload: String)
+    /**
+     * Invoked when a new [Message] is received.
+     *
+     * @param message a message
+     */
+    public fun onMessage(message: Message)
 }

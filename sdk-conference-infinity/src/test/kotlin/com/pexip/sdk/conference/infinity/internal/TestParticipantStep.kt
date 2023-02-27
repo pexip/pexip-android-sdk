@@ -24,7 +24,7 @@ import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.Token
 import java.util.UUID
 
-internal abstract class TestParticipantTest : InfinityService.ParticipantStep {
+internal abstract class TestParticipantStep : InfinityService.ParticipantStep {
 
     override fun calls(request: CallsRequest, token: String): Call<CallsResponse> = TODO()
 

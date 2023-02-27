@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ internal class RealMediaConnectionSignalingTest {
     fun `iceServers return IceServer list`() {
         val signaling = RealMediaConnectionSignaling(
             store = store,
-            participantStep = object : TestParticipantTest() {},
+            participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
         )
         assertEquals(iceServers, signaling.iceServers)
@@ -80,7 +80,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             }
         }
-        val participantStep = object : TestParticipantTest() {
+        val participantStep = object : TestParticipantStep() {
 
             override fun calls(request: CallsRequest, token: String): Call<CallsResponse> =
                 object : TestCall<CallsResponse> {
@@ -126,7 +126,7 @@ internal class RealMediaConnectionSignalingTest {
         val response = UpdateResponse(Random.nextString(8))
         val signaling = RealMediaConnectionSignaling(
             store = store,
-            participantStep = object : TestParticipantTest() {},
+            participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
         )
         signaling.callStep = object : TestCallStep() {
@@ -161,7 +161,7 @@ internal class RealMediaConnectionSignalingTest {
         val pwd = Random.nextString(8)
         val signaling = RealMediaConnectionSignaling(
             store = store,
-            participantStep = object : TestParticipantTest() {},
+            participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
         )
         signaling.callStep = object : TestCallStep() {
@@ -189,7 +189,7 @@ internal class RealMediaConnectionSignalingTest {
         val result = Random.nextBoolean()
         val signaling = RealMediaConnectionSignaling(
             store = store,
-            participantStep = object : TestParticipantTest() {},
+            participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
         )
         signaling.callStep = object : TestCallStep() {
@@ -211,7 +211,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onAudioMuted() returns`() {
         var called = false
-        val step = object : TestParticipantTest() {
+        val step = object : TestParticipantStep() {
 
             override fun mute(token: String): Call<Unit> = object : TestCall<Unit> {
 
@@ -229,7 +229,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onAudioUnmuted() returns`() {
         var called = false
-        val step = object : TestParticipantTest() {
+        val step = object : TestParticipantStep() {
 
             override fun unmute(token: String): Call<Unit> = object : TestCall<Unit> {
 
@@ -247,7 +247,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onVideoMuted() returns`() {
         var called = false
-        val step = object : TestParticipantTest() {
+        val step = object : TestParticipantStep() {
 
             override fun videoMuted(token: String): Call<Unit> = object : TestCall<Unit> {
 
@@ -265,7 +265,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onVideoUnmuted() returns`() {
         var called = false
-        val step = object : TestParticipantTest() {
+        val step = object : TestParticipantStep() {
 
             override fun videoUnmuted(token: String): Call<Unit> = object : TestCall<Unit> {
 
@@ -283,7 +283,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onTakeFloor() returns`() {
         var called = false
-        val step = object : TestParticipantTest() {
+        val step = object : TestParticipantStep() {
 
             override fun takeFloor(token: String): Call<Unit> = object : TestCall<Unit> {
 
@@ -301,7 +301,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onReleaseFloor() returns`() {
         var called = false
-        val step = object : TestParticipantTest() {
+        val step = object : TestParticipantStep() {
 
             override fun releaseFloor(token: String): Call<Unit> = object : TestCall<Unit> {
 
