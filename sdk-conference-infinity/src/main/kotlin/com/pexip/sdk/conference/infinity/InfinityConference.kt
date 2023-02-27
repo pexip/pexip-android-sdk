@@ -22,6 +22,7 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.Message
+import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.SendCallback
@@ -81,7 +82,7 @@ public class InfinityConference private constructor(
                     }
                 }
 
-                override fun onFailure(message: Message, t: Throwable) {
+                override fun onFailure(e: MessageNotSentException) {
                     // noop
                 }
             },
