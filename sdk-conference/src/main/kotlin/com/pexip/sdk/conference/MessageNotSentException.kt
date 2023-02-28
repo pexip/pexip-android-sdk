@@ -24,4 +24,4 @@ package com.pexip.sdk.conference
 public class MessageNotSentException @JvmOverloads constructor(
     public val msg: Message,
     cause: Throwable? = null,
-) : RuntimeException("Failed to sent the message.", cause)
+) : RuntimeException("Failed to send the message.", cause)
