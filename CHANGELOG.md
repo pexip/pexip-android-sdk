@@ -13,7 +13,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `WebRtcMediaConnectionFactory.createLocalVideoTrack` that accepts `VideoCapturer`
 - `ParticipantStep.message` that allows sending direct messages
 - `MessageReceivedEvent.direct` that indicates whether it's direct message
-- `Messenger` that provides facilities to send and receive `Message`s
+- `Messenger` that provides facilities to send and receive `Message`s; note that unlike previous
+  implementation, `MessageListener` will not be invoked when you send a message
 
 ### Changed
 
