@@ -94,10 +94,10 @@ public final class com/pexip/sdk/conference/MessageReceivedConferenceEvent : com
 }
 
 public abstract interface class com/pexip/sdk/conference/Messenger {
-	public abstract fun registerMessengerListener (Lcom/pexip/sdk/conference/MessageListener;)V
+	public abstract fun registerMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
 	public abstract fun send (Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
 	public abstract fun send (Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
-	public abstract fun unregisterMessengerListener (Lcom/pexip/sdk/conference/MessageListener;)V
+	public abstract fun unregisterMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
 }
 
 public final class com/pexip/sdk/conference/PresentationStartConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
