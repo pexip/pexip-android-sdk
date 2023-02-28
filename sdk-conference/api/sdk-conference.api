@@ -1,5 +1,6 @@
 public abstract interface class com/pexip/sdk/conference/Conference : com/pexip/sdk/media/MediaConnectionSignaling {
 	public abstract fun dtmf (Ljava/lang/String;)V
+	public abstract fun getMessenger ()Lcom/pexip/sdk/conference/Messenger;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun leave ()V
 	public abstract fun message (Ljava/lang/String;)V
@@ -41,6 +42,38 @@ public final class com/pexip/sdk/conference/FailureConferenceEvent : com/pexip/s
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/pexip/sdk/conference/Message {
+	public fun <init> (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+	public final fun component1 ()J
+	public final fun component2 ()Ljava/util/UUID;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Z
+	public final fun copy (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lcom/pexip/sdk/conference/Message;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/Message;JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/conference/Message;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAt ()J
+	public final fun getDirect ()Z
+	public final fun getParticipantId ()Ljava/util/UUID;
+	public final fun getParticipantName ()Ljava/lang/String;
+	public final fun getPayload ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/pexip/sdk/conference/MessageListener {
+	public abstract fun onMessage (Lcom/pexip/sdk/conference/Message;)V
+}
+
+public final class com/pexip/sdk/conference/MessageNotSentException : java/lang/RuntimeException {
+	public fun <init> (Lcom/pexip/sdk/conference/Message;)V
+	public fun <init> (Lcom/pexip/sdk/conference/Message;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Lcom/pexip/sdk/conference/Message;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getMsg ()Lcom/pexip/sdk/conference/Message;
+}
+
 public final class com/pexip/sdk/conference/MessageReceivedConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
 	public fun <init> (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun component1 ()J
@@ -58,6 +91,13 @@ public final class com/pexip/sdk/conference/MessageReceivedConferenceEvent : com
 	public final fun getType ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/pexip/sdk/conference/Messenger {
+	public abstract fun registerMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
+	public abstract fun send (Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
+	public abstract fun send (Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
+	public abstract fun unregisterMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
 }
 
 public final class com/pexip/sdk/conference/PresentationStartConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
@@ -84,5 +124,10 @@ public final class com/pexip/sdk/conference/PresentationStopConferenceEvent : co
 	public fun getAt ()J
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/pexip/sdk/conference/SendCallback {
+	public abstract fun onFailure (Lcom/pexip/sdk/conference/MessageNotSentException;)V
+	public abstract fun onSuccess (Lcom/pexip/sdk/conference/Message;)V
 }
 

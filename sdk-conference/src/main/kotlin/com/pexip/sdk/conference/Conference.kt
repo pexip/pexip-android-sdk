@@ -21,10 +21,13 @@ import com.pexip.sdk.media.MediaConnectionSignaling
  * Represents a conference.
  *
  * @property name a display name of this [Conference]
+ * @property messenger an instance of [Messenger] attached to this [Conference]
  */
 public interface Conference : MediaConnectionSignaling {
 
     public val name: String
+
+    public val messenger: Messenger
 
     /**
      * Registers a [ConferenceEventListener].
@@ -56,6 +59,7 @@ public interface Conference : MediaConnectionSignaling {
      *
      * @param payload a plain text message
      */
+    @Deprecated("Use Conference.messenger.send() instead.")
     public fun message(payload: String)
 
     /**

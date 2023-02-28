@@ -21,12 +21,16 @@ import com.pexip.sdk.api.infinity.TokenRefresher
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEventListener
+import com.pexip.sdk.conference.Message
+import com.pexip.sdk.conference.MessageNotSentException
+import com.pexip.sdk.conference.MessageReceivedConferenceEvent
+import com.pexip.sdk.conference.Messenger
+import com.pexip.sdk.conference.SendCallback
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.ConferenceEventSource
-import com.pexip.sdk.conference.infinity.internal.Messenger
+import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RealConferenceEventSource
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
-import com.pexip.sdk.conference.infinity.internal.RealMessenger
 import com.pexip.sdk.conference.infinity.internal.maybeSubmit
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
@@ -36,8 +40,8 @@ import java.util.concurrent.ScheduledExecutorService
 
 public class InfinityConference private constructor(
     override val name: String,
+    override val messenger: Messenger,
     private val source: ConferenceEventSource,
-    private val messenger: Messenger,
     private val refresher: TokenRefresher,
     private val signaling: MediaConnectionSignaling,
     private val executor: ScheduledExecutorService,
@@ -58,10 +62,31 @@ public class InfinityConference private constructor(
     override fun dtmf(digits: String) {
     }
 
+    @Deprecated("Use Conference.messenger.send() instead.")
     override fun message(payload: String) {
-        executor.maybeSubmit {
-            messenger.message(payload)
-        }
+        messenger.send(
+            type = "text/plain",
+            payload = payload,
+            callback = object : SendCallback {
+
+                override fun onSuccess(message: Message) {
+                    executor.maybeSubmit {
+                        val event = MessageReceivedConferenceEvent(
+                            at = message.at,
+                            participantId = message.participantId,
+                            participantName = message.participantName,
+                            type = message.type,
+                            payload = message.payload,
+                        )
+                        source.onConferenceEvent(event)
+                    }
+                }
+
+                override fun onFailure(e: MessageNotSentException) {
+                    // noop
+                }
+            },
+        )
     }
 
     override fun leave() {
@@ -91,7 +116,13 @@ public class InfinityConference private constructor(
             val store = TokenStore.create(response)
             val participantStep = step.participant(response.participantId)
             val executor = Executors.newSingleThreadScheduledExecutor()
-            val source = RealConferenceEventSource(store, step, executor)
+            val messenger = MessengerImpl(
+                senderId = response.participantId,
+                senderName = response.participantName,
+                store = store,
+                step = step,
+            )
+            val source = RealConferenceEventSource(store, step, executor, messenger)
             val iceServers = buildList(response.stun.size + response.turn.size) {
                 val stunIceServers = response.stun.map {
                     IceServer.Builder(it.url).build()
@@ -108,13 +139,7 @@ public class InfinityConference private constructor(
             return InfinityConference(
                 name = response.conferenceName,
                 source = source,
-                messenger = RealMessenger(
-                    participantId = response.participantId,
-                    participantName = response.participantName,
-                    store = store,
-                    conferenceStep = step,
-                    listener = source,
-                ),
+                messenger = messenger,
                 refresher = TokenRefresher.create(step, store, executor) {
                     source.onConferenceEvent(ConferenceEvent(it))
                 },
