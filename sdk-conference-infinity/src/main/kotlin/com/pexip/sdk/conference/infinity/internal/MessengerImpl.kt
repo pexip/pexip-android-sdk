@@ -52,11 +52,11 @@ internal class MessengerImpl(
         callback: SendCallback,
     ) = sendInternal(type, payload, callback, participantId)
 
-    override fun registerMessengerListener(listener: MessageListener) {
+    override fun registerMessageListener(listener: MessageListener) {
         listeners += listener
     }
 
-    override fun unregisterMessengerListener(listener: MessageListener) {
+    override fun unregisterMessageListener(listener: MessageListener) {
         listeners -= listener
     }
 

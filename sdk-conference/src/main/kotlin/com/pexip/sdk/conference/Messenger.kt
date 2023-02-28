@@ -46,12 +46,12 @@ public interface Messenger {
      *
      * @param listener a message listener
      */
-    public fun registerMessengerListener(listener: MessageListener)
+    public fun registerMessageListener(listener: MessageListener)
 
     /**
      * Unregisters a [MessageListener].
      *
      * @param listener a message listener
      */
-    public fun unregisterMessengerListener(listener: MessageListener)
+    public fun unregisterMessageListener(listener: MessageListener)
 }

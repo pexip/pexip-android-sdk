@@ -286,10 +286,10 @@ class MessengerImplTest {
         val messages = mutableListOf<Message>()
         val listener = MessageListener(messages::add)
         val eventSource = EventSource(::fail)
-        messenger.registerMessengerListener(listener)
+        messenger.registerMessageListener(listener)
         messenger.onEvent(eventSource, message.toMessageReceivedEvent())
         messenger.onEvent(eventSource, directMessage.toMessageReceivedEvent())
-        messenger.unregisterMessengerListener(listener)
+        messenger.unregisterMessageListener(listener)
         assertEquals(listOf(message, directMessage), messages)
     }
 

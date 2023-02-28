@@ -76,6 +76,6 @@ public suspend fun Messenger.send(
  */
 public fun Messenger.getMessages(): Flow<Message> = callbackFlow {
     val listener = MessageListener(::trySend)
-    registerMessengerListener(listener)
-    awaitClose { unregisterMessengerListener(listener) }
+    registerMessageListener(listener)
+    awaitClose { unregisterMessageListener(listener) }
 }
