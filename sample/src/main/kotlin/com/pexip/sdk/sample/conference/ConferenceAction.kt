@@ -25,6 +25,8 @@ import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.sample.audio.AudioDeviceOutput
+import com.pexip.sdk.sample.bandwidth.BandwidthOutput
+import com.pexip.sdk.sample.bandwidth.bitrate
 import com.pexip.sdk.sample.composer.ComposerOutput
 import com.pexip.sdk.sample.dtmf.DtmfOutput
 import com.squareup.workflow1.WorkflowAction
@@ -66,6 +68,23 @@ class OnAudioDevicesChange(private val visible: Boolean) : ConferenceAction() {
 
     override fun Updater.apply() {
         state = state.copy(audioDevicesVisible = visible)
+    }
+}
+
+class OnBandwidthChange(private val visible: Boolean) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(bandwidthVisible = visible)
+    }
+}
+
+class OnBandwidthOutput(private val output: BandwidthOutput) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        if (output is BandwidthOutput.ChangeBandwidth) {
+            state.connection.setMaxBitrate(output.bandwidth.bitrate)
+        }
+        state = state.copy(bandwidthVisible = false)
     }
 }
 

@@ -15,6 +15,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `MessageReceivedEvent.direct` that indicates whether it's direct message
 - `Messenger` that provides facilities to send and receive `Message`s; note that unlike previous
   implementation, `MessageListener` will not be invoked when you send a message
+- Bandwidth selection in the Sample app
 
 ### Changed
 

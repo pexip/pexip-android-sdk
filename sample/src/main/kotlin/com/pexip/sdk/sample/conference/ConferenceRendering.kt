@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import android.content.Intent
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.sample.audio.AudioDeviceRendering
+import com.pexip.sdk.sample.bandwidth.BandwidthRendering
 import com.pexip.sdk.sample.composer.ComposerRendering
 import com.pexip.sdk.sample.dtmf.DtmfRendering
 import com.pexip.sdk.sample.media.LocalMediaTrackRendering
@@ -32,12 +33,14 @@ data class ConferenceCallRendering(
     val mainRemoteVideoTrack: VideoTrack?,
     val presentationRemoteVideoTrack: VideoTrack?,
     val audioDeviceRendering: AudioDeviceRendering,
+    val bandwidthRendering: BandwidthRendering,
     val dtmfRendering: DtmfRendering,
     val cameraVideoTrackRendering: LocalMediaTrackRendering?,
     val microphoneAudioTrackRendering: LocalMediaTrackRendering?,
     val screenCapturing: Boolean,
     val onScreenCapture: (Intent) -> Unit,
     val onAudioDevicesChange: (Boolean) -> Unit,
+    val onBandwidthChange: (Boolean) -> Unit,
     val onDtmfChange: (Boolean) -> Unit,
     val onStopScreenCapture: () -> Unit,
     val onConferenceEventsClick: () -> Unit,
