@@ -26,6 +26,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Gradle Version Catalog missing a few entries
+- Missing ProGuard rules for `sdk-media-webrtc`
+- Wrong location of ProGuard rules for `sdk-api-infinity`
 
 ## [0.11.0] - 2022-12-15
 
