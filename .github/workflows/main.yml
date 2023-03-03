@@ -45,10 +45,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: snyk/actions/gradle-jdk11@master
+      - uses: snyk/actions/setup@master
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'gradle'
+
+      - run: snyk monitor --all-sub-projects --remote-repo-url=$GITHUB_REPOSITORY
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           SNYK_CFG_ORG: ${{ secrets.SNYK_CFG_ORG }}
-        with:
-          command: monitor
-          args: --all-sub-projects --remote-repo-url=$GITHUB_REPOSITORY
