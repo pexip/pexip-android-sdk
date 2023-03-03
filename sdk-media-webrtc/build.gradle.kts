@@ -4,6 +4,9 @@ plugins {
 
 android {
     namespace = "com.pexip.sdk.media.webrtc"
+    defaultConfig {
+        consumerProguardFiles("consumer-rules.pro")
+    }
 }
 
 dependencies {
