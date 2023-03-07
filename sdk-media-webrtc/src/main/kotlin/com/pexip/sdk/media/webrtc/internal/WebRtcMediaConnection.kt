@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.pexip.sdk.media.webrtc.internal
 
 import com.pexip.sdk.media.Bitrate
 import com.pexip.sdk.media.Bitrate.Companion.bps
+import com.pexip.sdk.media.DegradationPreference
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
@@ -53,6 +54,24 @@ internal class WebRtcMediaConnection(
 
     private var bitrate by Delegates.observable(0.bps) { _, old, new ->
         if (old != new) connection.restartIce()
+    }
+
+    // Rename due to platform declaration clash
+    @set:JvmName("setMainDegradationPreferenceInternal")
+    private var mainDegradationPreference by Delegates.observable(DegradationPreference.BALANCED) { _, old, new ->
+        if (old == new) return@observable
+        synchronized(mainVideoTransceiverLock) {
+            mainVideoTransceiver?.setDegradationPreference(new)
+        }
+    }
+
+    // Rename due to platform declaration clash
+    @set:JvmName("setPresentationDegradationPreferenceInternal")
+    private var presentationDegradationPreference by Delegates.observable(DegradationPreference.BALANCED) { _, old, new ->
+        if (old != new) return@observable
+        synchronized(presentationVideoTransceiver) {
+            presentationVideoTransceiver.setDegradationPreference(new)
+        }
     }
 
     // Rename due to platform declaration clash
@@ -132,6 +151,10 @@ internal class WebRtcMediaConnection(
                 ?.let(::WebRtcVideoTrack)
         }
 
+    init {
+        presentationVideoTransceiver.setDegradationPreference(presentationDegradationPreference)
+    }
+
     override fun setMainAudioTrack(localAudioTrack: LocalAudioTrack?) {
         val lat = when (localAudioTrack) {
             is WebRtcLocalAudioTrack -> localAudioTrack
@@ -157,7 +180,9 @@ internal class WebRtcMediaConnection(
         }
         workerExecutor.maybeExecuteUnlessDisposed {
             synchronized(mainVideoTransceiverLock) {
-                val t = mainVideoTransceiver ?: connection.maybeAddTransceiver(lvt)
+                val t = mainVideoTransceiver ?: connection.maybeAddTransceiver(lvt)?.apply {
+                    setDegradationPreference(mainDegradationPreference)
+                }
                 t?.maybeSetNewDirection(lvt)
                 t?.setTrack(lvt)
                 mainVideoTransceiver = t
@@ -214,6 +239,18 @@ internal class WebRtcMediaConnection(
     override fun setMaxBitrate(bitrate: Bitrate) {
         workerExecutor.maybeExecuteUnlessDisposed {
             this.bitrate = bitrate
+        }
+    }
+
+    override fun setMainDegradationPreference(preference: DegradationPreference) {
+        workerExecutor.maybeExecuteUnlessDisposed {
+            mainDegradationPreference = preference
+        }
+    }
+
+    override fun setPresentationDegradationPreference(preference: DegradationPreference) {
+        workerExecutor.maybeExecuteUnlessDisposed {
+            presentationDegradationPreference = preference
         }
     }
 

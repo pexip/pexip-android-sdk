@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.pexip.sdk.media.webrtc.internal
 
 import com.pexip.sdk.media.CameraVideoTrack
+import com.pexip.sdk.media.DegradationPreference
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.QualityProfile
@@ -23,6 +24,7 @@ import com.pexip.sdk.media.VideoTrack
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
+import org.webrtc.RtpParameters
 import org.webrtc.RtpTransceiver
 import java.util.concurrent.Executor
 import java.util.concurrent.RejectedExecutionException
@@ -76,6 +78,17 @@ internal fun QualityProfile.Companion.from(format: CaptureFormat) = QualityProfi
     height = format.height,
     fps = format.framerate.max / 1000,
 )
+
+internal fun RtpTransceiver.setDegradationPreference(preference: DegradationPreference) {
+    val parameters = sender.parameters
+    parameters.degradationPreference = when (preference) {
+        DegradationPreference.BALANCED -> RtpParameters.DegradationPreference.BALANCED
+        DegradationPreference.MAINTAIN_FRAMERATE -> RtpParameters.DegradationPreference.MAINTAIN_FRAMERATE
+        DegradationPreference.MAINTAIN_RESOLUTION -> RtpParameters.DegradationPreference.MAINTAIN_RESOLUTION
+        DegradationPreference.DISABLED -> RtpParameters.DegradationPreference.DISABLED
+    }
+    sender.parameters = parameters
+}
 
 internal fun RtpTransceiver.maybeSetNewDirection(track: LocalMediaTrack?) {
     val newDirection = when (track) {
