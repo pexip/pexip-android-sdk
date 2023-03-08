@@ -7,7 +7,6 @@ plugins {
 
 android {
     kotlinOptions {
-        jvmTarget = "${compileOptions.targetCompatibility}"
         freeCompilerArgs += "-Xexplicit-api=strict"
     }
 }
@@ -15,6 +14,10 @@ android {
 dependencies {
     testImplementation(kotlin("test-junit"))
     androidTestImplementation(kotlin("test-junit"))
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
 }
 
 tasks.withType<Test>().configureEach {
