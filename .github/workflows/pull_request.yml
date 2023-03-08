@@ -6,6 +6,10 @@ env:
   CI: 'true'
   GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
