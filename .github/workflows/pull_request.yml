@@ -30,7 +30,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SONATYPE_GPG_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
 
-  snyk:
+  snyk_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master

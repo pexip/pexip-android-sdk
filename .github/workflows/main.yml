@@ -41,7 +41,32 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/dokka/htmlMultiModule
 
-  snyk:
+  snyk_test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@master
+      - uses: snyk/actions/setup@master
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'gradle'
+
+      - run: snyk test --all-sub-projects --sarif-file-output=snyk.sarif
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_CFG_ORG: ${{ secrets.SNYK_CFG_ORG }}
+
+      - uses: github/codeql-action/upload-sarif@v2
+        with:
+          category: snyk
+          sarif_file: snyk.sarif
+
+  snyk_monitor:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
