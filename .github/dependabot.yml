@@ -8,10 +8,15 @@ updates:
       prefix: "feat"
       include: "scope"
 
-  - package-ecosystem: gradle
+  - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "weekly"
     commit-message:
       prefix: "feat"
       include: "scope"
+
+registries:
+  maven-google:
+    type: maven-repository
+    url: "https://dl.google.com/dl/android/maven2/"
