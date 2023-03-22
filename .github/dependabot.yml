@@ -15,6 +15,8 @@ updates:
     commit-message:
       prefix: "feat"
       include: "scope"
+    registries:
+      - maven-google
 
 registries:
   maven-google:
