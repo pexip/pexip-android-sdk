@@ -24,7 +24,7 @@ internal object Android {
     const val compileSdk = 33
 
     const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    const val composeCompilerExtensionVersion = "1.4.3"
+    const val composeCompilerExtensionVersion = "1.4.4"
 
     val sourceCompatibility = JavaVersion.VERSION_1_8
     val targetCompatibility = JavaVersion.VERSION_1_8
