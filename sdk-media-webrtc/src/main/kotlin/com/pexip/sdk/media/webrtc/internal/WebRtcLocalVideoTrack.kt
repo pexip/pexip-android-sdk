@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 package com.pexip.sdk.media.webrtc.internal
 
 import android.content.Context
+import android.util.Rational
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
 import org.webrtc.CapturerObserver
 import org.webrtc.EglBase
+import org.webrtc.JavaI420Buffer
+import org.webrtc.JniCommon
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoFrame
@@ -44,7 +47,12 @@ internal open class WebRtcLocalVideoTrack(
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val textureHelper =
         SurfaceTextureHelper.create("CaptureThread:${videoTrack.id()}", eglBase?.eglBaseContext)
+
     private val capturerObserver = object : CapturerObserver {
+
+        private var width = 0
+        private var height = 0
+        private var rotation = 0
 
         override fun onCapturerStarted(success: Boolean) {
             videoSource.capturerObserver.onCapturerStarted(success)
@@ -54,13 +62,21 @@ internal open class WebRtcLocalVideoTrack(
         }
 
         override fun onCapturerStopped() {
+            val rational = Rational(width, height)
+            val buffer = createBlackBuffer(rational.numerator * 16, rational.denominator * 16)
+            val frame = VideoFrame(buffer, rotation, 0)
+            videoSource.capturerObserver.onFrameCaptured(frame)
+            frame.release()
             videoSource.capturerObserver.onCapturerStopped()
             if (!capturing) return
             capturing = false
             notify(false)
         }
 
-        override fun onFrameCaptured(frame: VideoFrame?) {
+        override fun onFrameCaptured(frame: VideoFrame) {
+            width = frame.buffer.width
+            height = frame.buffer.height
+            rotation = frame.rotation
             videoSource.capturerObserver.onFrameCaptured(frame)
         }
 
@@ -70,6 +86,38 @@ internal open class WebRtcLocalVideoTrack(
                     it.safeOnCapturing(capturing)
                 }
             }
+        }
+
+        private fun createBlackBuffer(width: Int, height: Int): VideoFrame.Buffer {
+            val chromaHeight = (height + 1) / 2
+            val strideUV = (width + 1) / 2
+            val yPos = 0
+            val uPos = yPos + width * height
+            val vPos = uPos + strideUV * chromaHeight
+            val size = width * height + 2 * strideUV * chromaHeight
+            val buffer = JniCommon.nativeAllocateByteBuffer(size)
+            buffer.put(ByteArray(size) { if (it < uPos) 16 else Byte.MIN_VALUE })
+            buffer.position(yPos)
+            buffer.limit(uPos)
+            val dataY = buffer.slice()
+            buffer.position(uPos)
+            buffer.limit(vPos)
+            val dataU = buffer.slice()
+            buffer.position(vPos)
+            buffer.limit(vPos + strideUV * chromaHeight)
+            val dataV = buffer.slice()
+            val callback = Runnable { JniCommon.nativeFreeByteBuffer(buffer) }
+            return JavaI420Buffer.wrap(
+                width,
+                height,
+                dataY,
+                width,
+                dataU,
+                strideUV,
+                dataV,
+                strideUV,
+                callback,
+            )
         }
     }
 
