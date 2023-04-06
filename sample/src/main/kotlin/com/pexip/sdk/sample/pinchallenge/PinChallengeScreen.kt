@@ -27,7 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -59,9 +59,8 @@ fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Mo
                     )
                 }
                 val focusRequester = remember { FocusRequester() }
-                DisposableEffect(focusRequester) {
+                LaunchedEffect(focusRequester) {
                     focusRequester.requestFocus()
-                    onDispose { focusRequester.freeFocus() }
                 }
                 TextField(
                     value = rendering.pin,
