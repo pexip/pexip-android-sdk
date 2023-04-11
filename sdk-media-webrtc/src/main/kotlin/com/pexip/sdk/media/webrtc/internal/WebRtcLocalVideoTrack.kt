@@ -16,7 +16,6 @@
 package com.pexip.sdk.media.webrtc.internal
 
 import android.content.Context
-import android.util.Rational
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
@@ -50,10 +49,6 @@ internal open class WebRtcLocalVideoTrack(
 
     private val capturerObserver = object : CapturerObserver {
 
-        private var width = 0
-        private var height = 0
-        private var rotation = 0
-
         override fun onCapturerStarted(success: Boolean) {
             videoSource.capturerObserver.onCapturerStarted(success)
             if (capturing == success) return
@@ -62,9 +57,8 @@ internal open class WebRtcLocalVideoTrack(
         }
 
         override fun onCapturerStopped() {
-            val rational = Rational(width, height)
-            val buffer = createBlackBuffer(rational.numerator * 16, rational.denominator * 16)
-            val frame = VideoFrame(buffer, rotation, 0)
+            val buffer = createBlackBuffer()
+            val frame = VideoFrame(buffer, 0, 0)
             videoSource.capturerObserver.onFrameCaptured(frame)
             frame.release()
             videoSource.capturerObserver.onCapturerStopped()
@@ -74,9 +68,6 @@ internal open class WebRtcLocalVideoTrack(
         }
 
         override fun onFrameCaptured(frame: VideoFrame) {
-            width = frame.buffer.width
-            height = frame.buffer.height
-            rotation = frame.rotation
             videoSource.capturerObserver.onFrameCaptured(frame)
         }
 
@@ -88,7 +79,7 @@ internal open class WebRtcLocalVideoTrack(
             }
         }
 
-        private fun createBlackBuffer(width: Int, height: Int): VideoFrame.Buffer {
+        private fun createBlackBuffer(width: Int = 640, height: Int = 480): VideoFrame.Buffer {
             val chromaHeight = (height + 1) / 2
             val strideUV = (width + 1) / 2
             val yPos = 0
