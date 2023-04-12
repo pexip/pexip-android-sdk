@@ -30,6 +30,7 @@ import org.webrtc.VideoFrame
 import org.webrtc.VideoSource
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executor
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal open class WebRtcLocalVideoTrack(
@@ -49,6 +50,11 @@ internal open class WebRtcLocalVideoTrack(
 
     private val capturerObserver = object : CapturerObserver {
 
+        private var width = 0
+        private var height = 0
+        private var rotation = 0
+        private var timestampNs = 0L
+
         override fun onCapturerStarted(success: Boolean) {
             videoSource.capturerObserver.onCapturerStarted(success)
             if (capturing == success) return
@@ -57,10 +63,13 @@ internal open class WebRtcLocalVideoTrack(
         }
 
         override fun onCapturerStopped() {
-            val buffer = createBlackBuffer()
-            val frame = VideoFrame(buffer, 0, 0)
-            videoSource.capturerObserver.onFrameCaptured(frame)
-            frame.release()
+            val duration = TimeUnit.MILLISECONDS.toNanos(100)
+            repeat(2) {
+                val buffer = createBlackBuffer(width, height)
+                val frame = VideoFrame(buffer, rotation, timestampNs + (it + 1) * duration)
+                videoSource.capturerObserver.onFrameCaptured(frame)
+                frame.release()
+            }
             videoSource.capturerObserver.onCapturerStopped()
             if (!capturing) return
             capturing = false
@@ -68,6 +77,10 @@ internal open class WebRtcLocalVideoTrack(
         }
 
         override fun onFrameCaptured(frame: VideoFrame) {
+            width = frame.buffer.width
+            height = frame.buffer.height
+            rotation = frame.rotation
+            timestampNs = frame.timestampNs
             videoSource.capturerObserver.onFrameCaptured(frame)
         }
 
@@ -79,7 +92,7 @@ internal open class WebRtcLocalVideoTrack(
             }
         }
 
-        private fun createBlackBuffer(width: Int = 640, height: Int = 480): VideoFrame.Buffer {
+        private fun createBlackBuffer(width: Int, height: Int): VideoFrame.Buffer {
             val chromaHeight = (height + 1) / 2
             val strideUV = (width + 1) / 2
             val yPos = 0
