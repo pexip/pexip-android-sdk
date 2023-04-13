@@ -64,7 +64,7 @@ internal open class WebRtcLocalVideoTrack(
 
         override fun onCapturerStopped() {
             val duration = TimeUnit.MILLISECONDS.toNanos(100)
-            repeat(2) {
+            repeat(4) {
                 val buffer = createBlackBuffer(width, height)
                 val frame = VideoFrame(buffer, rotation, timestampNs + (it + 1) * duration)
                 videoSource.capturerObserver.onFrameCaptured(frame)
