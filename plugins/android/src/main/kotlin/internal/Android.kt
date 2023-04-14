@@ -26,8 +26,8 @@ internal object Android {
     const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     const val composeCompilerExtensionVersion = "1.4.4"
 
-    val sourceCompatibility = JavaVersion.VERSION_1_8
-    val targetCompatibility = JavaVersion.VERSION_1_8
+    val sourceCompatibility = JavaVersion.VERSION_11
+    val targetCompatibility = JavaVersion.VERSION_11
 
     val resourcesExcludes = setOf("META-INF/AL2.0", "META-INF/LGPL2.1")
 }
