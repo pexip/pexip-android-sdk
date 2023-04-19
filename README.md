@@ -85,7 +85,7 @@ repositories {
 
 ## Requirements
 
-* JDK 8
+* JDK 11
 * Android SDK 21+
 
 ## WebRTC versions
