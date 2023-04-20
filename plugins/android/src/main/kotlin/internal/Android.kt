@@ -28,6 +28,4 @@ internal object Android {
 
     val sourceCompatibility = JavaVersion.VERSION_11
     val targetCompatibility = JavaVersion.VERSION_11
-
-    val resourcesExcludes = setOf("META-INF/AL2.0", "META-INF/LGPL2.1")
 }
