@@ -19,7 +19,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Kotlin to 1.8.10
+- Kotlin to 1.8.20
 - WebRTC to M110
 - **BREAKING**: `MessageRequest` no longer has a default `type` set
 - Deprecated `Conference.message(String)`

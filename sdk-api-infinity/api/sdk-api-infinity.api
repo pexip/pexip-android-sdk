@@ -21,7 +21,7 @@ public final class com/pexip/sdk/api/infinity/CallsRequest {
 	public final fun getSdp ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/CallsRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/CallsRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/CallsRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -52,7 +52,7 @@ public final class com/pexip/sdk/api/infinity/CallsResponse {
 	public final fun getSdp ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/CallsResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/CallsResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/CallsResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -81,7 +81,7 @@ public final class com/pexip/sdk/api/infinity/DisconnectEvent : com/pexip/sdk/ap
 	public final fun getReason ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/DisconnectEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/DisconnectEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/DisconnectEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -111,7 +111,7 @@ public final class com/pexip/sdk/api/infinity/DtmfRequest {
 	public final fun getDigits ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/DtmfRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/DtmfRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/DtmfRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -159,7 +159,7 @@ public final class com/pexip/sdk/api/infinity/FeccEvent : com/pexip/sdk/api/Even
 	public final fun getTimeout ()J
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/FeccEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/FeccEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/FeccEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -207,7 +207,7 @@ public final class com/pexip/sdk/api/infinity/IdentityProvider {
 	public final fun getName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/IdentityProvider;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/IdentityProvider;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/IdentityProvider$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -265,7 +265,7 @@ public final class com/pexip/sdk/api/infinity/IncomingCancelledEvent : com/pexip
 	public final fun getToken ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/IncomingCancelledEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/IncomingCancelledEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/IncomingCancelledEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -298,7 +298,7 @@ public final class com/pexip/sdk/api/infinity/IncomingEvent : com/pexip/sdk/api/
 	public final fun getToken ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/IncomingEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/IncomingEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/IncomingEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -431,7 +431,7 @@ public final class com/pexip/sdk/api/infinity/MessageReceivedEvent : com/pexip/s
 	public final fun getType ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/MessageReceivedEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -462,7 +462,7 @@ public final class com/pexip/sdk/api/infinity/MessageRequest {
 	public final fun getType ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/MessageRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/MessageRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/MessageRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -498,7 +498,7 @@ public final class com/pexip/sdk/api/infinity/NewCandidateRequest {
 	public final fun getUfrag ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/NewCandidateRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/NewCandidateRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/NewCandidateRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -562,7 +562,7 @@ public final class com/pexip/sdk/api/infinity/PresentationStartEvent : com/pexip
 	public final fun getPresenterName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/PresentationStartEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/PresentationStartEvent;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/PresentationStartEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -598,7 +598,7 @@ public final class com/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse :
 	public fun getToken ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -629,7 +629,7 @@ public final class com/pexip/sdk/api/infinity/RefreshTokenResponse : com/pexip/s
 	public fun getToken ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/RefreshTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -663,7 +663,7 @@ public final class com/pexip/sdk/api/infinity/RegistrationResponse {
 	public final fun getUsername ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/RegistrationResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/RegistrationResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/RegistrationResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -702,7 +702,7 @@ public final class com/pexip/sdk/api/infinity/RequestRegistrationTokenResponse :
 	public final fun getVersion ()Lcom/pexip/sdk/api/infinity/VersionResponse;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/RequestRegistrationTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -740,7 +740,7 @@ public final class com/pexip/sdk/api/infinity/RequestTokenRequest {
 	public final fun getSsoToken ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/RequestTokenRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/RequestTokenRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/RequestTokenRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -792,7 +792,7 @@ public final class com/pexip/sdk/api/infinity/RequestTokenResponse : com/pexip/s
 	public final fun getVersion ()Lcom/pexip/sdk/api/infinity/VersionResponse;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/RequestTokenResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/RequestTokenResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/RequestTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -851,7 +851,7 @@ public final class com/pexip/sdk/api/infinity/StunResponse {
 	public final fun getUrl ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/StunResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/StunResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/StunResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -916,7 +916,7 @@ public final class com/pexip/sdk/api/infinity/TurnResponse {
 	public final fun getUsername ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/TurnResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/TurnResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/TurnResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -948,7 +948,7 @@ public final class com/pexip/sdk/api/infinity/UpdateRequest {
 	public final fun getSdp ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/UpdateRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/UpdateRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/UpdateRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
@@ -1009,7 +1009,7 @@ public final class com/pexip/sdk/api/infinity/VersionResponse {
 	public final fun getVersionId ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-	public static final fun write$Self (Lcom/pexip/sdk/api/infinity/VersionResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/VersionResponse;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
 }
 
 public final class com/pexip/sdk/api/infinity/VersionResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
