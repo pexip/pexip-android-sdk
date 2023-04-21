@@ -26,9 +26,6 @@ android {
             isIncludeAndroidResources = true
         }
     }
-    packagingOptions {
-        resources.excludes += internal.Android.resourcesExcludes
-    }
 }
 
 java {

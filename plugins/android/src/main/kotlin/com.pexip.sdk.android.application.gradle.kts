@@ -31,8 +31,8 @@ android {
         checkDependencies = true
         ignoreTestSources = true
     }
-    packagingOptions {
-        resources.excludes += internal.Android.resourcesExcludes
+    packaging {
+        resources.excludes += "META-INF/{AL2.0,LGPL2.1}"
     }
 }
 
