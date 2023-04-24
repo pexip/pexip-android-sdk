@@ -22,9 +22,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
 
-      - run: ./gradlew build
+      - uses: gradle/gradle-build-action@v2
+      - run: ./gradlew build --scan
       - run: ./gradlew publishToMavenLocal --no-parallel
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SONATYPE_GPG_KEY }}
@@ -39,8 +39,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
 
+      - uses: gradle/gradle-build-action@v2
       - run: snyk test --all-sub-projects --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
