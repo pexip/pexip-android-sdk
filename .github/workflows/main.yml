@@ -7,12 +7,11 @@ on:
 
 env:
   CI: 'true'
-  GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g'
+  GRADLE_OPTS: ${{ vars.GRADLE_OPTS }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
         with:
@@ -22,8 +21,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
 
+      - uses: gradle/gradle-build-action@v2
       - run: ./gradlew build
       - run: ./gradlew publish --no-parallel
         env:
@@ -53,7 +52,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
+
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: true
 
       - run: snyk test --all-sub-projects --sarif-file-output=snyk.sarif
         continue-on-error: true
@@ -75,7 +77,10 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
+
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: true
 
       - run: snyk monitor --all-sub-projects --remote-repo-url=$GITHUB_REPOSITORY
         env:

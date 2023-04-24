@@ -4,7 +4,7 @@ on: [pull_request, merge_group]
 
 env:
   CI: 'true'
-  GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g'
+  GRADLE_OPTS: ${{ vars.GRADLE_OPTS }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
@@ -22,8 +22,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
 
+      - uses: gradle/gradle-build-action@v2
       - run: ./gradlew build
       - run: ./gradlew publishToMavenLocal --no-parallel
         env:
@@ -39,8 +39,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
 
+      - uses: gradle/gradle-build-action@v2
       - run: snyk test --all-sub-projects --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
