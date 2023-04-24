@@ -4,7 +4,7 @@ on: [pull_request, merge_group]
 
 env:
   CI: 'true'
-  GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx4g'
+  GRADLE_OPTS: ${{ vars.GRADLE_OPTS }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
