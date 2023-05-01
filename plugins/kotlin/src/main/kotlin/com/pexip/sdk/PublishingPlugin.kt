@@ -30,8 +30,8 @@ class PublishingPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
-            apply("org.gradle.maven-publish")
-            apply("org.gradle.signing")
+            apply("maven-publish")
+            apply("signing")
         }
         group = checkNotNull(property("group")) { "group == null." }
         version = checkNotNull(property("version")) { "version == null." }

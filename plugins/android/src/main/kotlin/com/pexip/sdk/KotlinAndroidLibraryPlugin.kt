@@ -18,6 +18,7 @@ package com.pexip.sdk
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.withType
@@ -27,7 +28,7 @@ class KotlinAndroidLibraryPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
-            apply("com.pexip.sdk.android.library")
+            apply(AndroidLibraryPlugin::class)
             apply("org.jetbrains.kotlin.android")
         }
         dependencies {

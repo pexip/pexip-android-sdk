@@ -17,8 +17,10 @@ package com.pexip.sdk
 
 import com.android.build.api.dsl.ApplicationExtension
 import com.pexip.sdk.internal.Android
+import com.pexip.sdk.internal.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionConstraint
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -48,7 +50,9 @@ class AndroidApplicationPlugin : Plugin<Project> {
                 targetCompatibility = Android.targetCompatibility
             }
             composeOptions {
-                kotlinCompilerExtensionVersion = Android.composeCompilerExtensionVersion
+                kotlinCompilerExtensionVersion = libs.findVersion("androidx-compose-compiler")
+                    .map(VersionConstraint::toString)
+                    .get()
             }
             testOptions {
                 unitTests {

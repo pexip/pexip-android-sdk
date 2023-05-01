@@ -15,16 +15,9 @@
  */
 package com.pexip.sdk.internal
 
-import org.gradle.api.JavaVersion
+import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.kotlin.dsl.getByType
 
-internal object Android {
-
-    const val minSdk = 21
-    const val targetSdk = 33
-    const val compileSdk = 33
-
-    const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-    val sourceCompatibility = JavaVersion.VERSION_11
-    val targetCompatibility = JavaVersion.VERSION_11
-}
+internal val Project.libs
+    get() = extensions.getByType<VersionCatalogsExtension>().named("libs")

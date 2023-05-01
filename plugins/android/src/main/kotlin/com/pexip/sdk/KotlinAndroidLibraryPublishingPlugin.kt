@@ -20,6 +20,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.register
@@ -28,10 +29,10 @@ class KotlinAndroidLibraryPublishingPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
-            apply("com.pexip.sdk.kotlin.android.library")
-            apply("com.pexip.sdk.kotlin.dokka")
-            apply("com.pexip.sdk.licensee")
-            apply("com.pexip.sdk.publishing")
+            apply(KotlinAndroidLibraryPlugin::class)
+            apply(KotlinDokkaPlugin::class)
+            apply(LicenseePlugin::class)
+            apply(PublishingPlugin::class)
         }
         configure<LibraryExtension> {
             publishing {
