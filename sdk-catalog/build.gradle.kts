@@ -1,5 +1,5 @@
 plugins {
-    id("com.pexip.sdk.publish")
+    id("com.pexip.sdk.publishing")
     `version-catalog`
 }
 

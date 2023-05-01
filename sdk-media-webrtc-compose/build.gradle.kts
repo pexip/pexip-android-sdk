@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    id("com.pexip.sdk.kotlin.android.library.publish")
+    id("com.pexip.sdk.kotlin.android.library.publishing")
 }
 
 android {

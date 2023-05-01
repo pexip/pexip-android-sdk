@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal
+package com.pexip.sdk
 
-import org.gradle.api.JavaVersion
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 
-internal object Android {
+class KotlinKaptPlugin : Plugin<Project> {
 
-    const val minSdk = 21
-    const val targetSdk = 33
-    const val compileSdk = 33
-
-    const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    const val composeCompilerExtensionVersion = "1.4.5"
-
-    val sourceCompatibility = JavaVersion.VERSION_11
-    val targetCompatibility = JavaVersion.VERSION_11
+    override fun apply(target: Project) = with(target) {
+        pluginManager.apply("org.jetbrains.kotlin.kapt")
+        configure<KaptExtension> {
+            correctErrorTypes = true
+        }
+    }
 }
