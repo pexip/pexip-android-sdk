@@ -33,6 +33,7 @@ gradlePlugin {
 
 dependencies {
     implementation(libs.dokka)
+    implementation(libs.dokka.base)
     implementation(libs.kotlin)
     implementation(libs.licensee)
 }

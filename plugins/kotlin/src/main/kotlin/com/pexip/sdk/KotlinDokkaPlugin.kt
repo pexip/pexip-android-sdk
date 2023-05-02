@@ -18,15 +18,27 @@ package com.pexip.sdk
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.DokkaBaseConfiguration
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import java.util.Calendar
-import java.util.Locale
-import java.util.TimeZone
+import java.time.Year
 
 class KotlinDokkaPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("org.jetbrains.dokka")
+        val footerMessageProvider = provider {
+            "${Year.now().value} Pexip® AS, All rights reserved."
+        }
+        tasks.withType<DokkaMultiModuleTask>().configureEach {
+            includes.from("README.md")
+            pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+                footerMessage = footerMessageProvider.get()
+                customAssets += file("dokka/pexip.svg")
+                customStyleSheets += file("dokka/logo-styles.css")
+            }
+        }
         val hasAndroidLibraryPluginProvider = provider {
             pluginManager.hasPlugin("com.android.library")
         }
@@ -36,19 +48,10 @@ class KotlinDokkaPlugin : Plugin<Project> {
                 externalDocumentationLink("https://kotlin.github.io/kotlinx.coroutines/")
                 noAndroidSdkLink.set(hasAndroidLibraryPluginProvider.map { !it })
             }
-            val timeZone = TimeZone.getTimeZone("UTC")
-            val locale = Locale.ENGLISH
-            val calendar = Calendar.getInstance(timeZone, locale)
-            val year = calendar.get(Calendar.YEAR)
-            val footerMessage = "$year Pexip® AS, All rights reserved."
-            val m = mapOf(
-                "org.jetbrains.dokka.base.DokkaBase" to """{
-                |"footerMessage": "$footerMessage",
-                |"separateInheritedMembers": true
-                |}
-                """.trimMargin(),
-            )
-            pluginsMapConfiguration.set(m)
+            pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+                footerMessage = footerMessageProvider.get()
+                separateInheritedMembers = true
+            }
         }
     }
 }
