@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal
+package com.pexip.sdk.internal
 
-import org.gradle.api.JavaVersion
+import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.kotlin.dsl.getByType
 
-internal object Android {
-
-    const val minSdk = 21
-    const val targetSdk = 33
-    const val compileSdk = 33
-
-    const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    const val composeCompilerExtensionVersion = "1.4.5"
-
-    val sourceCompatibility = JavaVersion.VERSION_11
-    val targetCompatibility = JavaVersion.VERSION_11
-}
+internal val Project.libs
+    get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
