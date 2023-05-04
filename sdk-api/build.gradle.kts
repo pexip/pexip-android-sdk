@@ -1,5 +1,5 @@
 plugins {
-    id("com.pexip.sdk.kotlin.jvm.publish")
+    id("com.pexip.sdk.kotlin.jvm.publishing")
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {

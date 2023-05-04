@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage", "DSL_SCOPE_VIOLATION")
 
 plugins {
-    id("com.pexip.sdk.kotlin.jvm.publish")
+    id("com.pexip.sdk.kotlin.jvm.publishing")
     alias(libs.plugins.kotlin.serialization)
 }
 

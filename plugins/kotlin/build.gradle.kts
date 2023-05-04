@@ -12,8 +12,8 @@ gradlePlugin {
             id = "com.pexip.sdk.kotlin.jvm"
             implementationClass = "com.pexip.sdk.KotlinJvmPlugin"
         }
-        register("kotlinJvmPublish") {
-            id = "com.pexip.sdk.kotlin.jvm.publish"
+        register("kotlinJvmPublishing") {
+            id = "com.pexip.sdk.kotlin.jvm.publishing"
             implementationClass = "com.pexip.sdk.KotlinJvmPublishingPlugin"
         }
         register("kotlinKapt") {
