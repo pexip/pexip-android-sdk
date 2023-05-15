@@ -14,6 +14,7 @@ android {
 dependencies {
     api(project(":sdk-media-webrtc"))
     api(libs.androidx.compose.ui)
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.tooling)
 }

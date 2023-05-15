@@ -24,7 +24,6 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Surface
@@ -33,14 +32,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.pexip.sdk.media.AudioDevice
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AudioDeviceDialog(rendering: AudioDeviceRendering) {
     if (rendering.visible) {
@@ -77,7 +74,6 @@ private fun AudioDeviceList(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AudioDevice(
     audioDevice: AudioDevice,
@@ -90,7 +86,7 @@ private fun AudioDevice(
         leadingContent = {
             AudioDeviceIcon(audioDevice.type)
         },
-        headlineText = {
+        headlineContent = {
             val text = remember(audioDevice) {
                 when (audioDevice.type) {
                     AudioDevice.Type.BUILTIN_EARPIECE -> "Earpiece"

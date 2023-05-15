@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.pexip.sdk.sample.conference
 
 import android.text.format.DateFormat
@@ -49,6 +47,7 @@ import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 import java.util.Date
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConferenceEventsScreen(
     rendering: ConferenceEventsRendering,
@@ -126,10 +125,10 @@ private fun MessageReceivedConferenceEvent(
     val format = remember(context) { DateFormat.getTimeFormat(context) }
     val date = remember(conferenceEvent.at) { Date(conferenceEvent.at) }
     ListItem(
-        overlineText = {
+        overlineContent = {
             Text(text = conferenceEvent.participantName)
         },
-        headlineText = {
+        headlineContent = {
             Text(text = conferenceEvent.payload)
         },
         trailingContent = {
@@ -148,10 +147,10 @@ private fun PresentationStartConferenceEvent(
     val format = remember(context) { DateFormat.getTimeFormat(context) }
     val date = remember(conferenceEvent.at) { Date(conferenceEvent.at) }
     ListItem(
-        overlineText = {
+        overlineContent = {
             Text(text = conferenceEvent.presenterName)
         },
-        headlineText = {
+        headlineContent = {
             Text(text = "Presentation started")
         },
         trailingContent = {
@@ -170,7 +169,7 @@ private fun PresentationStopConferenceEvent(
     val format = remember(context) { DateFormat.getTimeFormat(context) }
     val date = remember(conferenceEvent.at) { Date(conferenceEvent.at) }
     ListItem(
-        headlineText = {
+        headlineContent = {
             Text(text = "Presentation stopped")
         },
         trailingContent = {
