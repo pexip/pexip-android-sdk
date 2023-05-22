@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.12.0] - 2023-05-22
+
 ### Added
 
 - `Conference.name` property
@@ -19,7 +21,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Kotlin to 1.8.20
+- Source and target compatibility to JDK 11
+- Kotlin to 1.8.21
 - WebRTC to M110
 - **BREAKING**: `MessageRequest` no longer has a default `type` set
 - Deprecated `Conference.message(String)`
@@ -208,7 +211,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.11.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.12.0...HEAD
+[0.12.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.12.0
 [0.11.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.11.0
 [0.10.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.10.0
 [0.9.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.9.0
