@@ -33,10 +33,13 @@
     <div id="leftToggler"><span class="icon-toggler"></span></div>
     <div class="library-name">
 <a href="../../../index.html">
-<span>sdk</span>            </a>    </div>
-    <div>0.11.0
+<span>pexip-android-sdk</span>            </a>    </div>
+    <div>0.12.0
     </div>
     <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-api-infinity:dokkaHtmlPartial/main">jvm</button>
+        </div>
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
     </div>
@@ -46,74 +49,78 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" id="content" pageids="sdk-api-infinity::com.pexip.sdk.api.infinity/FeccEvent///PointingToDeclaration//-663017702">
+<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-api-infinity::com.pexip.sdk.api.infinity/FeccEvent///PointingToDeclaration//-663017702">
   <div class="breadcrumbs"><a href="../../index.html">sdk-api-infinity</a><span class="delimiter">/</span><a href="../index.html">com.pexip.sdk.api.infinity</a><span class="delimiter">/</span><span class="current">FeccEvent</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Fecc</span><wbr><span><span>Event</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">FeccEvent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>action<span class="token operator">: </span><a href="../-fecc-action/index.html">FeccAction</a><span class="token operator"> = </span>FeccAction.UNKNOWN<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>movement<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-fecc-movement/index.html">FeccMovement</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span> : <a href="../../../sdk-api/com.pexip.sdk.api/-event/index.html">Event</a></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="kotlinx.serialization/Serializable///PointingToDeclaration/"><span class="token annotation builtin">Serializable</span></span></div></div><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">FeccEvent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>action<span class="token operator">: </span><a href="../-fecc-action/index.html">FeccAction</a><span class="token operator"> = </span>FeccAction.UNKNOWN<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>movement<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-fecc-movement/index.html">FeccMovement</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span> : <a href="../../../sdk-api/com.pexip.sdk.api/-event/index.html">Event</a></div></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
     <div class="tabs-section-body">
-      <h2 class="tabbedcontent">Constructors</h2>
-      <div class="table" data-togglable="Constructors"><a data-name="2118059600%2FConstructors%2F-663017702" anchor-label="FeccEvent" id="2118059600%2FConstructors%2F-663017702" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main"></a>
-        <div class="table-row" data-filterable-current=":sdk-api-infinity:dokkaHtmlPartial/main" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main">
-          <div class="main-subrow keyValue TabbedContent">
-            <div class=""><span class="inline-flex">
-                <div><a href="-fecc-event.html"><span>Fecc</span><wbr><span><span>Event</span></span></a></div>
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="2118059600%2FConstructors%2F-663017702" anchor-label="FeccEvent" id="2118059600%2FConstructors%2F-663017702" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":sdk-api-infinity:dokkaHtmlPartial/main" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-fecc-event.html"><span>Fecc</span><wbr><span><span>Event</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2118059600%2FConstructors%2F-663017702"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-fecc-event.html"><span class="token function">FeccEvent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">action<span class="token operator">: </span><a href="../-fecc-action/index.html">FeccAction</a><span class="token operator"> = </span>FeccAction.UNKNOWN<span class="token punctuation">, </span></span><span class="parameter ">timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">movement<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-fecc-movement/index.html">FeccMovement</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">action<span class="token operator">: </span><a href="../-fecc-action/index.html">FeccAction</a><span class="token operator"> = </span>FeccAction.UNKNOWN<span class="token punctuation">, </span></span><span class="parameter ">timeout<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter ">movement<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-fecc-movement/index.html">FeccMovement</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <h2 class="">Properties</h2>
-      <div class="table" data-togglable="Properties"><a data-name="1777594277%2FProperties%2F-663017702" anchor-label="action" id="1777594277%2FProperties%2F-663017702" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main"></a>
-        <div class="table-row" data-filterable-current=":sdk-api-infinity:dokkaHtmlPartial/main" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="action.html"><span><span>action</span></span></a></div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1777594277%2FProperties%2F-663017702" anchor-label="action" id="1777594277%2FProperties%2F-663017702" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api-infinity:dokkaHtmlPartial/main" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="action.html"><span><span>action</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1777594277%2FProperties%2F-663017702"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><a data-name="1777594277%2FProperties%2F-663017702" anchor-label="action" id="1777594277%2FProperties%2F-663017702" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="action.html">action</a><span class="token operator">: </span><a href="../-fecc-action/index.html">FeccAction</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="action.html">action</a><span class="token operator">: </span><a href="../-fecc-action/index.html">FeccAction</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-253421620%2FProperties%2F-663017702" anchor-label="movement" id="-253421620%2FProperties%2F-663017702" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main"></a>
-        <div class="table-row" data-filterable-current=":sdk-api-infinity:dokkaHtmlPartial/main" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="movement.html"><span><span>movement</span></span></a></div>
+          <div class="table-row" data-filterable-current=":sdk-api-infinity:dokkaHtmlPartial/main" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="movement.html"><span><span>movement</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-253421620%2FProperties%2F-663017702"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><a data-name="-253421620%2FProperties%2F-663017702" anchor-label="movement" id="-253421620%2FProperties%2F-663017702" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="movement.html">movement</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-fecc-movement/index.html">FeccMovement</a><span class="token operator">&gt;</span></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="movement.html">movement</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-fecc-movement/index.html">FeccMovement</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 <a data-name="-1274601506%2FProperties%2F-663017702" anchor-label="timeout" id="-1274601506%2FProperties%2F-663017702" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main"></a>
-        <div class="table-row" data-filterable-current=":sdk-api-infinity:dokkaHtmlPartial/main" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="timeout.html"><span><span>timeout</span></span></a></div>
+          <div class="table-row" data-filterable-current=":sdk-api-infinity:dokkaHtmlPartial/main" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="timeout.html"><span><span>timeout</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1274601506%2FProperties%2F-663017702"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><a data-name="-1274601506%2FProperties%2F-663017702" anchor-label="timeout" id="-1274601506%2FProperties%2F-663017702" data-filterable-set=":sdk-api-infinity:dokkaHtmlPartial/main"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="timeout.html">timeout</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api-infinity:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="timeout.html">timeout</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -123,10 +130,10 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2022 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2023 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
     </div>
 </div>
-
-</body></html>
+</body>
+</html>
 

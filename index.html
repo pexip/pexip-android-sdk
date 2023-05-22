@@ -38,11 +38,11 @@
     <div id="leftToggler"><span class="icon-toggler"></span></div>
     <div class="library-name">
             <a href="index.html">
-                    <span>sdk</span>
+                    <span>pexip-android-sdk</span>
             </a>
     </div>
     <div>
-0.11.0    </div>
+0.12.0    </div>
     <div class="pull-right d-flex">
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
@@ -53,7 +53,7 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" id="content" pageIds="sdk::.ext/allModules///PointingToDeclaration//0">
+<div class="main-content" id="content" pageIds="pexip-android-sdk::.ext/allModules///PointingToDeclaration//0">
   <div class="breadcrumbs"></div>
   <div class="cover ">
     <div class="cover ">
@@ -70,13 +70,13 @@
         </span></div>
       <p class="paragraph">And add modules that you need:</p>
       <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">dependencies {<br>    // A fluent wrapper for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-infinity:0.11.0&quot;)<br>    // A set of tools for interacting with an Infinity conference<br>    implementation(&quot;com.pexip.sdk:sdk-conference-infinity:0.11.0&quot;)<br>    // A set of tools for interacting with an Infinity registration<br>    implementation(&quot;com.pexip.sdk:sdk-registration-infinity:0.11.0&quot;)<br>    // A `MediaConnection` implementation build on top of WebRTC<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc:0.11.0&quot;)<br>    // A set of extensions that add coroutines support for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-coroutines:0.11.0&quot;)<br>    // A set of extensions that add coroutines support for Conference object<br>    implementation(&quot;com.pexip.sdk:sdk-conference-coroutines:0.11.0&quot;)<br>    // A set of extensions that add coroutines support for Registration object<br>    implementation(&quot;com.pexip.sdk:sdk-registration-coroutines:0.11.0&quot;)<br>    // A set of extensions that add coroutines support for MediaConnection object<br>    implementation(&quot;com.pexip.sdk:sdk-media-coroutines:0.11.0&quot;)<br>    // A composable that wraps SurfaceViewRenderer<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc-compose:0.11.0&quot;)<br>}</code></pre>
+        <pre><code class="block lang-kotlin" theme="idea">dependencies {<br>    // A fluent wrapper for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-infinity:0.12.0&quot;)<br>    // A set of tools for interacting with an Infinity conference<br>    implementation(&quot;com.pexip.sdk:sdk-conference-infinity:0.12.0&quot;)<br>    // A set of tools for interacting with an Infinity registration<br>    implementation(&quot;com.pexip.sdk:sdk-registration-infinity:0.12.0&quot;)<br>    // A `MediaConnection` implementation build on top of WebRTC<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc:0.12.0&quot;)<br>    // A set of extensions that add coroutines support for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-coroutines:0.12.0&quot;)<br>    // A set of extensions that add coroutines support for Conference object<br>    implementation(&quot;com.pexip.sdk:sdk-conference-coroutines:0.12.0&quot;)<br>    // A set of extensions that add coroutines support for Registration object<br>    implementation(&quot;com.pexip.sdk:sdk-registration-coroutines:0.12.0&quot;)<br>    // A set of extensions that add coroutines support for MediaConnection object<br>    implementation(&quot;com.pexip.sdk:sdk-media-coroutines:0.12.0&quot;)<br>    // A composable that wraps SurfaceViewRenderer<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc-compose:0.12.0&quot;)<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
       <p class="paragraph">We also publish a <a href="https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog">Version Catalog</a> that can be consumed as follows:</p>
       <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">// settings.gradle.kts<br>enableFeaturePreview(&quot;VERSION_CATALOGS&quot;)<br><br>dependencyResolutionManagement {<br>    repositories {<br>        mavenCentral()<br>    }<br>    versionCatalogs {<br>        register(&quot;pexipSdk&quot;) {<br>            from(&quot;com.pexip.sdk:sdk-catalog:0.11.0&quot;)<br>        }<br>    }<br>}<br>// build.gradle.kts<br>dependencies {<br>    implementation(pexipSdk.api.infinity)<br>}</code></pre>
+        <pre><code class="block lang-kotlin" theme="idea">// settings.gradle.kts<br>enableFeaturePreview(&quot;VERSION_CATALOGS&quot;)<br><br>dependencyResolutionManagement {<br>    repositories {<br>        mavenCentral()<br>    }<br>    versionCatalogs {<br>        register(&quot;pexipSdk&quot;) {<br>            from(&quot;com.pexip.sdk:sdk-catalog:0.12.0&quot;)<br>        }<br>    }<br>}<br>// build.gradle.kts<br>dependencies {<br>    implementation(pexipSdk.api.infinity)<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
@@ -89,7 +89,7 @@
       <h2 class=""> Requirements</h2>
       <ul>
         <li>
-          <p class="paragraph">JDK 8</p>
+          <p class="paragraph">JDK 11</p>
         </li>
         <li>
           <p class="paragraph">Android SDK 21+</p>
@@ -315,7 +315,7 @@
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2022 Pexip® AS, All rights reserved.</span><span
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2023 Pexip® AS, All rights reserved.</span><span
                 class="pull-right"><span>Generated by </span><a
                 href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
