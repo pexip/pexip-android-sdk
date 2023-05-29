@@ -22,14 +22,14 @@ spotless {
         ratchetFrom = "origin/main"
         target("**/*.kt")
         targetExclude("**/build/**")
-        ktlint(libs.versions.ktlint.get())
+        ktlint()
         licenseHeaderFile("LICENSE_HEADER")
     }
     kotlinGradle {
         ratchetFrom = "origin/main"
         target("**/*.gradle.kts")
         targetExclude("**/build/**")
-        ktlint(libs.versions.ktlint.get())
+        ktlint()
     }
     format("misc") {
         target(".gitignore", "*.md")
