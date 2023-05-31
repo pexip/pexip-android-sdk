@@ -55,13 +55,6 @@ public class InfinityConference private constructor(
         source.unregisterConferenceEventListener(listener)
     }
 
-    @Deprecated(
-        message = "Use MediaConnection.dtmf() instead.",
-        level = DeprecationLevel.ERROR,
-    )
-    override fun dtmf(digits: String) {
-    }
-
     @Deprecated("Use Conference.messenger.send() instead.")
     override fun message(payload: String) {
         messenger.send(

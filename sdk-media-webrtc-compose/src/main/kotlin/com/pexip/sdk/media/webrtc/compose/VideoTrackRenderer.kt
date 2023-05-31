@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 Pexip AS
+ * Copyright 2021-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.webrtc.SurfaceViewRenderer
-import org.webrtc.EglBase
 import org.webrtc.GlRectDrawer
 
 /**
@@ -79,24 +78,4 @@ public fun VideoTrackRenderer(
         },
         modifier = modifier,
     )
-}
-
-@Deprecated(
-    message = "Use EglBase.Context-less version and use LocalEglBase to provide an EglBase instance.",
-    replaceWith = ReplaceWith(
-        expression = "VideoTrackRenderer(videoTrack, modifier, mirror)",
-        imports = ["com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer"],
-    ),
-    level = DeprecationLevel.ERROR,
-)
-@Composable
-public fun VideoTrackRenderer(
-    sharedContext: EglBase.Context?,
-    videoTrack: VideoTrack?,
-    modifier: Modifier = Modifier,
-    mirror: Boolean = false,
-    zOrderMediaOverlay: Boolean = false,
-    zOrderOnTop: Boolean = false,
-    configAttributes: IntArray = LocalEglBaseConfigAttributes.current,
-) {
 }

@@ -44,17 +44,6 @@ public interface Conference : MediaConnectionSignaling {
     public fun unregisterConferenceEventListener(listener: ConferenceEventListener)
 
     /**
-     * Sends DTMF digits to this [Conference].
-     *
-     * @param digits a sequence of valid DTMF digits
-     */
-    @Deprecated(
-        message = "Use MediaConnection.dtmf() instead.",
-        level = DeprecationLevel.ERROR,
-    )
-    public fun dtmf(digits: String)
-
-    /**
      * Sends a plain text message to this [Conference].
      *
      * @param payload a plain text message

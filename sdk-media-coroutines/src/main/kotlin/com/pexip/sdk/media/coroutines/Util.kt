@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,10 @@ public suspend fun CameraVideoTrack.switchCamera(deviceName: String? = null): St
                 it.resume(deviceName)
             }
 
-            @Deprecated("Use onSuccess that contains deviceName as an argument.")
+            @Deprecated(
+                "Use onSuccess that contains deviceName as an argument.",
+                level = DeprecationLevel.ERROR,
+            )
             override fun onSuccess(front: Boolean) {
             }
 

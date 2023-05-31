@@ -5,6 +5,5 @@ public final class com/pexip/sdk/media/webrtc/compose/CompositionLocalsKt {
 
 public final class com/pexip/sdk/media/webrtc/compose/VideoTrackRendererKt {
 	public static final fun VideoTrackRenderer (Lcom/pexip/sdk/media/VideoTrack;Landroidx/compose/ui/Modifier;ZZZLandroidx/compose/runtime/Composer;II)V
-	public static final fun VideoTrackRenderer (Lorg/webrtc/EglBase$Context;Lcom/pexip/sdk/media/VideoTrack;Landroidx/compose/ui/Modifier;ZZZ[ILandroidx/compose/runtime/Composer;II)V
 }
 

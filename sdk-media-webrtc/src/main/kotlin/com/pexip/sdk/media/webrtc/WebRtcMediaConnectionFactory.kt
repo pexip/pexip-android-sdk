@@ -67,7 +67,10 @@ public class WebRtcMediaConnectionFactory private constructor(
     CameraVideoTrackFactory,
     MediaProjectionVideoTrackFactory {
 
-    @Deprecated("Use WebRtcMediaConnectionFactory.Builder instead.")
+    @Deprecated(
+        message = "Use WebRtcMediaConnectionFactory.Builder instead.",
+        level = DeprecationLevel.ERROR,
+    )
     @JvmOverloads
     public constructor(
         context: Context,
@@ -124,33 +127,20 @@ public class WebRtcMediaConnectionFactory private constructor(
         )
     }
 
-    @Deprecated("Use createCameraVideoTrack() that also accepts a Callback.")
+    @Deprecated(
+        message = "Use createCameraVideoTrack() that also accepts a Callback.",
+        level = DeprecationLevel.ERROR,
+    )
     override fun createCameraVideoTrack(): CameraVideoTrack {
-        checkNotDisposed()
-        val deviceNames = cameraEnumerator.deviceNames
-        val deviceName = deviceNames.firstOrNull(cameraEnumerator::isFrontFacing)
-            ?: deviceNames.firstOrNull(cameraEnumerator::isBackFacing)
-            ?: deviceNames.firstOrNull()
-        return createCameraVideoTrack(checkNotNull(deviceName) { "No available camera." })
+        throw UnsupportedOperationException()
     }
 
-    @Deprecated("Use createCameraVideoTrack() that also accepts a Callback.")
+    @Deprecated(
+        message = "Use createCameraVideoTrack() that also accepts a Callback.",
+        level = DeprecationLevel.ERROR,
+    )
     override fun createCameraVideoTrack(deviceName: String): CameraVideoTrack {
-        checkNotDisposed()
-        checkDeviceName(deviceName)
-        val videoCapturer = cameraEnumerator.createCapturer(deviceName, null)
-        val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
-        return WebRtcCameraVideoTrack(
-            factory = this,
-            applicationContext = applicationContext,
-            eglBase = eglBase,
-            deviceName = deviceName,
-            videoCapturer = videoCapturer,
-            videoSource = videoSource,
-            videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            workerExecutor = workerExecutor,
-            signalingExecutor = signalingExecutor,
-        )
+        throw UnsupportedOperationException()
     }
 
     override fun createCameraVideoTrack(callback: CameraVideoTrack.Callback): CameraVideoTrack {

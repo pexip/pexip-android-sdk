@@ -1,5 +1,4 @@
 public abstract interface class com/pexip/sdk/conference/Conference : com/pexip/sdk/media/MediaConnectionSignaling {
-	public abstract fun dtmf (Ljava/lang/String;)V
 	public abstract fun getMessenger ()Lcom/pexip/sdk/conference/Messenger;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun leave ()V
