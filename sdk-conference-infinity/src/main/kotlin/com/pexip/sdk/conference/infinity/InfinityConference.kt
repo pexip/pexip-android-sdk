@@ -37,6 +37,7 @@ import com.pexip.sdk.media.MediaConnectionSignaling
 import java.net.URL
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.logging.Logger
 
 public class InfinityConference private constructor(
     override val name: String,
@@ -106,6 +107,16 @@ public class InfinityConference private constructor(
             step: InfinityService.ConferenceStep,
             response: RequestTokenResponse,
         ): InfinityConference {
+            if (response.version.versionId < "29") {
+                val logger = Logger.getLogger("InfinityConference")
+                val msg = buildString {
+                    append("Infinity ")
+                    append(response.version.versionId)
+                    append(" is not officially supported by the SDK.")
+                    append(" Please upgrade your Infinity deployment to 29 or newer.")
+                }
+                logger.warning(msg)
+            }
             val store = TokenStore.create(response)
             val participantStep = step.participant(response.participantId)
             val executor = Executors.newSingleThreadScheduledExecutor()

@@ -87,11 +87,13 @@ repositories {
 
 * JDK 11
 * Android SDK 21+
+* Pexip Infinity 29+
 
 ## WebRTC versions
 
 | SDK version | WebRTC Milestone |
 |-------------|------------------|
+| 0.12.0+     | 110              |
 | 0.10.0+     | 104              |
 | 0.7.0+      | 102              |
 | 0.1.0+      | 96               |
