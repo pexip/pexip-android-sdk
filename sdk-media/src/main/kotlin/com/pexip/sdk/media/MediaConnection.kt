@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +97,24 @@ public interface MediaConnection {
      * @param bitrate a bitrate to set as maximum
      */
     public fun setMaxBitrate(bitrate: Bitrate)
+
+    /**
+     * Sets the [DegradationPreference] for main video stream.
+     *
+     * If supported, implementations should set [DegradationPreference.BALANCED] as the default.
+     *
+     * @param preference a degradation preference
+     */
+    public fun setMainDegradationPreference(preference: DegradationPreference)
+
+    /**
+     * Sets the [DegradationPreference] for presentation video stream.
+     *
+     * If supported, implementations should set [DegradationPreference.BALANCED] as the default.
+     *
+     * @param preference a degradation preference
+     */
+    public fun setPresentationDegradationPreference(preference: DegradationPreference)
 
     /**
      * Allows this [MediaConnection] to receive ongoing remote presentation.

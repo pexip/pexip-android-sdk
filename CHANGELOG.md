@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `DegradationPreference` API that lets one specify the desired behavior in low bandwidth conditions
+
 ## [0.12.0] - 2023-05-22
 
 ### Added

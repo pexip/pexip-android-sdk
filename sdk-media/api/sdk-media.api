@@ -95,6 +95,15 @@ public abstract interface class com/pexip/sdk/media/CameraVideoTrackFactory {
 	public abstract fun isFrontFacing (Ljava/lang/String;)Z
 }
 
+public final class com/pexip/sdk/media/DegradationPreference : java/lang/Enum {
+	public static final field BALANCED Lcom/pexip/sdk/media/DegradationPreference;
+	public static final field DISABLED Lcom/pexip/sdk/media/DegradationPreference;
+	public static final field MAINTAIN_FRAMERATE Lcom/pexip/sdk/media/DegradationPreference;
+	public static final field MAINTAIN_RESOLUTION Lcom/pexip/sdk/media/DegradationPreference;
+	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/media/DegradationPreference;
+	public static fun values ()[Lcom/pexip/sdk/media/DegradationPreference;
+}
+
 public final class com/pexip/sdk/media/IceServer {
 	public synthetic fun <init> (Ljava/util/Collection;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getPassword ()Ljava/lang/String;
@@ -142,10 +151,12 @@ public abstract interface class com/pexip/sdk/media/MediaConnection {
 	public abstract fun registerMainRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
 	public abstract fun registerPresentationRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
 	public abstract fun setMainAudioTrack (Lcom/pexip/sdk/media/LocalAudioTrack;)V
+	public abstract fun setMainDegradationPreference (Lcom/pexip/sdk/media/DegradationPreference;)V
 	public abstract fun setMainRemoteAudioTrackEnabled (Z)V
 	public abstract fun setMainRemoteVideoTrackEnabled (Z)V
 	public abstract fun setMainVideoTrack (Lcom/pexip/sdk/media/LocalVideoTrack;)V
 	public abstract fun setMaxBitrate-8YD4EQA (I)V
+	public abstract fun setPresentationDegradationPreference (Lcom/pexip/sdk/media/DegradationPreference;)V
 	public abstract fun setPresentationRemoteVideoTrackEnabled (Z)V
 	public abstract fun setPresentationVideoTrack (Lcom/pexip/sdk/media/LocalVideoTrack;)V
 	public abstract fun start ()V
