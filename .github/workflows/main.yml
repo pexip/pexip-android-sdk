@@ -46,7 +46,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
       - uses: snyk/actions/setup@master
       - uses: actions/setup-java@v3
         with:
@@ -71,7 +71,7 @@ jobs:
   snyk_monitor:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
       - uses: snyk/actions/setup@master
       - uses: actions/setup-java@v3
         with:
