@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,10 @@ public interface CameraVideoTrack : LocalVideoTrack {
          *
          * @param front true if the newly switched camera is front-facing, false otherwise
          */
-        @Deprecated("Use onSuccess that contains deviceName as an argument.")
+        @Deprecated(
+            message = "Use onSuccess that contains deviceName as an argument.",
+            level = DeprecationLevel.ERROR,
+        )
         public fun onSuccess(front: Boolean)
 
         /**

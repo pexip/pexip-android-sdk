@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,6 @@ internal class WebRtcCameraVideoTrack(
                     this@WebRtcCameraVideoTrack.deviceName = deviceName
                     signalingExecutor.maybeExecute {
                         callback.safeOnSuccess(deviceName)
-                        callback.safeOnSuccess(front)
                     }
                 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,10 @@ public interface CameraVideoTrackFactory {
      * @throws IllegalStateException if no camera is available
      * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
      */
-    @Deprecated("Use createCameraVideoTrack() that also accepts a Callback.")
+    @Deprecated(
+        message = "Use createCameraVideoTrack() that also accepts a Callback.",
+        level = DeprecationLevel.ERROR,
+    )
     public fun createCameraVideoTrack(): CameraVideoTrack
 
     /**
@@ -68,7 +71,10 @@ public interface CameraVideoTrackFactory {
      * @throws IllegalStateException if [deviceName] is not available
      * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
      */
-    @Deprecated("Use createCameraVideoTrack() that also accepts a Callback.")
+    @Deprecated(
+        message = "Use createCameraVideoTrack() that also accepts a Callback.",
+        level = DeprecationLevel.ERROR,
+    )
     public fun createCameraVideoTrack(deviceName: String): CameraVideoTrack
 
     /**

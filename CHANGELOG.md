@@ -11,6 +11,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - `DegradationPreference` API that lets one specify the desired behavior in low bandwidth conditions
 
+### Changed
+
+- Various deprecated methods `DeprecationLevel` to `DeprecationLevel.ERROR`
+
+### Removed
+
+- Various deprecated methods with `DeprecationLevel.ERROR`
+
 ## [0.12.0] - 2023-05-22
 
 ### Added

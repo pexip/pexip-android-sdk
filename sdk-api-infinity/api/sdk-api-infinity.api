@@ -537,7 +537,6 @@ public abstract interface class com/pexip/sdk/api/infinity/NodeResolver {
 	public static fun create ()Lcom/pexip/sdk/api/infinity/NodeResolver;
 	public static fun create (Lorg/minidns/hla/ResolverApi;)Lcom/pexip/sdk/api/infinity/NodeResolver;
 	public static fun create (Z)Lcom/pexip/sdk/api/infinity/NodeResolver;
-	public static fun initialize (Ljava/lang/Object;)V
 	public abstract fun resolve (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 }
 
@@ -546,7 +545,6 @@ public final class com/pexip/sdk/api/infinity/NodeResolver$Companion {
 	public final fun create (Lorg/minidns/hla/ResolverApi;)Lcom/pexip/sdk/api/infinity/NodeResolver;
 	public final fun create (Z)Lcom/pexip/sdk/api/infinity/NodeResolver;
 	public static synthetic fun create$default (Lcom/pexip/sdk/api/infinity/NodeResolver$Companion;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/NodeResolver;
-	public final fun initialize (Ljava/lang/Object;)V
 }
 
 public final class com/pexip/sdk/api/infinity/PresentationStartEvent : com/pexip/sdk/api/Event {

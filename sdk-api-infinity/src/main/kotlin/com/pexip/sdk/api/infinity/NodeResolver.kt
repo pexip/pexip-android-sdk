@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,6 @@ public fun interface NodeResolver {
     public fun resolve(host: String): Call<List<URL>>
 
     public companion object {
-
-        @Deprecated(
-            message = "Use AndroidUsingLinkProperties.setup(context) in org.minidns:minidns-android21 instead.",
-            level = DeprecationLevel.ERROR,
-        )
-        @JvmStatic
-        public fun initialize(context: Any) {
-        }
 
         @JvmStatic
         @JvmOverloads

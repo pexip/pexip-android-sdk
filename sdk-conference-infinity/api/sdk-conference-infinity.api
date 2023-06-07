@@ -3,7 +3,6 @@ public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pe
 	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/conference/Messenger;Lcom/pexip/sdk/conference/infinity/internal/ConferenceEventSource;Lcom/pexip/sdk/api/infinity/TokenRefresher;Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/concurrent/ScheduledExecutorService;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
 	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService;Ljava/net/URL;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
-	public fun dtmf (Ljava/lang/String;)V
 	public fun getIceServers ()Ljava/util/List;
 	public fun getMessenger ()Lcom/pexip/sdk/conference/Messenger;
 	public fun getName ()Ljava/lang/String;
