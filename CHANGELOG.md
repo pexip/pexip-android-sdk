@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `DegradationPreference` API that lets one specify the desired behavior in low bandwidth conditions
+
 ## [0.12.0] - 2023-05-22
 
 ### Added
@@ -212,17 +216,31 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Initial release
 
 [Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.12.0...HEAD
+
 [0.12.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.12.0
+
 [0.11.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.11.0
+
 [0.10.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.10.0
+
 [0.9.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.9.0
+
 [0.8.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.8.0
+
 [0.7.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.7.1
+
 [0.7.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.7.0
+
 [0.6.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.6.0
+
 [0.5.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.5.0
+
 [0.4.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.4.1
+
 [0.4.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.4.0
+
 [0.3.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.3.0
+
 [0.2.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.2.0
+
 [0.1.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.1.0
