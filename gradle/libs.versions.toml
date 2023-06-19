@@ -22,7 +22,7 @@ okio = "3.3.0"
 spotless = "6.19.0"
 turbine = "0.13.0"
 webrtc = "110.0.0"
-wire = "4.7.0"
+wire = "4.7.2"
 workflow = "1.7.1"
 
 [libraries]
