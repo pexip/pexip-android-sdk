@@ -16,8 +16,7 @@
 package com.pexip.sdk.sample.settings
 
 import androidx.datastore.core.DataStoreFactory
-import app.cash.turbine.testIn
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import app.cash.turbine.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -41,16 +40,16 @@ class SettingsStoreTest {
         store = SettingsStore(dataStore)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `setDisplayName updates display_name`() = runTest {
-        val turbine = store.getDisplayName().testIn(this)
-        assertEquals("", turbine.awaitItem())
-        repeat(10) {
-            val displayName = "   $it  "
-            store.setDisplayName(displayName)
-            assertEquals(displayName.trim(), turbine.awaitItem())
+        store.getDisplayName().test {
+            assertEquals("", awaitItem())
+            repeat(10) {
+                val displayName = "   $it  "
+                store.setDisplayName(displayName)
+                assertEquals(displayName.trim(), awaitItem())
+            }
+            cancelAndIgnoreRemainingEvents()
         }
-        turbine.cancelAndIgnoreRemainingEvents()
     }
 }
