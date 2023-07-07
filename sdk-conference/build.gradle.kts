@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     api(project(":sdk-media"))
+    api(libs.kotlinx.coroutines.core)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {

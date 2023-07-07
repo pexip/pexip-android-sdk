@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
     api(project(":sdk-conference"))
-    api(libs.kotlinx.coroutines.core)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
