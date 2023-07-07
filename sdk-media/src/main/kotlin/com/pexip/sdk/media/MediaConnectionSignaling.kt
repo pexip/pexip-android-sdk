@@ -42,6 +42,11 @@ public interface MediaConnectionSignaling {
     ): String
 
     /**
+     * Invoked when offer is set and the connection is ready to accept media.
+     */
+    public fun onAck()
+
+    /**
      * Invoked when a new ICE candidate is available.
      *
      * @param candidate an ICE candidate

@@ -195,6 +195,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionFactory : com
 
 public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
 	public abstract fun getIceServers ()Ljava/util/List;
+	public abstract fun onAck ()V
 	public abstract fun onAudioMuted ()V
 	public abstract fun onAudioUnmuted ()V
 	public abstract fun onCandidate (Ljava/lang/String;Ljava/lang/String;)V

@@ -152,6 +152,27 @@ internal class RealMediaConnectionSignalingTest {
     }
 
     @Test
+    fun `onAck() returns`() {
+        var called = false
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {},
+            iceServers = iceServers,
+        )
+        signaling.callStep = object : TestCallStep() {
+
+            override fun ack(token: String): Call<Unit> = object : TestCall<Unit> {
+
+                override fun execute() {
+                    called = true
+                }
+            }
+        }
+        signaling.onAck()
+        assertTrue(called)
+    }
+
+    @Test
     fun `onCandidate() returns`() {
         var called = false
         val candidate =

@@ -52,7 +52,6 @@ internal class RealMediaConnectionSignaling(
                 )
                 val response = participantStep.calls(request, token).execute()
                 callStep = participantStep.call(response.callId)
-                callStep!!.ack(token).execute()
                 response.sdp
             }
             else -> {
@@ -64,6 +63,12 @@ internal class RealMediaConnectionSignaling(
                 response.sdp
             }
         }
+    }
+
+    override fun onAck() {
+        val callStep = checkNotNull(callStep) { "callStep is not set." }
+        val token = store.get()
+        callStep.ack(token).execute()
     }
 
     override fun onCandidate(candidate: String, mid: String) {

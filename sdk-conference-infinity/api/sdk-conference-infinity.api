@@ -8,6 +8,7 @@ public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pe
 	public fun getName ()Ljava/lang/String;
 	public fun leave ()V
 	public fun message (Ljava/lang/String;)V
+	public fun onAck ()V
 	public fun onAudioMuted ()V
 	public fun onAudioUnmuted ()V
 	public fun onCandidate (Ljava/lang/String;Ljava/lang/String;)V
