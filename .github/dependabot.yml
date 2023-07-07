@@ -16,9 +16,13 @@ updates:
       prefix: "feat"
       include: "scope"
     registries:
+      - maven-gradle
       - maven-google
 
 registries:
+  maven-gradle:
+    type: maven-repository
+    url: "https://plugins.gradle.org/m2/"
   maven-google:
     type: maven-repository
     url: "https://dl.google.com/dl/android/maven2/"
