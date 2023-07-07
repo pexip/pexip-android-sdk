@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,12 @@
  */
 package com.pexip.sdk.registration
 
-/**
- * A registered device.
- *
- * @property alias a unique alias assigned to this device
- * @property description a human-readable description of this device, may be blank
- * @property username a username that this device belongs to, may be blank
- */
-public data class RegisteredDevice(
-    val alias: String,
-    val description: String,
-    val username: String,
-)
+public fun interface RegistrationEventListener {
+
+    /**
+     * Invoked when a new [RegistrationEvent] is received.
+     *
+     * @param event a registration event
+     */
+    public fun onRegistrationEvent(event: RegistrationEvent)
+}

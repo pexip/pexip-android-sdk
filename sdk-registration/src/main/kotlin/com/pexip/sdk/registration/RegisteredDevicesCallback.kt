@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,20 @@
  */
 package com.pexip.sdk.registration
 
-public sealed interface RegistrationEvent {
+public interface RegisteredDevicesCallback {
 
-    public val at: Long
+    /**
+     * Invoked for a received list of registered devices.
+     *
+     * @param devices a list of registered devices
+     */
+    public fun onSuccess(devices: List<RegisteredDevice>)
+
+    /**
+     * Invoked when a network exception occurred when fetching the list or an unexpected exception
+     * occurred.
+     *
+     * @param t an exception that occurred
+     */
+    public fun onFailure(t: Throwable)
 }
-
-public data class IncomingRegistrationEvent(
-    override val at: Long,
-    val conferenceAlias: String,
-    val remoteDisplayName: String,
-    val token: String,
-) : RegistrationEvent
-
-public data class IncomingCancelledRegistrationEvent(
-    override val at: Long,
-    val token: String,
-) : RegistrationEvent
-
-public data class FailureRegistrationEvent(
-    override val at: Long,
-    val t: Throwable,
-) : RegistrationEvent
