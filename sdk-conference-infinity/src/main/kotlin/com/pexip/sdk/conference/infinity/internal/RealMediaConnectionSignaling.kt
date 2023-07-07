@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ internal class RealMediaConnectionSignaling(
                 )
                 val response = participantStep.calls(request, token).execute()
                 callStep = participantStep.call(response.callId)
-                callStep!!.ack(token).execute()
                 response.sdp
             }
             else -> {
@@ -64,6 +63,12 @@ internal class RealMediaConnectionSignaling(
                 response.sdp
             }
         }
+    }
+
+    override fun onAck() {
+        val callStep = checkNotNull(callStep) { "callStep is not set." }
+        val token = store.get()
+        callStep.ack(token).execute()
     }
 
     override fun onCandidate(candidate: String, mid: String) {

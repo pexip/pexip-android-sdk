@@ -49,6 +49,7 @@ internal class WebRtcMediaConnection(
 
     private val started = AtomicBoolean()
     private val disposed = AtomicBoolean()
+    private val shouldAck = AtomicBoolean(true)
     private val shouldRenegotiate = AtomicBoolean()
     private val connection = factory.createPeerConnection(createRTCConfiguration(), this)
 
@@ -118,8 +119,7 @@ internal class WebRtcMediaConnection(
     private val remoteSdpObserver = object : SimpleSdpObserver {
 
         override fun onSetSuccess() {
-            mainAudioTrack?.let { onMainAudioCapturingChange(it.capturing) }
-            mainVideoTrack?.let { onMainVideoCapturingChange(it.capturing) }
+            onSetRemoteDescriptionSuccess()
         }
     }
     private val mainRemoteVideoTrackListeners =
@@ -399,6 +399,16 @@ internal class WebRtcMediaConnection(
                 }
             }
         }
+    }
+
+    private fun onSetRemoteDescriptionSuccess() {
+        if (shouldAck.compareAndSet(true, false)) {
+            networkExecutor.maybeExecute {
+                runCatching { config.signaling.onAck() }
+            }
+        }
+        mainAudioTrack?.let { onMainAudioCapturingChange(it.capturing) }
+        mainVideoTrack?.let { onMainVideoCapturingChange(it.capturing) }
     }
 
     private fun onCandidate(candidate: String, mid: String) {

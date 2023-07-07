@@ -14,10 +14,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Various deprecated methods `DeprecationLevel` to `DeprecationLevel.ERROR`
+- `ack` is now called later in the call setup phase
 
 ### Removed
 
 - Various deprecated methods with `DeprecationLevel.ERROR`
+- Read timeout on `ack`
 
 ## [0.12.0] - 2023-05-22
 

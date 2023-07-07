@@ -62,7 +62,6 @@ internal class RealMediaConnectionSignalingTest {
 
     @Test
     fun `onOffer() returns Answer (first call)`() {
-        var ackCalled = false
         val callType = Random.nextString(8)
         val sdp = read("session_description_original")
         val presentationInMix = Random.nextBoolean()
@@ -71,15 +70,7 @@ internal class RealMediaConnectionSignalingTest {
             callId = UUID.randomUUID(),
             sdp = Random.nextString(8),
         )
-        val callStep = object : TestCallStep() {
-
-            override fun ack(token: String): Call<Unit> = object : TestCall<Unit> {
-                override fun execute() {
-                    assertEquals(store.get().token, token)
-                    ackCalled = true
-                }
-            }
-        }
+        val callStep = object : TestCallStep() {}
         val participantStep = object : TestParticipantStep() {
 
             override fun calls(request: CallsRequest, token: String): Call<CallsResponse> =
@@ -114,7 +105,6 @@ internal class RealMediaConnectionSignalingTest {
         )
         assertEquals(callStep, signaling.callStep)
         assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
-        assertTrue(ackCalled)
     }
 
     @Test
@@ -149,6 +139,27 @@ internal class RealMediaConnectionSignalingTest {
             actual = response.sdp,
         )
         assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
+    }
+
+    @Test
+    fun `onAck() returns`() {
+        var called = false
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {},
+            iceServers = iceServers,
+        )
+        signaling.callStep = object : TestCallStep() {
+
+            override fun ack(token: String): Call<Unit> = object : TestCall<Unit> {
+
+                override fun execute() {
+                    called = true
+                }
+            }
+        }
+        signaling.onAck()
+        assertTrue(called)
     }
 
     @Test
