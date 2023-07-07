@@ -24,12 +24,15 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class KotlinAndroidLibraryPublishingPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
-            apply(KotlinAndroidLibraryPlugin::class)
+            apply(AndroidLibraryPlugin::class)
+            apply(KotlinAndroidPlugin::class)
             apply(KotlinDokkaPlugin::class)
             apply(LicenseePlugin::class)
             apply(PublishingPlugin::class)
@@ -49,6 +52,11 @@ class KotlinAndroidLibraryPublishingPlugin : Plugin<Project> {
                         from(components["release"])
                     }
                 }
+            }
+        }
+        tasks.withType<KotlinCompile>().configureEach {
+            compilerOptions {
+                freeCompilerArgs.add("-Xexplicit-api=strict")
             }
         }
     }
