@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import java.net.URL
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 internal class RealCallStep(
     private val client: OkHttpClient,
@@ -67,7 +68,9 @@ internal class RealCallStep(
     override fun ack(token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
-            client = client,
+            client = client.newBuilder()
+                .readTimeout(0, TimeUnit.SECONDS)
+                .build(),
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
                 .url(node) {
