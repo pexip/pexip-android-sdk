@@ -18,27 +18,17 @@ package com.pexip.sdk
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-class KotlinAndroidLibraryPlugin : Plugin<Project> {
+class KotlinAndroidPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
-        with(pluginManager) {
-            apply(AndroidLibraryPlugin::class)
-            apply("org.jetbrains.kotlin.android")
-        }
+        pluginManager.apply("org.jetbrains.kotlin.android")
         dependencies {
             "testImplementation"(kotlin("test-junit"))
             "androidTestImplementation"(kotlin("test-junit"))
-        }
-        tasks.withType<KotlinCompile>().configureEach {
-            compilerOptions {
-                freeCompilerArgs.add("-Xexplicit-api=strict")
-            }
         }
         tasks.withType<Test>().configureEach {
             systemProperty("kotlinx.coroutines.stacktrace.recovery", false)

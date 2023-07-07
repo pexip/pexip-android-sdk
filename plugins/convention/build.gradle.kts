@@ -12,13 +12,9 @@ gradlePlugin {
             id = "com.pexip.sdk.android.library"
             implementationClass = "com.pexip.sdk.AndroidLibraryPlugin"
         }
-        register("kotlinAndroidApplication") {
-            id = "com.pexip.sdk.kotlin.android.application"
-            implementationClass = "com.pexip.sdk.KotlinAndroidApplicationPlugin"
-        }
-        register("kotlinAndroidLibrary") {
-            id = "com.pexip.sdk.kotlin.android.library"
-            implementationClass = "com.pexip.sdk.KotlinAndroidLibraryPlugin"
+        register("kotlinAndroid") {
+            id = "com.pexip.sdk.kotlin.android"
+            implementationClass = "com.pexip.sdk.KotlinAndroidPlugin"
         }
         register("kotlinAndroidLibraryPublishing") {
             id = "com.pexip.sdk.kotlin.android.library.publishing"

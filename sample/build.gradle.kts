@@ -1,7 +1,8 @@
 @file:Suppress("UnstableApiUsage", "DSL_SCOPE_VIOLATION")
 
 plugins {
-    id("com.pexip.sdk.kotlin.android.application")
+    id("com.pexip.sdk.android.application")
+    id("com.pexip.sdk.kotlin.android")
     id("com.pexip.sdk.kotlin.kapt")
     id("com.pexip.sdk.licensee")
     alias(libs.plugins.dagger.hilt.android)
