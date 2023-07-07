@@ -26,3 +26,8 @@ public abstract interface class com/pexip/sdk/api/EventSourceListener {
 	public abstract fun onOpen (Lcom/pexip/sdk/api/EventSource;)V
 }
 
+public final class com/pexip/sdk/api/coroutines/CallUtilKt {
+	public static final fun asFlow (Lcom/pexip/sdk/api/EventSourceFactory;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun await (Lcom/pexip/sdk/api/Call;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
