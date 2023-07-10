@@ -25,14 +25,12 @@ import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import org.webrtc.IceCandidate
-import org.webrtc.MediaConstraints
 import org.webrtc.MediaStream
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
 import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
-import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executor
@@ -107,10 +105,6 @@ internal class WebRtcMediaConnection(
     private val mainAudioTransceiverLock = Any()
     private val mainVideoTransceiverLock = Any()
     private val localSdpObserver = object : SimpleSdpObserver {
-
-        override fun onCreateSuccess(description: SessionDescription) {
-            setLocalDescription(this, description)
-        }
 
         override fun onSetSuccess() {
             onSetLocalDescriptionSuccess()
@@ -274,7 +268,7 @@ internal class WebRtcMediaConnection(
 
     override fun start() {
         if (started.compareAndSet(false, true)) {
-            createOffer()
+            setLocalDescription()
         }
     }
 
@@ -322,9 +316,9 @@ internal class WebRtcMediaConnection(
 
     override fun onRenegotiationNeeded() {
         // Skip the first call to onRenegotiationNeeded() since it's called right after
-        // PeerConnection creation and we're still not ready to use createOffer()
+        // PeerConnection creation and we're still not ready to use setLocalDescription()
         if (shouldRenegotiate.compareAndSet(false, true)) return
-        createOffer()
+        setLocalDescription()
     }
 
     override fun onAddTrack(receiver: RtpReceiver, streams: Array<out MediaStream>) {
@@ -350,15 +344,9 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    private fun createOffer() {
+    private fun setLocalDescription() {
         workerExecutor.maybeExecuteUnlessDisposed {
-            connection.createOffer(localSdpObserver, MediaConstraints())
-        }
-    }
-
-    private fun setLocalDescription(observer: SdpObserver, description: SessionDescription) {
-        workerExecutor.maybeExecuteUnlessDisposed {
-            connection.setLocalDescription(observer, description)
+            connection.setLocalDescription(localSdpObserver)
         }
     }
 
