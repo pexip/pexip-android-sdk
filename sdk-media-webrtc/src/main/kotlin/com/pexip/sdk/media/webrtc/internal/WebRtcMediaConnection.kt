@@ -310,6 +310,13 @@ internal class WebRtcMediaConnection(
         presentationRemoteVideoTrackListeners -= listener
     }
 
+    override fun onStandardizedIceConnectionChange(newState: PeerConnection.IceConnectionState) {
+        if (newState != PeerConnection.IceConnectionState.FAILED) return
+        workerExecutor.maybeExecuteUnlessDisposed {
+            connection.restartIce()
+        }
+    }
+
     override fun onIceCandidate(candidate: IceCandidate) {
         onCandidate(candidate.sdp, candidate.sdpMid)
     }
