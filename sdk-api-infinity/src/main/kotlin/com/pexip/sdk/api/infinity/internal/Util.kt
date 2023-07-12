@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,12 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.okio.decodeFromBufferedSource
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import okhttp3.sse.EventSources
-import java.net.URL
 import java.util.UUID
 
 internal inline fun <reified T> Json.encodeToRequestBody(value: T) =
@@ -66,11 +64,10 @@ internal fun HttpUrl.Builder.registration(deviceAlias: String? = null): HttpUrl.
 }
 
 internal inline fun Request.Builder.url(
-    url: URL,
+    url: HttpUrl,
     block: HttpUrl.Builder.() -> Unit,
 ): Request.Builder {
-    val httpUrl = checkNotNull(url.toHttpUrlOrNull())
-    val builder = checkNotNull(httpUrl.newBuilder("/api/client/v2"))
+    val builder = checkNotNull(url.newBuilder("/api/client/v2"))
     return url(builder.apply(block).build())
 }
 

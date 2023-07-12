@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.net.URL
 
 internal class RealRequestBuilder(
     private val client: OkHttpClient,
     private val json: Json,
-    private val node: URL,
+    private val node: HttpUrl,
 ) : InfinityService.RequestBuilder {
 
     override fun status(): Call<Boolean> = RealCall(
