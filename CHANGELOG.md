@@ -21,6 +21,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `createOffer` to `setLocalDescription` that supports rollback
 - Usages of `java.net.URL` to `okhttp3.HttpUrl` internally
 
+### Fixed
+
+- Unnecessary network calls after `MediaConnection` has been disposed
+
 ### Removed
 
 - Various deprecated methods with `DeprecationLevel.ERROR`

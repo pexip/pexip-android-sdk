@@ -94,7 +94,6 @@ public class WebRtcMediaConnectionFactory private constructor(
         .setVideoEncoderFactory(videoEncoderFactory)
         .createPeerConnectionFactory()
     private val workerExecutor = Executors.newSingleThreadExecutor()
-    private val networkExecutor = Executors.newSingleThreadExecutor()
     private val signalingExecutor = ContextCompat.getMainExecutor(applicationContext)
 
     override fun getDeviceNames(): List<String> = cameraEnumerator.deviceNames.toList()
@@ -212,7 +211,6 @@ public class WebRtcMediaConnectionFactory private constructor(
             factory = this,
             config = config,
             workerExecutor = workerExecutor,
-            networkExecutor = networkExecutor,
             signalingExecutor = signalingExecutor,
         )
     }
@@ -224,7 +222,6 @@ public class WebRtcMediaConnectionFactory private constructor(
                 audioDeviceModule.release()
             }
             workerExecutor.shutdown()
-            networkExecutor.shutdown()
         } else {
             throw IllegalStateException("WebRtcMediaConnectionFactory has been disposed!")
         }

@@ -34,6 +34,7 @@ import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
@@ -41,7 +42,6 @@ internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
     private val config: MediaConnectionConfig,
     private val workerExecutor: Executor,
-    private val networkExecutor: Executor,
     private val signalingExecutor: Executor,
 ) : MediaConnection, SimplePeerConnectionObserver {
 
@@ -49,6 +49,7 @@ internal class WebRtcMediaConnection(
     private val disposed = AtomicBoolean()
     private val shouldAck = AtomicBoolean(true)
     private val shouldRenegotiate = AtomicBoolean()
+    private val networkExecutor = Executors.newSingleThreadExecutor()
     private val connection = factory.createPeerConnection(createRTCConfiguration(), this)
 
     private var bitrate by Delegates.observable(0.bps) { _, old, new ->
@@ -291,6 +292,7 @@ internal class WebRtcMediaConnection(
                 presentationRemoteVideoTrackListeners.clear()
                 connection.dispose()
             }
+            networkExecutor.shutdown()
         }
     }
 
