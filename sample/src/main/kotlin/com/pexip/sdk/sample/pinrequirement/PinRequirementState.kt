@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,14 @@
  */
 package com.pexip.sdk.sample.pinrequirement
 
-import java.net.URL
+import com.pexip.sdk.api.infinity.InfinityService
 
 sealed class PinRequirementState {
 
     object ResolvingNode : PinRequirementState()
 
-    data class ResolvingPinRequirement(val node: URL) : PinRequirementState()
+    data class ResolvingPinRequirement(val builder: InfinityService.RequestBuilder) :
+        PinRequirementState()
 
     data class Failure(val t: Throwable) : PinRequirementState()
 }

@@ -16,7 +16,6 @@
 package com.pexip.sdk.sample.pinchallenge
 
 import com.pexip.sdk.api.coroutines.await
-import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.sample.send
@@ -28,10 +27,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PinChallengeWorkflow @Inject constructor(
-    private val store: SettingsStore,
-    private val service: InfinityService,
-) : StatefulWorkflow<PinChallengeProps, PinChallengeState, PinChallengeOutput, PinChallengeRendering>() {
+class PinChallengeWorkflow @Inject constructor(private val store: SettingsStore) :
+    StatefulWorkflow<PinChallengeProps, PinChallengeState, PinChallengeOutput, PinChallengeRendering>() {
 
     override fun initialState(props: PinChallengeProps, snapshot: Snapshot?): PinChallengeState =
         PinChallengeState()
@@ -68,7 +65,7 @@ class PinChallengeWorkflow @Inject constructor(
             val action = try {
                 val displayName = store.getDisplayName().first()
                 val request = RequestTokenRequest(displayName = displayName)
-                val response = service.newRequest(props.node)
+                val response = props.builder
                     .conference(props.conferenceAlias)
                     .requestToken(request, pinToSubmit)
                     .await()

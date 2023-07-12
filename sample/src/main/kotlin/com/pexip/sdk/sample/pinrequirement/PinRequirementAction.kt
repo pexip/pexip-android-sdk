@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,38 +15,38 @@
  */
 package com.pexip.sdk.sample.pinrequirement
 
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.squareup.workflow1.WorkflowAction
-import java.net.URL
 
 typealias PinRequirementAction = WorkflowAction<PinRequirementProps, PinRequirementState, PinRequirementOutput>
 
-data class OnNode(val node: URL) : PinRequirementAction() {
+data class OnNode(val builder: InfinityService.RequestBuilder) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        state = PinRequirementState.ResolvingPinRequirement(node)
+        state = PinRequirementState.ResolvingPinRequirement(builder)
     }
 }
 
 data class OnResponse(
-    val node: URL,
+    val builder: InfinityService.RequestBuilder,
     val conferenceAlias: String,
     val response: RequestTokenResponse,
 ) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        setOutput(PinRequirementOutput.None(node, conferenceAlias, response))
+        setOutput(PinRequirementOutput.None(builder, conferenceAlias, response))
     }
 }
 
 data class OnRequiredPin(
-    val node: URL,
+    val builder: InfinityService.RequestBuilder,
     val conferenceAlias: String,
     val required: Boolean,
 ) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        setOutput(PinRequirementOutput.Some(node, conferenceAlias, required))
+        setOutput(PinRequirementOutput.Some(builder, conferenceAlias, required))
     }
 }
 

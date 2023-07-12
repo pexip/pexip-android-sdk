@@ -56,7 +56,8 @@ class PinRequirementWorkflow @Inject constructor(
     private fun RenderContext.getNodeSideEffect(props: PinRequirementProps) =
         runningSideEffect(props.toString()) {
             val action = runCatching { resolver.resolve(props.host).await() }
-                .mapCatching { it.first { node -> service.newRequest(node).status().await() } }
+                .map { it.asSequence().map(service::newRequest) }
+                .mapCatching { it.first { builder -> builder.status().await() } }
                 .fold(::OnNode, ::OnError)
             actionSink.send(action)
         }
@@ -64,21 +65,21 @@ class PinRequirementWorkflow @Inject constructor(
     private fun RenderContext.getPinRequirementSideEffect(
         props: PinRequirementProps,
         state: PinRequirementState.ResolvingPinRequirement,
-    ) = runningSideEffect("${props.conferenceAlias}:${state.node}") {
+    ) = runningSideEffect("${props.conferenceAlias}:${state.builder}") {
         val action = runCatching { store.getDisplayName().first() }
             .mapCatching { RequestTokenRequest(displayName = it) }
             .mapCatching {
-                service.newRequest(state.node)
+                state.builder
                     .conference(props.conferenceAlias)
                     .requestToken(it)
                     .await()
             }
             .fold(
-                onSuccess = { OnResponse(state.node, props.conferenceAlias, it) },
+                onSuccess = { OnResponse(state.builder, props.conferenceAlias, it) },
                 onFailure = {
                     when (it) {
                         is RequiredPinException -> OnRequiredPin(
-                            node = state.node,
+                            builder = state.builder,
                             conferenceAlias = props.conferenceAlias,
                             required = it.guestPin,
                         )

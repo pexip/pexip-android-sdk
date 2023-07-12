@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 package com.pexip.sdk.sample
 
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalAudioTrack
-import java.net.URL
 
 data class SampleState(
     val destination: SampleDestination,
@@ -37,7 +37,7 @@ sealed interface SampleDestination {
     object Preflight : SampleDestination
 
     data class Conference(
-        val node: URL,
+        val builder: InfinityService.RequestBuilder,
         val conferenceAlias: String,
         val presentationInMain: Boolean,
         val response: RequestTokenResponse,

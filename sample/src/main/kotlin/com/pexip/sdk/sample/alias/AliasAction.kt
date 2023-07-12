@@ -68,13 +68,13 @@ data class OnPinRequirementOutput(val output: PinRequirementOutput) : AliasActio
         state = state.copy(pinRequirementProps = null)
         val output = when (output) {
             is PinRequirementOutput.None -> AliasOutput.Conference(
-                node = output.node,
+                builder = output.builder,
                 conferenceAlias = output.conferenceAlias,
                 presentationInMain = state.presentationInMain,
                 response = output.response,
             )
             is PinRequirementOutput.Some -> AliasOutput.PinChallenge(
-                node = output.node,
+                builder = output.builder,
                 conferenceAlias = output.conferenceAlias,
                 presentationInMain = state.presentationInMain,
                 required = output.required,
