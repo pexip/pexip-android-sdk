@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,13 @@ import com.pexip.sdk.api.infinity.DisconnectEvent
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
+import com.pexip.sdk.api.infinity.ReferEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
+import com.pexip.sdk.conference.ReferConferenceEvent
 
 internal inline fun ConferenceEvent(
     event: Event,
@@ -42,6 +44,11 @@ internal inline fun ConferenceEvent(
         participantName = event.participantName,
         type = event.type,
         payload = event.payload,
+    )
+    is ReferEvent -> ReferConferenceEvent(
+        at = at(),
+        conferenceAlias = event.conferenceAlias,
+        token = event.token,
     )
     is DisconnectEvent -> DisconnectConferenceEvent(
         at = at(),

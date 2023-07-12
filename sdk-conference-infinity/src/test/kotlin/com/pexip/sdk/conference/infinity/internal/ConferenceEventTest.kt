@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,13 @@ import com.pexip.sdk.api.infinity.DisconnectEvent
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
+import com.pexip.sdk.api.infinity.ReferEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
+import com.pexip.sdk.conference.ReferConferenceEvent
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.Test
@@ -59,6 +61,15 @@ internal class ConferenceEventTest {
                 participantName = messageReceivedEvent.participantName,
                 type = messageReceivedEvent.type,
                 payload = messageReceivedEvent.payload,
+            )
+            val referEvent = ReferEvent(
+                conferenceAlias = Random.nextString(8),
+                token = Random.nextString(8),
+            )
+            this[referEvent] = ReferConferenceEvent(
+                at = at,
+                conferenceAlias = referEvent.conferenceAlias,
+                token = referEvent.token,
             )
             val disconnectEvent = DisconnectEvent(Random.nextString(8))
             this[disconnectEvent] = DisconnectConferenceEvent(

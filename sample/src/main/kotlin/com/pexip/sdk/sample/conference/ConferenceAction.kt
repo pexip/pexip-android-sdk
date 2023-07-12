@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("unused")
+
 package com.pexip.sdk.sample.conference
 
 import android.content.Intent
+import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
@@ -137,40 +140,66 @@ class OnScreenCapturing(private val capturing: Boolean) : ConferenceAction() {
     }
 }
 
-class OnConferenceEvent(private val conferenceEvent: ConferenceEvent) : ConferenceAction() {
+class OnPresentationStartConferenceEvent(private val event: PresentationStartConferenceEvent) :
+    ConferenceAction() {
 
     override fun Updater.apply() {
-        val presentation = when (conferenceEvent) {
-            is PresentationStartConferenceEvent -> true
-            is PresentationStopConferenceEvent -> false
-            else -> state.presentation
-        }
-        val conferenceEvents = state.conferenceEvents.asSequence()
-            .plus(conferenceEvent)
-            .sortedBy { it.at }
-            .toList()
-        if (conferenceEvent is PresentationStartConferenceEvent) {
-            state.connection.setPresentationVideoTrack(null)
-            state.screenCaptureVideoTrack?.dispose()
-            state.connection.setPresentationRemoteVideoTrackEnabled(true)
-        } else if (conferenceEvent is PresentationStopConferenceEvent) {
-            state.connection.setPresentationRemoteVideoTrackEnabled(false)
-        }
+        state.connection.setPresentationVideoTrack(null)
+        state.screenCaptureVideoTrack?.dispose()
+        state.connection.setPresentationRemoteVideoTrackEnabled(true)
         state = state.copy(
-            presentation = presentation,
-            conferenceEvents = conferenceEvents,
-            screenCapturing = when (conferenceEvent) {
-                is PresentationStartConferenceEvent -> false
-                else -> state.screenCapturing
-            },
-            screenCaptureVideoTrack = when (conferenceEvent) {
-                is PresentationStartConferenceEvent -> null
-                else -> state.screenCaptureVideoTrack
-            },
+            presentation = true,
+            screenCapturing = false,
+            screenCaptureVideoTrack = null,
         )
-        if (conferenceEvent is DisconnectConferenceEvent || conferenceEvent is FailureConferenceEvent) {
-            setOutput(ConferenceOutput.Back)
-        }
+    }
+}
+
+class OnPresentationStopConferenceEvent(private val event: PresentationStopConferenceEvent) :
+    ConferenceAction() {
+
+    override fun Updater.apply() {
+        state.connection.setPresentationRemoteVideoTrackEnabled(false)
+        state = state.copy(presentation = false)
+    }
+}
+
+class OnReferConferenceEvent(
+    private val conferenceAlias: String,
+    private val response: RequestTokenResponse,
+) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        setOutput(ConferenceOutput.Refer(conferenceAlias, response))
+    }
+}
+
+@Suppress("unused")
+class OnDisconnectConferenceEvent(private val event: DisconnectConferenceEvent) :
+    ConferenceAction() {
+
+    override fun Updater.apply() {
+        setOutput(ConferenceOutput.Back)
+    }
+}
+
+@Suppress("unused")
+class OnFailureConferenceEvent(private val event: FailureConferenceEvent) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        setOutput(ConferenceOutput.Back)
+    }
+}
+
+class OnConferenceEvent(private val event: ConferenceEvent) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(
+            conferenceEvents = state.conferenceEvents.asSequence()
+                .plus(event)
+                .sortedBy { it.at }
+                .toList(),
+        )
     }
 }
 

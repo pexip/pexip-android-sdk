@@ -19,7 +19,6 @@ import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.internal.UUIDSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.util.UUID
 
@@ -57,6 +56,13 @@ public data class FeccEvent(
 ) : Event
 
 @Serializable
+public data class ReferEvent(
+    @SerialName("alias")
+    val conferenceAlias: String,
+    val token: String,
+) : Event
+
+@Serializable
 public data class DisconnectEvent(val reason: String) : Event
 
 public object ByeEvent : Event {
@@ -81,6 +87,7 @@ internal fun Event(json: Json, id: String?, type: String?, data: String) = when 
     "presentation_stop" -> PresentationStopEvent
     "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
     "fecc" -> json.decodeFromString<FeccEvent>(data)
+    "refer" -> json.decodeFromString<ReferEvent>(data)
     "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
     "bye" -> ByeEvent
     "incoming" -> json.decodeFromString<IncomingEvent>(data)
