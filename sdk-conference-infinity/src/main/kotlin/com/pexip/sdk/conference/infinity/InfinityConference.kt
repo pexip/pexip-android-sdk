@@ -44,9 +44,9 @@ public class InfinityConference private constructor(
     override val messenger: Messenger,
     private val source: ConferenceEventSource,
     private val refresher: TokenRefresher,
-    private val signaling: MediaConnectionSignaling,
+    override val signaling: MediaConnectionSignaling,
     private val executor: ScheduledExecutorService,
-) : Conference, MediaConnectionSignaling by signaling {
+) : Conference {
 
     override fun registerConferenceEventListener(listener: ConferenceEventListener) {
         source.registerConferenceEventListener(listener)

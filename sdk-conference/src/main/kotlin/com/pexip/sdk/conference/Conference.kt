@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionSignaling
 
 /**
@@ -22,12 +23,15 @@ import com.pexip.sdk.media.MediaConnectionSignaling
  *
  * @property name a display name of this [Conference]
  * @property messenger an instance of [Messenger] attached to this [Conference]
+ * @property signaling an instance of [MediaConnectionSignaling] to be used with [MediaConnection]
  */
-public interface Conference : MediaConnectionSignaling {
+public interface Conference {
 
     public val name: String
 
     public val messenger: Messenger
+
+    public val signaling: MediaConnectionSignaling
 
     /**
      * Registers a [ConferenceEventListener].
