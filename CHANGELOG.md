@@ -10,12 +10,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - `DegradationPreference` API that lets one specify the desired behavior in low bandwidth conditions
+- ICE restart when ICE connection reaches failed state
 
 ### Changed
 
 - Various deprecated methods `DeprecationLevel` to `DeprecationLevel.ERROR`
 - `ack` is now called later in the call setup phase
 - Merged all `-coroutines` modules with their respective bases
+- `createOffer` to `setLocalDescription` that supports rollback
 
 ### Removed
 
