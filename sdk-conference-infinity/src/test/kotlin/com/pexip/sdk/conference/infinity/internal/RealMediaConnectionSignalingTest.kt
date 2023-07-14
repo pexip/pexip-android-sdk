@@ -104,7 +104,6 @@ internal class RealMediaConnectionSignalingTest {
             actual = response.sdp,
         )
         assertEquals(callStep, signaling.callStep)
-        assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
     }
 
     @Test
@@ -138,7 +137,6 @@ internal class RealMediaConnectionSignalingTest {
             ),
             actual = response.sdp,
         )
-        assertEquals(mapOf("ToQx" to "jSThfoPwGg6gKmxeTmTqz8ea"), signaling.pwds)
     }
 
     @Test
@@ -165,10 +163,9 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onCandidate() returns`() {
         var called = false
-        val candidate =
-            "candidate:842163049 1 udp 1686052607 45.83.220.205 49922 typ srflx raddr 10.0.2.16 rport 43359 generation 0 ufrag /GLA network-id 5 network-cost 10"
+        val candidate = Random.nextString(8)
         val mid = Random.nextString(8)
-        val ufrag = "/GLA"
+        val ufrag = Random.nextString(8)
         val pwd = Random.nextString(8)
         val signaling = RealMediaConnectionSignaling(
             store = store,
@@ -188,8 +185,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 }
         }
-        signaling.pwds = mapOf(ufrag to pwd)
-        signaling.onCandidate(candidate, mid)
+        signaling.onCandidate(candidate, mid, ufrag, pwd)
         assertTrue(called)
     }
 

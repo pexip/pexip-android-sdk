@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,27 +29,43 @@ internal class ManglerTest {
     @Test
     fun `mangles offer`() {
         val original = SessionDescription(SessionDescription.Type.OFFER, read("offer_original"))
-        val mangled = original.mangle(
+        val result = original.mangle(
             bitrate = 576.kbps,
             mainAudioMid = "3",
             mainVideoMid = "4",
             presentationVideoMid = "5",
         )
-        assertEquals(original.type, mangled.type)
-        assertEquals(read("offer_mangled"), mangled.description)
+        assertEquals(original.type, result.description.type)
+        assertEquals(read("offer_mangled"), result.description.description)
+        assertEquals(
+            expected = mapOf(
+                "3" to IceCredentials("ToQx", "jSThfoPwGg6gKmxeTmTqz8ea"),
+                "4" to IceCredentials("2kQE", "mYjX6xCx45NUnHd8HrTOqz/+"),
+                "5" to IceCredentials("lw9P", "v3+Lqsnv8B0QLnMat+NGxvPl"),
+            ),
+            actual = result.iceCredentials,
+        )
     }
 
     @Test
     fun `mangles offer, bitrate is zero`() {
         val original = SessionDescription(SessionDescription.Type.OFFER, read("offer_original"))
-        val mangled = original.mangle(
+        val result = original.mangle(
             bitrate = 0.bps,
             mainAudioMid = "3",
             mainVideoMid = "4",
             presentationVideoMid = "5",
         )
-        assertEquals(original.type, mangled.type)
-        assertEquals(read("offer_mangled_bitrate_zero"), mangled.description)
+        assertEquals(original.type, result.description.type)
+        assertEquals(read("offer_mangled_bitrate_zero"), result.description.description)
+        assertEquals(
+            expected = mapOf(
+                "3" to IceCredentials("ToQx", "jSThfoPwGg6gKmxeTmTqz8ea"),
+                "4" to IceCredentials("2kQE", "mYjX6xCx45NUnHd8HrTOqz/+"),
+                "5" to IceCredentials("lw9P", "v3+Lqsnv8B0QLnMat+NGxvPl"),
+            ),
+            actual = result.iceCredentials,
+        )
     }
 
     @Test

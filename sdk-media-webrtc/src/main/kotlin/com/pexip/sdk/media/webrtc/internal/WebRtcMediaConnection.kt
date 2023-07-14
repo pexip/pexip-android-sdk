@@ -50,6 +50,7 @@ internal class WebRtcMediaConnection(
     private val shouldAck = AtomicBoolean(true)
     private val shouldRenegotiate = AtomicBoolean()
     private val networkExecutor = Executors.newSingleThreadExecutor()
+    private val iceCredentials = mutableMapOf<String, IceCredentials>()
     private val connection = factory.createPeerConnection(createRTCConfiguration(), this)
 
     private var bitrate by Delegates.observable(0.bps) { _, old, new ->
@@ -320,7 +321,20 @@ internal class WebRtcMediaConnection(
     }
 
     override fun onIceCandidate(candidate: IceCandidate) {
-        onCandidate(candidate.sdp, candidate.sdpMid)
+        workerExecutor.maybeExecuteUnlessDisposed {
+            val mid = candidate.sdpMid ?: return@maybeExecuteUnlessDisposed
+            val (ufrag, pwd) = iceCredentials[mid] ?: return@maybeExecuteUnlessDisposed
+            networkExecutor.maybeExecuteUnlessDisposed {
+                runCatching {
+                    config.signaling.onCandidate(
+                        candidate = candidate.sdp,
+                        mid = mid,
+                        ufrag = ufrag,
+                        pwd = pwd,
+                    )
+                }
+            }
+        }
     }
 
     override fun onRenegotiationNeeded() {
@@ -367,7 +381,7 @@ internal class WebRtcMediaConnection(
 
     private fun onSetLocalDescriptionSuccess() {
         workerExecutor.maybeExecuteUnlessDisposed {
-            val mangledDescription = connection.localDescription.mangle(
+            val result = connection.localDescription.mangle(
                 bitrate = bitrate,
                 mainAudioMid = synchronized(mainAudioTransceiverLock) {
                     mainAudioTransceiver?.mid
@@ -379,13 +393,15 @@ internal class WebRtcMediaConnection(
                     presentationVideoTransceiver.mid
                 },
             )
+            iceCredentials.clear()
+            iceCredentials.putAll(result.iceCredentials)
             networkExecutor.maybeExecute {
                 try {
                     val sdp = SessionDescription(
                         SessionDescription.Type.ANSWER,
                         config.signaling.onOffer(
                             callType = "WEBRTC",
-                            description = mangledDescription.description,
+                            description = result.description.description,
                             presentationInMain = config.presentationInMain,
                             fecc = config.farEndCameraControl,
                         ),
@@ -406,12 +422,6 @@ internal class WebRtcMediaConnection(
         }
         mainAudioTrack?.let { onMainAudioCapturingChange(it.capturing) }
         mainVideoTrack?.let { onMainVideoCapturingChange(it.capturing) }
-    }
-
-    private fun onCandidate(candidate: String, mid: String) {
-        networkExecutor.maybeExecute {
-            runCatching { config.signaling.onCandidate(candidate, mid) }
-        }
     }
 
     private fun onMainAudioCapturingChange(capturing: Boolean) {
