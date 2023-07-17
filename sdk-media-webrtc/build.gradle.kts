@@ -12,6 +12,7 @@ android {
 dependencies {
     api(project(":sdk-media-android"))
     api(libs.webrtc)
+    implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.okio)
 }
 

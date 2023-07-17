@@ -24,6 +24,16 @@ import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.MediaStreamTrack.MediaType
@@ -33,23 +43,21 @@ import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.Delegates
 
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
     private val config: MediaConnectionConfig,
-    private val workerExecutor: Executor,
-    private val signalingExecutor: Executor,
 ) : MediaConnection, SimplePeerConnectionObserver {
 
     private val started = AtomicBoolean()
-    private val disposed = AtomicBoolean()
     private val shouldAck = AtomicBoolean(true)
     private val shouldRenegotiate = AtomicBoolean()
-    private val networkExecutor = Executors.newSingleThreadExecutor()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val dispatcher = Dispatchers.IO.limitedParallelism(1)
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val iceCredentials = mutableMapOf<String, IceCredentials>()
     private val connection = factory.createPeerConnection(createRTCConfiguration(), this)
 
@@ -109,18 +117,6 @@ internal class WebRtcMediaConnection(
     )
     private val mainAudioTransceiverLock = Any()
     private val mainVideoTransceiverLock = Any()
-    private val localSdpObserver = object : SimpleSdpObserver {
-
-        override fun onSetSuccess() {
-            onSetLocalDescriptionSuccess()
-        }
-    }
-    private val remoteSdpObserver = object : SimpleSdpObserver {
-
-        override fun onSetSuccess() {
-            onSetRemoteDescriptionSuccess()
-        }
-    }
     private val mainRemoteVideoTrackListeners =
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
     private val presentationRemoteVideoTrackListeners =
@@ -134,7 +130,7 @@ internal class WebRtcMediaConnection(
 
     override val mainRemoteVideoTrack: com.pexip.sdk.media.VideoTrack?
         get() = synchronized(mainVideoTransceiverLock) {
-            mainVideoTransceiver?.takeUnless { disposed.get() }
+            mainVideoTransceiver?.takeIf { scope.isActive }
                 ?.takeIf { it.direction == RtpTransceiverDirection.SEND_RECV }
                 ?.receiver
                 ?.videoTrack
@@ -143,7 +139,7 @@ internal class WebRtcMediaConnection(
 
     override val presentationRemoteVideoTrack: com.pexip.sdk.media.VideoTrack?
         get() = synchronized(presentationVideoTransceiver) {
-            presentationVideoTransceiver.takeUnless { disposed.get() }
+            presentationVideoTransceiver.takeIf { scope.isActive }
                 ?.takeIf { it.direction == RtpTransceiverDirection.RECV_ONLY || it.direction == RtpTransceiverDirection.SEND_RECV }
                 ?.receiver
                 ?.videoTrack
@@ -152,6 +148,29 @@ internal class WebRtcMediaConnection(
 
     init {
         presentationVideoTransceiver.setDegradationPreference(presentationDegradationPreference)
+        scope.launch {
+            try {
+                awaitCancellation()
+            } finally {
+                withContext(NonCancellable) {
+                    mainAudioTrack = null
+                    mainVideoTrack = null
+                    presentationVideoTrack = null
+                    synchronized(mainAudioTransceiverLock) {
+                        mainAudioTransceiver?.sender?.setTrack(null, false)
+                    }
+                    synchronized(mainVideoTransceiverLock) {
+                        mainVideoTransceiver?.sender?.setTrack(null, false)
+                    }
+                    synchronized(presentationVideoTransceiver) {
+                        presentationVideoTransceiver.sender.setTrack(null, false)
+                    }
+                    mainRemoteVideoTrackListeners.clear()
+                    presentationRemoteVideoTrackListeners.clear()
+                    connection.dispose()
+                }
+            }
+        }
     }
 
     override fun setMainAudioTrack(localAudioTrack: LocalAudioTrack?) {
@@ -160,7 +179,7 @@ internal class WebRtcMediaConnection(
             null -> null
             else -> throw IllegalArgumentException("localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.")
         }
-        workerExecutor.maybeExecuteUnlessDisposed {
+        scope.launch {
             synchronized(mainAudioTransceiverLock) {
                 val t = mainAudioTransceiver ?: connection.maybeAddTransceiver(lat)
                 t?.maybeSetNewDirection(lat)
@@ -177,7 +196,7 @@ internal class WebRtcMediaConnection(
             null -> null
             else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
         }
-        workerExecutor.maybeExecuteUnlessDisposed {
+        scope.launch {
             synchronized(mainVideoTransceiverLock) {
                 val t = mainVideoTransceiver ?: connection.maybeAddTransceiver(lvt)?.apply {
                     setDegradationPreference(mainDegradationPreference)
@@ -196,7 +215,7 @@ internal class WebRtcMediaConnection(
             null -> null
             else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
         }
-        workerExecutor.maybeExecuteUnlessDisposed {
+        scope.launch {
             synchronized(presentationVideoTransceiver) {
                 presentationVideoTransceiver.maybeSetNewDirection(lvt)
                 presentationVideoTransceiver.setTrack(lvt)
@@ -206,28 +225,32 @@ internal class WebRtcMediaConnection(
     }
 
     override fun setMainRemoteAudioTrackEnabled(enabled: Boolean) {
-        workerExecutor.maybeExecuteUnlessDisposed {
-            mainAudioTransceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(
-                mediaType = MediaType.MEDIA_TYPE_AUDIO,
-                receive = enabled,
-            )
-            mainAudioTransceiver?.maybeSetNewDirection(enabled)
+        scope.launch {
+            synchronized(mainAudioTransceiverLock) {
+                mainAudioTransceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(
+                    mediaType = MediaType.MEDIA_TYPE_AUDIO,
+                    receive = enabled,
+                )
+                mainAudioTransceiver?.maybeSetNewDirection(enabled)
+            }
         }
     }
 
     override fun setMainRemoteVideoTrackEnabled(enabled: Boolean) {
-        workerExecutor.maybeExecuteUnlessDisposed {
-            mainVideoTransceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(
-                mediaType = MediaType.MEDIA_TYPE_VIDEO,
-                receive = enabled,
-            )
-            mainVideoTransceiver?.maybeSetNewDirection(enabled)
+        scope.launch {
+            synchronized(mainVideoTransceiverLock) {
+                mainVideoTransceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(
+                    mediaType = MediaType.MEDIA_TYPE_VIDEO,
+                    receive = enabled,
+                )
+                mainVideoTransceiver?.maybeSetNewDirection(enabled)
+            }
         }
     }
 
     override fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean) {
         if (!config.presentationInMain) {
-            workerExecutor.maybeExecuteUnlessDisposed {
+            scope.launch {
                 synchronized(presentationVideoTransceiver) {
                     presentationVideoTransceiver.maybeSetNewDirection(enabled)
                 }
@@ -236,19 +259,19 @@ internal class WebRtcMediaConnection(
     }
 
     override fun setMaxBitrate(bitrate: Bitrate) {
-        workerExecutor.maybeExecuteUnlessDisposed {
-            this.bitrate = bitrate
+        scope.launch {
+            this@WebRtcMediaConnection.bitrate = bitrate
         }
     }
 
     override fun setMainDegradationPreference(preference: DegradationPreference) {
-        workerExecutor.maybeExecuteUnlessDisposed {
+        scope.launch {
             mainDegradationPreference = preference
         }
     }
 
     override fun setPresentationDegradationPreference(preference: DegradationPreference) {
-        workerExecutor.maybeExecuteUnlessDisposed {
+        scope.launch {
             presentationDegradationPreference = preference
         }
     }
@@ -266,7 +289,7 @@ internal class WebRtcMediaConnection(
     override fun stopPresentationReceive() = setPresentationRemoteVideoTrackEnabled(false)
 
     override fun dtmf(digits: String) {
-        networkExecutor.maybeExecuteUnlessDisposed {
+        scope.launch {
             runCatching { config.signaling.onDtmf(digits) }
         }
     }
@@ -278,26 +301,7 @@ internal class WebRtcMediaConnection(
     }
 
     override fun dispose() {
-        if (disposed.compareAndSet(false, true)) {
-            workerExecutor.execute {
-                mainAudioTrack = null
-                mainVideoTrack = null
-                presentationVideoTrack = null
-                synchronized(mainAudioTransceiverLock) {
-                    mainAudioTransceiver?.sender?.setTrack(null, false)
-                }
-                synchronized(mainVideoTransceiverLock) {
-                    mainVideoTransceiver?.sender?.setTrack(null, false)
-                }
-                synchronized(presentationVideoTransceiver) {
-                    presentationVideoTransceiver.sender.setTrack(null, false)
-                }
-                mainRemoteVideoTrackListeners.clear()
-                presentationRemoteVideoTrackListeners.clear()
-                connection.dispose()
-            }
-            networkExecutor.shutdown()
-        }
+        scope.cancel()
     }
 
     override fun registerMainRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
@@ -318,24 +322,22 @@ internal class WebRtcMediaConnection(
 
     override fun onStandardizedIceConnectionChange(newState: PeerConnection.IceConnectionState) {
         if (newState != PeerConnection.IceConnectionState.FAILED) return
-        workerExecutor.maybeExecuteUnlessDisposed {
+        scope.launch {
             connection.restartIce()
         }
     }
 
     override fun onIceCandidate(candidate: IceCandidate) {
-        workerExecutor.maybeExecuteUnlessDisposed {
-            val mid = candidate.sdpMid ?: return@maybeExecuteUnlessDisposed
-            val (ufrag, pwd) = iceCredentials[mid] ?: return@maybeExecuteUnlessDisposed
-            networkExecutor.maybeExecuteUnlessDisposed {
-                runCatching {
-                    config.signaling.onCandidate(
-                        candidate = candidate.sdp,
-                        mid = mid,
-                        ufrag = ufrag,
-                        pwd = pwd,
-                    )
-                }
+        scope.launch {
+            val mid = candidate.sdpMid ?: return@launch
+            val (ufrag, pwd) = iceCredentials[mid] ?: return@launch
+            runCatching {
+                config.signaling.onCandidate(
+                    candidate = candidate.sdp,
+                    mid = mid,
+                    ufrag = ufrag,
+                    pwd = pwd,
+                )
             }
         }
     }
@@ -348,42 +350,37 @@ internal class WebRtcMediaConnection(
     }
 
     override fun onAddTrack(receiver: RtpReceiver, streams: Array<out MediaStream>) {
+        val id = receiver.id()
         val videoTrack = receiver.videoTrack?.let(::WebRtcVideoTrack)
-        when (receiver.id()) {
-            synchronized(mainVideoTransceiverLock) { mainVideoTransceiver?.receiver?.id() } -> {
-                mainRemoteVideoTrackListeners.notify(videoTrack)
-            }
-            synchronized(presentationVideoTransceiver) { presentationVideoTransceiver.receiver.id() } -> {
-                presentationRemoteVideoTrackListeners.notify(videoTrack)
+        scope.launch {
+            when (id) {
+                synchronized(mainVideoTransceiverLock) { mainVideoTransceiver?.receiver?.id() } -> {
+                    mainRemoteVideoTrackListeners.notify(videoTrack)
+                }
+                synchronized(presentationVideoTransceiver) { presentationVideoTransceiver.receiver.id() } -> {
+                    presentationRemoteVideoTrackListeners.notify(videoTrack)
+                }
             }
         }
     }
 
     override fun onRemoveTrack(receiver: RtpReceiver) {
-        when (receiver.id()) {
-            synchronized(mainVideoTransceiverLock) { mainVideoTransceiver?.receiver?.id() } -> {
-                mainRemoteVideoTrackListeners.notify(null)
-            }
-            synchronized(presentationVideoTransceiver) { presentationVideoTransceiver.receiver.id() } -> {
-                presentationRemoteVideoTrackListeners.notify(null)
+        val id = receiver.id()
+        scope.launch {
+            when (id) {
+                synchronized(mainVideoTransceiverLock) { mainVideoTransceiver?.receiver?.id() } -> {
+                    mainRemoteVideoTrackListeners.notify(null)
+                }
+                synchronized(presentationVideoTransceiver) { presentationVideoTransceiver.receiver.id() } -> {
+                    presentationRemoteVideoTrackListeners.notify(null)
+                }
             }
         }
     }
 
     private fun setLocalDescription() {
-        workerExecutor.maybeExecuteUnlessDisposed {
-            connection.setLocalDescription(localSdpObserver)
-        }
-    }
-
-    private fun setRemoteDescription(sdp: SessionDescription) {
-        workerExecutor.maybeExecuteUnlessDisposed {
-            connection.setRemoteDescription(remoteSdpObserver, sdp.mangle(bitrate))
-        }
-    }
-
-    private fun onSetLocalDescriptionSuccess() {
-        workerExecutor.maybeExecuteUnlessDisposed {
+        scope.launch {
+            connection.setLocalDescription()
             val result = connection.localDescription.mangle(
                 bitrate = bitrate,
                 mainAudioMid = synchronized(mainAudioTransceiverLock) {
@@ -398,57 +395,42 @@ internal class WebRtcMediaConnection(
             )
             iceCredentials.clear()
             iceCredentials.putAll(result.iceCredentials)
-            networkExecutor.maybeExecute {
-                try {
-                    val sdp = SessionDescription(
-                        SessionDescription.Type.ANSWER,
-                        config.signaling.onOffer(
-                            callType = "WEBRTC",
-                            description = result.description.description,
-                            presentationInMain = config.presentationInMain,
-                            fecc = config.farEndCameraControl,
-                        ),
-                    )
-                    setRemoteDescription(sdp)
-                } catch (t: Throwable) {
-                    // noop
-                }
-            }
-        }
-    }
-
-    private fun onSetRemoteDescriptionSuccess() {
-        if (shouldAck.compareAndSet(true, false)) {
-            networkExecutor.maybeExecute {
+            val sdp = SessionDescription(
+                SessionDescription.Type.ANSWER,
+                config.signaling.onOffer(
+                    callType = "WEBRTC",
+                    description = result.description.description,
+                    presentationInMain = config.presentationInMain,
+                    fecc = config.farEndCameraControl,
+                ),
+            )
+            connection.setRemoteDescription(sdp.mangle(bitrate))
+            if (shouldAck.compareAndSet(true, false)) {
                 runCatching { config.signaling.onAck() }
+                mainAudioTrack?.let { onMainAudioCapturingChange(it.capturing) }
+                mainVideoTrack?.let { onMainVideoCapturingChange(it.capturing) }
             }
         }
-        mainAudioTrack?.let { onMainAudioCapturingChange(it.capturing) }
-        mainVideoTrack?.let { onMainVideoCapturingChange(it.capturing) }
     }
 
     private fun onMainAudioCapturingChange(capturing: Boolean) {
-        networkExecutor.maybeExecute {
-            val f = when (capturing) {
-                true -> config.signaling::onAudioUnmuted
-                else -> config.signaling::onAudioMuted
+        scope.launch {
+            runCatching {
+                with(config.signaling) { if (capturing) onAudioUnmuted() else onAudioMuted() }
             }
-            runCatching(f)
         }
     }
 
     private fun onMainVideoCapturingChange(capturing: Boolean) {
-        networkExecutor.maybeExecute {
-            val f = when (capturing) {
-                true -> config.signaling::onVideoUnmuted
-                else -> config.signaling::onVideoMuted
+        scope.launch {
+            runCatching {
+                with(config.signaling) { if (capturing) onVideoUnmuted() else onVideoMuted() }
             }
-            runCatching(f)
         }
     }
 
-    private fun Collection<MediaConnection.RemoteVideoTrackListener>.notify(videoTrack: WebRtcVideoTrack?) {
-        signalingExecutor.maybeExecute {
+    private suspend fun Collection<MediaConnection.RemoteVideoTrackListener>.notify(videoTrack: WebRtcVideoTrack?) {
+        withContext(Dispatchers.Main) {
             forEach {
                 it.safeOnRemoteVideoTrack(videoTrack)
             }
@@ -456,14 +438,14 @@ internal class WebRtcMediaConnection(
     }
 
     private fun onTakeFloor() {
-        networkExecutor.maybeExecute {
-            runCatching(config.signaling::onTakeFloor)
+        scope.launch {
+            runCatching { config.signaling.onTakeFloor() }
         }
     }
 
     private fun onReleaseFloor() {
-        networkExecutor.maybeExecute {
-            runCatching(config.signaling::onReleaseFloor)
+        scope.launch {
+            runCatching { config.signaling.onReleaseFloor() }
         }
     }
 
@@ -483,12 +465,4 @@ internal class WebRtcMediaConnection(
 
     private val RtpReceiver.videoTrack
         get() = track() as? org.webrtc.VideoTrack
-
-    private inline fun Executor.maybeExecuteUnlessDisposed(crossinline block: () -> Unit) {
-        if (!disposed.get()) {
-            maybeExecute {
-                if (!disposed.get()) block()
-            }
-        }
-    }
 }

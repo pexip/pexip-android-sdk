@@ -207,12 +207,7 @@ public class WebRtcMediaConnectionFactory private constructor(
 
     override fun createMediaConnection(config: MediaConnectionConfig): MediaConnection {
         checkNotDisposed()
-        return WebRtcMediaConnection(
-            factory = this,
-            config = config,
-            workerExecutor = workerExecutor,
-            signalingExecutor = signalingExecutor,
-        )
+        return WebRtcMediaConnection(this, config)
     }
 
     override fun dispose() {

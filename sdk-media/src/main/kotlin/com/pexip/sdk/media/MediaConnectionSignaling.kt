@@ -34,7 +34,7 @@ public interface MediaConnectionSignaling {
      * @param fecc whether far end camera control should be enabled
      * @return an answer
      */
-    public fun onOffer(
+    public suspend fun onOffer(
         callType: String,
         description: String,
         presentationInMain: Boolean,
@@ -44,7 +44,7 @@ public interface MediaConnectionSignaling {
     /**
      * Invoked when offer is set and the connection is ready to accept media.
      */
-    public fun onAck()
+    public suspend fun onAck()
 
     /**
      * Invoked when a new ICE candidate is available.
@@ -54,42 +54,42 @@ public interface MediaConnectionSignaling {
      * @param ufrag a username fragment of this ICE candidate
      * @param pwd a password of this ICE candidate
      */
-    public fun onCandidate(candidate: String, mid: String, ufrag: String, pwd: String)
+    public suspend fun onCandidate(candidate: String, mid: String, ufrag: String, pwd: String)
 
     /**
      * Invoked when a sequence of DTMF digits must be sent.
      *
      * @param digits a sequence of DTMF digits
      */
-    public fun onDtmf(digits: String)
+    public suspend fun onDtmf(digits: String)
 
     /**
      * Invoked when audio is muted.
      */
-    public fun onAudioMuted()
+    public suspend fun onAudioMuted()
 
     /**
      * Invoked when audio is unmuted.
      */
-    public fun onAudioUnmuted()
+    public suspend fun onAudioUnmuted()
 
     /**
      * Invoked when video is muted.
      */
-    public fun onVideoMuted()
+    public suspend fun onVideoMuted()
 
     /**
      * Invoked when video is unmuted.
      */
-    public fun onVideoUnmuted()
+    public suspend fun onVideoUnmuted()
 
     /**
      * Invoked when local presentation feed is added.
      */
-    public fun onTakeFloor()
+    public suspend fun onTakeFloor()
 
     /**
      * Invoked when local presentation feed is removed.
      */
-    public fun onReleaseFloor()
+    public suspend fun onReleaseFloor()
 }

@@ -16,6 +16,7 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Call
+import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.CallsResponse
 import com.pexip.sdk.api.infinity.DtmfRequest
@@ -25,6 +26,8 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 import com.pexip.sdk.media.IceServer
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import java.util.UUID
@@ -32,7 +35,6 @@ import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 internal class RealMediaConnectionSignalingTest {
 
@@ -61,7 +63,7 @@ internal class RealMediaConnectionSignalingTest {
     }
 
     @Test
-    fun `onOffer() returns Answer (first call)`() {
+    fun `onOffer() returns Answer (first call)`() = runTest {
         val callType = Random.nextString(8)
         val sdp = read("session_description_original")
         val presentationInMix = Random.nextBoolean()
@@ -72,11 +74,9 @@ internal class RealMediaConnectionSignalingTest {
         )
         val callStep = object : TestCallStep() {}
         val participantStep = object : TestParticipantStep() {
-
             override fun calls(request: CallsRequest, token: String): Call<CallsResponse> =
                 object : TestCall<CallsResponse> {
-
-                    override fun execute(): CallsResponse {
+                    override fun enqueue(callback: Callback<CallsResponse>) {
                         assertEquals(sdp, request.sdp)
                         assertEquals(
                             expected = if (presentationInMix) "main" else null,
@@ -84,7 +84,7 @@ internal class RealMediaConnectionSignalingTest {
                         )
                         assertEquals(callType, request.callType)
                         assertEquals(store.get().token, token)
-                        return response
+                        callback.onSuccess(this, response)
                     }
                 }
 
@@ -103,11 +103,11 @@ internal class RealMediaConnectionSignalingTest {
             ),
             actual = response.sdp,
         )
-        assertEquals(callStep, signaling.callStep)
+        assertEquals(callStep, signaling.callStep.await())
     }
 
     @Test
-    fun `onOffer() returns Answer (subsequent calls)`() {
+    fun `onOffer() returns Answer (subsequent calls)`() = runTest {
         val callType = Random.nextString(8)
         val sdp = read("session_description_original")
         val presentationInMix = Random.nextBoolean()
@@ -117,17 +117,17 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
-        )
-        signaling.callStep = object : TestCallStep() {
-            override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> =
-                object : TestCall<UpdateResponse> {
-                    override fun execute(): UpdateResponse {
-                        assertEquals(sdp, request.sdp)
-                        assertEquals(store.get().token, token)
-                        return response
+            callStep = object : TestCallStep() {
+                override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> =
+                    object : TestCall<UpdateResponse> {
+                        override fun enqueue(callback: Callback<UpdateResponse>) {
+                            assertEquals(sdp, request.sdp)
+                            assertEquals(store.get().token, token)
+                            callback.onSuccess(this, response)
+                        }
                     }
-                }
-        }
+            },
+        )
         assertEquals(
             expected = signaling.onOffer(
                 callType = callType,
@@ -140,29 +140,28 @@ internal class RealMediaConnectionSignalingTest {
     }
 
     @Test
-    fun `onAck() returns`() {
-        var called = false
+    fun `onAck() returns`() = runTest {
+        val called = Job()
         val signaling = RealMediaConnectionSignaling(
             store = store,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
-        )
-        signaling.callStep = object : TestCallStep() {
-
-            override fun ack(token: String): Call<Unit> = object : TestCall<Unit> {
-
-                override fun execute() {
-                    called = true
+            callStep = object : TestCallStep() {
+                override fun ack(token: String): Call<Unit> = object : TestCall<Unit> {
+                    override fun enqueue(callback: Callback<Unit>) {
+                        called.complete()
+                        callback.onSuccess(this, Unit)
+                    }
                 }
-            }
-        }
+            },
+        )
         signaling.onAck()
-        assertTrue(called)
+        called.join()
     }
 
     @Test
-    fun `onCandidate() returns`() {
-        var called = false
+    fun `onCandidate() returns`() = runTest {
+        val called = Job()
         val candidate = Random.nextString(8)
         val mid = Random.nextString(8)
         val ufrag = Random.nextString(8)
@@ -171,156 +170,167 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
-        )
-        signaling.callStep = object : TestCallStep() {
-            override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> =
-                object : TestCall<Unit> {
-                    override fun execute() {
-                        assertEquals(candidate, request.candidate)
-                        assertEquals(mid, request.mid)
-                        assertEquals(ufrag, request.ufrag)
-                        assertEquals(pwd, request.pwd)
-                        assertEquals(store.get().token, token)
-                        called = true
+            callStep = object : TestCallStep() {
+                override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> =
+                    object : TestCall<Unit> {
+                        override fun enqueue(callback: Callback<Unit>) {
+                            assertEquals(candidate, request.candidate)
+                            assertEquals(mid, request.mid)
+                            assertEquals(ufrag, request.ufrag)
+                            assertEquals(pwd, request.pwd)
+                            assertEquals(store.get().token, token)
+                            called.complete()
+                            callback.onSuccess(this, Unit)
+                        }
                     }
-                }
-        }
+            },
+        )
         signaling.onCandidate(candidate, mid, ufrag, pwd)
-        assertTrue(called)
+        called.join()
     }
 
     @Test
-    fun `onDtmf() returns`() {
-        var called = false
+    fun `onDtmf() returns`() = runTest {
+        val called = Job()
         val digits = Random.nextDigits(8)
         val result = Random.nextBoolean()
         val signaling = RealMediaConnectionSignaling(
             store = store,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
+            callStep = object : TestCallStep() {
+                override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> =
+                    object : TestCall<Boolean> {
+                        override fun enqueue(callback: Callback<Boolean>) {
+                            assertEquals(digits, request.digits)
+                            called.complete()
+                            callback.onSuccess(this, result)
+                        }
+                    }
+            },
         )
-        signaling.callStep = object : TestCallStep() {
+        signaling.onDtmf(digits)
+        called.join()
+    }
 
-            override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> =
-                object : TestCall<Boolean> {
-
-                    override fun execute(): Boolean {
-                        called = true
-                        assertEquals(digits, request.digits)
-                        return result
+    @Test
+    fun `onAudioMuted() returns`() = runTest {
+        val called = Job()
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {
+                override fun mute(token: String): Call<Unit> = object : TestCall<Unit> {
+                    override fun enqueue(callback: Callback<Unit>) {
+                        assertEquals(store.get().token, token)
+                        called.complete()
+                        callback.onSuccess(this, Unit)
                     }
                 }
-        }
-        signaling.onDtmf(digits)
-        assertTrue(called)
-    }
-
-    @Test
-    fun `onAudioMuted() returns`() {
-        var called = false
-        val step = object : TestParticipantStep() {
-
-            override fun mute(token: String): Call<Unit> = object : TestCall<Unit> {
-
-                override fun execute() {
-                    assertEquals(store.get().token, token)
-                    called = true
-                }
-            }
-        }
-        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
+            },
+            iceServers = iceServers,
+        )
         signaling.onAudioMuted()
-        assertTrue(called)
+        called.join()
     }
 
     @Test
-    fun `onAudioUnmuted() returns`() {
-        var called = false
-        val step = object : TestParticipantStep() {
-
-            override fun unmute(token: String): Call<Unit> = object : TestCall<Unit> {
-
-                override fun execute() {
-                    assertEquals(store.get().token, token)
-                    called = true
+    fun `onAudioUnmuted() returns`() = runTest {
+        val called = Job()
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {
+                override fun unmute(token: String): Call<Unit> = object : TestCall<Unit> {
+                    override fun enqueue(callback: Callback<Unit>) {
+                        assertEquals(store.get().token, token)
+                        called.complete()
+                        callback.onSuccess(this, Unit)
+                    }
                 }
-            }
-        }
-        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
+            },
+            iceServers = iceServers,
+        )
         signaling.onAudioUnmuted()
-        assertTrue(called)
+        called.join()
     }
 
     @Test
-    fun `onVideoMuted() returns`() {
-        var called = false
-        val step = object : TestParticipantStep() {
-
-            override fun videoMuted(token: String): Call<Unit> = object : TestCall<Unit> {
-
-                override fun execute() {
-                    assertEquals(store.get().token, token)
-                    called = true
+    fun `onVideoMuted() returns`() = runTest {
+        val called = Job()
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {
+                override fun videoMuted(token: String): Call<Unit> = object : TestCall<Unit> {
+                    override fun enqueue(callback: Callback<Unit>) {
+                        assertEquals(store.get().token, token)
+                        called.complete()
+                        callback.onSuccess(this, Unit)
+                    }
                 }
-            }
-        }
-        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
+            },
+            iceServers = iceServers,
+        )
         signaling.onVideoMuted()
-        assertTrue(called)
+        called.join()
     }
 
     @Test
-    fun `onVideoUnmuted() returns`() {
-        var called = false
-        val step = object : TestParticipantStep() {
-
-            override fun videoUnmuted(token: String): Call<Unit> = object : TestCall<Unit> {
-
-                override fun execute() {
-                    assertEquals(store.get().token, token)
-                    called = true
+    fun `onVideoUnmuted() returns`() = runTest {
+        val called = Job()
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {
+                override fun videoUnmuted(token: String): Call<Unit> = object : TestCall<Unit> {
+                    override fun enqueue(callback: Callback<Unit>) {
+                        assertEquals(store.get().token, token)
+                        called.complete()
+                        callback.onSuccess(this, Unit)
+                    }
                 }
-            }
-        }
-        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
+            },
+            iceServers = iceServers,
+        )
         signaling.onVideoUnmuted()
-        assertTrue(called)
+        called.join()
     }
 
     @Test
-    fun `onTakeFloor() returns`() {
-        var called = false
-        val step = object : TestParticipantStep() {
-
-            override fun takeFloor(token: String): Call<Unit> = object : TestCall<Unit> {
-
-                override fun execute() {
-                    assertEquals(store.get().token, token)
-                    called = true
+    fun `onTakeFloor() returns`() = runTest {
+        val called = Job()
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {
+                override fun takeFloor(token: String): Call<Unit> = object : TestCall<Unit> {
+                    override fun enqueue(callback: Callback<Unit>) {
+                        assertEquals(store.get().token, token)
+                        called.complete()
+                        callback.onSuccess(this, Unit)
+                    }
                 }
-            }
-        }
-        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
+            },
+            iceServers = iceServers,
+        )
         signaling.onTakeFloor()
-        assertTrue(called)
+        called.join()
     }
 
     @Test
-    fun `onReleaseFloor() returns`() {
-        var called = false
-        val step = object : TestParticipantStep() {
-
-            override fun releaseFloor(token: String): Call<Unit> = object : TestCall<Unit> {
-
-                override fun execute() {
-                    assertEquals(store.get().token, token)
-                    called = true
+    fun `onReleaseFloor() returns`() = runTest {
+        val called = Job()
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {
+                override fun releaseFloor(token: String): Call<Unit> = object : TestCall<Unit> {
+                    override fun enqueue(callback: Callback<Unit>) {
+                        assertEquals(store.get().token, token)
+                        called.complete()
+                        callback.onSuccess(this, Unit)
+                    }
                 }
-            }
-        }
-        val signaling = RealMediaConnectionSignaling(store, step, iceServers)
+            },
+            iceServers = iceServers,
+        )
         signaling.onReleaseFloor()
-        assertTrue(called)
+        called.join()
     }
 
     @Suppress("SameParameterValue")

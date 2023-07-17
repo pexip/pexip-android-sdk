@@ -30,14 +30,47 @@ import org.webrtc.RtpParameters
 import org.webrtc.RtpParameters.Encoding
 import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
+import org.webrtc.SessionDescription
 import java.util.concurrent.Executor
 import java.util.concurrent.RejectedExecutionException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 internal fun Executor.maybeExecute(block: () -> Unit) = try {
     execute(block)
 } catch (e: RejectedExecutionException) {
     // noop
 }
+
+internal suspend fun PeerConnection.setLocalDescription() = suspendCoroutine {
+    val observer = object : SimpleSdpObserver {
+
+        override fun onSetSuccess() {
+            it.resume(Unit)
+        }
+
+        override fun onSetFailure(reason: String) {
+            it.resumeWithException(RuntimeException(reason))
+        }
+    }
+    setLocalDescription(observer)
+}
+
+internal suspend fun PeerConnection.setRemoteDescription(description: SessionDescription) =
+    suspendCoroutine {
+        val observer = object : SimpleSdpObserver {
+
+            override fun onSetSuccess() {
+                it.resume(Unit)
+            }
+
+            override fun onSetFailure(reason: String) {
+                it.resumeWithException(RuntimeException(reason))
+            }
+        }
+        setRemoteDescription(observer, description)
+    }
 
 internal fun LocalMediaTrack.CapturingListener.safeOnCapturing(capturing: Boolean) = try {
     onCapturing(capturing)
