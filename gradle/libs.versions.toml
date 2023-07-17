@@ -21,7 +21,7 @@ okhttp = "4.11.0"
 okio = "3.4.0"
 spotless = "6.19.0"
 turbine = "1.0.0"
-webrtc = "110.0.0"
+webrtc = "114.0.0"
 wire = "4.7.2"
 workflow = "1.7.1"
 
