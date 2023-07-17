@@ -37,10 +37,6 @@ android {
     }
 }
 
-hilt {
-    enableAggregatingTask = true
-}
-
 wire {
     kotlin { }
 }

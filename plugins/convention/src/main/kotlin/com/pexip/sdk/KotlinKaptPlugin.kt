@@ -26,6 +26,10 @@ class KotlinKaptPlugin : Plugin<Project> {
         pluginManager.apply("org.jetbrains.kotlin.kapt")
         configure<KaptExtension> {
             correctErrorTypes = true
+            arguments {
+                arg("dagger.fastInit", "enabled")
+                arg("dagger.ignoreProvisionKeyWildcards", "enabled")
+            }
         }
     }
 }
