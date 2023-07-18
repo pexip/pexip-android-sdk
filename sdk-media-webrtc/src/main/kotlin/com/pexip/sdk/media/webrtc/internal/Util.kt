@@ -17,15 +17,19 @@ package com.pexip.sdk.media.webrtc.internal
 
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.DegradationPreference
+import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
+import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
-import org.webrtc.MediaStreamTrack
+import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
 import org.webrtc.RtpParameters
+import org.webrtc.RtpParameters.Encoding
 import org.webrtc.RtpTransceiver
+import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import java.util.concurrent.Executor
 import java.util.concurrent.RejectedExecutionException
 
@@ -86,13 +90,13 @@ internal fun RtpTransceiver.setDegradationPreference(preference: DegradationPref
 internal fun RtpTransceiver.maybeSetNewDirection(track: LocalMediaTrack?) {
     val newDirection = when (track) {
         null -> when (direction) {
-            RtpTransceiver.RtpTransceiverDirection.SEND_ONLY -> RtpTransceiver.RtpTransceiverDirection.INACTIVE
-            RtpTransceiver.RtpTransceiverDirection.SEND_RECV -> RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+            RtpTransceiverDirection.SEND_ONLY -> RtpTransceiverDirection.INACTIVE
+            RtpTransceiverDirection.SEND_RECV -> RtpTransceiverDirection.RECV_ONLY
             else -> null
         }
         else -> when (direction) {
-            RtpTransceiver.RtpTransceiverDirection.INACTIVE -> RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
-            RtpTransceiver.RtpTransceiverDirection.RECV_ONLY -> RtpTransceiver.RtpTransceiverDirection.SEND_RECV
+            RtpTransceiverDirection.INACTIVE -> RtpTransceiverDirection.SEND_ONLY
+            RtpTransceiverDirection.RECV_ONLY -> RtpTransceiverDirection.SEND_RECV
             else -> null
         }
     }
@@ -102,13 +106,13 @@ internal fun RtpTransceiver.maybeSetNewDirection(track: LocalMediaTrack?) {
 internal fun RtpTransceiver.maybeSetNewDirection(receive: Boolean) {
     val newDirection = when (receive) {
         true -> when (direction) {
-            RtpTransceiver.RtpTransceiverDirection.INACTIVE -> RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
-            RtpTransceiver.RtpTransceiverDirection.SEND_ONLY -> RtpTransceiver.RtpTransceiverDirection.SEND_RECV
+            RtpTransceiverDirection.INACTIVE -> RtpTransceiverDirection.RECV_ONLY
+            RtpTransceiverDirection.SEND_ONLY -> RtpTransceiverDirection.SEND_RECV
             else -> null
         }
         else -> when (direction) {
-            RtpTransceiver.RtpTransceiverDirection.RECV_ONLY -> RtpTransceiver.RtpTransceiverDirection.INACTIVE
-            RtpTransceiver.RtpTransceiverDirection.SEND_RECV -> RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
+            RtpTransceiverDirection.RECV_ONLY -> RtpTransceiverDirection.INACTIVE
+            RtpTransceiverDirection.SEND_RECV -> RtpTransceiverDirection.SEND_ONLY
             else -> null
         }
     }
@@ -118,20 +122,40 @@ internal fun RtpTransceiver.maybeSetNewDirection(receive: Boolean) {
 internal fun PeerConnection.maybeAddTransceiver(track: LocalMediaTrack?): RtpTransceiver? {
     track ?: return null
     val mediaType = when (track) {
-        is WebRtcLocalVideoTrack -> MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO
-        is WebRtcLocalAudioTrack -> MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO
+        is LocalVideoTrack -> MediaType.MEDIA_TYPE_VIDEO
+        is LocalAudioTrack -> MediaType.MEDIA_TYPE_AUDIO
         else -> throw IllegalArgumentException("Unknown LocalMediaTrack: $track.")
     }
-    val init = RtpTransceiver.RtpTransceiverInit(RtpTransceiver.RtpTransceiverDirection.SEND_ONLY)
+    val init = RtpTransceiverInit(
+        direction = RtpTransceiverDirection.SEND_ONLY,
+        sendEncodings = listOf(
+            Encoding {
+                maxFramerate = when (mediaType) {
+                    MediaType.MEDIA_TYPE_AUDIO -> null
+                    MediaType.MEDIA_TYPE_VIDEO -> MAX_FRAMERATE
+                }
+            },
+        ),
+    )
     return addTransceiver(mediaType, init)
 }
 
 internal fun PeerConnection.maybeAddTransceiver(
-    mediaType: MediaStreamTrack.MediaType,
+    mediaType: MediaType,
     receive: Boolean,
 ): RtpTransceiver? {
     if (!receive) return null
-    val init = RtpTransceiver.RtpTransceiverInit(RtpTransceiver.RtpTransceiverDirection.RECV_ONLY)
+    val init = RtpTransceiverInit(
+        direction = RtpTransceiverDirection.RECV_ONLY,
+        sendEncodings = listOf(
+            Encoding {
+                maxFramerate = when (mediaType) {
+                    MediaType.MEDIA_TYPE_AUDIO -> null
+                    MediaType.MEDIA_TYPE_VIDEO -> MAX_FRAMERATE
+                }
+            },
+        ),
+    )
     return addTransceiver(mediaType, init)
 }
 
@@ -144,3 +168,18 @@ internal fun RtpTransceiver.setTrack(track: LocalMediaTrack?) {
     }
     sender.setTrack(t, false)
 }
+
+internal fun RtpTransceiverInit(
+    direction: RtpTransceiverDirection = RtpTransceiverDirection.SEND_RECV,
+    streamIds: List<String> = emptyList(),
+    sendEncodings: List<Encoding> = emptyList(),
+) = RtpTransceiver.RtpTransceiverInit(direction, streamIds, sendEncodings)
+
+internal fun Encoding(
+    rid: String? = null,
+    active: Boolean = true,
+    scaleResolutionDownBy: Double? = null,
+    block: Encoding.() -> Unit = { },
+) = Encoding(rid, active, scaleResolutionDownBy).apply(block)
+
+internal const val MAX_FRAMERATE = 30
