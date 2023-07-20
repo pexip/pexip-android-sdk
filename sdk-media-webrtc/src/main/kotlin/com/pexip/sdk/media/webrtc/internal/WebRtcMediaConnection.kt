@@ -25,6 +25,7 @@ import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
+import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,6 +56,7 @@ import kotlin.properties.Delegates
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
     private val config: MediaConnectionConfig,
+    private val job: CompletableJob,
 ) : MediaConnection, SimplePeerConnectionObserver {
 
     private val started = AtomicBoolean()
@@ -162,6 +164,7 @@ internal class WebRtcMediaConnection(
                     mainRemoteVideoTrackListeners.clear()
                     presentationRemoteVideoTrackListeners.clear()
                     connection.dispose()
+                    job.complete()
                 }
             }
         }

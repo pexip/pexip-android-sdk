@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public interface MediaConnectionFactory : LocalAudioTrackFactory, CameraVideoTra
      *
      * The instance will become unusable after this call.
      *
-     * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
+     * @throws IllegalStateException if [MediaConnectionFactory] has been disposed or its children have not been disposed
      */
     public fun dispose()
 }
