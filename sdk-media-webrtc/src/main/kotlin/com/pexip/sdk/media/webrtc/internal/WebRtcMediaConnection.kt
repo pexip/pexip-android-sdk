@@ -75,18 +75,14 @@ internal class WebRtcMediaConnection(
     @set:JvmName("setMainDegradationPreferenceInternal")
     private var mainDegradationPreference by Delegates.observable(DegradationPreference.BALANCED) { _, old, new ->
         if (old == new) return@observable
-        synchronized(mainVideoTransceiverLock) {
-            mainVideoTransceiver?.setDegradationPreference(new)
-        }
+        mainVideoTransceiver?.setDegradationPreference(new)
     }
 
     // Rename due to platform declaration clash
     @set:JvmName("setPresentationDegradationPreferenceInternal")
     private var presentationDegradationPreference by Delegates.observable(DegradationPreference.BALANCED) { _, old, new ->
         if (old != new) return@observable
-        synchronized(presentationVideoTransceiver) {
-            presentationVideoTransceiver.setDegradationPreference(new)
-        }
+        presentationVideoTransceiver.setDegradationPreference(new)
     }
 
     // Rename due to platform declaration clash
@@ -121,8 +117,6 @@ internal class WebRtcMediaConnection(
             sendEncodings = listOf(Encoding { maxFramerate = MAX_FRAMERATE }),
         ),
     )
-    private val mainAudioTransceiverLock = Any()
-    private val mainVideoTransceiverLock = Any()
     private val mainRemoteVideoTrackListeners =
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
     private val presentationRemoteVideoTrackListeners =
@@ -160,15 +154,9 @@ internal class WebRtcMediaConnection(
                     mainAudioTrack = null
                     mainVideoTrack = null
                     presentationVideoTrack = null
-                    synchronized(mainAudioTransceiverLock) {
-                        mainAudioTransceiver?.sender?.setTrack(null, false)
-                    }
-                    synchronized(mainVideoTransceiverLock) {
-                        mainVideoTransceiver?.sender?.setTrack(null, false)
-                    }
-                    synchronized(presentationVideoTransceiver) {
-                        presentationVideoTransceiver.sender.setTrack(null, false)
-                    }
+                    mainAudioTransceiver?.sender?.setTrack(null, false)
+                    mainVideoTransceiver?.sender?.setTrack(null, false)
+                    presentationVideoTransceiver.sender.setTrack(null, false)
                     _mainRemoteVideoTrack.update { null }
                     _presentationRemoteVideoTrack.update { null }
                     mainRemoteVideoTrackListeners.clear()
@@ -186,12 +174,10 @@ internal class WebRtcMediaConnection(
             else -> throw IllegalArgumentException("localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.")
         }
         scope.launch {
-            synchronized(mainAudioTransceiverLock) {
-                val t = mainAudioTransceiver ?: connection.maybeAddTransceiver(lat)
-                t?.maybeSetNewDirection(lat)
-                t?.setTrack(lat)
-                mainAudioTransceiver = t
-            }
+            val t = mainAudioTransceiver ?: connection.maybeAddTransceiver(lat)
+            t?.maybeSetNewDirection(lat)
+            t?.setTrack(lat)
+            mainAudioTransceiver = t
             mainAudioTrack = lat
         }
     }
@@ -203,14 +189,12 @@ internal class WebRtcMediaConnection(
             else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
         }
         scope.launch {
-            synchronized(mainVideoTransceiverLock) {
-                val t = mainVideoTransceiver ?: connection.maybeAddTransceiver(lvt)?.apply {
-                    setDegradationPreference(mainDegradationPreference)
-                }
-                t?.maybeSetNewDirection(lvt)
-                t?.setTrack(lvt)
-                mainVideoTransceiver = t
+            val t = mainVideoTransceiver ?: connection.maybeAddTransceiver(lvt)?.apply {
+                setDegradationPreference(mainDegradationPreference)
             }
+            t?.maybeSetNewDirection(lvt)
+            t?.setTrack(lvt)
+            mainVideoTransceiver = t
             mainVideoTrack = lvt
         }
     }
@@ -222,44 +206,36 @@ internal class WebRtcMediaConnection(
             else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
         }
         scope.launch {
-            synchronized(presentationVideoTransceiver) {
-                presentationVideoTransceiver.maybeSetNewDirection(lvt)
-                presentationVideoTransceiver.setTrack(lvt)
-            }
+            presentationVideoTransceiver.maybeSetNewDirection(lvt)
+            presentationVideoTransceiver.setTrack(lvt)
             presentationVideoTrack = lvt
         }
     }
 
     override fun setMainRemoteAudioTrackEnabled(enabled: Boolean) {
         scope.launch {
-            synchronized(mainAudioTransceiverLock) {
-                mainAudioTransceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(
-                    mediaType = MediaType.MEDIA_TYPE_AUDIO,
-                    receive = enabled,
-                )
-                mainAudioTransceiver?.maybeSetNewDirection(enabled)
-            }
+            mainAudioTransceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(
+                mediaType = MediaType.MEDIA_TYPE_AUDIO,
+                receive = enabled,
+            )
+            mainAudioTransceiver?.maybeSetNewDirection(enabled)
         }
     }
 
     override fun setMainRemoteVideoTrackEnabled(enabled: Boolean) {
         scope.launch {
-            synchronized(mainVideoTransceiverLock) {
-                mainVideoTransceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(
-                    mediaType = MediaType.MEDIA_TYPE_VIDEO,
-                    receive = enabled,
-                )
-                mainVideoTransceiver?.maybeSetNewDirection(enabled)
-            }
+            mainVideoTransceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(
+                mediaType = MediaType.MEDIA_TYPE_VIDEO,
+                receive = enabled,
+            )
+            mainVideoTransceiver?.maybeSetNewDirection(enabled)
         }
     }
 
     override fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean) {
         if (!config.presentationInMain) {
             scope.launch {
-                synchronized(presentationVideoTransceiver) {
-                    presentationVideoTransceiver.maybeSetNewDirection(enabled)
-                }
+                presentationVideoTransceiver.maybeSetNewDirection(enabled)
             }
         }
     }
@@ -360,10 +336,10 @@ internal class WebRtcMediaConnection(
         val videoTrack = receiver.videoTrack?.let(::WebRtcVideoTrack)
         scope.launch {
             when (id) {
-                synchronized(mainVideoTransceiverLock) { mainVideoTransceiver?.receiver?.id() } -> {
+                mainVideoTransceiver?.receiver?.id() -> {
                     _mainRemoteVideoTrack.emit(videoTrack)
                 }
-                synchronized(presentationVideoTransceiver) { presentationVideoTransceiver.receiver.id() } -> {
+                presentationVideoTransceiver.receiver.id() -> {
                     _presentationRemoteVideoTrack.emit(videoTrack)
                 }
             }
@@ -374,10 +350,10 @@ internal class WebRtcMediaConnection(
         val id = receiver.id()
         scope.launch {
             when (id) {
-                synchronized(mainVideoTransceiverLock) { mainVideoTransceiver?.receiver?.id() } -> {
+                mainVideoTransceiver?.receiver?.id() -> {
                     _mainRemoteVideoTrack.emit(null)
                 }
-                synchronized(presentationVideoTransceiver) { presentationVideoTransceiver.receiver.id() } -> {
+                presentationVideoTransceiver.receiver.id() -> {
                     _presentationRemoteVideoTrack.emit(null)
                 }
             }
@@ -389,15 +365,9 @@ internal class WebRtcMediaConnection(
             connection.setLocalDescription()
             val result = connection.localDescription.mangle(
                 bitrate = bitrate,
-                mainAudioMid = synchronized(mainAudioTransceiverLock) {
-                    mainAudioTransceiver?.mid
-                },
-                mainVideoMid = synchronized(mainVideoTransceiverLock) {
-                    mainVideoTransceiver?.mid
-                },
-                presentationVideoMid = synchronized(presentationVideoTransceiver) {
-                    presentationVideoTransceiver.mid
-                },
+                mainAudioMid = mainAudioTransceiver?.mid,
+                mainVideoMid = mainVideoTransceiver?.mid,
+                presentationVideoMid = presentationVideoTransceiver.mid,
             )
             iceCredentials.clear()
             iceCredentials.putAll(result.iceCredentials)
