@@ -56,7 +56,6 @@ import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.properties.Delegates
 
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
@@ -74,23 +73,9 @@ internal class WebRtcMediaConnection(
     private val iceCredentials = mutableMapOf<String, IceCredentials>()
     private val connection = factory.createPeerConnection(createRTCConfiguration(), this)
 
-    private var bitrate by Delegates.observable(0.bps) { _, old, new ->
-        if (old != new) connection.restartIce()
-    }
-
-    // Rename due to platform declaration clash
-    @set:JvmName("setMainDegradationPreferenceInternal")
-    private var mainDegradationPreference by Delegates.observable(DegradationPreference.BALANCED) { _, old, new ->
-        if (old == new) return@observable
-        mainVideoTransceiver?.setDegradationPreference(new)
-    }
-
-    // Rename due to platform declaration clash
-    @set:JvmName("setPresentationDegradationPreferenceInternal")
-    private var presentationDegradationPreference by Delegates.observable(DegradationPreference.BALANCED) { _, old, new ->
-        if (old != new) return@observable
-        presentationVideoTransceiver.setDegradationPreference(new)
-    }
+    private val maxBitrate = MutableStateFlow(0.bps)
+    private val mainDegradationPreference = MutableStateFlow(DegradationPreference.BALANCED)
+    private val presentationDegradationPreference = MutableStateFlow(DegradationPreference.BALANCED)
 
     private val mainLocalAudioTrack = MutableSharedFlow<LocalAudioTrack?>()
     private val mainLocalVideoTrack = MutableSharedFlow<LocalVideoTrack?>()
@@ -104,7 +89,7 @@ internal class WebRtcMediaConnection(
             direction = RtpTransceiverDirection.INACTIVE,
             sendEncodings = listOf(Encoding { maxFramerate = MAX_FRAMERATE }),
         ),
-    )
+    ).apply { setDegradationPreference(presentationDegradationPreference.value) }
     private val mainRemoteVideoTrackListeners =
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
     private val presentationRemoteVideoTrackListeners =
@@ -119,8 +104,10 @@ internal class WebRtcMediaConnection(
         get() = _presentationRemoteVideoTrack.value
 
     init {
-        presentationVideoTransceiver.setDegradationPreference(presentationDegradationPreference)
         with(scope) {
+            launchMaxBitrate()
+            launchMainDegradationPreference()
+            launchPresentationDegradationPreference()
             launchMainRemoteVideoTrackListeners()
             launchPresentationRemoteVideoTrackListeners()
             launchMainLocalAudioTrack()
@@ -186,21 +173,15 @@ internal class WebRtcMediaConnection(
     }
 
     override fun setMaxBitrate(bitrate: Bitrate) {
-        scope.launch {
-            this@WebRtcMediaConnection.bitrate = bitrate
-        }
+        maxBitrate.value = bitrate
     }
 
     override fun setMainDegradationPreference(preference: DegradationPreference) {
-        scope.launch {
-            mainDegradationPreference = preference
-        }
+        mainDegradationPreference.value = preference
     }
 
     override fun setPresentationDegradationPreference(preference: DegradationPreference) {
-        scope.launch {
-            presentationDegradationPreference = preference
-        }
+        presentationDegradationPreference.value = preference
     }
 
     @Deprecated(
@@ -223,7 +204,7 @@ internal class WebRtcMediaConnection(
 
     override fun start() {
         if (started.compareAndSet(false, true)) {
-            setLocalDescription()
+            scope.launch { setLocalDescription() }
         }
     }
 
@@ -249,9 +230,7 @@ internal class WebRtcMediaConnection(
 
     override fun onStandardizedIceConnectionChange(newState: PeerConnection.IceConnectionState) {
         if (newState != PeerConnection.IceConnectionState.FAILED) return
-        scope.launch {
-            connection.restartIce()
-        }
+        scope.launch { connection.restartIce() }
     }
 
     override fun onIceCandidate(candidate: IceCandidate) {
@@ -273,7 +252,7 @@ internal class WebRtcMediaConnection(
         // Skip the first call to onRenegotiationNeeded() since it's called right after
         // PeerConnection creation and we're still not ready to use setLocalDescription()
         if (shouldRenegotiate.compareAndSet(false, true)) return
-        setLocalDescription()
+        scope.launch { setLocalDescription() }
     }
 
     override fun onAddTrack(receiver: RtpReceiver, streams: Array<out MediaStream>) {
@@ -305,32 +284,44 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    private fun setLocalDescription() {
-        scope.launch {
-            connection.setLocalDescription()
-            val result = connection.localDescription.mangle(
-                bitrate = bitrate,
-                mainAudioMid = mainAudioTransceiver?.mid,
-                mainVideoMid = mainVideoTransceiver?.mid,
-                presentationVideoMid = presentationVideoTransceiver.mid,
-            )
-            iceCredentials.clear()
-            iceCredentials.putAll(result.iceCredentials)
-            val sdp = SessionDescription(
-                SessionDescription.Type.ANSWER,
-                config.signaling.onOffer(
-                    callType = "WEBRTC",
-                    description = result.description.description,
-                    presentationInMain = config.presentationInMain,
-                    fecc = config.farEndCameraControl,
-                ),
-            )
-            connection.setRemoteDescription(sdp.mangle(bitrate))
-            if (shouldAck.compareAndSet(true, false)) {
-                runCatching { config.signaling.onAck() }
-            }
+    private suspend fun setLocalDescription() {
+        connection.setLocalDescription()
+        val bitrate = maxBitrate.value
+        val result = connection.localDescription.mangle(
+            bitrate = bitrate,
+            mainAudioMid = mainAudioTransceiver?.mid,
+            mainVideoMid = mainVideoTransceiver?.mid,
+            presentationVideoMid = presentationVideoTransceiver.mid,
+        )
+        iceCredentials.clear()
+        iceCredentials.putAll(result.iceCredentials)
+        val sdp = SessionDescription(
+            SessionDescription.Type.ANSWER,
+            config.signaling.onOffer(
+                callType = "WEBRTC",
+                description = result.description.description,
+                presentationInMain = config.presentationInMain,
+                fecc = config.farEndCameraControl,
+            ),
+        )
+        connection.setRemoteDescription(sdp.mangle(bitrate))
+        if (shouldAck.compareAndSet(true, false)) {
+            runCatching { config.signaling.onAck() }
         }
     }
+
+    private fun CoroutineScope.launchMaxBitrate() = maxBitrate.drop(1)
+        .onEach { connection.restartIce() }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchMainDegradationPreference() = mainDegradationPreference.drop(1)
+        .onEach { mainVideoTransceiver?.setDegradationPreference(it) }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchPresentationDegradationPreference() =
+        presentationDegradationPreference.drop(1)
+            .onEach { presentationVideoTransceiver.setDegradationPreference(it) }
+            .launchIn(this)
 
     private fun CoroutineScope.launchMainLocalAudioTrack() = launch {
         mainLocalAudioTrack.distinctUntilChanged().collectLatest { track ->
@@ -349,7 +340,7 @@ internal class WebRtcMediaConnection(
     private fun CoroutineScope.launchMainLocalVideoTrack() = launch {
         mainLocalVideoTrack.distinctUntilChanged().collectLatest { track ->
             val transceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(track)?.apply {
-                setDegradationPreference(mainDegradationPreference)
+                setDegradationPreference(mainDegradationPreference.value)
             }
             transceiver?.maybeSetNewDirection(track)
             transceiver?.setTrack(track)
@@ -410,9 +401,8 @@ internal class WebRtcMediaConnection(
             .distinctUntilChanged()
     }
 
-    private fun Collection<MediaConnection.RemoteVideoTrackListener>.notify(videoTrack: VideoTrack?) {
+    private fun Collection<MediaConnection.RemoteVideoTrackListener>.notify(videoTrack: VideoTrack?) =
         forEach { it.safeOnRemoteVideoTrack(videoTrack) }
-    }
 
     private fun createRTCConfiguration(): PeerConnection.RTCConfiguration {
         val iceServers = config.iceServers.map {
