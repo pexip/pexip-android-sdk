@@ -30,6 +30,7 @@ import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionFactory
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
+import com.pexip.sdk.media.webrtc.internal.PeerConnectionWrapper
 import com.pexip.sdk.media.webrtc.internal.SimpleCameraEventsHandler
 import com.pexip.sdk.media.webrtc.internal.WebRtcCameraVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
@@ -242,10 +243,20 @@ public class WebRtcMediaConnectionFactory private constructor(
         }
     }
 
-    internal fun createPeerConnection(
-        rtcConfig: PeerConnection.RTCConfiguration,
-        observer: PeerConnection.Observer,
-    ) = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
+    internal fun createPeerConnection(config: MediaConnectionConfig): PeerConnectionWrapper {
+        val iceServers = config.iceServers.map {
+            PeerConnection.IceServer.builder(it.urls.toList())
+                .setUsername(it.username)
+                .setPassword(it.password)
+                .createIceServer()
+        }
+        val rtcConfig = PeerConnection.RTCConfiguration(iceServers).apply {
+            enableDscp = config.dscp
+            sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
+            continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
+        }
+        return PeerConnectionWrapper(factory, rtcConfig)
+    }
 
     private fun createMediaTrackId() = UUID.randomUUID().toString()
 

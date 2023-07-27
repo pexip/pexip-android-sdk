@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,4 @@
  */
 package com.pexip.sdk.media.webrtc.internal
 
-import org.webrtc.SdpObserver
-import org.webrtc.SessionDescription
-
-internal interface SimpleSdpObserver : SdpObserver {
-
-    override fun onCreateSuccess(description: SessionDescription) {
-    }
-
-    override fun onCreateFailure(reason: String) {
-    }
-
-    override fun onSetSuccess() {
-    }
-
-    override fun onSetFailure(reason: String) {
-    }
-}
+internal data class IceCredentials(val ufrag: String, val pwd: String)

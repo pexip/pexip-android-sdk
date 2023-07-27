@@ -24,80 +24,55 @@ internal fun SessionDescription.mangle(
     mainAudioMid: String?,
     mainVideoMid: String?,
     presentationVideoMid: String?,
-): MangleResult {
-    require(type == SessionDescription.Type.OFFER) { "type must be OFFER." }
-    val builder = StringBuilder()
+): SessionDescription = SessionDescription(type) {
     val lines = splitToLineSequence()
     val mainAudioMidLine = mainAudioMid?.toMidLine()
     val mainVideoMidLine = mainVideoMid?.toMidLine()
     val presentationVideoMidLine = presentationVideoMid?.toMidLine()
     var section = Section.SESSION
-    var ufrag: String? = null
-    var pwd: String? = null
-    var mid: String? = null
-    val iceCredentials = mutableMapOf<String, IceCredentials>()
     for (line in lines) {
         section = when {
             line.startsWith("m=audio") -> Section.AUDIO
             line.startsWith("m=video") -> Section.VIDEO
             else -> section
         }
-        builder.appendSdpLine(line)
+        appendSdpLine(line)
         if (section == Section.VIDEO && line.startsWith("c=IN") && bitrate > 0.bps) {
-            builder.appendSdpLine(bitrate)
+            appendSdpLine(bitrate)
         }
         when (line) {
-            mainAudioMidLine, mainVideoMidLine -> builder.appendSdpLine("a=content:main")
-            presentationVideoMidLine -> builder.appendSdpLine("a=content:slides")
-        }
-        if (line.startsWith(ICE_UFRAG)) ufrag = line.removePrefix(ICE_UFRAG)
-        if (line.startsWith(ICE_PWD)) pwd = line.removePrefix(ICE_PWD)
-        if (line.startsWith(MID)) mid = line.removePrefix(MID)
-        if (ufrag != null && pwd != null && mid != null) {
-            iceCredentials[mid] = IceCredentials(ufrag, pwd)
-            ufrag = null
-            pwd = null
-            mid = null
+            mainAudioMidLine, mainVideoMidLine -> appendSdpLine("a=content:main")
+            presentationVideoMidLine -> appendSdpLine("a=content:slides")
         }
     }
-    return MangleResult(
-        description = SessionDescription(type, builder.toString()),
-        iceCredentials = iceCredentials.toMap(),
-    )
 }
 
-internal fun SessionDescription.mangle(bitrate: Bitrate): SessionDescription {
-    require(type == SessionDescription.Type.ANSWER) { "type must be ANSWER." }
-    val newDescription = buildString {
-        val lines = splitToLineSequence()
-        for (line in lines) {
-            val result = TIAS.matchEntire(line)
-            if (result == null) {
+internal fun SessionDescription.mangle(bitrate: Bitrate) = SessionDescription(type) {
+    val lines = splitToLineSequence()
+    for (line in lines) {
+        val result = TIAS.matchEntire(line)
+        if (result == null) {
+            appendSdpLine(line)
+        } else {
+            val sdpBitrate = result.groupValues[1].toIntOrNull()
+            if (sdpBitrate == null || bitrate.bps > sdpBitrate || bitrate.bps == 0) {
                 appendSdpLine(line)
             } else {
-                val sdpBitrate = result.groupValues[1].toIntOrNull()
-                if (sdpBitrate == null || bitrate.bps > sdpBitrate || bitrate.bps == 0) {
-                    appendSdpLine(line)
-                } else {
-                    appendSdpLine(bitrate)
-                }
+                appendSdpLine(bitrate)
             }
         }
     }
-    return SessionDescription(type, newDescription)
 }
 
-internal data class MangleResult(
-    val description: SessionDescription,
-    val iceCredentials: Map<String, IceCredentials>,
-)
-
-internal data class IceCredentials(val ufrag: String, val pwd: String)
-
-private fun SessionDescription.splitToLineSequence() =
+internal fun SessionDescription.splitToLineSequence() =
     description.splitToSequence(DELIMITER).filter { it.isNotBlank() }
 
-private fun String.toMidLine(): String = MID + this
+private inline fun SessionDescription(
+    type: SessionDescription.Type,
+    block: StringBuilder.() -> Unit,
+) = SessionDescription(type, buildString(block))
+
+private fun String.toMidLine(): String = "a=mid:$this"
 
 private fun StringBuilder.appendSdpLine(line: String) {
     append(line)
@@ -110,9 +85,6 @@ private fun StringBuilder.appendSdpLine(bitrate: Bitrate) {
 }
 
 private const val DELIMITER = "\r\n"
-private const val MID = "a=mid:"
-private const val ICE_UFRAG = "a=ice-ufrag:"
-private const val ICE_PWD = "a=ice-pwd:"
 
 private enum class Section {
     SESSION, AUDIO, VIDEO

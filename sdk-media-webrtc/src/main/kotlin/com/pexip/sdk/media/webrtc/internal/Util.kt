@@ -17,60 +17,23 @@ package com.pexip.sdk.media.webrtc.internal
 
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.DegradationPreference
-import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
-import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
-import org.webrtc.MediaStreamTrack.MediaType
-import org.webrtc.PeerConnection
 import org.webrtc.RtpParameters
 import org.webrtc.RtpParameters.Encoding
 import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
-import org.webrtc.SessionDescription
 import java.util.concurrent.Executor
 import java.util.concurrent.RejectedExecutionException
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 internal fun Executor.maybeExecute(block: () -> Unit) = try {
     execute(block)
 } catch (e: RejectedExecutionException) {
     // noop
 }
-
-internal suspend fun PeerConnection.setLocalDescription() = suspendCoroutine {
-    val observer = object : SimpleSdpObserver {
-
-        override fun onSetSuccess() {
-            it.resume(Unit)
-        }
-
-        override fun onSetFailure(reason: String) {
-            it.resumeWithException(RuntimeException(reason))
-        }
-    }
-    setLocalDescription(observer)
-}
-
-internal suspend fun PeerConnection.setRemoteDescription(description: SessionDescription) =
-    suspendCoroutine {
-        val observer = object : SimpleSdpObserver {
-
-            override fun onSetSuccess() {
-                it.resume(Unit)
-            }
-
-            override fun onSetFailure(reason: String) {
-                it.resumeWithException(RuntimeException(reason))
-            }
-        }
-        setRemoteDescription(observer, description)
-    }
 
 internal fun LocalMediaTrack.CapturingListener.safeOnCapturing(capturing: Boolean) = try {
     onCapturing(capturing)
@@ -150,46 +113,6 @@ internal fun RtpTransceiver.maybeSetNewDirection(receive: Boolean) {
         }
     }
     newDirection?.let(::setDirection)
-}
-
-internal fun PeerConnection.maybeAddTransceiver(track: LocalMediaTrack?): RtpTransceiver? {
-    track ?: return null
-    val mediaType = when (track) {
-        is LocalVideoTrack -> MediaType.MEDIA_TYPE_VIDEO
-        is LocalAudioTrack -> MediaType.MEDIA_TYPE_AUDIO
-        else -> throw IllegalArgumentException("Unknown LocalMediaTrack: $track.")
-    }
-    val init = RtpTransceiverInit(
-        direction = RtpTransceiverDirection.SEND_ONLY,
-        sendEncodings = listOf(
-            Encoding {
-                maxFramerate = when (mediaType) {
-                    MediaType.MEDIA_TYPE_AUDIO -> null
-                    MediaType.MEDIA_TYPE_VIDEO -> MAX_FRAMERATE
-                }
-            },
-        ),
-    )
-    return addTransceiver(mediaType, init)
-}
-
-internal fun PeerConnection.maybeAddTransceiver(
-    mediaType: MediaType,
-    receive: Boolean,
-): RtpTransceiver? {
-    if (!receive) return null
-    val init = RtpTransceiverInit(
-        direction = RtpTransceiverDirection.RECV_ONLY,
-        sendEncodings = listOf(
-            Encoding {
-                maxFramerate = when (mediaType) {
-                    MediaType.MEDIA_TYPE_AUDIO -> null
-                    MediaType.MEDIA_TYPE_VIDEO -> MAX_FRAMERATE
-                }
-            },
-        ),
-    )
-    return addTransceiver(mediaType, init)
 }
 
 internal fun RtpTransceiver.setTrack(track: LocalMediaTrack?) {
