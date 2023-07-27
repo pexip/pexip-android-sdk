@@ -9,6 +9,7 @@ public final class com/pexip/sdk/media/AudioDevice$Type : java/lang/Enum {
 	public static final field BUILTIN_EARPIECE Lcom/pexip/sdk/media/AudioDevice$Type;
 	public static final field BUILTIN_SPEAKER Lcom/pexip/sdk/media/AudioDevice$Type;
 	public static final field WIRED_HEADSET Lcom/pexip/sdk/media/AudioDevice$Type;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/media/AudioDevice$Type;
 	public static fun values ()[Lcom/pexip/sdk/media/AudioDevice$Type;
 }
@@ -65,6 +66,7 @@ public final class com/pexip/sdk/media/BitrateUnit : java/lang/Enum {
 	public static final field BPS Lcom/pexip/sdk/media/BitrateUnit;
 	public static final field KBPS Lcom/pexip/sdk/media/BitrateUnit;
 	public static final field MBPS Lcom/pexip/sdk/media/BitrateUnit;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/media/BitrateUnit;
 	public static fun values ()[Lcom/pexip/sdk/media/BitrateUnit;
 }
@@ -100,6 +102,7 @@ public final class com/pexip/sdk/media/DegradationPreference : java/lang/Enum {
 	public static final field DISABLED Lcom/pexip/sdk/media/DegradationPreference;
 	public static final field MAINTAIN_FRAMERATE Lcom/pexip/sdk/media/DegradationPreference;
 	public static final field MAINTAIN_RESOLUTION Lcom/pexip/sdk/media/DegradationPreference;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/media/DegradationPreference;
 	public static fun values ()[Lcom/pexip/sdk/media/DegradationPreference;
 }
