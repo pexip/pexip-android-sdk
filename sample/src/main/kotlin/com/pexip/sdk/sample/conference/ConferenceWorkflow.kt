@@ -23,6 +23,7 @@ import android.media.projection.MediaProjection
 import android.os.IBinder
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.RequestTokenRequest
+import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
@@ -260,23 +261,8 @@ class ConferenceWorkflow @Inject constructor(
         val conference = renderState.conference
         runningSideEffect("conferenceEventsSideEffect($builder, $conference)") {
             val events = conference.getConferenceEvents().shareIn(this, SharingStarted.Lazily)
-            events.map(::OnConferenceEvent)
-                .onEach(actionSink::send)
-                .launchIn(this)
-            events.filterIsInstance<PresentationStartConferenceEvent>()
-                .map(::OnPresentationStartConferenceEvent)
-                .onEach(actionSink::send)
-                .launchIn(this)
-            events.filterIsInstance<PresentationStopConferenceEvent>()
-                .map(::OnPresentationStopConferenceEvent)
-                .onEach(actionSink::send)
-                .launchIn(this)
-            events.filterIsInstance<FailureConferenceEvent>()
-                .map(::OnFailureConferenceEvent)
-                .onEach(actionSink::send)
-                .launchIn(this)
-            events.filterIsInstance<DisconnectConferenceEvent>()
-                .map(::OnDisconnectConferenceEvent)
+            events
+                .map(::toConferenceAction)
                 .onEach(actionSink::send)
                 .launchIn(this)
             events.filterIsInstance<ReferConferenceEvent>()
@@ -289,6 +275,14 @@ class ConferenceWorkflow @Inject constructor(
                 .onEach(actionSink::send)
                 .launchIn(this)
         }
+    }
+
+    private fun toConferenceAction(event: ConferenceEvent) = when (event) {
+        is PresentationStartConferenceEvent -> OnPresentationStartConferenceEvent(event)
+        is PresentationStopConferenceEvent -> OnPresentationStopConferenceEvent(event)
+        is DisconnectConferenceEvent -> OnDisconnectConferenceEvent(event)
+        is FailureConferenceEvent -> OnFailureConferenceEvent(event)
+        else -> OnConferenceEvent(event)
     }
 
     private companion object {
