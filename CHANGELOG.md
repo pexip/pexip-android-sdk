@@ -19,6 +19,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `ack` is now called later in the call setup phase
 - Merged all `-coroutines` modules with their respective bases
 - `createOffer` to `setLocalDescription` that supports rollback
+- Usages of `java.net.URL` to `okhttp3.HttpUrl` internally
 
 ### Removed
 

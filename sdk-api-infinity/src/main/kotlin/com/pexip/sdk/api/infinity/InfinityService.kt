@@ -32,6 +32,7 @@ public interface InfinityService {
      * Creates a new [RequestBuilder].
      *
      * @param node a conferencing node against which to perform requests
+     * @throws IllegalArgumentException if the [node] is invalid
      */
     public fun newRequest(node: URL): RequestBuilder
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.pexip.sdk.api.infinity.internal
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InfinityService.RequestBuilder
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import java.net.URL
 
@@ -29,6 +30,6 @@ internal class RealInfinityService(
     override fun newRequest(node: URL): RequestBuilder = RealRequestBuilder(
         client = client,
         json = json,
-        node = node,
+        node = requireNotNull(node.toHttpUrlOrNull()) { "Invalid node address." },
     )
 }
