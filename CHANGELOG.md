@@ -15,11 +15,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Various deprecated methods `DeprecationLevel` to `DeprecationLevel.ERROR`
 - `ack` is now called later in the call setup phase
+- Merged all `-coroutines` modules with their respective bases
 
 ### Removed
 
 - Various deprecated methods with `DeprecationLevel.ERROR`
 - Read timeout on `ack`
+
+### Notes
+
+`-coroutines` modules now only contain their base modules as the sole dependency and can be skipped
+in consumer modules. They will continue to be published for some time to provide a clean migration
+path and will be removed at a later point.
 
 ## [0.12.0] - 2023-05-22
 

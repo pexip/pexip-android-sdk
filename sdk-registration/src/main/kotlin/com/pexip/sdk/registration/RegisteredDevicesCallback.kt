@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.media.coroutines
+package com.pexip.sdk.registration
 
-public class SwitchCameraException(message: String) : RuntimeException(message)
+public interface RegisteredDevicesCallback {
+
+    /**
+     * Invoked for a received list of registered devices.
+     *
+     * @param devices a list of registered devices
+     */
+    public fun onSuccess(devices: List<RegisteredDevice>)
+
+    /**
+     * Invoked when a network exception occurred when fetching the list or an unexpected exception
+     * occurred.
+     *
+     * @param t an exception that occurred
+     */
+    public fun onFailure(t: Throwable)
+}

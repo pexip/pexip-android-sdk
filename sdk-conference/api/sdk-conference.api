@@ -130,3 +130,10 @@ public abstract interface class com/pexip/sdk/conference/SendCallback {
 	public abstract fun onSuccess (Lcom/pexip/sdk/conference/Message;)V
 }
 
+public final class com/pexip/sdk/conference/coroutines/UtilKt {
+	public static final fun getConferenceEvents (Lcom/pexip/sdk/conference/Conference;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun getMessages (Lcom/pexip/sdk/conference/Messenger;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun send (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun send$default (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+

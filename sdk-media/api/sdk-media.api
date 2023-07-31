@@ -238,3 +238,22 @@ public abstract interface class com/pexip/sdk/media/VideoTrack {
 	public abstract fun removeRenderer (Lcom/pexip/sdk/media/Renderer;)V
 }
 
+public final class com/pexip/sdk/media/coroutines/SwitchCameraException : java/lang/RuntimeException {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class com/pexip/sdk/media/coroutines/UtilKt {
+	public static final fun availableAudioDevicesIn (Lcom/pexip/sdk/media/AudioDeviceManager;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/coroutines/flow/SharingStarted;)Lkotlinx/coroutines/flow/StateFlow;
+	public static final fun capturingIn (Lcom/pexip/sdk/media/LocalMediaTrack;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/coroutines/flow/SharingStarted;)Lkotlinx/coroutines/flow/StateFlow;
+	public static final fun getAvailableAudioDevices (Lcom/pexip/sdk/media/AudioDeviceManager;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun getCapturing (Lcom/pexip/sdk/media/LocalMediaTrack;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun getMainRemoteVideoTrack (Lcom/pexip/sdk/media/MediaConnection;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun getPresentationRemoteVideoTrack (Lcom/pexip/sdk/media/MediaConnection;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun getSelectedAudioDevice (Lcom/pexip/sdk/media/AudioDeviceManager;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun mainRemoteVideoTrackIn (Lcom/pexip/sdk/media/MediaConnection;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/coroutines/flow/SharingStarted;)Lkotlinx/coroutines/flow/StateFlow;
+	public static final fun presentationRemoteVideoTrackIn (Lcom/pexip/sdk/media/MediaConnection;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/coroutines/flow/SharingStarted;)Lkotlinx/coroutines/flow/StateFlow;
+	public static final fun selectedAudioDeviceIn (Lcom/pexip/sdk/media/AudioDeviceManager;Lkotlinx/coroutines/CoroutineScope;Lkotlinx/coroutines/flow/SharingStarted;)Lkotlinx/coroutines/flow/StateFlow;
+	public static final fun switchCamera (Lcom/pexip/sdk/media/CameraVideoTrack;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun switchCamera$default (Lcom/pexip/sdk/media/CameraVideoTrack;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+

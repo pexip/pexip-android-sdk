@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
     api(project(":sdk-registration"))
-    api(libs.kotlinx.coroutines.core)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
