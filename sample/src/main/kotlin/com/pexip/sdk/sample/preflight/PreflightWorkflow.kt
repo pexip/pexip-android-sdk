@@ -56,7 +56,7 @@ class PreflightWorkflow @Inject constructor(
             is PreflightDestination.PinChallenge -> context.renderChild(
                 child = pinChallengeWorkflow,
                 props = PinChallengeProps(
-                    node = destination.node,
+                    builder = destination.builder,
                     conferenceAlias = destination.conferenceAlias,
                     required = destination.required,
                 ),

@@ -21,7 +21,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.media.projection.MediaProjection
 import android.os.IBinder
-import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
 import com.pexip.sdk.conference.infinity.InfinityConference
@@ -57,7 +56,6 @@ import javax.inject.Singleton
 @Singleton
 class ConferenceWorkflow @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
-    private val service: InfinityService,
     private val mediaConnectionFactory: MediaConnectionFactory,
     private val mediaProjectionVideoTrackFactory: MediaProjectionVideoTrackFactory,
     private val audioDeviceWorkflow: AudioDeviceWorkflow,
@@ -69,9 +67,7 @@ class ConferenceWorkflow @Inject constructor(
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState {
         val conference = InfinityConference.create(
-            service = service,
-            node = props.node,
-            conferenceAlias = props.conferenceAlias,
+            step = props.builder.conference(props.conferenceAlias),
             response = props.response,
         )
         val iceServer = IceServer.Builder(GoogleStunUrls).build()
@@ -212,10 +208,11 @@ class ConferenceWorkflow @Inject constructor(
                         actionSink.send(OnStopScreenCapture())
                     }
                 }
-                val localVideoTrack = mediaProjectionVideoTrackFactory.createMediaProjectionVideoTrack(
-                    intent = data,
-                    callback = callback,
-                )
+                val localVideoTrack =
+                    mediaProjectionVideoTrackFactory.createMediaProjectionVideoTrack(
+                        intent = data,
+                        callback = callback,
+                    )
                 actionSink.send(OnScreenCaptureVideoTrack(localVideoTrack))
             }
         }

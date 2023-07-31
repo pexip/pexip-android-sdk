@@ -61,7 +61,7 @@ class OnPreflightOutput(private val output: PreflightOutput) : SampleAction() {
         when (output) {
             is PreflightOutput.Conference -> state = state.copy(
                 destination = SampleDestination.Conference(
-                    node = output.node,
+                    builder = output.builder,
                     conferenceAlias = output.conferenceAlias,
                     presentationInMain = output.presentationInMain,
                     response = output.response,

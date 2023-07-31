@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 package com.pexip.sdk.sample.conference
 
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalAudioTrack
-import java.net.URL
 
 data class ConferenceProps(
-    val node: URL,
+    val builder: InfinityService.RequestBuilder,
     val conferenceAlias: String,
     val presentationInMain: Boolean,
     val response: RequestTokenResponse,
