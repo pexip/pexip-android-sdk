@@ -20,6 +20,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Merged all `-coroutines` modules with their respective bases
 - `createOffer` to `setLocalDescription` that supports rollback
 - Usages of `java.net.URL` to `okhttp3.HttpUrl` internally
+- **BREAKING**: `Conference` no longer implements `MediaConnectionSignaling`. It instead provides an
+  instance of `MediaConnectionSignaling` as a property `Conference.signaling`. To migrated, update
+  the any calls of `MediaConnectionConfig.Builder(conference)` to
+  `MediaConnectionConfig.Builder(conference.signaling)`
 
 ### Fixed
 

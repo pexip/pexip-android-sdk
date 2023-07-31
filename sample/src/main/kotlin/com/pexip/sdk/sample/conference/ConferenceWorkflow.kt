@@ -83,7 +83,7 @@ class ConferenceWorkflow @Inject constructor(
             response = props.response,
         )
         val iceServer = IceServer.Builder(GoogleStunUrls).build()
-        val config = MediaConnectionConfig.Builder(conference)
+        val config = MediaConnectionConfig.Builder(conference.signaling)
             .addIceServer(iceServer)
             .presentationInMain(props.presentationInMain)
             .build()
