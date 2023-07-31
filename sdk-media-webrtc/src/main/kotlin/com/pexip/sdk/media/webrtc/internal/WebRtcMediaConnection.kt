@@ -102,7 +102,10 @@ internal class WebRtcMediaConnection(
     private var mainVideoTransceiver: RtpTransceiver? = null
     private val presentationVideoTransceiver: RtpTransceiver = connection.addTransceiver(
         MediaType.MEDIA_TYPE_VIDEO,
-        RtpTransceiver.RtpTransceiverInit(RtpTransceiverDirection.INACTIVE),
+        RtpTransceiverInit(
+            direction = RtpTransceiverDirection.INACTIVE,
+            sendEncodings = listOf(Encoding { maxFramerate = MAX_FRAMERATE }),
+        ),
     )
     private val mainAudioTransceiverLock = Any()
     private val mainVideoTransceiverLock = Any()
