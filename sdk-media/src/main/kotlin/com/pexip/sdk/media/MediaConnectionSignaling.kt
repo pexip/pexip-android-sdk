@@ -51,8 +51,10 @@ public interface MediaConnectionSignaling {
      *
      * @param candidate an ICE candidate
      * @param mid a media ID associated with this candidate
+     * @param ufrag a username fragment of this ICE candidate
+     * @param pwd a password of this ICE candidate
      */
-    public fun onCandidate(candidate: String, mid: String)
+    public fun onCandidate(candidate: String, mid: String, ufrag: String, pwd: String)
 
     /**
      * Invoked when a sequence of DTMF digits must be sent.

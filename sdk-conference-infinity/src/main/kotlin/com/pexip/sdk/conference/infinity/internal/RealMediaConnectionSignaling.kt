@@ -32,7 +32,6 @@ internal class RealMediaConnectionSignaling(
 ) : MediaConnectionSignaling {
 
     var callStep: InfinityService.CallStep? by ThreadLocal()
-    var pwds: Map<String, String>? by ThreadLocal()
 
     override fun onOffer(
         callType: String,
@@ -41,7 +40,6 @@ internal class RealMediaConnectionSignaling(
         fecc: Boolean,
     ): String {
         val token = store.get()
-        pwds = getUfragPwd(description)
         return when (val step = callStep) {
             null -> {
                 val request = CallsRequest(
@@ -71,16 +69,14 @@ internal class RealMediaConnectionSignaling(
         callStep.ack(token).execute()
     }
 
-    override fun onCandidate(candidate: String, mid: String) {
+    override fun onCandidate(candidate: String, mid: String, ufrag: String, pwd: String) {
         val callStep = checkNotNull(callStep) { "callStep is not set." }
-        val pwds = checkNotNull(pwds) { "pwds are not set." }
         val token = store.get()
-        val ufrag = getUfrag(candidate)
         val request = NewCandidateRequest(
             candidate = candidate,
             mid = mid,
             ufrag = ufrag,
-            pwd = pwds[ufrag],
+            pwd = pwd,
         )
         callStep.newCandidate(request, token).execute()
     }
@@ -114,27 +110,6 @@ internal class RealMediaConnectionSignaling(
 
     override fun onReleaseFloor() {
         participantStep.releaseFloor(store.get()).execute()
-    }
-
-    private fun getUfrag(candidate: String) =
-        checkNotNull(CANDIDATE_UFRAG.matchEntire(candidate)?.groupValues?.get(1))
-
-    private fun getUfragPwd(description: String) = buildMap {
-        val iterator = description.splitToSequence("\r\n").iterator()
-        while (iterator.hasNext()) {
-            var line = iterator.next()
-            val ufrag = SDP_UFRAG.matchEntire(line)?.groupValues?.get(1) ?: continue
-            line = iterator.next()
-            val pwd = SDP_PWD.matchEntire(line)?.groupValues?.get(1) ?: continue
-            put(ufrag, pwd)
-        }
-    }
-
-    companion object {
-
-        val SDP_UFRAG = Regex("^a=ice-ufrag:(.+)$")
-        val SDP_PWD = Regex("^a=ice-pwd:(.+)$")
-        val CANDIDATE_UFRAG = Regex(".*\\bufrag\\s+(.+?)\\s+.*")
     }
 }
 

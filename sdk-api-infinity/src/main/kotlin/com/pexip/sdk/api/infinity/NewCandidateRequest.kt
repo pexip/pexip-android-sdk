@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,6 @@ import kotlinx.serialization.Serializable
 public data class NewCandidateRequest(
     public val candidate: String,
     public val mid: String,
-    public val ufrag: String,
+    public val ufrag: String? = null,
     public val pwd: String? = null,
 )
