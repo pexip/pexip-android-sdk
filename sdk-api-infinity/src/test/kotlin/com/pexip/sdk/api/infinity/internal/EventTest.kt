@@ -28,6 +28,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
+import com.pexip.sdk.api.infinity.ReferEvent
 import com.pexip.sdk.api.infinity.nextString
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -109,6 +110,13 @@ internal class EventTest {
                     movement = List(3) { FeccMovement.UNKNOWN },
                 ),
                 filename = "fecc_unknown.json",
+            ),
+            TestCase(
+                type = "refer",
+                event = ReferEvent(
+                    conferenceAlias = "toto",
+                    token = "ZqWyw87Yr03g-vH_VCqZBTMemTcmcwwUrHIpq9LWl8Kn8DGc1yBmeMSN-ux5KRsO70QRtOvLfyoasEeioIve4wsUgCAsi6y_GUqc2Af40TcCHRm3RF5fEUqPo0x8P32Nc3BhmaTk5Mz2YP8t8v5YCggcaHDU1d_ddWZszWUwa_sszv-9h3FxmpTzT-zuB67RXfdBQlStbt86paf5S-6E9kzB2QJCKfrB1U9-juF-czmMibaEODEVC88V2Rlf8GIer2w=",
+                ),
             ),
         )
         testCases.forEach { (type, event, filename) ->

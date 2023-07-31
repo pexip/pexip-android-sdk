@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,14 @@
  */
 package com.pexip.sdk.sample.conference
 
+import com.pexip.sdk.api.infinity.RequestTokenResponse
+
 sealed interface ConferenceOutput {
+
+    data class Refer(
+        val conferenceAlias: String,
+        val response: RequestTokenResponse,
+    ) : ConferenceOutput
 
     object Back : ConferenceOutput {
 

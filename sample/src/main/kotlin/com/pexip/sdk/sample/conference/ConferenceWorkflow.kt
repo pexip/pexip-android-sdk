@@ -21,7 +21,14 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.media.projection.MediaProjection
 import android.os.IBinder
-import com.pexip.sdk.conference.Conference
+import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.api.infinity.RequestTokenRequest
+import com.pexip.sdk.conference.ConferenceEvent
+import com.pexip.sdk.conference.DisconnectConferenceEvent
+import com.pexip.sdk.conference.FailureConferenceEvent
+import com.pexip.sdk.conference.PresentationStartConferenceEvent
+import com.pexip.sdk.conference.PresentationStopConferenceEvent
+import com.pexip.sdk.conference.ReferConferenceEvent
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
 import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.media.IceServer
@@ -48,8 +55,13 @@ import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.renderChild
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -81,6 +93,15 @@ class ConferenceWorkflow @Inject constructor(
         )
     }
 
+    override fun onPropsChanged(
+        old: ConferenceProps,
+        new: ConferenceProps,
+        state: ConferenceState,
+    ): ConferenceState {
+        if (old.conferenceAlias == new.conferenceAlias && old.response == new.response) return state
+        return initialState(new, null)
+    }
+
     override fun snapshotState(state: ConferenceState): Snapshot? = null
 
     override fun render(
@@ -98,7 +119,7 @@ class ConferenceWorkflow @Inject constructor(
         context.screenCapturingSideEffect(renderState.screenCaptureVideoTrack)
         context.screenCaptureVideoTrackSideEffect(renderState.screenCaptureData)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
-        context.conferenceEventsSideEffect(renderState.conference)
+        context.conferenceEventsSideEffect(renderProps, renderState)
         context.presentationRemoteVideoTrackSideEffect(renderState.connection)
         return when (renderState.showingConferenceEvents) {
             true -> ConferenceEventsRendering(
@@ -232,12 +253,37 @@ class ConferenceWorkflow @Inject constructor(
                 .collectLatest(actionSink::send)
         }
 
-    private fun RenderContext.conferenceEventsSideEffect(conference: Conference) =
-        runningSideEffect("${conference}ConferenceEvents") {
-            conference.getConferenceEvents()
-                .map(::OnConferenceEvent)
-                .collectLatest(actionSink::send)
+    private fun RenderContext.conferenceEventsSideEffect(
+        renderProps: ConferenceProps,
+        renderState: ConferenceState,
+    ) {
+        val builder = renderProps.builder
+        val conference = renderState.conference
+        runningSideEffect("conferenceEventsSideEffect($builder, $conference)") {
+            val events = conference.getConferenceEvents().shareIn(this, SharingStarted.Lazily)
+            events
+                .map(::toConferenceAction)
+                .onEach(actionSink::send)
+                .launchIn(this)
+            events.filterIsInstance<ReferConferenceEvent>()
+                .map {
+                    val step = builder.conference(it.conferenceAlias)
+                    val request = RequestTokenRequest(incomingToken = it.token)
+                    val response = step.requestToken(request).await()
+                    OnReferConferenceEvent(it.conferenceAlias, response)
+                }
+                .onEach(actionSink::send)
+                .launchIn(this)
         }
+    }
+
+    private fun toConferenceAction(event: ConferenceEvent) = when (event) {
+        is PresentationStartConferenceEvent -> OnPresentationStartConferenceEvent(event)
+        is PresentationStopConferenceEvent -> OnPresentationStopConferenceEvent(event)
+        is DisconnectConferenceEvent -> OnDisconnectConferenceEvent(event)
+        is FailureConferenceEvent -> OnFailureConferenceEvent(event)
+        else -> OnConferenceEvent(event)
+    }
 
     private companion object {
 

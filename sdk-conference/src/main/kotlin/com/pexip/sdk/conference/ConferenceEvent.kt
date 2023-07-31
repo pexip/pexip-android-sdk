@@ -39,6 +39,12 @@ public data class MessageReceivedConferenceEvent(
     val payload: String,
 ) : ConferenceEvent
 
+public data class ReferConferenceEvent(
+    override val at: Long,
+    val conferenceAlias: String,
+    val token: String,
+) : ConferenceEvent
+
 public data class DisconnectConferenceEvent(
     override val at: Long,
     val reason: String,

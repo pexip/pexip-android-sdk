@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - `DegradationPreference` API that lets one specify the desired behavior in low bandwidth conditions
 - ICE restart when ICE connection reaches failed state
+- Call transfer support via `ReferConferenceEvent`
 
 ### Changed
 
