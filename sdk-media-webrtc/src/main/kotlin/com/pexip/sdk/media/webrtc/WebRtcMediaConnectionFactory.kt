@@ -36,6 +36,11 @@ import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcMediaConnection
 import com.pexip.sdk.media.webrtc.internal.from
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerator
@@ -52,8 +57,10 @@ import org.webrtc.VideoEncoderFactory
 import org.webrtc.audio.AudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule
 import java.util.UUID
+import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration.Companion.seconds
 
 public class WebRtcMediaConnectionFactory private constructor(
     private val applicationContext: Context,
@@ -95,6 +102,7 @@ public class WebRtcMediaConnectionFactory private constructor(
         .createPeerConnectionFactory()
     private val workerExecutor = Executors.newSingleThreadExecutor()
     private val signalingExecutor = ContextCompat.getMainExecutor(applicationContext)
+    private val jobs = CopyOnWriteArraySet<Job>()
 
     override fun getDeviceNames(): List<String> = cameraEnumerator.deviceNames.toList()
 
@@ -210,12 +218,19 @@ public class WebRtcMediaConnectionFactory private constructor(
         return WebRtcMediaConnection(
             factory = this,
             config = config,
-            workerExecutor = workerExecutor,
-            signalingExecutor = signalingExecutor,
+            job = Job().also(jobs::add),
         )
     }
 
     override fun dispose() {
+        try {
+            runBlocking {
+                withTimeout(10.seconds) { jobs.joinAll() }
+                jobs.clear()
+            }
+        } catch (e: TimeoutCancellationException) {
+            throw IllegalStateException("Children of this WebRtcMediaConnectionFactory have not been disposed.")
+        }
         if (disposed.compareAndSet(false, true)) {
             workerExecutor.execute {
                 factory.dispose()

@@ -195,16 +195,16 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionFactory : com
 
 public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
 	public abstract fun getIceServers ()Ljava/util/List;
-	public abstract fun onAck ()V
-	public abstract fun onAudioMuted ()V
-	public abstract fun onAudioUnmuted ()V
-	public abstract fun onCandidate (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public abstract fun onDtmf (Ljava/lang/String;)V
-	public abstract fun onOffer (Ljava/lang/String;Ljava/lang/String;ZZ)Ljava/lang/String;
-	public abstract fun onReleaseFloor ()V
-	public abstract fun onTakeFloor ()V
-	public abstract fun onVideoMuted ()V
-	public abstract fun onVideoUnmuted ()V
+	public abstract fun onAck (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onAudioMuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onAudioUnmuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onCandidate (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onDtmf (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onOffer (Ljava/lang/String;Ljava/lang/String;ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onReleaseFloor (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onTakeFloor (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onVideoMuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onVideoUnmuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/pexip/sdk/media/QualityProfile {

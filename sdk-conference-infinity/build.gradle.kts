@@ -5,6 +5,7 @@ plugins {
 dependencies {
     api(project(":sdk-conference"))
     api(project(":sdk-api-infinity"))
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {

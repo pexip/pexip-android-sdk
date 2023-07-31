@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
+import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
@@ -23,54 +24,59 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
-import kotlin.reflect.KProperty
+import kotlinx.coroutines.CompletableDeferred
 
 internal class RealMediaConnectionSignaling(
     private val store: TokenStore,
     private val participantStep: InfinityService.ParticipantStep,
     override val iceServers: List<IceServer>,
+    callStep: InfinityService.CallStep? = null,
 ) : MediaConnectionSignaling {
 
-    var callStep: InfinityService.CallStep? by ThreadLocal()
+    val callStep = when (callStep) {
+        null -> CompletableDeferred()
+        else -> CompletableDeferred(callStep)
+    }
 
-    override fun onOffer(
+    override suspend fun onOffer(
         callType: String,
         description: String,
         presentationInMain: Boolean,
         fecc: Boolean,
     ): String {
         val token = store.get()
-        return when (val step = callStep) {
-            null -> {
-                val request = CallsRequest(
-                    callType = callType,
-                    sdp = description,
-                    present = if (presentationInMain) "main" else null,
-                    fecc = fecc,
-                )
-                val response = participantStep.calls(request, token).execute()
-                callStep = participantStep.call(response.callId)
-                response.sdp
-            }
-            else -> {
-                val request = UpdateRequest(
-                    sdp = description,
-                    fecc = fecc,
-                )
-                val response = step.update(request, token).execute()
-                response.sdp
-            }
+        val step = when {
+            callStep.isCompleted -> callStep.await()
+            else -> null
+        }
+        if (step == null) {
+            val request = CallsRequest(
+                callType = callType,
+                sdp = description,
+                present = if (presentationInMain) "main" else null,
+                fecc = fecc,
+            )
+            val response = participantStep.calls(request, token).await()
+            callStep.complete(participantStep.call(response.callId))
+            return response.sdp
+        } else {
+            val request = UpdateRequest(
+                sdp = description,
+                fecc = fecc,
+            )
+            val response = step.update(request, token).await()
+            return response.sdp
         }
     }
 
-    override fun onAck() {
-        val callStep = checkNotNull(callStep) { "callStep is not set." }
+    override suspend fun onAck() {
+        val callStep = callStep.await()
         val token = store.get()
-        callStep.ack(token).execute()
+        callStep.ack(token).await()
     }
 
-    override fun onCandidate(candidate: String, mid: String, ufrag: String, pwd: String) {
-        val callStep = checkNotNull(callStep) { "callStep is not set." }
+    override suspend fun onCandidate(candidate: String, mid: String, ufrag: String, pwd: String) {
+        val callStep = callStep.await()
         val token = store.get()
         val request = NewCandidateRequest(
             candidate = candidate,
@@ -78,42 +84,37 @@ internal class RealMediaConnectionSignaling(
             ufrag = ufrag,
             pwd = pwd,
         )
-        callStep.newCandidate(request, token).execute()
+        callStep.newCandidate(request, token).await()
     }
 
-    override fun onDtmf(digits: String) {
-        val callStep = checkNotNull(callStep) { "callStep is not set." }
+    override suspend fun onDtmf(digits: String) {
+        val callStep = callStep.await()
         val request = DtmfRequest(digits)
         val token = store.get()
-        callStep.dtmf(request, token).execute()
+        callStep.dtmf(request, token).await()
     }
 
-    override fun onAudioMuted() {
-        participantStep.mute(store.get()).execute()
+    override suspend fun onAudioMuted() {
+        participantStep.mute(store.get()).await()
     }
 
-    override fun onAudioUnmuted() {
-        participantStep.unmute(store.get()).execute()
+    override suspend fun onAudioUnmuted() {
+        participantStep.unmute(store.get()).await()
     }
 
-    override fun onVideoMuted() {
-        participantStep.videoMuted(store.get()).execute()
+    override suspend fun onVideoMuted() {
+        participantStep.videoMuted(store.get()).await()
     }
 
-    override fun onVideoUnmuted() {
-        participantStep.videoUnmuted(store.get()).execute()
+    override suspend fun onVideoUnmuted() {
+        participantStep.videoUnmuted(store.get()).await()
     }
 
-    override fun onTakeFloor() {
-        participantStep.takeFloor(store.get()).execute()
+    override suspend fun onTakeFloor() {
+        participantStep.takeFloor(store.get()).await()
     }
 
-    override fun onReleaseFloor() {
-        participantStep.releaseFloor(store.get()).execute()
+    override suspend fun onReleaseFloor() {
+        participantStep.releaseFloor(store.get()).await()
     }
 }
-
-private operator fun <T> ThreadLocal<T>.getValue(thisRef: Any?, property: KProperty<*>) = get()
-
-private operator fun <T> ThreadLocal<T>.setValue(thisRef: Any?, property: KProperty<*>, value: T) =
-    set(value)
