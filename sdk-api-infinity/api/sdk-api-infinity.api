@@ -135,6 +135,7 @@ public final class com/pexip/sdk/api/infinity/FeccAction : java/lang/Enum {
 	public static final field START Lcom/pexip/sdk/api/infinity/FeccAction;
 	public static final field STOP Lcom/pexip/sdk/api/infinity/FeccAction;
 	public static final field UNKNOWN Lcom/pexip/sdk/api/infinity/FeccAction;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/FeccAction;
 	public static fun values ()[Lcom/pexip/sdk/api/infinity/FeccAction;
 }
@@ -186,6 +187,7 @@ public final class com/pexip/sdk/api/infinity/FeccMovement : java/lang/Enum {
 	public static final field UNKNOWN Lcom/pexip/sdk/api/infinity/FeccMovement;
 	public static final field ZOOM_IN Lcom/pexip/sdk/api/infinity/FeccMovement;
 	public static final field ZOOM_OUT Lcom/pexip/sdk/api/infinity/FeccMovement;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/FeccMovement;
 	public static fun values ()[Lcom/pexip/sdk/api/infinity/FeccMovement;
 }
@@ -855,6 +857,7 @@ public final class com/pexip/sdk/api/infinity/ServiceType : java/lang/Enum {
 	public static final field GATEWAY Lcom/pexip/sdk/api/infinity/ServiceType;
 	public static final field TEST_CALL Lcom/pexip/sdk/api/infinity/ServiceType;
 	public static final field UNKNOWN Lcom/pexip/sdk/api/infinity/ServiceType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/ServiceType;
 	public static fun values ()[Lcom/pexip/sdk/api/infinity/ServiceType;
 }
