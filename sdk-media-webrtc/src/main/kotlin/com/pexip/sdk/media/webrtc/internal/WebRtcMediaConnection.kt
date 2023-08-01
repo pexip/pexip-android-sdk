@@ -23,6 +23,7 @@ import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
+import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
@@ -34,44 +35,41 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.webrtc.IceCandidate
-import org.webrtc.MediaStream
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
-import org.webrtc.RtpReceiver
-import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.atomic.AtomicBoolean
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
     private val config: MediaConnectionConfig,
     private val job: CompletableJob,
-) : MediaConnection, SimplePeerConnectionObserver {
+) : MediaConnection {
 
     private val started = AtomicBoolean()
     private val shouldAck = AtomicBoolean(true)
-    private val shouldRenegotiate = AtomicBoolean()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val dispatcher = Dispatchers.IO.limitedParallelism(1)
-    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
-    private val iceCredentials = mutableMapOf<String, IceCredentials>()
-    private val connection = factory.createPeerConnection(createRTCConfiguration(), this)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val wrapper = factory.createPeerConnection(config)
 
     private val maxBitrate = MutableStateFlow(0.bps)
     private val mainDegradationPreference = MutableStateFlow(DegradationPreference.BALANCED)
@@ -81,19 +79,13 @@ internal class WebRtcMediaConnection(
     private val mainLocalVideoTrack = MutableSharedFlow<LocalVideoTrack?>()
     private val presentationLocalVideoTrack = MutableSharedFlow<LocalVideoTrack?>()
 
-    private var mainAudioTransceiver: RtpTransceiver? = null
-    private var mainVideoTransceiver: RtpTransceiver? = null
-    private val presentationVideoTransceiver: RtpTransceiver = connection.addTransceiver(
-        MediaType.MEDIA_TYPE_VIDEO,
-        RtpTransceiverInit(
-            direction = RtpTransceiverDirection.INACTIVE,
-            sendEncodings = listOf(Encoding { maxFramerate = MAX_FRAMERATE }),
-        ),
-    ).apply { setDegradationPreference(presentationDegradationPreference.value) }
     private val mainRemoteVideoTrackListeners =
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
     private val presentationRemoteVideoTrackListeners =
         CopyOnWriteArraySet<MediaConnection.RemoteVideoTrackListener>()
+
+    // Using MutableStateFlow instead of stateIn to be able to set the value to null after the
+    // CoroutineScope cancellation
     private val _mainRemoteVideoTrack = MutableStateFlow<VideoTrack?>(null)
     private val _presentationRemoteVideoTrack = MutableStateFlow<VideoTrack?>(null)
 
@@ -106,69 +98,80 @@ internal class WebRtcMediaConnection(
     init {
         with(scope) {
             launchMaxBitrate()
-            launchMainDegradationPreference()
-            launchPresentationDegradationPreference()
-            launchMainRemoteVideoTrackListeners()
-            launchPresentationRemoteVideoTrackListeners()
-            launchMainLocalAudioTrack()
-            launchMainLocalVideoTrack()
-            launchPresentationLocalVideoTrack()
+            launchOnRenegotiationNeeded()
+            launchOnIceCandidate()
+            launchOnIceConnectionChange()
+            launchDegradationPreference(MainVideo, mainDegradationPreference)
+            launchDegradationPreference(PresentationVideo, presentationDegradationPreference)
+            launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
+                if (it) onAudioUnmuted() else onAudioMuted()
+            }
+            launchLocalMediaTrackCapturing(mainLocalVideoTrack) {
+                if (it) onVideoUnmuted() else onVideoMuted()
+            }
+            launchLocalMediaTrackCapturing(presentationLocalVideoTrack) {
+                if (it) onTakeFloor() else onReleaseFloor()
+            }
+            launchRemoteVideoTrackListeners(_mainRemoteVideoTrack, mainRemoteVideoTrackListeners)
+            launchRemoteVideoTrackListeners(
+                flow = _presentationRemoteVideoTrack,
+                listeners = presentationRemoteVideoTrackListeners,
+            )
+            launchRemoteVideoTrack(MainVideo, _mainRemoteVideoTrack)
+            launchRemoteVideoTrack(PresentationVideo, _presentationRemoteVideoTrack)
             launchDispose()
         }
     }
 
     override fun setMainAudioTrack(localAudioTrack: LocalAudioTrack?) {
-        val lat = when (localAudioTrack) {
-            is WebRtcLocalAudioTrack -> localAudioTrack
-            null -> null
-            else -> throw IllegalArgumentException("localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.")
-        }
-        scope.launch { mainLocalAudioTrack.emit(lat) }
+        scope.launchLocalMediaTrack(
+            key = MainAudio,
+            track = when (localAudioTrack) {
+                is WebRtcLocalAudioTrack -> localAudioTrack
+                null -> null
+                else -> throw IllegalArgumentException("localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.")
+            },
+            emit = mainLocalAudioTrack::emit,
+        )
     }
 
     override fun setMainVideoTrack(localVideoTrack: LocalVideoTrack?) {
-        val lvt = when (localVideoTrack) {
-            is WebRtcLocalVideoTrack -> localVideoTrack
-            null -> null
-            else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
-        }
-        scope.launch { mainLocalVideoTrack.emit(lvt) }
+        scope.launchLocalMediaTrack(
+            key = MainVideo,
+            track = when (localVideoTrack) {
+                is WebRtcLocalVideoTrack -> localVideoTrack
+                null -> null
+                else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
+            },
+            preference = mainDegradationPreference::value,
+            emit = mainLocalVideoTrack::emit,
+        )
     }
 
     override fun setPresentationVideoTrack(localVideoTrack: LocalVideoTrack?) {
-        val lvt = when (localVideoTrack) {
-            is WebRtcLocalVideoTrack -> localVideoTrack
-            null -> null
-            else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
-        }
-        scope.launch { presentationLocalVideoTrack.emit(lvt) }
+        scope.launchLocalMediaTrack(
+            key = PresentationVideo,
+            track = when (localVideoTrack) {
+                is WebRtcLocalVideoTrack -> localVideoTrack
+                null -> null
+                else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
+            },
+            preference = presentationDegradationPreference::value,
+            emit = presentationLocalVideoTrack::emit,
+        )
     }
 
     override fun setMainRemoteAudioTrackEnabled(enabled: Boolean) {
-        scope.launch {
-            mainAudioTransceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(
-                mediaType = MediaType.MEDIA_TYPE_AUDIO,
-                receive = enabled,
-            )
-            mainAudioTransceiver?.maybeSetNewDirection(enabled)
-        }
+        scope.launchRemoteVideoTrackEnabled(MainAudio, enabled)
     }
 
     override fun setMainRemoteVideoTrackEnabled(enabled: Boolean) {
-        scope.launch {
-            mainVideoTransceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(
-                mediaType = MediaType.MEDIA_TYPE_VIDEO,
-                receive = enabled,
-            )
-            mainVideoTransceiver?.maybeSetNewDirection(enabled)
-        }
+        scope.launchRemoteVideoTrackEnabled(MainVideo, enabled)
     }
 
     override fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean) {
         if (!config.presentationInMain) {
-            scope.launch {
-                presentationVideoTransceiver.maybeSetNewDirection(enabled)
-            }
+            scope.launchRemoteVideoTrackEnabled(PresentationVideo, enabled)
         }
     }
 
@@ -197,9 +200,7 @@ internal class WebRtcMediaConnection(
     override fun stopPresentationReceive() = setPresentationRemoteVideoTrackEnabled(false)
 
     override fun dtmf(digits: String) {
-        scope.launch {
-            runCatching { config.signaling.onDtmf(digits) }
-        }
+        scope.launch { runCatching { config.signaling.onDtmf(digits) } }
     }
 
     override fun start() {
@@ -228,196 +229,164 @@ internal class WebRtcMediaConnection(
         presentationRemoteVideoTrackListeners -= listener
     }
 
-    override fun onStandardizedIceConnectionChange(newState: PeerConnection.IceConnectionState) {
-        if (newState != PeerConnection.IceConnectionState.FAILED) return
-        scope.launch { connection.restartIce() }
-    }
-
-    override fun onIceCandidate(candidate: IceCandidate) {
-        scope.launch {
-            val mid = candidate.sdpMid ?: return@launch
-            val (ufrag, pwd) = iceCredentials[mid] ?: return@launch
-            runCatching {
-                config.signaling.onCandidate(
-                    candidate = candidate.sdp,
-                    mid = mid,
-                    ufrag = ufrag,
-                    pwd = pwd,
-                )
-            }
-        }
-    }
-
-    override fun onRenegotiationNeeded() {
-        // Skip the first call to onRenegotiationNeeded() since it's called right after
-        // PeerConnection creation and we're still not ready to use setLocalDescription()
-        if (shouldRenegotiate.compareAndSet(false, true)) return
-        scope.launch { setLocalDescription() }
-    }
-
-    override fun onAddTrack(receiver: RtpReceiver, streams: Array<out MediaStream>) {
-        val id = receiver.id()
-        val videoTrack = receiver.videoTrack?.let(::WebRtcVideoTrack)
-        scope.launch {
-            when (id) {
-                mainVideoTransceiver?.receiver?.id() -> {
-                    _mainRemoteVideoTrack.emit(videoTrack)
-                }
-                presentationVideoTransceiver.receiver.id() -> {
-                    _presentationRemoteVideoTrack.emit(videoTrack)
-                }
-            }
-        }
-    }
-
-    override fun onRemoveTrack(receiver: RtpReceiver) {
-        val id = receiver.id()
-        scope.launch {
-            when (id) {
-                mainVideoTransceiver?.receiver?.id() -> {
-                    _mainRemoteVideoTrack.emit(null)
-                }
-                presentationVideoTransceiver.receiver.id() -> {
-                    _presentationRemoteVideoTrack.emit(null)
-                }
-            }
-        }
-    }
-
     private suspend fun setLocalDescription() {
-        connection.setLocalDescription()
         val bitrate = maxBitrate.value
-        val result = connection.localDescription.mangle(
-            bitrate = bitrate,
-            mainAudioMid = mainAudioTransceiver?.mid,
-            mainVideoMid = mainVideoTransceiver?.mid,
-            presentationVideoMid = presentationVideoTransceiver.mid,
-        )
-        iceCredentials.clear()
-        iceCredentials.putAll(result.iceCredentials)
+        val localDescription = wrapper.setLocalDescription {
+            mangle(
+                bitrate = bitrate,
+                mainAudioMid = it[MainAudio],
+                mainVideoMid = it[MainVideo],
+                presentationVideoMid = it[PresentationVideo],
+            )
+        }
         val sdp = SessionDescription(
             SessionDescription.Type.ANSWER,
             config.signaling.onOffer(
                 callType = "WEBRTC",
-                description = result.description.description,
+                description = localDescription.description,
                 presentationInMain = config.presentationInMain,
                 fecc = config.farEndCameraControl,
             ),
         )
-        connection.setRemoteDescription(sdp.mangle(bitrate))
+        wrapper.setRemoteDescription(sdp.mangle(bitrate))
         if (shouldAck.compareAndSet(true, false)) {
             runCatching { config.signaling.onAck() }
         }
     }
 
     private fun CoroutineScope.launchMaxBitrate() = maxBitrate.drop(1)
-        .onEach { connection.restartIce() }
+        .onEach { wrapper.restartIce() }
         .launchIn(this)
 
-    private fun CoroutineScope.launchMainDegradationPreference() = mainDegradationPreference.drop(1)
-        .onEach { mainVideoTransceiver?.setDegradationPreference(it) }
+    private fun CoroutineScope.launchOnRenegotiationNeeded() = wrapper.event
+        .filterIsInstance<Event.OnRenegotiationNeeded>()
+        .drop(1)
+        .onEach { setLocalDescription() }
         .launchIn(this)
 
-    private fun CoroutineScope.launchPresentationDegradationPreference() =
-        presentationDegradationPreference.drop(1)
-            .onEach { presentationVideoTransceiver.setDegradationPreference(it) }
-            .launchIn(this)
-
-    private fun CoroutineScope.launchMainLocalAudioTrack() = launch {
-        mainLocalAudioTrack.distinctUntilChanged().collectLatest { track ->
-            val transceiver = mainAudioTransceiver ?: connection.maybeAddTransceiver(track)
-            transceiver?.maybeSetNewDirection(track)
-            transceiver?.setTrack(track)
-            mainAudioTransceiver = transceiver
-            track.getCapturingOrFalse().collectLatest {
-                runCatching {
-                    with(config.signaling) { if (it) onAudioUnmuted() else onAudioMuted() }
-                }
+    private fun CoroutineScope.launchOnIceCandidate() = wrapper.event
+        .filterIsInstance<Event.OnIceCandidate>()
+        .onEach {
+            val (ufrag, pwd) = wrapper.getIceCredentials(it.candidate) ?: return@onEach
+            runCatching {
+                config.signaling.onCandidate(
+                    candidate = it.candidate.sdp,
+                    mid = it.candidate.sdpMid,
+                    ufrag = ufrag,
+                    pwd = pwd,
+                )
             }
         }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchOnIceConnectionChange() = wrapper.event
+        .filterIsInstance<Event.OnIceConnectionChange>()
+        .filter { it.state == PeerConnection.IceConnectionState.FAILED }
+        .onEach { wrapper.restartIce() }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchDegradationPreference(
+        key: RtpTransceiverKey,
+        flow: Flow<DegradationPreference>,
+    ) = flow.drop(1)
+        .onEach { p -> wrapper.withRtpTransceiver(key) { it?.setDegradationPreference(p) } }
+        .launchIn(this)
+
+    private fun <T : LocalMediaTrack> CoroutineScope.launchLocalMediaTrack(
+        key: RtpTransceiverKey,
+        track: T?,
+        preference: (() -> DegradationPreference)? = null,
+        emit: suspend (T?) -> Unit,
+    ) = launch {
+        val init = when (track) {
+            null -> null
+            else -> RtpTransceiverInit(RtpTransceiverDirection.SEND_ONLY)
+        }
+        wrapper.withRtpTransceiver(key, init) { rtpTransceiver ->
+            rtpTransceiver ?: return@withRtpTransceiver
+            rtpTransceiver.setTrack(track)
+            rtpTransceiver.maybeSetNewDirection(track)
+            preference?.let { rtpTransceiver.setDegradationPreference(it()) }
+        }
+        emit(track)
     }
 
-    private fun CoroutineScope.launchMainLocalVideoTrack() = launch {
-        mainLocalVideoTrack.distinctUntilChanged().collectLatest { track ->
-            val transceiver = mainVideoTransceiver ?: connection.maybeAddTransceiver(track)?.apply {
-                setDegradationPreference(mainDegradationPreference.value)
-            }
-            transceiver?.maybeSetNewDirection(track)
-            transceiver?.setTrack(track)
-            mainVideoTransceiver = transceiver
-            track.getCapturingOrFalse().collectLatest {
-                runCatching {
-                    with(config.signaling) { if (it) onVideoUnmuted() else onVideoMuted() }
-                }
+    private fun CoroutineScope.launchLocalMediaTrackCapturing(
+        flow: Flow<LocalMediaTrack?>,
+        onCapturing: suspend MediaConnectionSignaling.(Boolean) -> Unit,
+    ) = flow
+        .flatMapLatest {
+            when (it) {
+                null -> flowOf(false)
+                else -> it.getCapturing().onStart { emit(it.capturing) }
             }
         }
-    }
+        .onEach { runCatching { config.signaling.onCapturing(it) } }
+        .launchIn(this)
 
-    private fun CoroutineScope.launchPresentationLocalVideoTrack() = launch {
-        presentationLocalVideoTrack.distinctUntilChanged().collectLatest { track ->
-            presentationVideoTransceiver.maybeSetNewDirection(track)
-            presentationVideoTransceiver.setTrack(track)
-            track.getCapturingOrFalse().collectLatest {
-                runCatching {
-                    with(config.signaling) { if (it) onTakeFloor() else onReleaseFloor() }
-                }
-            }
-        }
-    }
-
-    private fun CoroutineScope.launchMainRemoteVideoTrackListeners() = _mainRemoteVideoTrack.drop(1)
-        .onEach { mainRemoteVideoTrackListeners.notify(it) }
+    private fun CoroutineScope.launchRemoteVideoTrackListeners(
+        flow: Flow<VideoTrack?>,
+        listeners: Collection<MediaConnection.RemoteVideoTrackListener>,
+    ) = flow.drop(1)
+        .onEach { track -> listeners.forEach { it.safeOnRemoteVideoTrack(track) } }
         .flowOn(Dispatchers.Main)
         .launchIn(this)
 
-    private fun CoroutineScope.launchPresentationRemoteVideoTrackListeners() =
-        _presentationRemoteVideoTrack.drop(1)
-            .onEach { presentationRemoteVideoTrackListeners.notify(it) }
-            .flowOn(Dispatchers.Main)
-            .launchIn(this)
+    private fun CoroutineScope.launchRemoteVideoTrack(
+        key: RtpTransceiverKey,
+        flow: MutableStateFlow<VideoTrack?>,
+    ) = wrapper.getRemoteVideoTrack(key)
+        .map { it?.let(::WebRtcVideoTrack) }
+        .onEach { flow.value = it }
+        .onCompletion { flow.value = null }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchRemoteVideoTrackEnabled(
+        key: RtpTransceiverKey,
+        enabled: Boolean,
+    ) = launch {
+        val init = when (enabled) {
+            true -> RtpTransceiverInit(RtpTransceiverDirection.RECV_ONLY)
+            else -> null
+        }
+        wrapper.withRtpTransceiver(key, init) { it?.maybeSetNewDirection(enabled) }
+    }
 
     private fun CoroutineScope.launchDispose() = launch {
         try {
             awaitCancellation()
         } finally {
             withContext(NonCancellable) {
-                mainAudioTransceiver?.sender?.setTrack(null, false)
-                mainVideoTransceiver?.sender?.setTrack(null, false)
-                presentationVideoTransceiver.sender.setTrack(null, false)
-                _mainRemoteVideoTrack.emit(null)
-                _presentationRemoteVideoTrack.emit(null)
                 mainRemoteVideoTrackListeners.clear()
                 presentationRemoteVideoTrackListeners.clear()
-                connection.dispose()
+                wrapper.dispose()
                 job.complete()
             }
         }
     }
 
-    private fun LocalMediaTrack?.getCapturingOrFalse() = when (this) {
-        null -> flowOf(false)
-        else -> getCapturing()
-            .onStart { emit(capturing) }
-            .distinctUntilChanged()
+    private fun RtpTransceiverInit(direction: RtpTransceiverDirection) = { key: RtpTransceiverKey ->
+        RtpTransceiverInit(
+            direction = direction,
+            sendEncodings = when (key.mediaType) {
+                MediaType.MEDIA_TYPE_VIDEO -> listOf(Encoding { maxFramerate = MAX_FRAMERATE })
+                MediaType.MEDIA_TYPE_AUDIO -> emptyList()
+            },
+        )
     }
 
-    private fun Collection<MediaConnection.RemoteVideoTrackListener>.notify(videoTrack: VideoTrack?) =
-        forEach { it.safeOnRemoteVideoTrack(videoTrack) }
+    private data object MainAudio : RtpTransceiverKey {
 
-    private fun createRTCConfiguration(): PeerConnection.RTCConfiguration {
-        val iceServers = config.iceServers.map {
-            PeerConnection.IceServer.builder(it.urls.toList())
-                .setUsername(it.username)
-                .setPassword(it.password)
-                .createIceServer()
-        }
-        val c = PeerConnection.RTCConfiguration(iceServers)
-        c.enableDscp = config.dscp
-        c.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
-        c.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
-        return c
+        override val mediaType: MediaType = MediaType.MEDIA_TYPE_AUDIO
     }
 
-    private val RtpReceiver.videoTrack
-        get() = track() as? org.webrtc.VideoTrack
+    private data object MainVideo : RtpTransceiverKey {
+
+        override val mediaType: MediaType = MediaType.MEDIA_TYPE_VIDEO
+    }
+
+    private data object PresentationVideo : RtpTransceiverKey {
+
+        override val mediaType: MediaType = MediaType.MEDIA_TYPE_VIDEO
+    }
 }
