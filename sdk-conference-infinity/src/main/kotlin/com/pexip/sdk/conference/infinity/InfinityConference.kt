@@ -27,7 +27,6 @@ import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.SendCallback
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
-import com.pexip.sdk.conference.infinity.internal.ConferenceEventSource
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RealConferenceEventSource
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
@@ -36,17 +35,43 @@ import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import java.net.URL
 import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
 import java.util.logging.Logger
 
 public class InfinityConference private constructor(
-    override val name: String,
-    override val messenger: Messenger,
-    private val source: ConferenceEventSource,
-    private val refresher: TokenRefresher,
-    override val signaling: MediaConnectionSignaling,
-    private val executor: ScheduledExecutorService,
+    step: InfinityService.ConferenceStep,
+    response: RequestTokenResponse,
 ) : Conference {
+
+    private val executor = Executors.newSingleThreadScheduledExecutor()
+    private val store = TokenStore.create(response)
+    private val refresher = TokenRefresher.create(step, store, executor) {
+        source.onConferenceEvent(ConferenceEvent(it))
+    }
+    private val messengerImpl = MessengerImpl(
+        senderId = response.participantId,
+        senderName = response.participantName,
+        store = store,
+        step = step,
+    )
+    private val source = RealConferenceEventSource(store, step, executor, messengerImpl)
+
+    override val name: String = response.conferenceName
+
+    override val messenger: Messenger = messengerImpl
+
+    override val signaling: MediaConnectionSignaling = RealMediaConnectionSignaling(
+        store = store,
+        participantStep = step.participant(response.participantId),
+        iceServers = buildList(response.stun.size + response.turn.size) {
+            this += response.stun.map { IceServer.Builder(it.url).build() }
+            this += response.turn.map {
+                IceServer.Builder(it.urls)
+                    .username(it.username)
+                    .password(it.credential)
+                    .build()
+            }
+        },
+    )
 
     override fun registerConferenceEventListener(listener: ConferenceEventListener) {
         source.registerConferenceEventListener(listener)
@@ -117,43 +142,7 @@ public class InfinityConference private constructor(
                 }
                 logger.warning(msg)
             }
-            val store = TokenStore.create(response)
-            val participantStep = step.participant(response.participantId)
-            val executor = Executors.newSingleThreadScheduledExecutor()
-            val messenger = MessengerImpl(
-                senderId = response.participantId,
-                senderName = response.participantName,
-                store = store,
-                step = step,
-            )
-            val source = RealConferenceEventSource(store, step, executor, messenger)
-            val iceServers = buildList(response.stun.size + response.turn.size) {
-                val stunIceServers = response.stun.map {
-                    IceServer.Builder(it.url).build()
-                }
-                addAll(stunIceServers)
-                val turnIceServers = response.turn.map {
-                    IceServer.Builder(it.urls)
-                        .username(it.username)
-                        .password(it.credential)
-                        .build()
-                }
-                addAll(turnIceServers)
-            }
-            return InfinityConference(
-                name = response.conferenceName,
-                source = source,
-                messenger = messenger,
-                refresher = TokenRefresher.create(step, store, executor) {
-                    source.onConferenceEvent(ConferenceEvent(it))
-                },
-                signaling = RealMediaConnectionSignaling(
-                    store = store,
-                    participantStep = participantStep,
-                    iceServers = iceServers,
-                ),
-                executor = executor,
-            )
+            return InfinityConference(step, response)
         }
     }
 }
