@@ -9,6 +9,7 @@ androidx-datastore = "1.0.0"
 androidx-media = "1.6.0"
 androidx-startup = "1.1.1"
 accompanist = "0.30.1"
+assertk = "0.26.1"
 cachefix = "2.7.2"
 dagger = "2.47"
 dokka = "1.8.20"
@@ -41,6 +42,7 @@ androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "a
 androidx-media = { module = "androidx.media:media", version.ref = "androidx-media" }
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "androidx-startup" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
+assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk" }
 cachefix = { module = "org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin", version.ref = "cachefix" }
 dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
 dagger-hilt-android-runtime = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }

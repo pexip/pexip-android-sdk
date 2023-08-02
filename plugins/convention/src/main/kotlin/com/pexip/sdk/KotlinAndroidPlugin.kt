@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk
 
+import com.pexip.sdk.internal.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
@@ -28,7 +29,9 @@ class KotlinAndroidPlugin : Plugin<Project> {
         pluginManager.apply("org.jetbrains.kotlin.android")
         dependencies {
             "testImplementation"(kotlin("test-junit"))
+            "testImplementation"(libs.findLibrary("assertk").get())
             "androidTestImplementation"(kotlin("test-junit"))
+            "androidTestImplementation"(libs.findLibrary("assertk").get())
         }
         tasks.withType<Test>().configureEach {
             systemProperty("kotlinx.coroutines.stacktrace.recovery", false)
