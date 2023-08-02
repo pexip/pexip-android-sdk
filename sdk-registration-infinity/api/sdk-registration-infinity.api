@@ -1,6 +1,6 @@
 public final class com/pexip/sdk/registration/infinity/InfinityRegistration : com/pexip/sdk/registration/Registration {
 	public static final field Companion Lcom/pexip/sdk/registration/infinity/InfinityRegistration$Companion;
-	public synthetic fun <init> (Lcom/pexip/sdk/registration/infinity/internal/RegistrationEventSource;Lcom/pexip/sdk/registration/infinity/internal/RegisteredDevicesFetcher;Lcom/pexip/sdk/api/infinity/TokenRefresher;Ljava/util/concurrent/ScheduledExecutorService;ZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;)Lcom/pexip/sdk/registration/infinity/InfinityRegistration;
 	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService;Ljava/net/URL;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;)Lcom/pexip/sdk/registration/infinity/InfinityRegistration;
 	public fun dispose ()V

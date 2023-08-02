@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,22 +24,28 @@ import com.pexip.sdk.registration.Registration
 import com.pexip.sdk.registration.RegistrationEventListener
 import com.pexip.sdk.registration.infinity.internal.RealRegisteredDevicesFetcher
 import com.pexip.sdk.registration.infinity.internal.RealRegistrationEventSource
-import com.pexip.sdk.registration.infinity.internal.RegisteredDevicesFetcher
 import com.pexip.sdk.registration.infinity.internal.RegistrationEvent
-import com.pexip.sdk.registration.infinity.internal.RegistrationEventSource
 import com.pexip.sdk.registration.infinity.internal.maybeSubmit
 import java.net.URL
 import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
+import java.util.logging.Logger
 
 public class InfinityRegistration private constructor(
-    private val source: RegistrationEventSource,
-    private val fetcher: RegisteredDevicesFetcher,
-    private val refresher: TokenRefresher,
-    private val executor: ScheduledExecutorService,
-    override val directoryEnabled: Boolean,
-    override val routeViaRegistrar: Boolean,
+    step: InfinityService.RegistrationStep,
+    response: RequestRegistrationTokenResponse,
 ) : Registration {
+
+    private val executor = Executors.newSingleThreadScheduledExecutor()
+    private val store = TokenStore.create(response)
+    private val source = RealRegistrationEventSource(step, store, executor)
+    private val refresher = TokenRefresher.create(step, store, executor) {
+        source.onRegistrationEvent(RegistrationEvent(it))
+    }
+    private val fetcher = RealRegisteredDevicesFetcher(step, store)
+
+    override val directoryEnabled: Boolean = response.directoryEnabled
+
+    override val routeViaRegistrar: Boolean = response.routeViaRegistrar
 
     override fun getRegisteredDevices(query: String, callback: RegisteredDevicesCallback) {
         executor.maybeSubmit {
@@ -83,20 +89,17 @@ public class InfinityRegistration private constructor(
             step: InfinityService.RegistrationStep,
             response: RequestRegistrationTokenResponse,
         ): InfinityRegistration {
-            val store = TokenStore.create(response)
-            val executor = Executors.newSingleThreadScheduledExecutor()
-            val source = RealRegistrationEventSource(step, store, executor)
-            val refresher = TokenRefresher.create(step, store, executor) {
-                source.onRegistrationEvent(RegistrationEvent(it))
+            if (response.version.versionId < "29") {
+                val logger = Logger.getLogger("InfinityRegistration")
+                val msg = buildString {
+                    append("Infinity ")
+                    append(response.version.versionId)
+                    append(" is not officially supported by the SDK.")
+                    append(" Please upgrade your Infinity deployment to 29 or newer.")
+                }
+                logger.warning(msg)
             }
-            return InfinityRegistration(
-                source = source,
-                fetcher = RealRegisteredDevicesFetcher(step, store),
-                refresher = refresher,
-                executor = executor,
-                directoryEnabled = response.directoryEnabled,
-                routeViaRegistrar = response.routeViaRegistrar,
-            )
+            return InfinityRegistration(step, response)
         }
     }
 }
