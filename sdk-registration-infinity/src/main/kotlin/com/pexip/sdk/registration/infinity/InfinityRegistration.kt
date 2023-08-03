@@ -22,10 +22,14 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.registration.RegisteredDevicesCallback
 import com.pexip.sdk.registration.Registration
 import com.pexip.sdk.registration.RegistrationEventListener
-import com.pexip.sdk.registration.infinity.internal.RealRegisteredDevicesFetcher
 import com.pexip.sdk.registration.infinity.internal.RealRegistrationEventSource
+import com.pexip.sdk.registration.infinity.internal.RegisteredDevicesFetcher
 import com.pexip.sdk.registration.infinity.internal.RegistrationEvent
-import com.pexip.sdk.registration.infinity.internal.maybeSubmit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.net.URL
 import java.util.concurrent.Executors
 import java.util.logging.Logger
@@ -36,19 +40,20 @@ public class InfinityRegistration private constructor(
 ) : Registration {
 
     private val executor = Executors.newSingleThreadScheduledExecutor()
+    private val scope = CoroutineScope(SupervisorJob() + executor.asCoroutineDispatcher())
     private val store = TokenStore.create(response)
     private val source = RealRegistrationEventSource(step, store, executor)
     private val refresher = TokenRefresher.create(step, store, executor) {
         source.onRegistrationEvent(RegistrationEvent(it))
     }
-    private val fetcher = RealRegisteredDevicesFetcher(step, store)
+    private val fetcher = RegisteredDevicesFetcher(step, store)
 
     override val directoryEnabled: Boolean = response.directoryEnabled
 
     override val routeViaRegistrar: Boolean = response.routeViaRegistrar
 
     override fun getRegisteredDevices(query: String, callback: RegisteredDevicesCallback) {
-        executor.maybeSubmit {
+        scope.launch {
             try {
                 callback.onSuccess(fetcher.fetch(query))
             } catch (t: Throwable) {
@@ -66,6 +71,7 @@ public class InfinityRegistration private constructor(
     }
 
     override fun dispose() {
+        scope.cancel()
         source.cancel()
         refresher.cancel()
         executor.shutdown()

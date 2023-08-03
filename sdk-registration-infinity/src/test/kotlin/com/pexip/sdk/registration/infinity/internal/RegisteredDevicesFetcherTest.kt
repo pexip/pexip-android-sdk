@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,18 @@
 package com.pexip.sdk.registration.infinity.internal
 
 import com.pexip.sdk.api.Call
+import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.infinity.RegistrationResponse
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.registration.RegisteredDevice
+import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
-internal class RegisteredDevicesStoreTest {
+internal class RegisteredDevicesFetcherTest {
 
     private lateinit var store: TokenStore
 
@@ -35,7 +37,7 @@ internal class RegisteredDevicesStoreTest {
     }
 
     @Test
-    fun `fetch triggers onFailure`() {
+    fun `fetch triggers onFailure`() = runTest {
         val throwable = Throwable()
         val q = Random.nextString(8)
         val step = object : TestRegistrationStep() {
@@ -45,19 +47,19 @@ internal class RegisteredDevicesStoreTest {
                 query: String,
             ): Call<List<RegistrationResponse>> = object : TestCall<List<RegistrationResponse>> {
 
-                override fun execute(): List<RegistrationResponse> {
+                override fun enqueue(callback: Callback<List<RegistrationResponse>>) {
                     assertEquals(store.get().token, token)
                     assertEquals(q, query)
-                    throw throwable
+                    callback.onFailure(this, throwable)
                 }
             }
         }
-        val fetcher = RealRegisteredDevicesFetcher(step, store)
+        val fetcher = RegisteredDevicesFetcher(step, store)
         assertEquals(throwable, assertFails { fetcher.fetch(q) })
     }
 
     @Test
-    fun `fetch triggers onSuccess`() {
+    fun `fetch triggers onSuccess`() = runTest {
         val responses = List(10) {
             val username = "user$it"
             RegistrationResponse(
@@ -74,15 +76,14 @@ internal class RegisteredDevicesStoreTest {
                 query: String,
             ): Call<List<RegistrationResponse>> = object : TestCall<List<RegistrationResponse>> {
 
-                override fun execute(): List<RegistrationResponse> {
+                override fun enqueue(callback: Callback<List<RegistrationResponse>>) {
                     assertEquals(store.get().token, token)
                     assertEquals(q, query)
-                    return responses
+                    callback.onSuccess(this, responses)
                 }
             }
         }
-        val fetcher = RealRegisteredDevicesFetcher(step, store)
-        fetcher.fetch(q)
+        val fetcher = RegisteredDevicesFetcher(step, store)
         assertEquals(
             expected = responses.map {
                 RegisteredDevice(
