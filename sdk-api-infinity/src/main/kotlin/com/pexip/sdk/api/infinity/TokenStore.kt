@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,15 @@
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.infinity.internal.RealTokenStore
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * A token store.
@@ -40,5 +49,38 @@ public interface TokenStore {
 
         @JvmStatic
         public fun create(token: Token): TokenStore = RealTokenStore(token)
+
+        /**
+         * A helper function to refresh and release the [Token] found in [TokenStore].
+         *
+         * Note that this function is not intended for consumers to use directly.
+         *
+         * @param scope a [CoroutineScope] to launch the refresh process in
+         * @param refreshToken a function that refreshes the [Token]
+         * @param releaseToken a function that releases the [Token]
+         * @param onFailure a callback to notify callers about failures
+         */
+        public inline fun TokenStore.refreshTokenIn(
+            scope: CoroutineScope,
+            crossinline refreshToken: suspend (Token) -> Token,
+            crossinline releaseToken: suspend (Token) -> Unit,
+            crossinline onFailure: (t: Throwable) -> Unit,
+        ): Job = scope.launch {
+            try {
+                while (isActive) {
+                    val response = refreshToken(get())
+                    set(response)
+                    delay(response.expires.seconds / 2)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (t: Throwable) {
+                onFailure(t)
+            } finally {
+                withContext(NonCancellable) {
+                    releaseToken(get())
+                }
+            }
+        }
     }
 }

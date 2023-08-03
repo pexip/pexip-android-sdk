@@ -906,22 +906,6 @@ public abstract interface class com/pexip/sdk/api/infinity/Token {
 	public abstract fun getToken ()Ljava/lang/String;
 }
 
-public abstract interface class com/pexip/sdk/api/infinity/TokenRefresher {
-	public static final field Companion Lcom/pexip/sdk/api/infinity/TokenRefresher$Companion;
-	public abstract fun cancel ()V
-	public static fun create (Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;Lcom/pexip/sdk/api/infinity/TokenStore;Ljava/util/concurrent/ScheduledExecutorService;Lcom/pexip/sdk/api/infinity/TokenRefresher$Callback;)Lcom/pexip/sdk/api/infinity/TokenRefresher;
-	public static fun create (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Lcom/pexip/sdk/api/infinity/TokenStore;Ljava/util/concurrent/ScheduledExecutorService;Lcom/pexip/sdk/api/infinity/TokenRefresher$Callback;)Lcom/pexip/sdk/api/infinity/TokenRefresher;
-}
-
-public abstract interface class com/pexip/sdk/api/infinity/TokenRefresher$Callback {
-	public abstract fun onFailure (Ljava/lang/Throwable;)V
-}
-
-public final class com/pexip/sdk/api/infinity/TokenRefresher$Companion {
-	public final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;Lcom/pexip/sdk/api/infinity/TokenStore;Ljava/util/concurrent/ScheduledExecutorService;Lcom/pexip/sdk/api/infinity/TokenRefresher$Callback;)Lcom/pexip/sdk/api/infinity/TokenRefresher;
-	public final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Lcom/pexip/sdk/api/infinity/TokenStore;Ljava/util/concurrent/ScheduledExecutorService;Lcom/pexip/sdk/api/infinity/TokenRefresher$Callback;)Lcom/pexip/sdk/api/infinity/TokenRefresher;
-}
-
 public abstract interface class com/pexip/sdk/api/infinity/TokenStore {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/TokenStore$Companion;
 	public static fun create (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/infinity/TokenStore;
@@ -931,6 +915,7 @@ public abstract interface class com/pexip/sdk/api/infinity/TokenStore {
 
 public final class com/pexip/sdk/api/infinity/TokenStore$Companion {
 	public final fun create (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/infinity/TokenStore;
+	public final fun refreshTokenIn (Lcom/pexip/sdk/api/infinity/TokenStore;Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/Job;
 }
 
 public final class com/pexip/sdk/api/infinity/TurnResponse {
