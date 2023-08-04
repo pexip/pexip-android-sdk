@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,25 @@
  */
 package com.pexip.sdk.registration.infinity.internal
 
+import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.RegistrationResponse
+import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.registration.RegisteredDevice
 
-internal interface RegisteredDevicesFetcher {
+internal class RegisteredDevicesFetcher(
+    private val step: InfinityService.RegistrationStep,
+    private val store: TokenStore,
+) {
 
-    fun fetch(query: String): List<RegisteredDevice>
+    suspend fun fetch(query: String): List<RegisteredDevice> =
+        step.registrations(store.get(), query)
+            .await()
+            .map(::RegisteredDevice)
+
+    private fun RegisteredDevice(response: RegistrationResponse) = RegisteredDevice(
+        alias = response.alias,
+        description = response.description,
+        username = response.username,
+    )
 }
