@@ -20,6 +20,7 @@ import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
+import kotlinx.coroutines.CompletableJob
 import org.webrtc.CapturerObserver
 import org.webrtc.EglBase
 import org.webrtc.JavaI420Buffer
@@ -41,6 +42,7 @@ internal open class WebRtcLocalVideoTrack(
     internal val videoTrack: org.webrtc.VideoTrack,
     protected val workerExecutor: Executor,
     protected val signalingExecutor: Executor,
+    private val job: CompletableJob,
 ) : LocalVideoTrack, VideoTrack by WebRtcVideoTrack(videoTrack) {
 
     private val disposed = AtomicBoolean()
@@ -167,6 +169,7 @@ internal open class WebRtcLocalVideoTrack(
                 videoSource.dispose()
                 videoCapturer.dispose()
                 textureHelper.dispose()
+                job.complete()
             }
         }
     }

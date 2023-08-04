@@ -15,18 +15,14 @@
  */
 package com.pexip.sdk.media.webrtc.internal
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runInterruptible
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
@@ -41,15 +37,10 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-@OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
 internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: RTCConfiguration) {
 
     private val observer = PeerConnectionObserver()
-    private val peerConnectionDelegate = lazy(LazyThreadSafetyMode.NONE) {
-        checkNotNull(factory.createPeerConnection(rtcConfig, observer))
-    }
-    private val peerConnection by peerConnectionDelegate
-    private val dispatcher = newSingleThreadContext("PeerConnection")
+    private val peerConnection = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
     private val rtpTransceivers = mutableMapOf<RtpTransceiverKey, RtpTransceiver>()
     private val iceCredentials = mutableMapOf<String, IceCredentials>()
 
@@ -78,16 +69,14 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
             )
             flow.collect(::send)
         }
-        return flow
-            .onCompletion { emit(null) }
-            .flowOn(dispatcher)
+        return flow.onCompletion { emit(null) }
     }
 
     suspend fun <T> withRtpTransceiver(
         key: RtpTransceiverKey,
         init: ((RtpTransceiverKey) -> RtpTransceiver.RtpTransceiverInit)? = null,
         block: (RtpTransceiver?) -> T,
-    ): T = withContext(dispatcher) {
+    ): T = runInterruptible {
         val rtpTransceiver = when (init) {
             null -> rtpTransceivers[key]
             else -> rtpTransceivers.getOrPut(key) {
@@ -97,9 +86,9 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
         block(rtpTransceiver)
     }
 
-    suspend fun setLocalDescription(block: SessionDescription.(Map<RtpTransceiverKey, String>) -> SessionDescription = { this }): SessionDescription =
-        withContext(dispatcher) {
-            peerConnection.setLocalDescription()
+    suspend fun setLocalDescription(block: SessionDescription.(Map<RtpTransceiverKey, String>) -> SessionDescription = { this }): SessionDescription {
+        peerConnection.setLocalDescription()
+        return runInterruptible {
             iceCredentials.clear()
             val localDescription = peerConnection.localDescription
             var ufrag: String? = null
@@ -120,26 +109,23 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
             val mids = rtpTransceivers.mapValues { (_, rtpTransceiver) -> rtpTransceiver.mid }
             localDescription.block(mids)
         }
+    }
 
     suspend fun setRemoteDescription(description: SessionDescription) =
-        withContext(dispatcher) { peerConnection.setRemoteDescription(description) }
+        peerConnection.setRemoteDescription(description)
 
-    suspend fun restartIce() = withContext(dispatcher) { peerConnection.restartIce() }
+    suspend fun restartIce() = runInterruptible { peerConnection.restartIce() }
 
-    suspend fun getIceCredentials(candidate: IceCandidate): IceCredentials? =
-        withContext(dispatcher) { candidate.sdpMid?.let(iceCredentials::get) }
+    suspend fun getIceCredentials(candidate: IceCandidate) =
+        runInterruptible { candidate.sdpMid?.let(iceCredentials::get) }
 
-    suspend fun dispose() = dispatcher.use {
-        withContext(it) {
-            rtpTransceivers.forEach { (_, transceiver) ->
-                transceiver.sender.setTrack(null, false)
-            }
-            rtpTransceivers.clear()
-            iceCredentials.clear()
-            if (peerConnectionDelegate.isInitialized()) {
-                peerConnection.dispose()
-            }
+    suspend fun dispose() = runInterruptible {
+        rtpTransceivers.forEach { (_, rtpTransceiver) ->
+            rtpTransceiver.sender.setTrack(null, false)
         }
+        rtpTransceivers.clear()
+        iceCredentials.clear()
+        peerConnection.dispose()
     }
 
     private suspend fun PeerConnection.setLocalDescription() =
