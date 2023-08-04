@@ -37,9 +37,13 @@ import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcMediaConnection
 import com.pexip.sdk.media.webrtc.internal.from
+import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.webrtc.Camera1Enumerator
@@ -57,9 +61,8 @@ import org.webrtc.VideoDecoderFactory
 import org.webrtc.VideoEncoderFactory
 import org.webrtc.audio.AudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule
+import java.util.Collections
 import java.util.UUID
-import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.time.Duration.Companion.seconds
 
@@ -101,9 +104,11 @@ public class WebRtcMediaConnectionFactory private constructor(
         .setVideoDecoderFactory(videoDecoderFactory)
         .setVideoEncoderFactory(videoEncoderFactory)
         .createPeerConnectionFactory()
-    private val workerExecutor = Executors.newSingleThreadExecutor()
+
+    @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
+    private val dispatcher = newSingleThreadContext("WebRtcMediaConnectionFactory")
     private val signalingExecutor = ContextCompat.getMainExecutor(applicationContext)
-    private val jobs = CopyOnWriteArraySet<Job>()
+    private val jobs = Collections.synchronizedSet<Job>(mutableSetOf())
 
     override fun getDeviceNames(): List<String> = cameraEnumerator.deviceNames.toList()
 
@@ -130,8 +135,9 @@ public class WebRtcMediaConnectionFactory private constructor(
             context = applicationContext,
             audioSource = audioSource,
             audioTrack = audioTrack,
-            workerExecutor = workerExecutor,
+            workerExecutor = dispatcher.executor,
             signalingExecutor = signalingExecutor,
+            job = createAndAddJob(),
         )
     }
 
@@ -177,8 +183,9 @@ public class WebRtcMediaConnectionFactory private constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            workerExecutor = workerExecutor,
+            workerExecutor = dispatcher.executor,
             signalingExecutor = signalingExecutor,
+            job = createAndAddJob(),
         )
     }
 
@@ -209,8 +216,9 @@ public class WebRtcMediaConnectionFactory private constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            workerExecutor = workerExecutor,
+            workerExecutor = dispatcher.executor,
             signalingExecutor = signalingExecutor,
+            job = createAndAddJob(),
         )
     }
 
@@ -219,7 +227,8 @@ public class WebRtcMediaConnectionFactory private constructor(
         return WebRtcMediaConnection(
             factory = this,
             config = config,
-            job = Job().also(jobs::add),
+            dispatcher = dispatcher,
+            job = createAndAddJob(),
         )
     }
 
@@ -233,11 +242,11 @@ public class WebRtcMediaConnectionFactory private constructor(
             throw IllegalStateException("Children of this WebRtcMediaConnectionFactory have not been disposed.")
         }
         if (disposed.compareAndSet(false, true)) {
-            workerExecutor.execute {
+            dispatcher.executor.execute {
                 factory.dispose()
                 audioDeviceModule.release()
             }
-            workerExecutor.shutdown()
+            dispatcher.close()
         } else {
             throw IllegalStateException("WebRtcMediaConnectionFactory has been disposed!")
         }
@@ -265,6 +274,11 @@ public class WebRtcMediaConnectionFactory private constructor(
 
     private fun checkDeviceName(deviceName: String) =
         check(deviceName in getDeviceNames()) { "No available camera: $deviceName." }
+
+    private fun createAndAddJob(): CompletableJob {
+        jobs.removeAll(Job::isCompleted)
+        return Job().also(jobs::add)
+    }
 
     /**
      * A builder for [WebRtcMediaConnectionFactory].

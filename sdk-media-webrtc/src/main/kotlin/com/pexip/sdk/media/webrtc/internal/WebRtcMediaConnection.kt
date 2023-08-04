@@ -28,6 +28,7 @@ import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -62,13 +63,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
     private val config: MediaConnectionConfig,
+    dispatcher: CoroutineDispatcher,
     private val job: CompletableJob,
 ) : MediaConnection {
 
     private val started = AtomicBoolean()
     private val shouldAck = AtomicBoolean(true)
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val wrapper = factory.createPeerConnection(config)
 
     private val maxBitrate = MutableStateFlow(0.bps)

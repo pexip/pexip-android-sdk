@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.pexip.sdk.media.webrtc.internal
 import android.content.Context
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
+import kotlinx.coroutines.CompletableJob
 import org.webrtc.AudioSource
 import org.webrtc.AudioTrack
 import java.util.concurrent.CopyOnWriteArraySet
@@ -30,6 +31,7 @@ internal class WebRtcLocalAudioTrack(
     internal val audioTrack: AudioTrack,
     private val workerExecutor: Executor,
     private val signalingExecutor: Executor,
+    private val job: CompletableJob,
 ) : LocalAudioTrack {
 
     private val disposed = AtomicBoolean()
@@ -71,6 +73,7 @@ internal class WebRtcLocalAudioTrack(
                 microphoneMuteObserver.dispose()
                 audioTrack.dispose()
                 audioSource.dispose()
+                job.complete()
             }
         }
     }
