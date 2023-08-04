@@ -21,18 +21,21 @@ import com.pexip.sdk.api.infinity.TokenRefresher
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEventListener
-import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.Messenger
-import com.pexip.sdk.conference.SendCallback
+import com.pexip.sdk.conference.coroutines.send
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RealConferenceEventSource
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
-import com.pexip.sdk.conference.infinity.internal.maybeSubmit
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.net.URL
 import java.util.concurrent.Executors
 import java.util.logging.Logger
@@ -43,6 +46,7 @@ public class InfinityConference private constructor(
 ) : Conference {
 
     private val executor = Executors.newSingleThreadScheduledExecutor()
+    private val scope = CoroutineScope(SupervisorJob() + executor.asCoroutineDispatcher())
     private val store = TokenStore.create(response)
     private val refresher = TokenRefresher.create(step, store, executor) {
         source.onConferenceEvent(ConferenceEvent(it))
@@ -83,32 +87,25 @@ public class InfinityConference private constructor(
 
     @Deprecated("Use Conference.messenger.send() instead.")
     override fun message(payload: String) {
-        messenger.send(
-            type = "text/plain",
-            payload = payload,
-            callback = object : SendCallback {
-
-                override fun onSuccess(message: Message) {
-                    executor.maybeSubmit {
-                        val event = MessageReceivedConferenceEvent(
-                            at = message.at,
-                            participantId = message.participantId,
-                            participantName = message.participantName,
-                            type = message.type,
-                            payload = message.payload,
-                        )
-                        source.onConferenceEvent(event)
-                    }
-                }
-
-                override fun onFailure(e: MessageNotSentException) {
-                    // noop
-                }
-            },
-        )
+        scope.launch {
+            val message = try {
+                messenger.send(type = "text/plain", payload = payload)
+            } catch (e: MessageNotSentException) {
+                return@launch
+            }
+            val event = MessageReceivedConferenceEvent(
+                at = message.at,
+                participantId = message.participantId,
+                participantName = message.participantName,
+                type = message.type,
+                payload = message.payload,
+            )
+            source.onConferenceEvent(event)
+        }
     }
 
     override fun leave() {
+        scope.cancel()
         source.cancel()
         refresher.cancel()
         executor.shutdown()
