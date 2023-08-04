@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk
 
+import com.pexip.sdk.internal.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
@@ -34,6 +35,7 @@ class KotlinJvmPlugin : Plugin<Project> {
         }
         dependencies {
             "testImplementation"(kotlin("test-junit"))
+            "testImplementation"(libs.findLibrary("assertk").get())
         }
         tasks.withType<Test>().configureEach {
             testLogging.exceptionFormat = TestExceptionFormat.FULL
