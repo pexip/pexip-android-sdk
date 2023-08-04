@@ -21,6 +21,14 @@ import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
 import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.webrtc.CapturerObserver
 import org.webrtc.EglBase
 import org.webrtc.JavaI420Buffer
@@ -30,9 +38,7 @@ import org.webrtc.VideoCapturer
 import org.webrtc.VideoFrame
 import org.webrtc.VideoSource
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 
 internal open class WebRtcLocalVideoTrack(
     applicationContext: Context,
@@ -40,12 +46,12 @@ internal open class WebRtcLocalVideoTrack(
     private val videoCapturer: VideoCapturer,
     private val videoSource: VideoSource,
     internal val videoTrack: org.webrtc.VideoTrack,
-    protected val workerExecutor: Executor,
-    protected val signalingExecutor: Executor,
+    workerDispatcher: CoroutineDispatcher,
+    protected val signalingDispatcher: CoroutineDispatcher,
+    protected val scope: CoroutineScope = CoroutineScope(SupervisorJob() + workerDispatcher),
     private val job: CompletableJob,
-) : LocalVideoTrack, VideoTrack by WebRtcVideoTrack(videoTrack) {
+) : LocalVideoTrack, VideoTrack by WebRtcVideoTrack(videoTrack, scope) {
 
-    private val disposed = AtomicBoolean()
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val textureHelper =
         SurfaceTextureHelper.create("CaptureThread:${videoTrack.id()}", eglBase?.eglBaseContext)
@@ -86,12 +92,8 @@ internal open class WebRtcLocalVideoTrack(
             videoSource.capturerObserver.onFrameCaptured(frame)
         }
 
-        private fun notify(capturing: Boolean) {
-            signalingExecutor.maybeExecute {
-                capturingListeners.forEach {
-                    it.safeOnCapturing(capturing)
-                }
-            }
+        private fun notify(capturing: Boolean) = scope.launch(signalingDispatcher) {
+            capturingListeners.forEach { it.safeOnCapturing(capturing) }
         }
 
         private fun createBlackBuffer(width: Int, height: Int): VideoFrame.Buffer {
@@ -132,15 +134,25 @@ internal open class WebRtcLocalVideoTrack(
         private set
 
     init {
-        workerExecutor.maybeExecute {
-            videoCapturer.initialize(textureHelper, applicationContext, capturerObserver)
+        scope.launch {
+            try {
+                videoCapturer.initialize(textureHelper, applicationContext, capturerObserver)
+                awaitCancellation()
+            } finally {
+                withContext(NonCancellable) {
+                    videoCapturer.stopCapture()
+                    videoTrack.dispose()
+                    videoSource.dispose()
+                    videoCapturer.dispose()
+                    textureHelper.dispose()
+                    job.complete()
+                }
+            }
         }
     }
 
     override fun startCapture(profile: QualityProfile) {
-        workerExecutor.maybeExecute {
-            videoCapturer.startCapture(profile.width, profile.height, profile.fps)
-        }
+        scope.launch { videoCapturer.startCapture(profile.width, profile.height, profile.fps) }
     }
 
     override fun startCapture() {
@@ -148,9 +160,7 @@ internal open class WebRtcLocalVideoTrack(
     }
 
     override fun stopCapture() {
-        workerExecutor.maybeExecute {
-            videoCapturer.stopCapture()
-        }
+        scope.launch { videoCapturer.stopCapture() }
     }
 
     override fun registerCapturingListener(listener: LocalMediaTrack.CapturingListener) {
@@ -162,15 +172,6 @@ internal open class WebRtcLocalVideoTrack(
     }
 
     override fun dispose() {
-        if (disposed.compareAndSet(false, true)) {
-            workerExecutor.execute {
-                videoCapturer.stopCapture()
-                videoTrack.dispose()
-                videoSource.dispose()
-                videoCapturer.dispose()
-                textureHelper.dispose()
-                job.complete()
-            }
-        }
+        scope.cancel()
     }
 }

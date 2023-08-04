@@ -30,7 +30,6 @@ import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
@@ -63,14 +62,15 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
     private val config: MediaConnectionConfig,
-    dispatcher: CoroutineDispatcher,
+    workerDispatcher: CoroutineDispatcher,
+    private val signalingDispatcher: CoroutineDispatcher,
     private val job: CompletableJob,
 ) : MediaConnection {
 
     private val started = AtomicBoolean()
     private val shouldAck = AtomicBoolean(true)
 
-    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
+    private val scope = CoroutineScope(SupervisorJob() + workerDispatcher)
     private val wrapper = factory.createPeerConnection(config)
 
     private val maxBitrate = MutableStateFlow(0.bps)
@@ -331,14 +331,14 @@ internal class WebRtcMediaConnection(
         listeners: Collection<MediaConnection.RemoteVideoTrackListener>,
     ) = flow.drop(1)
         .onEach { track -> listeners.forEach { it.safeOnRemoteVideoTrack(track) } }
-        .flowOn(Dispatchers.Main)
+        .flowOn(signalingDispatcher)
         .launchIn(this)
 
     private fun CoroutineScope.launchRemoteVideoTrack(
         key: RtpTransceiverKey,
         flow: MutableStateFlow<VideoTrack?>,
     ) = wrapper.getRemoteVideoTrack(key)
-        .map { it?.let(::WebRtcVideoTrack) }
+        .map { track -> track?.let { WebRtcVideoTrack(it, this) } }
         .onEach { flow.value = it }
         .onCompletion { flow.value = null }
         .launchIn(this)

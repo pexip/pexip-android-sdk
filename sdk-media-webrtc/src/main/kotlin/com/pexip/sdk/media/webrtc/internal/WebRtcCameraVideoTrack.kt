@@ -19,11 +19,16 @@ import android.content.Context
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.CameraVideoTrackFactory
 import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.webrtc.CameraVideoCapturer
 import org.webrtc.EglBase
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
-import java.util.concurrent.Executor
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 internal class WebRtcCameraVideoTrack(
     private val factory: CameraVideoTrackFactory,
@@ -33,8 +38,8 @@ internal class WebRtcCameraVideoTrack(
     private val videoCapturer: CameraVideoCapturer,
     videoSource: VideoSource,
     videoTrack: VideoTrack,
-    workerExecutor: Executor,
-    signalingExecutor: Executor,
+    workerDispatcher: CoroutineDispatcher,
+    signalingDispatcher: CoroutineDispatcher,
     job: CompletableJob,
 ) : CameraVideoTrack, WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
@@ -42,43 +47,52 @@ internal class WebRtcCameraVideoTrack(
     videoCapturer = videoCapturer,
     videoSource = videoSource,
     videoTrack = videoTrack,
-    workerExecutor = workerExecutor,
-    signalingExecutor = signalingExecutor,
+    workerDispatcher = workerDispatcher,
+    signalingDispatcher = signalingDispatcher,
     job = job,
 ) {
 
     override fun switchCamera(callback: CameraVideoTrack.SwitchCameraCallback) {
-        workerExecutor.maybeExecute {
+        scope.launch {
             val deviceNames = factory.getDeviceNames()
             if (deviceNames.size <= 1) {
                 callback.safeOnFailure("No camera to switch to.")
-                return@maybeExecute
+                return@launch
             } else {
                 val deviceNameIndex = deviceNames.indexOf(deviceName)
                 val deviceName = deviceNames[(deviceNameIndex + 1) % deviceNames.size]
-                switchCamera(deviceName, callback)
+                switchCameraInternal(deviceName, callback)
             }
         }
     }
 
     override fun switchCamera(deviceName: String, callback: CameraVideoTrack.SwitchCameraCallback) {
-        workerExecutor.maybeExecute {
-            val handler = object : CameraVideoCapturer.CameraSwitchHandler {
-
-                override fun onCameraSwitchDone(front: Boolean) {
-                    this@WebRtcCameraVideoTrack.deviceName = deviceName
-                    signalingExecutor.maybeExecute {
-                        callback.safeOnSuccess(deviceName)
-                    }
-                }
-
-                override fun onCameraSwitchError(error: String) {
-                    signalingExecutor.maybeExecute {
-                        callback.safeOnFailure(error)
-                    }
-                }
-            }
-            videoCapturer.switchCamera(handler, deviceName)
-        }
+        scope.launch { switchCameraInternal(deviceName, callback) }
     }
+
+    private suspend fun switchCameraInternal(
+        deviceName: String,
+        callback: CameraVideoTrack.SwitchCameraCallback,
+    ) = try {
+        this.deviceName = videoCapturer.switchCamera(deviceName)
+        withContext(signalingDispatcher) { callback.safeOnSuccess(deviceName) }
+    } catch (e: SwitchCameraException) {
+        withContext(signalingDispatcher) { callback.safeOnFailure(e.error) }
+    }
+
+    private suspend fun CameraVideoCapturer.switchCamera(deviceName: String) = suspendCoroutine {
+        val handler = object : CameraVideoCapturer.CameraSwitchHandler {
+
+            override fun onCameraSwitchDone(front: Boolean) {
+                it.resume(deviceName)
+            }
+
+            override fun onCameraSwitchError(error: String) {
+                it.resumeWithException(SwitchCameraException(error))
+            }
+        }
+        switchCamera(handler, deviceName)
+    }
+
+    private class SwitchCameraException(val error: String) : RuntimeException(error)
 }
