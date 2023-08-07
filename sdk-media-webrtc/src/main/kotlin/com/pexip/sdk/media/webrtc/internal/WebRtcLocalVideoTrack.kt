@@ -20,11 +20,9 @@ import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
-import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -46,10 +44,8 @@ internal open class WebRtcLocalVideoTrack(
     private val videoCapturer: VideoCapturer,
     private val videoSource: VideoSource,
     internal val videoTrack: org.webrtc.VideoTrack,
-    workerDispatcher: CoroutineDispatcher,
+    protected val scope: CoroutineScope,
     protected val signalingDispatcher: CoroutineDispatcher,
-    protected val scope: CoroutineScope = CoroutineScope(SupervisorJob() + workerDispatcher),
-    private val job: CompletableJob,
 ) : LocalVideoTrack, VideoTrack by WebRtcVideoTrack(videoTrack, scope) {
 
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
@@ -146,7 +142,6 @@ internal open class WebRtcLocalVideoTrack(
                     videoSource.dispose()
                     videoCapturer.dispose()
                     textureHelper.dispose()
-                    job.complete()
                 }
             }
         }

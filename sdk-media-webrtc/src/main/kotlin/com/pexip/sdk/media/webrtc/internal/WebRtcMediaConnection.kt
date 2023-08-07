@@ -27,12 +27,10 @@ import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
-import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
@@ -62,15 +60,13 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
     private val config: MediaConnectionConfig,
-    workerDispatcher: CoroutineDispatcher,
+    private val scope: CoroutineScope,
     private val signalingDispatcher: CoroutineDispatcher,
-    private val job: CompletableJob,
 ) : MediaConnection {
 
     private val started = AtomicBoolean()
     private val shouldAck = AtomicBoolean(true)
 
-    private val scope = CoroutineScope(SupervisorJob() + workerDispatcher)
     private val wrapper = factory.createPeerConnection(config)
 
     private val maxBitrate = MutableStateFlow(0.bps)
@@ -362,7 +358,6 @@ internal class WebRtcMediaConnection(
                 mainRemoteVideoTrackListeners.clear()
                 presentationRemoteVideoTrackListeners.clear()
                 wrapper.dispose()
-                job.complete()
             }
         }
     }

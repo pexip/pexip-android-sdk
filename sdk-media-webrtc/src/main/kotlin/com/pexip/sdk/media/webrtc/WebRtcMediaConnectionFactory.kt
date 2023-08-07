@@ -36,17 +36,17 @@ import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcMediaConnection
 import com.pexip.sdk.media.webrtc.internal.from
-import kotlinx.coroutines.CompletableJob
+import com.pexip.sdk.media.webrtc.internal.maybeExecute
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asExecutor
-import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerator
@@ -62,10 +62,7 @@ import org.webrtc.VideoDecoderFactory
 import org.webrtc.VideoEncoderFactory
 import org.webrtc.audio.AudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule
-import java.util.Collections
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.time.Duration.Companion.seconds
 
 public class WebRtcMediaConnectionFactory private constructor(
     private val applicationContext: Context,
@@ -99,7 +96,6 @@ public class WebRtcMediaConnectionFactory private constructor(
         videoEncoderFactory = videoEncoderFactory,
     )
 
-    private val disposed = AtomicBoolean()
     private val factory = PeerConnectionFactory.builder()
         .setAudioDeviceModule(audioDeviceModule)
         .setVideoDecoderFactory(videoDecoderFactory)
@@ -109,7 +105,7 @@ public class WebRtcMediaConnectionFactory private constructor(
     @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
     private val workerDispatcher = newSingleThreadContext("WebRtcMediaConnectionFactory")
     private val signalingDispatcher = Dispatchers.Main.immediate
-    private val jobs = Collections.synchronizedSet<Job>(mutableSetOf())
+    private val job = Job()
 
     override fun getDeviceNames(): List<String> = cameraEnumerator.deviceNames.toList()
 
@@ -136,9 +132,8 @@ public class WebRtcMediaConnectionFactory private constructor(
             context = applicationContext,
             audioSource = audioSource,
             audioTrack = audioTrack,
-            workerDispatcher = workerDispatcher,
+            scope = CoroutineScope(),
             signalingDispatcher = signalingDispatcher,
-            job = createAndAddJob(),
         )
     }
 
@@ -184,9 +179,8 @@ public class WebRtcMediaConnectionFactory private constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            workerDispatcher = workerDispatcher,
+            scope = CoroutineScope(),
             signalingDispatcher = signalingDispatcher,
-            job = createAndAddJob(),
         )
     }
 
@@ -217,9 +211,8 @@ public class WebRtcMediaConnectionFactory private constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            workerDispatcher = workerDispatcher,
+            scope = CoroutineScope(),
             signalingDispatcher = signalingDispatcher,
-            job = createAndAddJob(),
         )
     }
 
@@ -228,30 +221,18 @@ public class WebRtcMediaConnectionFactory private constructor(
         return WebRtcMediaConnection(
             factory = this,
             config = config,
-            workerDispatcher = workerDispatcher,
+            scope = CoroutineScope(),
             signalingDispatcher = signalingDispatcher,
-            job = createAndAddJob(),
         )
     }
 
     override fun dispose() {
-        try {
-            runBlocking {
-                withTimeout(10.seconds) { jobs.joinAll() }
-                jobs.clear()
-            }
-        } catch (e: TimeoutCancellationException) {
-            throw IllegalStateException("Children of this WebRtcMediaConnectionFactory have not been disposed.")
+        runBlocking { job.cancelAndJoin() }
+        workerDispatcher.executor.maybeExecute {
+            factory.dispose()
+            audioDeviceModule.release()
         }
-        if (disposed.compareAndSet(false, true)) {
-            workerDispatcher.executor.execute {
-                factory.dispose()
-                audioDeviceModule.release()
-            }
-            workerDispatcher.close()
-        } else {
-            throw IllegalStateException("WebRtcMediaConnectionFactory has been disposed!")
-        }
+        workerDispatcher.close()
     }
 
     internal fun createPeerConnection(config: MediaConnectionConfig): PeerConnectionWrapper {
@@ -271,16 +252,13 @@ public class WebRtcMediaConnectionFactory private constructor(
 
     private fun createMediaTrackId() = UUID.randomUUID().toString()
 
+    private fun CoroutineScope() = CoroutineScope(SupervisorJob(job) + workerDispatcher)
+
     private fun checkNotDisposed() =
-        check(!disposed.get()) { "WebRtcMediaConnectionFactory has been disposed!" }
+        check(job.isActive) { "WebRtcMediaConnectionFactory has been disposed!" }
 
     private fun checkDeviceName(deviceName: String) =
         check(deviceName in getDeviceNames()) { "No available camera: $deviceName." }
-
-    private fun createAndAddJob(): CompletableJob {
-        jobs.removeAll(Job::isCompleted)
-        return Job().also(jobs::add)
-    }
 
     /**
      * A builder for [WebRtcMediaConnectionFactory].
