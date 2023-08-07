@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,22 @@ package com.pexip.sdk.media.webrtc.internal
 
 import com.pexip.sdk.media.Renderer
 import com.pexip.sdk.media.VideoTrack
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.webrtc.VideoSink
 
-@JvmInline
-internal value class WebRtcVideoTrack(private val videoTrack: org.webrtc.VideoTrack) : VideoTrack {
+internal class WebRtcVideoTrack(
+    private val videoTrack: org.webrtc.VideoTrack,
+    private val scope: CoroutineScope,
+) : VideoTrack {
 
     override fun addRenderer(renderer: Renderer) {
         require(renderer is VideoSink) { "renderer must be an instance of VideoSink." }
-        videoTrack.addSink(renderer)
+        scope.launch { videoTrack.addSink(renderer) }
     }
 
     override fun removeRenderer(renderer: Renderer) {
         require(renderer is VideoSink) { "renderer must be an instance of VideoSink." }
-        videoTrack.removeSink(renderer)
+        scope.launch { videoTrack.removeSink(renderer) }
     }
 }

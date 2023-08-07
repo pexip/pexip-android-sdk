@@ -19,44 +19,60 @@ import android.content.Context
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
 import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.webrtc.AudioSource
 import org.webrtc.AudioTrack
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.Executor
-import java.util.concurrent.atomic.AtomicBoolean
 
 internal class WebRtcLocalAudioTrack(
     context: Context,
     private val audioSource: AudioSource,
     internal val audioTrack: AudioTrack,
-    private val workerExecutor: Executor,
-    private val signalingExecutor: Executor,
+    workerDispatcher: CoroutineDispatcher,
+    signalingDispatcher: CoroutineDispatcher,
     private val job: CompletableJob,
 ) : LocalAudioTrack {
 
-    private val disposed = AtomicBoolean()
+    private val scope = CoroutineScope(SupervisorJob() + workerDispatcher)
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val microphoneMuteObserver = MicrophoneMuteObserver(context) { microphoneMute ->
-        signalingExecutor.maybeExecute {
-            capturingListeners.forEach {
-                it.safeOnCapturing(!microphoneMute)
-            }
+        scope.launch(signalingDispatcher) {
+            capturingListeners.forEach { it.safeOnCapturing(!microphoneMute) }
         }
     }
 
     override val capturing: Boolean
         get() = !microphoneMuteObserver.microphoneMute
 
-    override fun startCapture() {
-        workerExecutor.maybeExecute {
-            microphoneMuteObserver.microphoneMute = false
+    init {
+        scope.launch {
+            try {
+                awaitCancellation()
+            } finally {
+                withContext(NonCancellable) {
+                    capturingListeners.clear()
+                    microphoneMuteObserver.dispose()
+                    audioTrack.dispose()
+                    audioSource.dispose()
+                    job.complete()
+                }
+            }
         }
     }
 
+    override fun startCapture() {
+        scope.launch { microphoneMuteObserver.microphoneMute = false }
+    }
+
     override fun stopCapture() {
-        workerExecutor.maybeExecute {
-            microphoneMuteObserver.microphoneMute = true
-        }
+        scope.launch { microphoneMuteObserver.microphoneMute = true }
     }
 
     override fun registerCapturingListener(listener: LocalMediaTrack.CapturingListener) {
@@ -68,13 +84,6 @@ internal class WebRtcLocalAudioTrack(
     }
 
     override fun dispose() {
-        if (disposed.compareAndSet(false, true)) {
-            workerExecutor.execute {
-                microphoneMuteObserver.dispose()
-                audioTrack.dispose()
-                audioSource.dispose()
-                job.complete()
-            }
-        }
+        scope.cancel()
     }
 }
