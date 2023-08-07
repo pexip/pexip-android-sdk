@@ -140,6 +140,7 @@ internal open class WebRtcLocalVideoTrack(
                 awaitCancellation()
             } finally {
                 withContext(NonCancellable) {
+                    capturingListeners.clear()
                     videoCapturer.stopCapture()
                     videoTrack.dispose()
                     videoSource.dispose()

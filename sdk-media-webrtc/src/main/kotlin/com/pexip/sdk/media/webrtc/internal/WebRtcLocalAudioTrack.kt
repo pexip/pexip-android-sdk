@@ -57,6 +57,7 @@ internal class WebRtcLocalAudioTrack(
                 awaitCancellation()
             } finally {
                 withContext(NonCancellable) {
+                    capturingListeners.clear()
                     microphoneMuteObserver.dispose()
                     audioTrack.dispose()
                     audioSource.dispose()
