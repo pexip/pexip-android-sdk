@@ -15,10 +15,11 @@
  */
 package com.pexip.sdk.conference.infinity
 
+import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenResponse
-import com.pexip.sdk.api.infinity.TokenRefresher
 import com.pexip.sdk.api.infinity.TokenStore
+import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.MessageNotSentException
@@ -48,9 +49,6 @@ public class InfinityConference private constructor(
     private val executor = Executors.newSingleThreadScheduledExecutor()
     private val scope = CoroutineScope(SupervisorJob() + executor.asCoroutineDispatcher())
     private val store = TokenStore.create(response)
-    private val refresher = TokenRefresher.create(step, store, executor) {
-        source.onConferenceEvent(ConferenceEvent(it))
-    }
     private val messengerImpl = MessengerImpl(
         senderId = response.participantId,
         senderName = response.participantName,
@@ -76,6 +74,15 @@ public class InfinityConference private constructor(
             }
         },
     )
+
+    init {
+        store.refreshTokenIn(
+            scope = scope,
+            refreshToken = { step.refreshToken(it).await() },
+            releaseToken = { step.releaseToken(it).await() },
+            onFailure = { source.onConferenceEvent(ConferenceEvent(it)) },
+        )
+    }
 
     override fun registerConferenceEventListener(listener: ConferenceEventListener) {
         source.registerConferenceEventListener(listener)
@@ -107,7 +114,6 @@ public class InfinityConference private constructor(
     override fun leave() {
         scope.cancel()
         source.cancel()
-        refresher.cancel()
         executor.shutdown()
     }
 

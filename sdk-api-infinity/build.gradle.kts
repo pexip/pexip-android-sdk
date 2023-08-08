@@ -12,6 +12,7 @@ dependencies {
     api(libs.okio)
     implementation(libs.okhttp.sse)
     implementation(libs.kotlinx.serialization.json.okio)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
 }
 
