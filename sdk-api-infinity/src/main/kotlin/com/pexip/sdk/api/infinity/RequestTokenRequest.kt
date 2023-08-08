@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,4 +31,6 @@ public data class RequestTokenRequest(
     public val ssoToken: String? = null,
     @Transient
     public val incomingToken: String? = null,
+    @Transient
+    public val registrationToken: String? = null,
 )
