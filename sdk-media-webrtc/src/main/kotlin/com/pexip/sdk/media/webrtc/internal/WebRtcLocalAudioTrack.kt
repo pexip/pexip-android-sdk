@@ -18,11 +18,9 @@ package com.pexip.sdk.media.webrtc.internal
 import android.content.Context
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
-import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -35,12 +33,10 @@ internal class WebRtcLocalAudioTrack(
     context: Context,
     private val audioSource: AudioSource,
     internal val audioTrack: AudioTrack,
-    workerDispatcher: CoroutineDispatcher,
+    private val scope: CoroutineScope,
     signalingDispatcher: CoroutineDispatcher,
-    private val job: CompletableJob,
 ) : LocalAudioTrack {
 
-    private val scope = CoroutineScope(SupervisorJob() + workerDispatcher)
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val microphoneMuteObserver = MicrophoneMuteObserver(context) { microphoneMute ->
         scope.launch(signalingDispatcher) {
@@ -61,7 +57,6 @@ internal class WebRtcLocalAudioTrack(
                     microphoneMuteObserver.dispose()
                     audioTrack.dispose()
                     audioSource.dispose()
-                    job.complete()
                 }
             }
         }

@@ -18,8 +18,8 @@ package com.pexip.sdk.media.webrtc.internal
 import android.content.Context
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.CameraVideoTrackFactory
-import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.webrtc.CameraVideoCapturer
@@ -38,18 +38,16 @@ internal class WebRtcCameraVideoTrack(
     private val videoCapturer: CameraVideoCapturer,
     videoSource: VideoSource,
     videoTrack: VideoTrack,
-    workerDispatcher: CoroutineDispatcher,
+    scope: CoroutineScope,
     signalingDispatcher: CoroutineDispatcher,
-    job: CompletableJob,
 ) : CameraVideoTrack, WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
     eglBase = eglBase,
     videoCapturer = videoCapturer,
     videoSource = videoSource,
     videoTrack = videoTrack,
-    workerDispatcher = workerDispatcher,
+    scope = scope,
     signalingDispatcher = signalingDispatcher,
-    job = job,
 ) {
 
     override fun switchCamera(callback: CameraVideoTrack.SwitchCameraCallback) {
