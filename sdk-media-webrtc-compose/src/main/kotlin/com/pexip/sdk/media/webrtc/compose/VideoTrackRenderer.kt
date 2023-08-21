@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.viewinterop.AndroidView
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.webrtc.SurfaceViewRenderer
@@ -51,6 +52,7 @@ public fun VideoTrackRenderer(
     val eglBaseConfigAttributes = LocalEglBaseConfigAttributes.current
     val context = LocalContext.current
     val renderer = remember(context) { SurfaceViewRenderer(context) }
+    val currentView = LocalView.current
     DisposableEffect(renderer, eglBaseContext) {
         renderer.init(eglBaseContext, null, eglBaseConfigAttributes, GlRectDrawer())
         onDispose {
@@ -68,10 +70,15 @@ public fun VideoTrackRenderer(
             renderer.clearImage()
         }
     }
+    DisposableEffect(currentView) {
+        currentView.keepScreenOn = true
+        onDispose {
+            currentView.keepScreenOn = false
+        }
+    }
     AndroidView(
         factory = {
             renderer.apply {
-                keepScreenOn = true
                 if (zOrderMediaOverlay) setZOrderMediaOverlay(true)
                 if (zOrderOnTop) setZOrderOnTop(true)
             }
