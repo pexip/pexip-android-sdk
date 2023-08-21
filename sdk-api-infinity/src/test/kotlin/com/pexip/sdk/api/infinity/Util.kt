@@ -15,7 +15,6 @@
  */
 package com.pexip.sdk.api.infinity
 
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -70,6 +69,9 @@ internal fun RecordedRequest.assertRequestUrl(url: URL, block: HttpUrl.Builder.(
     assertEquals(url.toString().toHttpUrl().newBuilder().apply(block).build(), requestUrl)
 
 internal fun RecordedRequest.assertToken(token: String?) = assertEquals(token, getHeader("token"))
+
+internal fun RecordedRequest.assertRegistrationToken(token: String?) =
+    assertEquals(token, getHeader("registration_token"))
 
 internal fun RecordedRequest.assertAuthorization(username: String, password: String) {
     val base64 = "$username:$password".encodeUtf8().base64Url()

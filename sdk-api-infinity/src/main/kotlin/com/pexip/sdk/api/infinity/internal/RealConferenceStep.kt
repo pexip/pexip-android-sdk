@@ -55,6 +55,8 @@ internal class RealConferenceStep(
             }
         if (request.incomingToken?.isNotBlank() == true) {
             builder.header("token", request.incomingToken)
+        } else if (request.registrationToken?.isNotBlank() == true) {
+            builder.header("registration_token", request.registrationToken)
         }
         return RealCall(client, builder.build(), ::parseRequestToken)
     }

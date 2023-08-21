@@ -181,6 +181,7 @@ internal class ConferenceStepTest {
         val requests = setOf(
             RequestTokenRequest(ssoToken = Random.nextString(8)),
             RequestTokenRequest(incomingToken = Random.nextString(8)),
+            RequestTokenRequest(registrationToken = Random.nextString(8)),
         )
         requests.forEach {
             server.enqueue {
@@ -448,8 +449,9 @@ internal class ConferenceStepTest {
         }
         assertPin(pin)
         assertToken(request.incomingToken)
-        // Copy due to incomingToken being @Transient
-        assertPost(json, request.copy(incomingToken = null))
+        assertRegistrationToken(request.registrationToken)
+        // Copy due to incomingToken & registrationToken being @Transient
+        assertPost(json, request.copy(incomingToken = null, registrationToken = null))
     }
 
     private fun MockWebServer.verifyRefreshToken(token: String) = takeRequest {
