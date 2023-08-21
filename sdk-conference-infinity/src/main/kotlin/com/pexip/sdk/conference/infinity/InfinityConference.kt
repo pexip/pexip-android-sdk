@@ -21,6 +21,7 @@ import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
 import com.pexip.sdk.conference.Conference
+import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
@@ -28,16 +29,25 @@ import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.coroutines.send
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
-import com.pexip.sdk.conference.infinity.internal.RealConferenceEventSource
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
+import com.pexip.sdk.conference.infinity.internal.conferenceEvent
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import java.net.URL
+import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executors
 import java.util.logging.Logger
 
@@ -55,7 +65,11 @@ public class InfinityConference private constructor(
         store = store,
         step = step,
     )
-    private val source = RealConferenceEventSource(store, step, executor, messengerImpl)
+    private val conferenceEvent = step
+        .conferenceEvent(store)
+        .shareIn(scope, SharingStarted.Lazily)
+    private val listeners = CopyOnWriteArraySet<ConferenceEventListener>()
+    private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
 
     override val name: String = response.conferenceName
 
@@ -80,16 +94,20 @@ public class InfinityConference private constructor(
             scope = scope,
             refreshToken = { step.refreshToken(it).await() },
             releaseToken = { step.releaseToken(it).await() },
-            onFailure = { source.onConferenceEvent(ConferenceEvent(it)) },
+            onFailure = { mutableConferenceEvent.emit(ConferenceEvent(it)) },
         )
+        merge(conferenceEvent, mutableConferenceEvent)
+            .onEach { event -> listeners.forEach { it.onConferenceEvent(event) } }
+            .flowOn(Dispatchers.Main.immediate)
+            .launchIn(scope)
     }
 
     override fun registerConferenceEventListener(listener: ConferenceEventListener) {
-        source.registerConferenceEventListener(listener)
+        listeners += listener
     }
 
     override fun unregisterConferenceEventListener(listener: ConferenceEventListener) {
-        source.unregisterConferenceEventListener(listener)
+        listeners -= listener
     }
 
     @Deprecated("Use Conference.messenger.send() instead.")
@@ -107,13 +125,12 @@ public class InfinityConference private constructor(
                 type = message.type,
                 payload = message.payload,
             )
-            source.onConferenceEvent(event)
+            mutableConferenceEvent.emit(event)
         }
     }
 
     override fun leave() {
         scope.cancel()
-        source.cancel()
         executor.shutdown()
     }
 

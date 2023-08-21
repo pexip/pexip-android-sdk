@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
 
     override fun events(token: String): EventSourceFactory = TODO()
 
-    final override fun events(token: Token): EventSourceFactory = events(token.token)
+    override fun events(token: Token): EventSourceFactory = events(token.token)
 
     override fun participant(participantId: UUID): InfinityService.ParticipantStep = TODO()
 }
