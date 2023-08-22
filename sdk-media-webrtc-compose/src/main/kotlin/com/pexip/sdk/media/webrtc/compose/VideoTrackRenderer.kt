@@ -34,6 +34,7 @@ import org.webrtc.GlRectDrawer
  *
  * @param videoTrack an instance of video track or null
  * @param modifier optional [Modifier] to be applied to the video
+ * @param keepScreenOn controls whether the screen should remain on
  * @param mirror defines if the video should rendered mirrored
  * @param zOrderMediaOverlay control whether the video is rendered on top of another video
  * @param zOrderOnTop control whether the video is rendered on top of its window. This overrides [zOrderMediaOverlay] if set
@@ -42,6 +43,7 @@ import org.webrtc.GlRectDrawer
 public fun VideoTrackRenderer(
     videoTrack: VideoTrack?,
     modifier: Modifier = Modifier,
+    keepScreenOn: Boolean = true,
     mirror: Boolean = false,
     zOrderMediaOverlay: Boolean = false,
     zOrderOnTop: Boolean = false,
@@ -71,11 +73,11 @@ public fun VideoTrackRenderer(
     AndroidView(
         factory = {
             renderer.apply {
-                keepScreenOn = true
                 if (zOrderMediaOverlay) setZOrderMediaOverlay(true)
                 if (zOrderOnTop) setZOrderOnTop(true)
             }
         },
+        update = { it.keepScreenOn = keepScreenOn },
         modifier = modifier,
     )
 }
