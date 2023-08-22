@@ -77,9 +77,7 @@ public fun VideoTrackRenderer(
                 if (zOrderOnTop) setZOrderOnTop(true)
             }
         },
-        update = {
-            renderer.apply { it.keepScreenOn = keepScreenOn }
-        },
+        update = { it.keepScreenOn = keepScreenOn },
         modifier = modifier,
     )
 }
