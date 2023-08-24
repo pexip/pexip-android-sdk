@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.13.0] - 2023-08-25
+
 ### Added
 
 - `DegradationPreference` API that lets one specify the desired behavior in low bandwidth conditions
@@ -15,19 +17,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Kotlin to 1.9.0
+- WebRTC to M114
 - Various deprecated methods `DeprecationLevel` to `DeprecationLevel.ERROR`
 - `ack` is now called later in the call setup phase
 - Merged all `-coroutines` modules with their respective bases
 - `createOffer` to `setLocalDescription` that supports rollback
 - Usages of `java.net.URL` to `okhttp3.HttpUrl` internally
 - **BREAKING**: `Conference` no longer implements `MediaConnectionSignaling`. It instead provides an
-  instance of `MediaConnectionSignaling` as a property `Conference.signaling`. To migrated, update
-  the any calls of `MediaConnectionConfig.Builder(conference)` to
+  instance of `MediaConnectionSignaling` as a property `Conference.signaling`. To migrate, update
+  any calls of `MediaConnectionConfig.Builder(conference)` to
   `MediaConnectionConfig.Builder(conference.signaling)`
 
 ### Fixed
 
 - Unnecessary network calls after `MediaConnection` has been disposed
+- Unconstrained codec FPS
+- `keepScreenOn` not working in `VideoTrackRenderer`
 
 ### Removed
 
@@ -244,7 +250,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.12.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.13.0...HEAD
+[0.13.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.13.0
 [0.12.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.12.0
 [0.11.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.11.0
 [0.10.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.10.0
