@@ -22,16 +22,26 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
 import com.pexip.sdk.registration.RegisteredDevicesCallback
 import com.pexip.sdk.registration.Registration
+import com.pexip.sdk.registration.RegistrationEvent
 import com.pexip.sdk.registration.RegistrationEventListener
-import com.pexip.sdk.registration.infinity.internal.RealRegistrationEventSource
 import com.pexip.sdk.registration.infinity.internal.RegisteredDevicesFetcher
 import com.pexip.sdk.registration.infinity.internal.RegistrationEvent
+import com.pexip.sdk.registration.infinity.internal.registrationEvent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import java.net.URL
+import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executors
 import java.util.logging.Logger
 
@@ -43,8 +53,12 @@ public class InfinityRegistration private constructor(
     private val executor = Executors.newSingleThreadScheduledExecutor()
     private val scope = CoroutineScope(SupervisorJob() + executor.asCoroutineDispatcher())
     private val store = TokenStore.create(response)
-    private val source = RealRegistrationEventSource(step, store, executor)
     private val fetcher = RegisteredDevicesFetcher(step, store)
+    private val registrationEvent = step
+        .registrationEvent(store)
+        .shareIn(scope, SharingStarted.Lazily)
+    private val listeners = CopyOnWriteArraySet<RegistrationEventListener>()
+    private val mutableRegistrationEvent = MutableSharedFlow<RegistrationEvent>()
 
     override val directoryEnabled: Boolean = response.directoryEnabled
 
@@ -55,8 +69,12 @@ public class InfinityRegistration private constructor(
             scope = scope,
             refreshToken = { step.refreshToken(it).await() },
             releaseToken = { step.releaseToken(it).await() },
-            onFailure = { source.onRegistrationEvent(RegistrationEvent(it)) },
+            onFailure = { mutableRegistrationEvent.emit(RegistrationEvent(it)) },
         )
+        merge(registrationEvent, mutableRegistrationEvent)
+            .onEach { event -> listeners.forEach { it.onRegistrationEvent(event) } }
+            .flowOn(Dispatchers.Main.immediate)
+            .launchIn(scope)
     }
 
     override fun getRegisteredDevices(query: String, callback: RegisteredDevicesCallback) {
@@ -70,17 +88,17 @@ public class InfinityRegistration private constructor(
     }
 
     override fun registerRegistrationEventListener(listener: RegistrationEventListener) {
-        source.registerRegistrationEventListener(listener)
+        listeners += listener
     }
 
     override fun unregisterRegistrationEventListener(listener: RegistrationEventListener) {
-        source.unregisterRegistrationEventListener(listener)
+        listeners -= listener
     }
 
     override fun dispose() {
         scope.cancel()
-        source.cancel()
         executor.shutdown()
+        listeners.clear()
     }
 
     public companion object {
