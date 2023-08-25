@@ -64,7 +64,7 @@ public interface TokenStore {
             scope: CoroutineScope,
             crossinline refreshToken: suspend (Token) -> Token,
             crossinline releaseToken: suspend (Token) -> Unit,
-            crossinline onFailure: (t: Throwable) -> Unit,
+            crossinline onFailure: suspend (t: Throwable) -> Unit,
         ): Job = scope.launch {
             try {
                 while (isActive) {
