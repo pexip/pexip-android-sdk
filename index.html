@@ -42,7 +42,7 @@
             </a>
     </div>
     <div>
-0.12.0    </div>
+0.13.0    </div>
     <div class="pull-right d-flex">
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
@@ -70,13 +70,13 @@
         </span></div>
       <p class="paragraph">And add modules that you need:</p>
       <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">dependencies {<br>    // A fluent wrapper for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-infinity:0.12.0&quot;)<br>    // A set of tools for interacting with an Infinity conference<br>    implementation(&quot;com.pexip.sdk:sdk-conference-infinity:0.12.0&quot;)<br>    // A set of tools for interacting with an Infinity registration<br>    implementation(&quot;com.pexip.sdk:sdk-registration-infinity:0.12.0&quot;)<br>    // A `MediaConnection` implementation build on top of WebRTC<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc:0.12.0&quot;)<br>    // A set of extensions that add coroutines support for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-coroutines:0.12.0&quot;)<br>    // A set of extensions that add coroutines support for Conference object<br>    implementation(&quot;com.pexip.sdk:sdk-conference-coroutines:0.12.0&quot;)<br>    // A set of extensions that add coroutines support for Registration object<br>    implementation(&quot;com.pexip.sdk:sdk-registration-coroutines:0.12.0&quot;)<br>    // A set of extensions that add coroutines support for MediaConnection object<br>    implementation(&quot;com.pexip.sdk:sdk-media-coroutines:0.12.0&quot;)<br>    // A composable that wraps SurfaceViewRenderer<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc-compose:0.12.0&quot;)<br>}</code></pre>
+        <pre><code class="block lang-kotlin" theme="idea">dependencies {<br>    // A fluent wrapper for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api-infinity:0.13.0&quot;)<br>    // A set of tools for interacting with an Infinity conference<br>    implementation(&quot;com.pexip.sdk:sdk-conference-infinity:0.13.0&quot;)<br>    // A set of tools for interacting with an Infinity registration<br>    implementation(&quot;com.pexip.sdk:sdk-registration-infinity:0.13.0&quot;)<br>    // A `MediaConnection` implementation build on top of WebRTC<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc:0.13.0&quot;)<br>    // A composable that wraps SurfaceViewRenderer<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc-compose:0.13.0&quot;)<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
       <p class="paragraph">We also publish a <a href="https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog">Version Catalog</a> that can be consumed as follows:</p>
       <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">// settings.gradle.kts<br>enableFeaturePreview(&quot;VERSION_CATALOGS&quot;)<br><br>dependencyResolutionManagement {<br>    repositories {<br>        mavenCentral()<br>    }<br>    versionCatalogs {<br>        register(&quot;pexipSdk&quot;) {<br>            from(&quot;com.pexip.sdk:sdk-catalog:0.12.0&quot;)<br>        }<br>    }<br>}<br>// build.gradle.kts<br>dependencies {<br>    implementation(pexipSdk.api.infinity)<br>}</code></pre>
+        <pre><code class="block lang-kotlin" theme="idea">// settings.gradle.kts<br>enableFeaturePreview(&quot;VERSION_CATALOGS&quot;)<br><br>dependencyResolutionManagement {<br>    repositories {<br>        mavenCentral()<br>    }<br>    versionCatalogs {<br>        register(&quot;pexipSdk&quot;) {<br>            from(&quot;com.pexip.sdk:sdk-catalog:0.13.0&quot;)<br>        }<br>    }<br>}<br>// build.gradle.kts<br>dependencies {<br>    implementation(pexipSdk.api.infinity)<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
@@ -94,6 +94,9 @@
         <li>
           <p class="paragraph">Android SDK 21+</p>
         </li>
+        <li>
+          <p class="paragraph">Pexip Infinity 29+</p>
+        </li>
       </ul>
       <h2 class=""> WebRTC versions</h2>
       <table>
@@ -104,6 +107,14 @@
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td>0.13.0+</td>
+            <td>114</td>
+          </tr>
+          <tr>
+            <td>0.12.0+</td>
+            <td>110</td>
+          </tr>
           <tr>
             <td>0.10.0+</td>
             <td>104</td>
@@ -142,19 +153,6 @@
             </span></div>
         </div>
       </div>
-<a data-name="47107156%2FMain%2F0" anchor-label="sdk-api-coroutines" id="47107156%2FMain%2F0" data-filterable-set=""></a>
-      <div class="table-row">
-        <div class="main-subrow ">
-          <div class="w-100"><span class="inline-flex">
-              <div><a href="sdk-api-coroutines/index.html">sdk-api-coroutines</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="47107156%2FMain%2F0"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div><span class="brief-comment">
-              <p class="paragraph">Coroutines support for sdk-api.</p>
-            </span></div>
-        </div>
-      </div>
 <a data-name="-847584537%2FMain%2F0" anchor-label="sdk-api-infinity" id="-847584537%2FMain%2F0" data-filterable-set=""></a>
       <div class="table-row">
         <div class="main-subrow ">
@@ -178,19 +176,6 @@
               </span></span></div>
           <div><span class="brief-comment">
               <p class="paragraph">A set of tools to interact with conferences.</p>
-            </span></div>
-        </div>
-      </div>
-<a data-name="-1946161132%2FMain%2F0" anchor-label="sdk-conference-coroutines" id="-1946161132%2FMain%2F0" data-filterable-set=""></a>
-      <div class="table-row">
-        <div class="main-subrow ">
-          <div class="w-100"><span class="inline-flex">
-              <div><a href="sdk-conference-coroutines/index.html">sdk-conference-coroutines</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1946161132%2FMain%2F0"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div><span class="brief-comment">
-              <p class="paragraph">Coroutines support for sdk-conference.</p>
             </span></div>
         </div>
       </div>
@@ -233,19 +218,6 @@
             </span></div>
         </div>
       </div>
-<a data-name="806241502%2FMain%2F0" anchor-label="sdk-media-coroutines" id="806241502%2FMain%2F0" data-filterable-set=""></a>
-      <div class="table-row">
-        <div class="main-subrow ">
-          <div class="w-100"><span class="inline-flex">
-              <div><a href="sdk-media-coroutines/index.html">sdk-media-coroutines</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="806241502%2FMain%2F0"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div><span class="brief-comment">
-              <p class="paragraph">Coroutines support for sdk-media.</p>
-            </span></div>
-        </div>
-      </div>
 <a data-name="1216972588%2FMain%2F0" anchor-label="sdk-media-webrtc" id="1216972588%2FMain%2F0" data-filterable-set=""></a>
       <div class="table-row">
         <div class="main-subrow ">
@@ -282,19 +254,6 @@
               </span></span></div>
           <div><span class="brief-comment">
               <p class="paragraph">A set of tools to interact with registrations.</p>
-            </span></div>
-        </div>
-      </div>
-<a data-name="-1292799631%2FMain%2F0" anchor-label="sdk-registration-coroutines" id="-1292799631%2FMain%2F0" data-filterable-set=""></a>
-      <div class="table-row">
-        <div class="main-subrow ">
-          <div class="w-100"><span class="inline-flex">
-              <div><a href="sdk-registration-coroutines/index.html">sdk-registration-coroutines</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1292799631%2FMain%2F0"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div><span class="brief-comment">
-              <p class="paragraph">Coroutines support for sdk-registration.</p>
             </span></div>
         </div>
       </div>
