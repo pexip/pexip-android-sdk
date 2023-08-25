@@ -132,6 +132,7 @@ public class InfinityConference private constructor(
     override fun leave() {
         scope.cancel()
         executor.shutdown()
+        listeners.clear()
     }
 
     public companion object {
