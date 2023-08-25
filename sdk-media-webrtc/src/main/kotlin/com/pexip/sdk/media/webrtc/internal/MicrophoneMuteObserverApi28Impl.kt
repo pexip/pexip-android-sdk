@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,34 +21,44 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @RequiresApi(28)
 internal class MicrophoneMuteObserverApi28Impl(
-    private val context: Context,
-    private val callback: Callback,
-) : MicrophoneMuteObserver(context) {
+    context: Context,
+    scope: CoroutineScope,
+) : MicrophoneMuteObserver(context, scope) {
 
-    private val filter = IntentFilter(AudioManager.ACTION_MICROPHONE_MUTE_CHANGED)
-    private val receiver = object : BroadcastReceiver() {
+    override val microphoneMute: StateFlow<Boolean> = context.microphoneMuteChange()
+        .map { audioManager.isMicrophoneMute }
+        .stateIn(scope, SharingStarted.Eagerly, audioManager.isMicrophoneMute)
 
-        override fun onReceive(context: Context, intent: Intent) {
-            callback.onMicrophoneMuteChange(microphoneMute)
+    override fun setMicrophoneMute(mute: Boolean) {
+        scope.launch { audioManager.isMicrophoneMute = mute }
+    }
+
+    private fun Context.microphoneMuteChange() = callbackFlow {
+        val filter = IntentFilter(AudioManager.ACTION_MICROPHONE_MUTE_CHANGED)
+        val receiver = object : BroadcastReceiver() {
+
+            override fun onReceive(context: Context, intent: Intent) {
+                trySend(intent)
+            }
         }
-    }
-
-    init {
-        context.registerReceiver(receiver, filter)
-    }
-
-    override fun doSetMicrophoneMute(microphoneMute: Boolean) {
-        audioManager.isMicrophoneMute = microphoneMute
-    }
-
-    override fun doDispose() {
-        try {
-            context.unregisterReceiver(receiver)
-        } catch (e: IllegalArgumentException) {
-            // noop
+        registerReceiver(receiver, filter)
+        awaitClose {
+            try {
+                unregisterReceiver(receiver)
+            } catch (e: IllegalArgumentException) {
+                // noop
+            }
         }
     }
 }

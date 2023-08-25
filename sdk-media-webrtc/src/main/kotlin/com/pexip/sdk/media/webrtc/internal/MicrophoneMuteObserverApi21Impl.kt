@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,25 @@
 package com.pexip.sdk.media.webrtc.internal
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-internal class MicrophoneMuteObserverApi21Impl(context: Context, private val callback: Callback) :
-    MicrophoneMuteObserver(context) {
+internal class MicrophoneMuteObserverApi21Impl(
+    context: Context,
+    scope: CoroutineScope,
+) : MicrophoneMuteObserver(context, scope) {
 
-    override fun doSetMicrophoneMute(microphoneMute: Boolean) {
-        val previousValue = audioManager.isMicrophoneMute
-        if (previousValue == microphoneMute) return
-        audioManager.isMicrophoneMute = microphoneMute
-        val newValue = audioManager.isMicrophoneMute
-        if (newValue == microphoneMute) callback.onMicrophoneMuteChange(microphoneMute)
-    }
+    private val _microphoneMute = MutableStateFlow(audioManager.isMicrophoneMute)
 
-    override fun doDispose() {
-        // noop
+    override val microphoneMute: StateFlow<Boolean> = _microphoneMute.asStateFlow()
+
+    override fun setMicrophoneMute(mute: Boolean) {
+        scope.launch {
+            audioManager.isMicrophoneMute = mute
+            _microphoneMute.emit(audioManager.isMicrophoneMute)
+        }
     }
 }

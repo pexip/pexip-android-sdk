@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,34 +19,37 @@ import android.content.Context
 import android.media.AudioManager
 import android.os.Build
 import androidx.core.content.getSystemService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-internal abstract class MicrophoneMuteObserver(context: Context) {
-
-    fun interface Callback {
-
-        fun onMicrophoneMuteChange(microphoneMute: Boolean)
-    }
+internal abstract class MicrophoneMuteObserver(
+    context: Context,
+    protected val scope: CoroutineScope,
+) {
 
     protected val audioManager = context.getSystemService<AudioManager>()!!
 
-    var microphoneMute: Boolean
-        get() = audioManager.isMicrophoneMute
-        set(value) = doSetMicrophoneMute(value)
+    abstract val microphoneMute: StateFlow<Boolean>
 
-    private val initialMicrophoneMute = microphoneMute
-
-    fun dispose() {
-        doDispose()
-        microphoneMute = initialMicrophoneMute
+    init {
+        scope.launch {
+            val initialMicrophoneMute = audioManager.isMicrophoneMute
+            try {
+                awaitCancellation()
+            } finally {
+                withContext(NonCancellable) { setMicrophoneMute(initialMicrophoneMute) }
+            }
+        }
     }
 
-    protected abstract fun doDispose()
-
-    protected abstract fun doSetMicrophoneMute(microphoneMute: Boolean)
+    abstract fun setMicrophoneMute(mute: Boolean)
 }
 
-internal fun MicrophoneMuteObserver(context: Context, callback: MicrophoneMuteObserver.Callback) =
-    when {
-        Build.VERSION.SDK_INT >= 28 -> MicrophoneMuteObserverApi28Impl(context, callback)
-        else -> MicrophoneMuteObserverApi21Impl(context, callback)
-    }
+internal fun Context.microphoneMuteObserverIn(scope: CoroutineScope) = when {
+    Build.VERSION.SDK_INT >= 28 -> MicrophoneMuteObserverApi28Impl(this, scope)
+    else -> MicrophoneMuteObserverApi21Impl(this, scope)
+}
