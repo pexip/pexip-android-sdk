@@ -448,9 +448,7 @@ internal class ConferenceStepTest {
             addPathSegment("request_token")
         }
         assertPin(pin)
-        assertToken(request.incomingToken)
-        // Copy due to incomingToken being @Transient
-        assertPost(json, request.copy(incomingToken = null))
+        assertPost(json, request)
     }
 
     private fun MockWebServer.verifyRefreshToken(token: String) = takeRequest {

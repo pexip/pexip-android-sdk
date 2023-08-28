@@ -46,18 +46,17 @@ internal class RealConferenceStep(
     private val conferenceAlias: String,
 ) : InfinityService.ConferenceStep {
 
-    override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
-        val builder = Request.Builder()
+    override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> = RealCall(
+        client = client,
+        request = Request.Builder()
             .post(json.encodeToRequestBody(request))
             .url(node) {
                 conference(conferenceAlias)
                 addPathSegment("request_token")
             }
-        if (request.incomingToken?.isNotBlank() == true) {
-            builder.header("token", request.incomingToken)
-        }
-        return RealCall(client, builder.build(), ::parseRequestToken)
-    }
+            .build(),
+        mapper = ::parseRequestToken,
+    )
 
     override fun requestToken(
         request: RequestTokenRequest,

@@ -17,7 +17,6 @@ package com.pexip.sdk.api.infinity
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 public data class RequestTokenRequest(
@@ -29,7 +28,7 @@ public data class RequestTokenRequest(
     public val chosenIdp: IdentityProviderId? = null,
     @SerialName("sso_token")
     public val ssoToken: String? = null,
-    @Transient
+    @SerialName("token")
     public val incomingToken: String? = null,
     @SerialName("registration_token")
     public val registrationToken: String? = null,
