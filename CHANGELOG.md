@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- `registration_token` being ignored
+
 ## [0.13.0] - 2023-08-25
 
 ### Added

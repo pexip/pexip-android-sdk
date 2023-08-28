@@ -70,9 +70,6 @@ internal fun RecordedRequest.assertRequestUrl(url: URL, block: HttpUrl.Builder.(
 
 internal fun RecordedRequest.assertToken(token: String?) = assertEquals(token, getHeader("token"))
 
-internal fun RecordedRequest.assertRegistrationToken(token: String?) =
-    assertEquals(token, getHeader("registration_token"))
-
 internal fun RecordedRequest.assertAuthorization(username: String, password: String) {
     val base64 = "$username:$password".encodeUtf8().base64Url()
     assertEquals("x-pexip-basic $base64", getHeader("Authorization"))

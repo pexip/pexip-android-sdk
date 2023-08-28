@@ -31,6 +31,6 @@ public data class RequestTokenRequest(
     public val ssoToken: String? = null,
     @Transient
     public val incomingToken: String? = null,
-    @Transient
+    @SerialName("registration_token")
     public val registrationToken: String? = null,
 )

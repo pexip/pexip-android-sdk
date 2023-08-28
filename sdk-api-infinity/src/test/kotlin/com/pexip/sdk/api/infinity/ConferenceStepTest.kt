@@ -449,9 +449,8 @@ internal class ConferenceStepTest {
         }
         assertPin(pin)
         assertToken(request.incomingToken)
-        assertRegistrationToken(request.registrationToken)
-        // Copy due to incomingToken & registrationToken being @Transient
-        assertPost(json, request.copy(incomingToken = null, registrationToken = null))
+        // Copy due to incomingToken being @Transient
+        assertPost(json, request.copy(incomingToken = null))
     }
 
     private fun MockWebServer.verifyRefreshToken(token: String) = takeRequest {
