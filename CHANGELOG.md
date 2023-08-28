@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- `token` to be passed in the body instead of the header for `request_token` API call
+
 ### Fixed
 
 - `registration_token` being ignored
