@@ -16,7 +16,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         register("pexipSdk") {
-            from("com.pexip.sdk:sdk-catalog:0.13.0")
+            from("com.pexip.sdk:sdk-catalog:0.13.1")
         }
     }
 }

@@ -7,8 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.13.1] - 2023-08-29
+
 ### Changed
 
+- `targetSdk` to 34
 - `token` to be passed in the body instead of the header for `request_token` API call
 
 ### Fixed
@@ -258,7 +261,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.13.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.13.1...HEAD
+[0.13.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.13.1
 [0.13.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.13.0
 [0.12.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.12.0
 [0.11.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.11.0

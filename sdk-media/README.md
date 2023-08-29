@@ -8,6 +8,6 @@ A set of classes and interfaces to help with establishing a media connection.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-media:0.13.0")
+    implementation("com.pexip.sdk:sdk-media:0.13.1")
 }
 ```
