@@ -49,7 +49,6 @@ gradlePlugin {
 
 dependencies {
     implementation(libs.android)
-    implementation(libs.cachefix)
     implementation(libs.dokka)
     implementation(libs.dokka.base)
     implementation(libs.kotlin)

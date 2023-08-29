@@ -28,13 +28,11 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 
+@Suppress("UnstableApiUsage")
 class AndroidLibraryPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
-        with(pluginManager) {
-            apply("com.android.library")
-            apply("org.gradle.android.cache-fix")
-        }
+        pluginManager.apply("com.android.library")
         configure<LibraryExtension> {
             compileSdk = Android.compileSdk
             defaultConfig {
