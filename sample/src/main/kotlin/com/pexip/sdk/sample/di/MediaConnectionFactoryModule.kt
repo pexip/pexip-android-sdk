@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,14 @@ import dagger.hilt.components.SingletonComponent
 interface MediaConnectionFactoryModule {
 
     @Binds
-    fun WebRtcMediaConnectionFactory.bindMediaConnectionFactory(): MediaConnectionFactory
+    fun bindMediaConnectionFactory(factory: WebRtcMediaConnectionFactory): MediaConnectionFactory
 
     @Binds
-    fun WebRtcMediaConnectionFactory.bindLocalAudioTrackFactory(): LocalAudioTrackFactory
+    fun bindLocalAudioTrackFactory(factory: WebRtcMediaConnectionFactory): LocalAudioTrackFactory
 
     @Binds
-    fun WebRtcMediaConnectionFactory.bindCameraVideoTrackFactory(): CameraVideoTrackFactory
+    fun bindCameraVideoTrackFactory(factory: WebRtcMediaConnectionFactory): CameraVideoTrackFactory
 
     @Binds
-    fun WebRtcMediaConnectionFactory.bindMediaProjectionVideoTrackFactory(): MediaProjectionVideoTrackFactory
+    fun bindMediaProjectionVideoTrackFactory(factory: WebRtcMediaConnectionFactory): MediaProjectionVideoTrackFactory
 }

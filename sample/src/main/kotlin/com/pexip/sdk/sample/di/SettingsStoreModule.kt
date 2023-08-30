@@ -15,7 +15,7 @@
  */
 package com.pexip.sdk.sample.di
 
-import android.app.Application
+import android.content.Context
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import com.pexip.sdk.sample.settings.SettingsSerializer
@@ -23,6 +23,7 @@ import com.pexip.sdk.sample.settings.SettingsStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -32,10 +33,10 @@ object SettingsStoreModule {
 
     @Provides
     @Singleton
-    fun Application.provideSettingsStore(): SettingsStore {
+    fun provideSettingsStore(@ApplicationContext context: Context): SettingsStore {
         val store = DataStoreFactory.create(
             serializer = SettingsSerializer,
-            produceFile = { dataStoreFile("settings.pb") },
+            produceFile = { context.dataStoreFile("settings.pb") },
         )
         return SettingsStore(store)
     }

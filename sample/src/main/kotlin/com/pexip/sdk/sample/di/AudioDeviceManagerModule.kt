@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.pexip.sdk.sample.di
 
-import android.app.Application
+import android.content.Context
 import com.pexip.sdk.media.AudioDevice
 import com.pexip.sdk.media.AudioDeviceManager
 import com.pexip.sdk.media.android.create
@@ -23,6 +23,7 @@ import com.pexip.sdk.sample.log
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 
 @Module
@@ -30,8 +31,8 @@ import dagger.hilt.components.SingletonComponent
 object AudioDeviceManagerModule {
 
     @Provides
-    fun Application.provideAudioDeviceManager(): AudioDeviceManager =
-        LoggingAudioDeviceManager(AudioDeviceManager.create(this))
+    fun provideAudioDeviceManager(@ApplicationContext context: Context): AudioDeviceManager =
+        LoggingAudioDeviceManager(AudioDeviceManager.create(context))
 
     private class LoggingAudioDeviceManager(private val delegate: AudioDeviceManager) :
         AudioDeviceManager {
