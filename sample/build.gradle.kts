@@ -1,11 +1,9 @@
-@file:Suppress("UnstableApiUsage", "DSL_SCOPE_VIOLATION")
-
 plugins {
     id("com.pexip.sdk.android.application")
     id("com.pexip.sdk.kotlin.android")
-    id("com.pexip.sdk.kotlin.kapt")
     id("com.pexip.sdk.licensee")
     alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.wire)
 }
 
@@ -58,7 +56,7 @@ dependencies {
     implementation(libs.androidx.startup.runtime)
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.dagger.hilt.android.runtime)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
     implementation(libs.minidns.android21)
     implementation(libs.okhttp.logginginterceptor)
     implementation(libs.workflow.core.jvm)
