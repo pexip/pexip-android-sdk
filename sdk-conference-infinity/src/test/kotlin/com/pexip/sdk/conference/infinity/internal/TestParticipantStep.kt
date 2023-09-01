@@ -26,6 +26,8 @@ import java.util.UUID
 
 internal abstract class TestParticipantStep : InfinityService.ParticipantStep {
 
+    override val conferenceStep: InfinityService.ConferenceStep get() = TODO()
+
     override fun calls(request: CallsRequest, token: String): Call<CallsResponse> = TODO()
 
     final override fun calls(request: CallsRequest, token: Token): Call<CallsResponse> =

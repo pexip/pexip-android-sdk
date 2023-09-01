@@ -22,14 +22,13 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import java.net.URL
 
-internal class RealInfinityService(
-    private val client: OkHttpClient,
-    private val json: Json,
-) : InfinityService {
+internal class InfinityServiceImpl(
+    override val client: OkHttpClient,
+    override val json: Json,
+) : InfinityService, InfinityServiceImplScope {
 
-    override fun newRequest(node: URL): RequestBuilder = RealRequestBuilder(
-        client = client,
-        json = json,
+    override fun newRequest(node: URL): RequestBuilder = RequestBuilderImpl(
+        infinityService = this,
         node = requireNotNull(node.toHttpUrlOrNull()) { "Invalid node address." },
     )
 }

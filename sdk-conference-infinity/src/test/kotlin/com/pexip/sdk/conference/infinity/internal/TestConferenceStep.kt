@@ -27,6 +27,8 @@ import java.util.UUID
 
 internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
 
+    override val requestBuilder: InfinityService.RequestBuilder get() = TODO()
+
     override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> = TODO()
 
     override fun requestToken(

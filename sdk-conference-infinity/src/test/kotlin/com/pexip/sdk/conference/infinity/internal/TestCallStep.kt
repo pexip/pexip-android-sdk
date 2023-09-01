@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 
 internal abstract class TestCallStep : InfinityService.CallStep {
+
+    override val participantStep: InfinityService.ParticipantStep get() = TODO()
 
     override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> = TODO()
 
