@@ -11,6 +11,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Kotlin to 1.9.10
 
+### Fixed
+
+- Crash in `TokenStore.refreshTokenIn` when `release_token` throws
+
 ## [0.13.1] - 2023-08-29
 
 ### Changed

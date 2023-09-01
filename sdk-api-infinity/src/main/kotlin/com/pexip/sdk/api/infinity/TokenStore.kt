@@ -18,6 +18,7 @@ package com.pexip.sdk.api.infinity
 import com.pexip.sdk.api.infinity.internal.RealTokenStore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
@@ -60,12 +61,12 @@ public interface TokenStore {
          * @param releaseToken a function that releases the [Token]
          * @param onFailure a callback to notify callers about failures
          */
-        public inline fun TokenStore.refreshTokenIn(
+        public fun TokenStore.refreshTokenIn(
             scope: CoroutineScope,
-            crossinline refreshToken: suspend (Token) -> Token,
-            crossinline releaseToken: suspend (Token) -> Unit,
-            crossinline onFailure: suspend (t: Throwable) -> Unit,
-        ): Job = scope.launch {
+            refreshToken: suspend (Token) -> Token,
+            releaseToken: suspend (Token) -> Unit,
+            onFailure: suspend (t: Throwable) -> Unit,
+        ): Job = scope.launch(start = CoroutineStart.UNDISPATCHED) {
             try {
                 while (isActive) {
                     val response = refreshToken(get())
@@ -78,7 +79,11 @@ public interface TokenStore {
                 onFailure(t)
             } finally {
                 withContext(NonCancellable) {
-                    releaseToken(get())
+                    try {
+                        releaseToken(get())
+                    } catch (t: Throwable) {
+                        // noop
+                    }
                 }
             }
         }
