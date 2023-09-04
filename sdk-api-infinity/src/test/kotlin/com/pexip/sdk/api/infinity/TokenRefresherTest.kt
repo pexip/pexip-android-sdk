@@ -17,8 +17,10 @@ package com.pexip.sdk.api.infinity
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.fail
 import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
@@ -76,8 +78,27 @@ class TokenRefresherTest {
             onFailure = tDeferred::complete,
         )
         assertThat(tDeferred.await(), "t").isEqualTo(t)
-        job.cancel()
+        job.cancelAndJoin()
         assertThat(releaseTokenDeferred.await(), "releaseTokenDeferred").isEqualTo(token)
+    }
+
+    @Test
+    fun `ignores releaseToken failures`() = runTest {
+        val t = Throwable()
+        val token = TestToken()
+        val store = TokenStore.create(token)
+        val tDeferred = CompletableDeferred<Token>()
+        val job = store.refreshTokenIn(
+            scope = this,
+            refreshToken = { awaitCancellation() },
+            releaseToken = {
+                tDeferred.complete(it)
+                throw t
+            },
+            onFailure = { fail("onFailure should not be called.") },
+        )
+        job.cancelAndJoin()
+        assertThat(tDeferred.await(), "token").assertThat(token)
     }
 
     private data class TestToken(
