@@ -9,7 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- **BREAKING**: `InfinityService.RequestBuilder.infinityService`,`InfinityService.ConferenceStep.requestBuilder`,
+- `InfinityService.RequestBuilder.infinityService`,`InfinityService.ConferenceStep.requestBuilder`,
   `InfinityService.RegistrationStep.requestBuilder`, `InfinityService.ParticipantStep.conferenceStep`,
   `InfinityService.CallStep.participantStep` that give access to previous steps
 
