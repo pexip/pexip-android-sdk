@@ -26,23 +26,16 @@ import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-internal class RealCallStep(
-    private val client: OkHttpClient,
-    private val json: Json,
-    private val node: HttpUrl,
-    private val conferenceAlias: String,
-    private val participantId: UUID,
+internal class CallStepImpl(
+    override val participantStep: ParticipantStepImpl,
     private val callId: UUID,
-) : InfinityService.CallStep {
+) : InfinityService.CallStep, ParticipantStepImplScope by participantStep {
 
     override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> {
         require(token.isNotBlank()) { "token is blank." }

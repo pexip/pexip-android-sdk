@@ -26,21 +26,17 @@ import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import java.util.UUID
 
-internal class RealParticipantStep(
-    private val client: OkHttpClient,
-    private val json: Json,
-    private val node: HttpUrl,
-    private val conferenceAlias: String,
-    private val participantId: UUID,
-) : InfinityService.ParticipantStep {
+internal class ParticipantStepImpl(
+    override val conferenceStep: ConferenceStepImpl,
+    override val participantId: UUID,
+) : InfinityService.ParticipantStep,
+    ParticipantStepImplScope,
+    ConferenceStepImplScope by conferenceStep {
 
     override fun calls(request: CallsRequest, token: String): Call<CallsResponse> {
         require(token.isNotBlank()) { "token is blank." }
@@ -216,14 +212,7 @@ internal class RealParticipantStep(
     override fun message(request: MessageRequest, token: Token): Call<Boolean> =
         message(request, token.token)
 
-    override fun call(callId: UUID): InfinityService.CallStep = RealCallStep(
-        client = client,
-        json = json,
-        node = node,
-        conferenceAlias = conferenceAlias,
-        participantId = participantId,
-        callId = callId,
-    )
+    override fun call(callId: UUID): InfinityService.CallStep = CallStepImpl(this, callId)
 
     private fun parseCalls(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(CallsResponseSerializer, response.body!!)

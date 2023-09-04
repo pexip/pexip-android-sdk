@@ -17,7 +17,7 @@ package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
-import com.pexip.sdk.api.infinity.internal.RealInfinityService
+import com.pexip.sdk.api.infinity.internal.InfinityServiceImpl
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import java.net.URL
@@ -38,8 +38,12 @@ public interface InfinityService {
 
     /**
      * Represents the [Other miscellaneous requests](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#misc) section.
+     *
+     * @property infinityService the [InfinityService] that produced this [RequestBuilder]
      */
     public interface RequestBuilder {
+
+        public val infinityService: InfinityService
 
         /**
          * Checks the status of the conferencing node.
@@ -68,8 +72,12 @@ public interface InfinityService {
 
     /**
      * Represents the [Conference control functions](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#conference) section.
+     *
+     * @property requestBuilder the [RequestBuilder] that produced this [ConferenceStep]
      */
     public interface ConferenceStep {
+
+        public val requestBuilder: RequestBuilder
 
         /**
          * Requests a token for the conference alias.
@@ -185,8 +193,12 @@ public interface InfinityService {
 
     /**
      * Represents the registration control functions section.
+     *
+     * @property requestBuilder the [RequestBuilder] that produced this [RegistrationStep]
      */
     public interface RegistrationStep {
+
+        public val requestBuilder: RequestBuilder
 
         /**
          * Requests a token for the registration alias.
@@ -300,8 +312,12 @@ public interface InfinityService {
 
     /**
      * Represents the [Participant functions](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#participant) section.
+     *
+     * @property conferenceStep the [ConferenceStep] that produced this [ParticipantStep]
      */
     public interface ParticipantStep {
+
+        public val conferenceStep: ConferenceStep
 
         /**
          * Requests an upgrade of the call to include media.
@@ -479,8 +495,12 @@ public interface InfinityService {
 
     /**
      * Represents the [Call functions](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#call_functions) section.
+     *
+     * @property participantStep the [ParticipantStep] that produced this [CallStep]
      */
     public interface CallStep {
+
+        public val participantStep: ParticipantStep
 
         /**
          * Sends the new ICE candidate.
@@ -598,6 +618,6 @@ public interface InfinityService {
         )
 
         internal fun create(client: OkHttpClient, json: Json): InfinityService =
-            RealInfinityService(client, json)
+            InfinityServiceImpl(client, json)
     }
 }

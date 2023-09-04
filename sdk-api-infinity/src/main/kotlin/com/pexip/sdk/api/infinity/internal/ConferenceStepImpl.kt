@@ -18,59 +18,67 @@ package com.pexip.sdk.api.infinity.internal
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.InvalidTokenException
+import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
-import com.pexip.sdk.api.infinity.NoSuchRegistrationException
-import com.pexip.sdk.api.infinity.RefreshRegistrationTokenResponse
-import com.pexip.sdk.api.infinity.RegistrationResponse
-import com.pexip.sdk.api.infinity.RequestRegistrationTokenResponse
+import com.pexip.sdk.api.infinity.RefreshTokenResponse
+import com.pexip.sdk.api.infinity.RequestTokenRequest
+import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.api.infinity.RequiredPinException
+import com.pexip.sdk.api.infinity.RequiredSsoException
+import com.pexip.sdk.api.infinity.SsoRedirectException
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
-import okio.ByteString.Companion.encodeUtf8
+import java.util.UUID
 
-internal class RealRegistrationStep(
-    private val client: OkHttpClient,
-    private val json: Json,
-    private val node: HttpUrl,
-    private val deviceAlias: String,
-) : InfinityService.RegistrationStep {
+internal class ConferenceStepImpl(
+    override val requestBuilder: RequestBuilderImpl,
+    override val conferenceAlias: String,
+) : InfinityService.ConferenceStep,
+    ConferenceStepImplScope,
+    RequestBuilderImplScope by requestBuilder {
+
+    override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("request_token")
+            }
+            .build(),
+        mapper = ::parseRequestToken,
+    )
 
     override fun requestToken(
-        username: String,
-        password: String,
-    ): Call<RequestRegistrationTokenResponse> {
-        require(username.isNotBlank()) { "username is blank." }
-        require(password.isNotBlank()) { "password is blank." }
-        val base64 = "$username:$password".encodeUtf8().base64Url()
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    registration(deviceAlias)
-                    addPathSegment("request_token")
-                }
-                .header("Authorization", "x-pexip-basic $base64")
-                .build(),
-            mapper = ::parseRequestToken,
-        )
-    }
+        request: RequestTokenRequest,
+        pin: String,
+    ): Call<RequestTokenResponse> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("request_token")
+            }
+            .header("pin", if (pin.isBlank()) "none" else pin.trim())
+            .build(),
+        mapper = ::parseRequestToken,
+    )
 
-    override fun refreshToken(token: String): Call<RefreshRegistrationTokenResponse> {
+    override fun refreshToken(token: String): Call<RefreshTokenResponse> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
                 .url(node) {
-                    registration(deviceAlias)
+                    conference(conferenceAlias)
                     addPathSegment("refresh_token")
                 }
                 .header("token", token)
@@ -79,8 +87,7 @@ internal class RealRegistrationStep(
         )
     }
 
-    override fun refreshToken(token: Token): Call<RefreshRegistrationTokenResponse> =
-        refreshToken(token.token)
+    override fun refreshToken(token: Token): Call<RefreshTokenResponse> = refreshToken(token.token)
 
     override fun releaseToken(token: String): Call<Boolean> {
         require(token.isNotBlank()) { "token is blank." }
@@ -89,7 +96,7 @@ internal class RealRegistrationStep(
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
                 .url(node) {
-                    registration(deviceAlias)
+                    conference(conferenceAlias)
                     addPathSegment("release_token")
                 }
                 .header("token", token)
@@ -100,6 +107,25 @@ internal class RealRegistrationStep(
 
     override fun releaseToken(token: Token): Call<Boolean> = releaseToken(token.token)
 
+    override fun message(request: MessageRequest, token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("message")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseMessage,
+        )
+    }
+
+    override fun message(request: MessageRequest, token: Token): Call<Boolean> =
+        message(request, token.token)
+
     override fun events(token: String): EventSourceFactory {
         require(token.isNotBlank()) { "token is blank." }
         return RealEventSourceFactory(
@@ -107,7 +133,7 @@ internal class RealRegistrationStep(
             request = Request.Builder()
                 .get()
                 .url(node) {
-                    registration(deviceAlias)
+                    conference(conferenceAlias)
                     addPathSegment("events")
                 }
                 .header("token", token)
@@ -118,44 +144,28 @@ internal class RealRegistrationStep(
 
     override fun events(token: Token): EventSourceFactory = events(token.token)
 
-    override fun registrations(token: String, query: String): Call<List<RegistrationResponse>> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .get()
-                .url(node) {
-                    registration()
-                    if (query.isNotBlank()) {
-                        addQueryParameter("q", query.trim())
-                    }
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseRegistrations,
-        )
-    }
-
-    override fun registrations(token: Token, query: String): Call<List<RegistrationResponse>> =
-        registrations(token.token, query)
+    override fun participant(participantId: UUID): InfinityService.ParticipantStep =
+        ParticipantStepImpl(this, participantId)
 
     private fun parseRequestToken(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(
-            deserializer = RequestRegistrationTokenResponseSerializer,
-            body = response.body!!,
-        )
-        401 -> response.parse401()
-        403 -> response.parse403()
+        200 -> json.decodeFromResponseBody(RequestTokenResponseSerializer, response.body!!)
+        403 -> response.parseRequestToken403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
+    private fun Response.parseRequestToken403(): Nothing {
+        val r = json.decodeFromResponseBody(RequestToken403ResponseSerializer, body!!)
+        throw when (r) {
+            is RequiredPinResponse -> RequiredPinException(r.guest_pin == "required")
+            is RequiredSsoResponse -> RequiredSsoException(r.idp)
+            is SsoRedirectResponse -> SsoRedirectException(r.redirect_url, r.redirect_idp)
+            is ErrorResponse -> InvalidPinException(r.message)
+        }
+    }
+
     private fun parseRefreshToken(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(
-            deserializer = RefreshRegistrationTokenResponseSerializer,
-            body = response.body!!,
-        )
-        401 -> response.parse401()
+        200 -> json.decodeFromResponseBody(RefreshTokenResponseSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
@@ -163,22 +173,16 @@ internal class RealRegistrationStep(
 
     private fun parseReleaseToken(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
-        401 -> response.parse401()
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
-    private fun parseRegistrations(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(RegistrationResponseSerializer, response.body!!)
-        401 -> response.parse401()
+    private fun parseMessage(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
-    }
-
-    private fun Response.parse401(): Nothing {
-        throw NoSuchRegistrationException(body?.string())
     }
 
     private fun Response.parse403(): Nothing {

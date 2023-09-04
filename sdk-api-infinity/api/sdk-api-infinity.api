@@ -330,6 +330,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$CallS
 	public abstract fun ack (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public abstract fun getParticipantStep ()Lcom/pexip/sdk/api/infinity/InfinityService$ParticipantStep;
 	public abstract fun newCandidate (Lcom/pexip/sdk/api/infinity/NewCandidateRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun newCandidate (Lcom/pexip/sdk/api/infinity/NewCandidateRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun update (Lcom/pexip/sdk/api/infinity/UpdateRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
@@ -345,6 +346,7 @@ public final class com/pexip/sdk/api/infinity/InfinityService$Companion {
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$ConferenceStep {
 	public abstract fun events (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/EventSourceFactory;
 	public abstract fun events (Ljava/lang/String;)Lcom/pexip/sdk/api/EventSourceFactory;
+	public abstract fun getRequestBuilder ()Lcom/pexip/sdk/api/infinity/InfinityService$RequestBuilder;
 	public abstract fun message (Lcom/pexip/sdk/api/infinity/MessageRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun message (Lcom/pexip/sdk/api/infinity/MessageRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun participant (Ljava/util/UUID;)Lcom/pexip/sdk/api/infinity/InfinityService$ParticipantStep;
@@ -362,6 +364,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Parti
 	public abstract fun calls (Lcom/pexip/sdk/api/infinity/CallsRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public abstract fun getConferenceStep ()Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;
 	public abstract fun message (Lcom/pexip/sdk/api/infinity/MessageRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun message (Lcom/pexip/sdk/api/infinity/MessageRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun mute (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
@@ -381,6 +384,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Parti
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$RegistrationStep {
 	public abstract fun events (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/EventSourceFactory;
 	public abstract fun events (Ljava/lang/String;)Lcom/pexip/sdk/api/EventSourceFactory;
+	public abstract fun getRequestBuilder ()Lcom/pexip/sdk/api/infinity/InfinityService$RequestBuilder;
 	public abstract fun refreshToken (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun refreshToken (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun registrations (Lcom/pexip/sdk/api/infinity/Token;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
@@ -397,6 +401,7 @@ public final class com/pexip/sdk/api/infinity/InfinityService$RegistrationStep$D
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$RequestBuilder {
 	public abstract fun conference (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;
+	public abstract fun getInfinityService ()Lcom/pexip/sdk/api/infinity/InfinityService;
 	public abstract fun registration (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;
 	public abstract fun status ()Lcom/pexip/sdk/api/Call;
 }
