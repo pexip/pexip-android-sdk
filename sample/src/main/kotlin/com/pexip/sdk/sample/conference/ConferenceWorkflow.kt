@@ -21,8 +21,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.media.projection.MediaProjection
 import android.os.IBinder
-import com.pexip.sdk.api.coroutines.await
-import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
@@ -30,7 +28,6 @@ import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
-import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
@@ -78,19 +75,12 @@ class ConferenceWorkflow @Inject constructor(
 ) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
 
     override fun initialState(props: ConferenceProps, snapshot: Snapshot?): ConferenceState {
-        val conference = InfinityConference.create(
-            step = props.builder.conference(props.conferenceAlias),
-            response = props.response,
-        )
         val iceServer = IceServer.Builder(GoogleStunUrls).build()
-        val config = MediaConnectionConfig.Builder(conference.signaling)
+        val config = MediaConnectionConfig.Builder(props.conference.signaling)
             .addIceServer(iceServer)
             .presentationInMain(props.presentationInMain)
             .build()
-        return ConferenceState(
-            conference = conference,
-            connection = mediaConnectionFactory.createMediaConnection(config),
-        )
+        return ConferenceState(connection = mediaConnectionFactory.createMediaConnection(config))
     }
 
     override fun onPropsChanged(
@@ -98,7 +88,7 @@ class ConferenceWorkflow @Inject constructor(
         new: ConferenceProps,
         state: ConferenceState,
     ): ConferenceState {
-        if (old.conferenceAlias == new.conferenceAlias && old.response == new.response) return state
+        if (old.conference == new.conference) return state
         return initialState(new, null)
     }
 
@@ -119,7 +109,7 @@ class ConferenceWorkflow @Inject constructor(
         context.screenCapturingSideEffect(renderState.screenCaptureVideoTrack)
         context.screenCaptureVideoTrackSideEffect(renderState.screenCaptureData)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
-        context.conferenceEventsSideEffect(renderProps, renderState)
+        context.conferenceEventsSideEffect(renderProps)
         context.presentationRemoteVideoTrackSideEffect(renderState.connection)
         return when (renderState.showingConferenceEvents) {
             true -> ConferenceEventsRendering(
@@ -196,7 +186,7 @@ class ConferenceWorkflow @Inject constructor(
     private fun RenderContext.leaveSideEffect(
         renderProps: ConferenceProps,
         renderState: ConferenceState,
-    ) = runningSideEffect("${renderState.conference}Leave") {
+    ) = runningSideEffect("${renderProps.conference}Leave") {
         try {
             renderState.connection.setMainVideoTrack(renderProps.cameraVideoTrack)
             renderState.connection.setMainAudioTrack(renderProps.microphoneAudioTrack)
@@ -206,7 +196,7 @@ class ConferenceWorkflow @Inject constructor(
             awaitCancellation()
         } finally {
             renderState.connection.dispose()
-            renderState.conference.leave()
+            renderProps.conference.leave()
             renderState.screenCaptureVideoTrack?.dispose()
         }
     }
@@ -253,13 +243,9 @@ class ConferenceWorkflow @Inject constructor(
                 .collectLatest(actionSink::send)
         }
 
-    private fun RenderContext.conferenceEventsSideEffect(
-        renderProps: ConferenceProps,
-        renderState: ConferenceState,
-    ) {
-        val builder = renderProps.builder
-        val conference = renderState.conference
-        runningSideEffect("conferenceEventsSideEffect($builder, $conference)") {
+    private fun RenderContext.conferenceEventsSideEffect(renderProps: ConferenceProps) {
+        val conference = renderProps.conference
+        runningSideEffect("conferenceEventsSideEffect($$conference)") {
             val events = conference.getConferenceEvents().shareIn(this, SharingStarted.Lazily)
             events
                 .map(::toConferenceAction)
@@ -267,10 +253,8 @@ class ConferenceWorkflow @Inject constructor(
                 .launchIn(this)
             events.filterIsInstance<ReferConferenceEvent>()
                 .map {
-                    val step = builder.conference(it.conferenceAlias)
-                    val request = RequestTokenRequest(incomingToken = it.token)
-                    val response = step.requestToken(request).await()
-                    OnReferConferenceEvent(it.conferenceAlias, response)
+                    val c = conference.referer.refer(it)
+                    OnReferConferenceEvent(c)
                 }
                 .onEach(actionSink::send)
                 .launchIn(this)

@@ -61,10 +61,8 @@ class OnPreflightOutput(private val output: PreflightOutput) : SampleAction() {
         when (output) {
             is PreflightOutput.Conference -> state = state.copy(
                 destination = SampleDestination.Conference(
-                    builder = output.builder,
-                    conferenceAlias = output.conferenceAlias,
+                    conference = output.conference,
                     presentationInMain = output.presentationInMain,
-                    response = output.response,
                 ),
             )
             is PreflightOutput.Toast -> setOutput(SampleOutput.Toast(output.message))
@@ -81,10 +79,7 @@ class OnConferenceOutput(private val output: ConferenceOutput) : SampleAction() 
     override fun Updater.apply() {
         val destination = checkNotNull(state.destination as? SampleDestination.Conference)
         val newDestination = when (output) {
-            is ConferenceOutput.Refer -> destination.copy(
-                conferenceAlias = output.conferenceAlias,
-                response = output.response,
-            )
+            is ConferenceOutput.Refer -> destination.copy(conference = output.conference)
             is ConferenceOutput.Back -> SampleDestination.Preflight
         }
         state = state.copy(destination = newDestination)

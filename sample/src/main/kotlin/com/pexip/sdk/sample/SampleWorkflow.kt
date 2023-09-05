@@ -86,10 +86,8 @@ class SampleWorkflow @Inject constructor(
             is SampleDestination.Conference -> context.renderChild(
                 child = conferenceWorkflow,
                 props = ConferenceProps(
-                    builder = destination.builder,
-                    conferenceAlias = destination.conferenceAlias,
+                    conference = destination.conference,
                     presentationInMain = destination.presentationInMain,
-                    response = destination.response,
                     cameraVideoTrack = renderState.cameraVideoTrack,
                     microphoneAudioTrack = renderState.microphoneAudioTrack,
                 ),

@@ -5,6 +5,7 @@ public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pe
 	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService;Ljava/net/URL;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
 	public fun getMessenger ()Lcom/pexip/sdk/conference/Messenger;
 	public fun getName ()Ljava/lang/String;
+	public fun getReferer ()Lcom/pexip/sdk/conference/Referer;
 	public fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public fun leave ()V
 	public fun message (Ljava/lang/String;)V

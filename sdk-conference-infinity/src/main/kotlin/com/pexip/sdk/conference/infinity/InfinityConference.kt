@@ -26,10 +26,12 @@ import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.Messenger
+import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.coroutines.send
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
+import com.pexip.sdk.conference.infinity.internal.RefererImpl
 import com.pexip.sdk.conference.infinity.internal.conferenceEvent
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
@@ -72,6 +74,8 @@ public class InfinityConference private constructor(
     private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
 
     override val name: String = response.conferenceName
+
+    override val referer: Referer = RefererImpl(step.requestBuilder)
 
     override val messenger: Messenger = messengerImpl
 

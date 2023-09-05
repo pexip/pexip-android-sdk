@@ -16,25 +16,22 @@
 package com.pexip.sdk.sample.alias
 
 import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.RequestTokenResponse
 
-sealed class AliasOutput {
+sealed interface AliasOutput {
 
     data class Conference(
-        val builder: InfinityService.RequestBuilder,
-        val conferenceAlias: String,
+        val conference: com.pexip.sdk.conference.Conference,
         val presentationInMain: Boolean,
-        val response: RequestTokenResponse,
-    ) : AliasOutput()
+    ) : AliasOutput
 
     data class PinChallenge(
-        val builder: InfinityService.RequestBuilder,
-        val conferenceAlias: String,
+        val step: InfinityService.ConferenceStep,
         val presentationInMain: Boolean,
         val required: Boolean,
-    ) : AliasOutput()
+    ) : AliasOutput
 
-    data class Toast(val message: String) : AliasOutput()
+    @JvmInline
+    value class Toast(val message: String) : AliasOutput
 
-    object Back : AliasOutput()
+    data object Back : AliasOutput
 }

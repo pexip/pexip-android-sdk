@@ -16,7 +16,7 @@
 package com.pexip.sdk.sample.pinrequirement
 
 import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.conference.Conference
 import com.squareup.workflow1.WorkflowAction
 
 typealias PinRequirementAction = WorkflowAction<PinRequirementProps, PinRequirementState, PinRequirementOutput>
@@ -28,25 +28,20 @@ data class OnNode(val builder: InfinityService.RequestBuilder) : PinRequirementA
     }
 }
 
-data class OnResponse(
-    val builder: InfinityService.RequestBuilder,
-    val conferenceAlias: String,
-    val response: RequestTokenResponse,
-) : PinRequirementAction() {
+data class OnConference(val conference: Conference) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        setOutput(PinRequirementOutput.None(builder, conferenceAlias, response))
+        setOutput(PinRequirementOutput.None(conference))
     }
 }
 
 data class OnRequiredPin(
-    val builder: InfinityService.RequestBuilder,
-    val conferenceAlias: String,
+    val step: InfinityService.ConferenceStep,
     val required: Boolean,
 ) : PinRequirementAction() {
 
     override fun Updater.apply() {
-        setOutput(PinRequirementOutput.Some(builder, conferenceAlias, required))
+        setOutput(PinRequirementOutput.Some(step, required))
     }
 }
 

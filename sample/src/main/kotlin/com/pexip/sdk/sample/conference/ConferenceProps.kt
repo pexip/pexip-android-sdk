@@ -15,16 +15,13 @@
  */
 package com.pexip.sdk.sample.conference
 
-import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalAudioTrack
 
 data class ConferenceProps(
-    val builder: InfinityService.RequestBuilder,
-    val conferenceAlias: String,
+    val conference: Conference,
     val presentationInMain: Boolean,
-    val response: RequestTokenResponse,
     val cameraVideoTrack: CameraVideoTrack?,
     val microphoneAudioTrack: LocalAudioTrack?,
 )

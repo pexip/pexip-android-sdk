@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.pinrequirement
+package com.pexip.sdk.conference
 
-import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.conference.Conference
+/**
+ * Handles call transfer.
+ */
+public interface Referer {
 
-sealed interface PinRequirementOutput {
-
-    @JvmInline
-    value class None(val conference: Conference) : PinRequirementOutput
-
-    data class Some(
-        val step: InfinityService.ConferenceStep,
-        val required: Boolean,
-    ) : PinRequirementOutput
-
-    data class Error(val t: Throwable) : PinRequirementOutput
+    /**
+     * Transfers the call using information specified in the [event].
+     *
+     * Note that upon successful call transfer the current [Conference] will still be active and
+     * must be disposed of manually.
+     *
+     * @param event a [ReferConferenceEvent] that contains information about target conference
+     * @return a new [Conference]
+     */
+    public suspend fun refer(event: ReferConferenceEvent): Conference
 }

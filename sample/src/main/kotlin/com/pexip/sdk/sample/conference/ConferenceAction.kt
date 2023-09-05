@@ -16,7 +16,7 @@
 package com.pexip.sdk.sample.conference
 
 import android.content.Intent
-import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
@@ -162,13 +162,10 @@ class OnPresentationStopConferenceEvent(private val event: PresentationStopConfe
     }
 }
 
-class OnReferConferenceEvent(
-    private val conferenceAlias: String,
-    private val response: RequestTokenResponse,
-) : ConferenceAction() {
+class OnReferConferenceEvent(private val conference: Conference) : ConferenceAction() {
 
     override fun Updater.apply() {
-        setOutput(ConferenceOutput.Refer(conferenceAlias, response))
+        setOutput(ConferenceOutput.Refer(conference))
     }
 }
 
@@ -221,7 +218,7 @@ class OnComposerOutput(private val output: ComposerOutput) : ConferenceAction() 
 
     override fun Updater.apply() {
         when (output) {
-            is ComposerOutput.Submit -> state.conference.message(output.message)
+            is ComposerOutput.Submit -> props.conference.message(output.message)
         }
     }
 }
