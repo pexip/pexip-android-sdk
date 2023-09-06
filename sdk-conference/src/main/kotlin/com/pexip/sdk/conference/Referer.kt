@@ -28,6 +28,7 @@ public interface Referer {
      *
      * @param event a [ReferConferenceEvent] that contains information about target conference
      * @return a new [Conference]
+     * @throws [ReferException] if [refer] did not succeed
      */
     public suspend fun refer(event: ReferConferenceEvent): Conference
 }
