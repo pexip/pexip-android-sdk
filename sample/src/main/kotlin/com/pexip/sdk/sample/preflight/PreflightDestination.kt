@@ -19,13 +19,12 @@ import com.pexip.sdk.api.infinity.InfinityService
 
 sealed interface PreflightDestination {
 
-    object DisplayName : PreflightDestination
+    data object DisplayName : PreflightDestination
 
-    object Alias : PreflightDestination
+    data object Alias : PreflightDestination
 
     data class PinChallenge(
-        val builder: InfinityService.RequestBuilder,
-        val conferenceAlias: String,
+        val step: InfinityService.ConferenceStep,
         val presentationInMain: Boolean,
         val required: Boolean,
     ) : PreflightDestination

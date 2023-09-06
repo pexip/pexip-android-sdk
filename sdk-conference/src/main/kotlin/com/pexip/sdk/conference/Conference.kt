@@ -22,12 +22,15 @@ import com.pexip.sdk.media.MediaConnectionSignaling
  * Represents a conference.
  *
  * @property name a display name of this [Conference]
+ * @property referer an instance of [Referer] attached to this [Conference]
  * @property messenger an instance of [Messenger] attached to this [Conference]
  * @property signaling an instance of [MediaConnectionSignaling] to be used with [MediaConnection]
  */
 public interface Conference {
 
     public val name: String
+
+    public val referer: Referer
 
     public val messenger: Messenger
 

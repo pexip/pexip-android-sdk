@@ -18,7 +18,6 @@ package com.pexip.sdk.sample.pinchallenge
 import com.pexip.sdk.api.infinity.InfinityService
 
 data class PinChallengeProps(
-    val builder: InfinityService.RequestBuilder,
-    val conferenceAlias: String,
+    val step: InfinityService.ConferenceStep,
     val required: Boolean,
 )

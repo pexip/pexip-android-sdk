@@ -15,17 +15,12 @@
  */
 package com.pexip.sdk.sample.conference
 
-import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.conference.Conference
 
 sealed interface ConferenceOutput {
 
-    data class Refer(
-        val conferenceAlias: String,
-        val response: RequestTokenResponse,
-    ) : ConferenceOutput
+    @JvmInline
+    value class Refer(val conference: Conference) : ConferenceOutput
 
-    object Back : ConferenceOutput {
-
-        override fun toString(): String = "Back"
-    }
+    data object Back : ConferenceOutput
 }

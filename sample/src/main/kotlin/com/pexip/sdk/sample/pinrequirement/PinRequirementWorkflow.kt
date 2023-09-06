@@ -20,6 +20,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NodeResolver
 import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequiredPinException
+import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -66,21 +67,17 @@ class PinRequirementWorkflow @Inject constructor(
         props: PinRequirementProps,
         state: PinRequirementState.ResolvingPinRequirement,
     ) = runningSideEffect("${props.conferenceAlias}:${state.builder}") {
+        val step = state.builder.conference(props.conferenceAlias)
         val action = runCatching { store.getDisplayName().first() }
             .mapCatching { RequestTokenRequest(displayName = it) }
-            .mapCatching {
-                state.builder
-                    .conference(props.conferenceAlias)
-                    .requestToken(it)
-                    .await()
-            }
+            .mapCatching { step.requestToken(it).await() }
+            .map { InfinityConference.create(step, it) }
             .fold(
-                onSuccess = { OnResponse(state.builder, props.conferenceAlias, it) },
+                onSuccess = ::OnConference,
                 onFailure = {
                     when (it) {
                         is RequiredPinException -> OnRequiredPin(
-                            builder = state.builder,
-                            conferenceAlias = props.conferenceAlias,
+                            step = step,
                             required = it.guestPin,
                         )
                         else -> OnError(it)

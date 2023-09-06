@@ -15,8 +15,6 @@
  */
 package com.pexip.sdk.sample
 
-import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.LocalAudioTrack
 
@@ -32,14 +30,12 @@ data class SampleState(
 
 sealed interface SampleDestination {
 
-    object Permissions : SampleDestination
+    data object Permissions : SampleDestination
 
-    object Preflight : SampleDestination
+    data object Preflight : SampleDestination
 
     data class Conference(
-        val builder: InfinityService.RequestBuilder,
-        val conferenceAlias: String,
+        val conference: com.pexip.sdk.conference.Conference,
         val presentationInMain: Boolean,
-        val response: RequestTokenResponse,
     ) : SampleDestination
 }

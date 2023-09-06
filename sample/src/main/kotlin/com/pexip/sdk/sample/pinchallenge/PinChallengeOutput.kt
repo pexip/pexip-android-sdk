@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,10 @@
  */
 package com.pexip.sdk.sample.pinchallenge
 
-import com.pexip.sdk.api.infinity.RequestTokenResponse
+sealed interface PinChallengeOutput {
 
-sealed class PinChallengeOutput {
+    @JvmInline
+    value class Conference(val conference: com.pexip.sdk.conference.Conference) : PinChallengeOutput
 
-    data class Response(val response: RequestTokenResponse) : PinChallengeOutput()
-
-    object Back : PinChallengeOutput() {
-
-        override fun toString(): String = "Back"
-    }
+    data object Back : PinChallengeOutput
 }

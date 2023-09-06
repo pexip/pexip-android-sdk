@@ -18,6 +18,7 @@ package com.pexip.sdk.sample.pinchallenge
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.RequestTokenRequest
+import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.sample.send
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
@@ -65,11 +66,9 @@ class PinChallengeWorkflow @Inject constructor(private val store: SettingsStore)
             val action = try {
                 val displayName = store.getDisplayName().first()
                 val request = RequestTokenRequest(displayName = displayName)
-                val response = props.builder
-                    .conference(props.conferenceAlias)
-                    .requestToken(request, pinToSubmit)
-                    .await()
-                OnResponse(response)
+                val response = props.step.requestToken(request, pinToSubmit).await()
+                val conference = InfinityConference.create(props.step, response)
+                OnConference(conference)
             } catch (e: InvalidPinException) {
                 OnInvalidPin(e)
             } catch (t: Throwable) {

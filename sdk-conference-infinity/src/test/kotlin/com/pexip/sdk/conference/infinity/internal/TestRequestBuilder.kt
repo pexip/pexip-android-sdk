@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.pinrequirement
+package com.pexip.sdk.conference.infinity.internal
 
+import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.conference.Conference
 
-sealed interface PinRequirementOutput {
+internal abstract class TestRequestBuilder : InfinityService.RequestBuilder {
 
-    @JvmInline
-    value class None(val conference: Conference) : PinRequirementOutput
+    override val infinityService: InfinityService get() = TODO()
 
-    data class Some(
-        val step: InfinityService.ConferenceStep,
-        val required: Boolean,
-    ) : PinRequirementOutput
+    override fun status(): Call<Boolean> = TODO()
 
-    data class Error(val t: Throwable) : PinRequirementOutput
+    override fun conference(conferenceAlias: String): InfinityService.ConferenceStep = TODO()
+
+    override fun registration(deviceAlias: String): InfinityService.RegistrationStep = TODO()
 }

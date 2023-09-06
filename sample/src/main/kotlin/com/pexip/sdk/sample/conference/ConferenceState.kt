@@ -16,14 +16,12 @@
 package com.pexip.sdk.sample.conference
 
 import android.content.Intent
-import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.VideoTrack
 
 data class ConferenceState(
-    val conference: Conference,
     val connection: MediaConnection,
     val screenCaptureData: Intent? = null,
     val screenCaptureVideoTrack: LocalVideoTrack? = null,

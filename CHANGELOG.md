@@ -12,6 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `InfinityService.RequestBuilder.infinityService`,`InfinityService.ConferenceStep.requestBuilder`,
   `InfinityService.RegistrationStep.requestBuilder`, `InfinityService.ParticipantStep.conferenceStep`,
   `InfinityService.CallStep.participantStep` that give access to previous steps
+- `Conference.referer` to improve call transfer flow
 
 ### Changed
 

@@ -15,28 +15,17 @@
  */
 package com.pexip.sdk.sample.preflight
 
-import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.RequestTokenResponse
-
 sealed interface PreflightOutput {
 
     @JvmInline
     value class Toast(val message: String) : PreflightOutput
 
     data class Conference(
-        val builder: InfinityService.RequestBuilder,
-        val conferenceAlias: String,
+        val conference: com.pexip.sdk.conference.Conference,
         val presentationInMain: Boolean,
-        val response: RequestTokenResponse,
     ) : PreflightOutput
 
-    object CreateCameraVideoTrack : PreflightOutput {
+    data object CreateCameraVideoTrack : PreflightOutput
 
-        override fun toString(): String = "CreateCameraVideoTrack"
-    }
-
-    object Back : PreflightOutput {
-
-        override fun toString(): String = "Back"
-    }
+    data object Back : PreflightOutput
 }

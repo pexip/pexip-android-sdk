@@ -16,7 +16,7 @@
 package com.pexip.sdk.sample.pinchallenge
 
 import com.pexip.sdk.api.infinity.InvalidPinException
-import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.conference.Conference
 import com.squareup.workflow1.WorkflowAction
 
 typealias PinChallengeAction = WorkflowAction<PinChallengeProps, PinChallengeState, PinChallengeOutput>
@@ -49,10 +49,10 @@ class OnBackClick : PinChallengeAction() {
     }
 }
 
-data class OnResponse(val response: RequestTokenResponse) : PinChallengeAction() {
+data class OnConference(val conference: Conference) : PinChallengeAction() {
 
     override fun Updater.apply() {
-        setOutput(PinChallengeOutput.Response(response))
+        setOutput(PinChallengeOutput.Conference(conference))
     }
 }
 

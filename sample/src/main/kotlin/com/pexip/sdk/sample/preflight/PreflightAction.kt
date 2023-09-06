@@ -60,17 +60,14 @@ class OnAliasOutput(private val output: AliasOutput) : PreflightAction() {
         when (output) {
             is AliasOutput.Conference -> {
                 val output = PreflightOutput.Conference(
-                    builder = output.builder,
-                    conferenceAlias = output.conferenceAlias,
+                    conference = output.conference,
                     presentationInMain = output.presentationInMain,
-                    response = output.response,
                 )
                 setOutput(output)
             }
             is AliasOutput.PinChallenge -> state = PreflightState(
                 destination = PreflightDestination.PinChallenge(
-                    builder = output.builder,
-                    conferenceAlias = output.conferenceAlias,
+                    step = output.step,
                     presentationInMain = output.presentationInMain,
                     required = output.required,
                 ),
@@ -86,12 +83,10 @@ class OnPinChallengeOutput(private val output: PinChallengeOutput) : PreflightAc
     override fun Updater.apply() {
         val s = checkNotNull(state.destination as? PreflightDestination.PinChallenge)
         when (output) {
-            is PinChallengeOutput.Response -> {
+            is PinChallengeOutput.Conference -> {
                 val output = PreflightOutput.Conference(
-                    builder = s.builder,
-                    conferenceAlias = s.conferenceAlias,
+                    conference = output.conference,
                     presentationInMain = s.presentationInMain,
-                    response = output.response,
                 )
                 setOutput(output)
             }
