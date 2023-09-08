@@ -23,6 +23,7 @@ jobs:
           java-version: '17'
 
       - uses: gradle/gradle-build-action@v2
+
       - run: ./gradlew build
       - run: ./gradlew publish --no-parallel
         env:
@@ -42,9 +43,6 @@ jobs:
 
   snyk_test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
     steps:
       - uses: actions/checkout@v3
       - uses: snyk/actions/setup@master
@@ -57,16 +55,10 @@ jobs:
         with:
           cache-read-only: true
 
-      - run: snyk test --all-sub-projects --sarif-file-output=snyk.sarif
-        continue-on-error: true
+      - run: snyk test --all-sub-projects --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           SNYK_CFG_ORG: ${{ secrets.SNYK_CFG_ORG }}
-
-      - uses: github/codeql-action/upload-sarif@v2
-        with:
-          category: snyk
-          sarif_file: snyk.sarif
 
   snyk_monitor:
     runs-on: ubuntu-latest
