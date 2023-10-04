@@ -21,9 +21,9 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.Button
@@ -32,8 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,6 +43,7 @@ import com.pexip.sdk.sample.IconButtonDefaults
 import com.pexip.sdk.sample.MicrophoneIconButton
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
+import org.webrtc.RendererCommon
 
 @Composable
 fun PreflightScreen(
@@ -54,22 +53,14 @@ fun PreflightScreen(
 ) {
     BackHandler(onBack = rendering.onBackClick)
     Surface(modifier = modifier) {
-        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val landscape = remember(maxWidth, maxHeight) { maxWidth > maxHeight }
-            val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
-            val aspectRatioModifier = when (aspectRatio) {
-                0f -> Modifier
-                else -> Modifier.aspectRatio(aspectRatio, landscape)
-            }
+        BoxWithConstraints(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             VideoTrackRenderer(
                 videoTrack = rendering.cameraVideoTrack?.takeIf {
                     rendering.cameraVideoTrackRendering?.capturing == true
                 },
-                onAspectRatioChange = onAspectRatioChange,
                 mirror = true,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(aspectRatioModifier),
+                scalingTypeMatchOrientation = RendererCommon.ScalingType.SCALE_ASPECT_FIT,
+                modifier = Modifier.wrapContentSize(),
             )
             if (rendering.cameraVideoTrack == null) {
                 Column(
