@@ -1,5 +1,3 @@
-@file:Suppress("DSL_SCOPE_VIOLATION")
-
 plugins {
     id("com.pexip.sdk.kotlin.dokka")
     alias(libs.plugins.kotlinx.binarycompatibilityvalidator)
