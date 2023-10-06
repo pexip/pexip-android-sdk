@@ -245,14 +245,18 @@ public class WebRtcMediaConnectionFactory private constructor(
         val rtcConfig = PeerConnection.RTCConfiguration(iceServers).apply {
             enableDscp = config.dscp
             sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
-            continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
+            continualGatheringPolicy = when (config.continualGathering) {
+                true -> PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
+                else -> PeerConnection.ContinualGatheringPolicy.GATHER_ONCE
+            }
         }
         return PeerConnectionWrapper(factory, rtcConfig)
     }
 
     private fun createMediaTrackId() = UUID.randomUUID().toString()
 
-    private fun CoroutineScope() = CoroutineScope(SupervisorJob(job) + workerDispatcher)
+    private fun CoroutineScope(): CoroutineScope =
+        CoroutineScope(SupervisorJob(job) + workerDispatcher)
 
     private fun checkNotDisposed() =
         check(job.isActive) { "WebRtcMediaConnectionFactory has been disposed!" }
@@ -347,7 +351,7 @@ public class WebRtcMediaConnectionFactory private constructor(
 
     public companion object {
 
-        private fun CameraEnumerator(context: Context) =
+        private fun CameraEnumerator(context: Context): CameraEnumerator =
             when (Camera2Enumerator.isSupported(context.applicationContext)) {
                 true -> Camera2Enumerator(context.applicationContext)
                 else -> Camera1Enumerator()
@@ -363,10 +367,10 @@ public class WebRtcMediaConnectionFactory private constructor(
                 .createAudioDeviceModule()
         }
 
-        private fun DefaultVideoDecoderFactory(eglBase: EglBase?) =
+        private fun DefaultVideoDecoderFactory(eglBase: EglBase?): DefaultVideoDecoderFactory =
             DefaultVideoDecoderFactory(eglBase?.eglBaseContext)
 
-        private fun DefaultVideoEncoderFactory(eglBase: EglBase?) =
+        private fun DefaultVideoEncoderFactory(eglBase: EglBase?): DefaultVideoEncoderFactory =
             DefaultVideoEncoderFactory(eglBase?.eglBaseContext, false, false)
 
         @JvmStatic

@@ -269,20 +269,35 @@ internal class WebRtcMediaConnection(
         .onEach { setLocalDescription() }
         .launchIn(this)
 
-    private fun CoroutineScope.launchOnIceCandidate() = wrapper.event
-        .filterIsInstance<Event.OnIceCandidate>()
-        .onEach {
-            val (ufrag, pwd) = wrapper.getIceCredentials(it.candidate) ?: return@onEach
+    private fun CoroutineScope.launchOnIceCandidate() = launch {
+        fun onCandidate(sdp: String, mid: String, credentials: IceCredentials) = launch {
             runCatching {
                 config.signaling.onCandidate(
-                    candidate = it.candidate.sdp,
-                    mid = it.candidate.sdpMid,
-                    ufrag = ufrag,
-                    pwd = pwd,
+                    candidate = sdp,
+                    mid = mid,
+                    ufrag = credentials.ufrag,
+                    pwd = credentials.pwd,
                 )
             }
         }
-        .launchIn(this)
+        wrapper.event.collect {
+            when (it) {
+                is Event.OnIceCandidate -> {
+                    val sdp = it.candidate.sdp?.takeIf(String::isNotBlank) ?: return@collect
+                    val mid = it.candidate.sdpMid ?: return@collect
+                    val credentials = wrapper.getIceCredentials(mid) ?: return@collect
+                    onCandidate(sdp = sdp, mid = mid, credentials = credentials)
+                }
+                is Event.OnIceGatheringChange -> {
+                    if (it.state != PeerConnection.IceGatheringState.COMPLETE) return@collect
+                    wrapper.getIceCredentials().onEach { (mid, credentials) ->
+                        onCandidate(sdp = "", mid = mid, credentials = credentials)
+                    }
+                }
+                else -> Unit
+            }
+        }
+    }
 
     private fun CoroutineScope.launchOnIceConnectionChange() = wrapper.event
         .filterIsInstance<Event.OnIceConnectionChange>()

@@ -40,6 +40,10 @@ internal class PeerConnectionObserver : PeerConnection.Observer {
         _event.tryEmit(Event.OnIceCandidate(candidate))
     }
 
+    override fun onIceGatheringChange(state: PeerConnection.IceGatheringState) {
+        _event.tryEmit(Event.OnIceGatheringChange(state))
+    }
+
     override fun onStandardizedIceConnectionChange(newState: PeerConnection.IceConnectionState) {
         _event.tryEmit(Event.OnIceConnectionChange(newState))
     }
@@ -71,9 +75,6 @@ internal class PeerConnectionObserver : PeerConnection.Observer {
     }
 
     override fun onIceConnectionChange(state: PeerConnection.IceConnectionState) {
-    }
-
-    override fun onIceGatheringChange(state: PeerConnection.IceGatheringState) {
     }
 
     override fun onSignalingChange(state: PeerConnection.SignalingState) {
