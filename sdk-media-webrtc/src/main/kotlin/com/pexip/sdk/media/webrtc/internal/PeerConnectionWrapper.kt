@@ -16,7 +16,9 @@
 package com.pexip.sdk.media.webrtc.internal
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
@@ -43,6 +45,10 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
     private val peerConnection = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
     private val rtpTransceivers = mutableMapOf<RtpTransceiverKey, RtpTransceiver>()
     private val iceCredentials = mutableMapOf<String, IceCredentials>()
+    private val localFingerprints = MutableStateFlow(emptyList<String>())
+    private val remoteFingerprints = MutableStateFlow(emptyList<String>())
+
+    val secureCheckCode = localFingerprints.combine(remoteFingerprints, ::SecureCheckCode)
 
     val event get() = observer.event
 
@@ -90,12 +96,14 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
         peerConnection.setLocalDescription()
         return runInterruptible {
             iceCredentials.clear()
-            val localDescription = peerConnection.localDescription
+            val description = peerConnection.localDescription
             var ufrag: String? = null
             var pwd: String? = null
             var mid: String? = null
-            val lines = localDescription.splitToLineSequence()
+            val lines = description.splitToLineSequence()
+            val fingerprints = mutableListOf<String>()
             for (line in lines) {
+                if (line.startsWith(FINGERPRINT)) fingerprints += line.removePrefix(FINGERPRINT)
                 if (line.startsWith(ICE_UFRAG)) ufrag = line.removePrefix(ICE_UFRAG)
                 if (line.startsWith(ICE_PWD)) pwd = line.removePrefix(ICE_PWD)
                 if (line.startsWith(MID)) mid = line.removePrefix(MID)
@@ -107,12 +115,20 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
                 }
             }
             val mids = rtpTransceivers.mapValues { (_, rtpTransceiver) -> rtpTransceiver.mid }
-            localDescription.block(mids)
+            localFingerprints.value = fingerprints.toList()
+            description.block(mids)
         }
     }
 
-    suspend fun setRemoteDescription(description: SessionDescription) =
+    suspend fun setRemoteDescription(description: SessionDescription) {
         peerConnection.setRemoteDescription(description)
+        runInterruptible {
+            remoteFingerprints.value = description.splitToLineSequence()
+                .filter { it.startsWith(FINGERPRINT) }
+                .map { it.removePrefix(FINGERPRINT) }
+                .toList()
+        }
+    }
 
     suspend fun restartIce() = runInterruptible { peerConnection.restartIce() }
 
@@ -148,6 +164,7 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
 
     companion object {
 
+        private const val FINGERPRINT = "a=fingerprint:"
         private const val MID = "a=mid:"
         private const val ICE_UFRAG = "a=ice-ufrag:"
         private const val ICE_PWD = "a=ice-pwd:"

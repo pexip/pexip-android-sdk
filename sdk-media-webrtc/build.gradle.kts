@@ -13,7 +13,7 @@ dependencies {
     api(project(":sdk-media-android"))
     api(libs.webrtc)
     implementation(libs.kotlinx.coroutines.android)
-    testImplementation(libs.okio)
+    implementation(libs.okio)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
