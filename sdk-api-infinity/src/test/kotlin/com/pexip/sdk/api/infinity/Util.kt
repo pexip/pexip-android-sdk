@@ -27,6 +27,8 @@ import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.test.assertEquals
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -35,6 +37,9 @@ internal fun Random.nextString(length: Int) =
 
 internal fun Random.nextDigits(length: Int) =
     CharArray(length) { DtmfRequest.ALLOWED_DIGITS.random(this) }.concatToString()
+
+internal fun Random.nextDuration(unit: DurationUnit = DurationUnit.SECONDS) =
+    nextInt(0, 1000).toDuration(unit)
 
 internal fun Random.nextIdentityProviderId() = IdentityProviderId(nextUuid())
 

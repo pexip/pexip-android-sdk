@@ -20,6 +20,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.LongAsStringSerializer
 import java.util.UUID
+import kotlin.time.Duration
 
 @Serializable
 public data class RequestTokenResponse(
@@ -51,5 +52,5 @@ public data class RequestTokenResponse(
     @SerialName("pex_datachannel_id")
     public val dataChannelId: Int? = null,
     @SerialName("client_stats_update_interval")
-    public val clientStatsUpdateInterval: Long = 5000L,
+    public val clientStatsUpdateInterval: Duration = Duration.INFINITE,
 ) : Token

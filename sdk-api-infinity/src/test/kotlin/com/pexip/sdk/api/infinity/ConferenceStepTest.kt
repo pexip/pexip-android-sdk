@@ -194,7 +194,7 @@ internal class ConferenceStepTest {
             directMedia = Random.nextBoolean(),
             useRelayCandidatesOnly = Random.nextBoolean(),
             dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
-            clientStatsUpdateInterval = Random.nextLong(),
+            clientStatsUpdateInterval = Random.nextDuration(),
         )
         val requests = setOf(
             RequestTokenRequest(ssoToken = Random.nextString(8)),
@@ -239,7 +239,7 @@ internal class ConferenceStepTest {
             directMedia = Random.nextBoolean(),
             useRelayCandidatesOnly = Random.nextBoolean(),
             dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
-            clientStatsUpdateInterval = Random.nextLong(),
+            clientStatsUpdateInterval = Random.nextDuration(),
         )
         val requests = setOf(
             RequestTokenRequest(ssoToken = Random.nextString(8)),
@@ -284,7 +284,7 @@ internal class ConferenceStepTest {
             directMedia = Random.nextBoolean(),
             useRelayCandidatesOnly = Random.nextBoolean(),
             dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
-            clientStatsUpdateInterval = Random.nextLong(),
+            clientStatsUpdateInterval = Random.nextDuration(),
         )
         server.enqueue {
             setResponseCode(200)
