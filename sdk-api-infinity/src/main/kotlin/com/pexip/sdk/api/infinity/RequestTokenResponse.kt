@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,4 +44,12 @@ public data class RequestTokenResponse(
     public val serviceType: ServiceType = ServiceType.UNKNOWN,
     public val stun: List<StunResponse> = emptyList(),
     public val turn: List<TurnResponse> = emptyList(),
+    @SerialName("direct_media")
+    public val directMedia: Boolean = false,
+    @SerialName("use_relay_candidates_only")
+    public val useRelayCandidatesOnly: Boolean = false,
+    @SerialName("pex_datachannel_id")
+    public val dataChannelId: Int? = null,
+    @SerialName("client_stats_update_interval")
+    public val clientStatsUpdateInterval: Long = 5000L,
 ) : Token

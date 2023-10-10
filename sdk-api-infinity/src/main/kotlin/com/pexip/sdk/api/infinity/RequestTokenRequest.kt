@@ -32,4 +32,6 @@ public data class RequestTokenRequest(
     public val incomingToken: String? = null,
     @SerialName("registration_token")
     public val registrationToken: String? = null,
+    @SerialName("direct_media")
+    public val directMedia: Boolean = false,
 )
