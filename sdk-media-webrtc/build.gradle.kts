@@ -17,5 +17,5 @@ dependencies {
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description.set("WebRTC-based implementation of sdk-media.")
+    pom.description = "WebRTC-based implementation of sdk-media."
 }

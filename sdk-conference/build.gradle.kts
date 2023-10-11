@@ -8,5 +8,5 @@ dependencies {
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description.set("A set of tools to interact with conferences.")
+    pom.description = "A set of tools to interact with conferences."
 }

@@ -7,5 +7,6 @@ dependencies {
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description.set("A set of classes and interfaces to help with establishing a media connection.")
+    pom.description =
+        "A set of classes and interfaces to help with establishing a media connection."
 }

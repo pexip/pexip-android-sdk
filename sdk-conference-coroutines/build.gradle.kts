@@ -7,5 +7,5 @@ dependencies {
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description.set("Coroutines support for sdk-conference.")
+    pom.description = "Coroutines support for sdk-conference."
 }

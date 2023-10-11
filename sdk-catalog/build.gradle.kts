@@ -19,12 +19,12 @@ catalog {
 }
 
 val javadocJar by tasks.register<Jar>("javadocJar") {
-    archiveClassifier.set("javadoc")
+    archiveClassifier = "javadoc"
     from(file("README.md"))
 }
 
 val sourcesJar by tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
+    archiveClassifier = "sources"
     from(file("README.md"))
 }
 
@@ -34,7 +34,7 @@ publishing {
             from(components["versionCatalog"])
             artifact(javadocJar)
             artifact(sourcesJar)
-            pom.description.set("Gradle Version Catalog for Pexip Android SDK")
+            pom.description = "Gradle Version Catalog for Pexip Android SDK"
         }
     }
 }

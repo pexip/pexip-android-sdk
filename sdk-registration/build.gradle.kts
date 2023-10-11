@@ -7,5 +7,5 @@ dependencies {
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description.set("A set of tools to interact with registrations.")
+    pom.description = "A set of tools to interact with registrations."
 }

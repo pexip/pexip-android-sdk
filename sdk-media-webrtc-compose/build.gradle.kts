@@ -20,5 +20,5 @@ dependencies {
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description.set("Compose support for sdk-media-webrtc.")
+    pom.description = "Compose support for sdk-media-webrtc."
 }
