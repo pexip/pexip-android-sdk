@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.api.infinity.internal.DurationAsMillisecondsSerializer
 import com.pexip.sdk.api.infinity.internal.UUIDSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.LongAsStringSerializer
 import java.util.UUID
+import kotlin.time.Duration
 
 @Serializable
 public data class RequestTokenResponse(
@@ -44,4 +46,13 @@ public data class RequestTokenResponse(
     public val serviceType: ServiceType = ServiceType.UNKNOWN,
     public val stun: List<StunResponse> = emptyList(),
     public val turn: List<TurnResponse> = emptyList(),
+    @SerialName("direct_media")
+    public val directMedia: Boolean = false,
+    @SerialName("use_relay_candidates_only")
+    public val useRelayCandidatesOnly: Boolean = false,
+    @SerialName("pex_datachannel_id")
+    public val dataChannelId: Int? = null,
+    @Serializable(with = DurationAsMillisecondsSerializer::class)
+    @SerialName("client_stats_update_interval")
+    public val clientStatsUpdateInterval: Duration = Duration.INFINITE,
 ) : Token

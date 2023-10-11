@@ -15,6 +15,13 @@
  */
 package com.pexip.sdk.api.infinity
 
+import assertk.all
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.prop
 import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
 import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
@@ -28,8 +35,6 @@ import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 internal class ConferenceStepTest {
 
@@ -54,7 +59,7 @@ internal class ConferenceStepTest {
     fun `requestToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val request = RequestTokenRequest()
-        assertFailsWith<IllegalStateException> { step.requestToken(request).execute() }
+        assertFailure { step.requestToken(request).execute() }.isInstanceOf<IllegalStateException>()
         server.verifyRequestToken(request)
     }
 
@@ -62,7 +67,7 @@ internal class ConferenceStepTest {
     fun `requestToken throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
         val request = RequestTokenRequest()
-        assertFailsWith<NoSuchNodeException> { step.requestToken(request).execute() }
+        assertFailure { step.requestToken(request).execute() }.isInstanceOf<NoSuchNodeException>()
         server.verifyRequestToken(request)
     }
 
@@ -74,8 +79,9 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = RequestTokenRequest(displayName = Random.nextString(16))
-        val e = assertFailsWith<NoSuchConferenceException> { step.requestToken(request).execute() }
-        assertEquals(message, e.message)
+        assertFailure { step.requestToken(request).execute() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyRequestToken(request)
     }
 
@@ -91,8 +97,10 @@ internal class ConferenceStepTest {
                 setBody(json.encodeToString(Box(response)))
             }
             val request = RequestTokenRequest()
-            val e = assertFailsWith<RequiredPinException> { step.requestToken(request).execute() }
-            assertEquals(response.guest_pin == "required", e.guestPin)
+            assertFailure { step.requestToken(request).execute() }
+                .isInstanceOf<RequiredPinException>()
+                .prop(RequiredPinException::guestPin)
+                .isEqualTo(response.guest_pin == "required")
             server.verifyRequestToken(request)
         }
     }
@@ -106,8 +114,9 @@ internal class ConferenceStepTest {
         }
         val request = RequestTokenRequest()
         val pin = Random.nextPin()
-        val e = assertFailsWith<InvalidPinException> { step.requestToken(request, pin).execute() }
-        assertEquals(message, e.message)
+        assertFailure { step.requestToken(request, pin).execute() }
+            .isInstanceOf<InvalidPinException>()
+            .hasMessage(message)
         server.verifyRequestToken(request, pin)
     }
 
@@ -125,8 +134,10 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(response)))
         }
         val request = RequestTokenRequest()
-        val e = assertFailsWith<RequiredSsoException> { step.requestToken(request).execute() }
-        assertEquals(idps, e.idps)
+        assertFailure { step.requestToken(request).execute() }
+            .isInstanceOf<RequiredSsoException>()
+            .prop(RequiredSsoException::idps)
+            .isEqualTo(idps)
         server.verifyRequestToken(request)
     }
 
@@ -145,9 +156,12 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(response)))
         }
         val request = RequestTokenRequest(chosenIdp = idp.id)
-        val e = assertFailsWith<SsoRedirectException> { step.requestToken(request).execute() }
-        assertEquals(response.redirect_url, e.url)
-        assertEquals(idp, e.idp)
+        assertFailure { step.requestToken(request).execute() }
+            .isInstanceOf<SsoRedirectException>()
+            .all {
+                prop(SsoRedirectException::url).isEqualTo(response.redirect_url)
+                prop(SsoRedirectException::idp).isEqualTo(idp)
+            }
         server.verifyRequestToken(request)
     }
 
@@ -162,7 +176,7 @@ internal class ConferenceStepTest {
             analyticsEnabled = Random.nextBoolean(),
             chatEnabled = Random.nextBoolean(),
             guestsCanPresent = Random.nextBoolean(),
-            serviceType = ServiceType.values().random(),
+            serviceType = ServiceType.entries.random(),
             version = VersionResponse(
                 versionId = Random.nextString(8),
                 pseudoVersion = Random.nextString(8),
@@ -177,6 +191,10 @@ internal class ConferenceStepTest {
                     credential = "${it shr 1}",
                 )
             },
+            directMedia = Random.nextBoolean(),
+            useRelayCandidatesOnly = Random.nextBoolean(),
+            dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
+            clientStatsUpdateInterval = Random.nextDuration(),
         )
         val requests = setOf(
             RequestTokenRequest(ssoToken = Random.nextString(8)),
@@ -188,7 +206,7 @@ internal class ConferenceStepTest {
                 setResponseCode(200)
                 setBody(json.encodeToString(Box(response)))
             }
-            assertEquals(response, step.requestToken(it).execute())
+            assertThat(step.requestToken(it).execute(), "response").isEqualTo(response)
             server.verifyRequestToken(it)
         }
     }
@@ -218,6 +236,10 @@ internal class ConferenceStepTest {
                     credential = "${it shr 1}",
                 )
             },
+            directMedia = Random.nextBoolean(),
+            useRelayCandidatesOnly = Random.nextBoolean(),
+            dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
+            clientStatsUpdateInterval = Random.nextDuration(),
         )
         val requests = setOf(
             RequestTokenRequest(ssoToken = Random.nextString(8)),
@@ -228,9 +250,7 @@ internal class ConferenceStepTest {
                 setResponseCode(200)
                 setBody(json.encodeToString(Box(response)))
             }
-            val actualResponse = step.requestToken(it).execute()
-            assertEquals(response, actualResponse)
-            assertEquals(ServiceType.UNKNOWN, actualResponse.serviceType)
+            assertThat(step.requestToken(it).execute(), "response").isEqualTo(response)
             server.verifyRequestToken(it)
         }
     }
@@ -246,7 +266,7 @@ internal class ConferenceStepTest {
             analyticsEnabled = Random.nextBoolean(),
             chatEnabled = Random.nextBoolean(),
             guestsCanPresent = Random.nextBoolean(),
-            serviceType = ServiceType.values().random(),
+            serviceType = ServiceType.entries.random(),
             version = VersionResponse(
                 versionId = Random.nextString(8),
                 pseudoVersion = Random.nextString(8),
@@ -261,6 +281,10 @@ internal class ConferenceStepTest {
                     credential = "${it shr 1}",
                 )
             },
+            directMedia = Random.nextBoolean(),
+            useRelayCandidatesOnly = Random.nextBoolean(),
+            dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
+            clientStatsUpdateInterval = Random.nextDuration(),
         )
         server.enqueue {
             setResponseCode(200)
@@ -268,7 +292,7 @@ internal class ConferenceStepTest {
         }
         val request = RequestTokenRequest()
         val pin = "   "
-        assertEquals(response, step.requestToken(request, pin).execute())
+        assertThat(step.requestToken(request, pin).execute(), "response").isEqualTo(response)
         server.verifyRequestToken(request, pin)
     }
 
@@ -276,7 +300,7 @@ internal class ConferenceStepTest {
     fun `refreshToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
-        assertFailsWith<IllegalStateException> { step.refreshToken(token).execute() }
+        assertFailure { step.refreshToken(token).execute() }.isInstanceOf<IllegalStateException>()
         server.verifyRefreshToken(token)
     }
 
@@ -284,7 +308,7 @@ internal class ConferenceStepTest {
     fun `refreshToken throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
         val token = Random.nextString(8)
-        assertFailsWith<NoSuchNodeException> { step.refreshToken(token).execute() }
+        assertFailure { step.refreshToken(token).execute() }.isInstanceOf<NoSuchNodeException>()
         server.verifyRefreshToken(token)
     }
 
@@ -296,8 +320,9 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
-        val e = assertFailsWith<NoSuchConferenceException> { step.refreshToken(token).execute() }
-        assertEquals(message, e.message)
+        assertFailure { step.refreshToken(token).execute() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyRefreshToken(token)
     }
 
@@ -309,8 +334,9 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
-        val e = assertFailsWith<InvalidTokenException> { step.refreshToken(token).execute() }
-        assertEquals(message, e.message)
+        assertFailure { step.refreshToken(token).execute() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyRefreshToken(token)
     }
 
@@ -322,7 +348,7 @@ internal class ConferenceStepTest {
         )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
         val token = Random.nextString(8)
-        assertEquals(response, step.refreshToken(token).execute())
+        assertThat(step.refreshToken(token).execute(), "response").isEqualTo(response)
         server.verifyRefreshToken(token)
     }
 
@@ -330,7 +356,7 @@ internal class ConferenceStepTest {
     fun `releaseToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
-        assertFailsWith<IllegalStateException> { step.releaseToken(token).execute() }
+        assertFailure { step.releaseToken(token).execute() }.isInstanceOf<IllegalStateException>()
         server.verifyReleaseToken(token)
     }
 
@@ -338,7 +364,7 @@ internal class ConferenceStepTest {
     fun `releaseToken throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
         val token = Random.nextString(8)
-        assertFailsWith<NoSuchNodeException> { step.releaseToken(token).execute() }
+        assertFailure { step.releaseToken(token).execute() }.isInstanceOf<NoSuchNodeException>()
         server.verifyReleaseToken(token)
     }
 
@@ -350,7 +376,8 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
-        assertFailsWith<NoSuchConferenceException> { step.releaseToken(token).execute() }
+        assertFailure { step.releaseToken(token).execute() }
+            .isInstanceOf<NoSuchConferenceException>()
         server.verifyReleaseToken(token)
     }
 
@@ -362,7 +389,7 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
-        assertFailsWith<InvalidTokenException> { step.releaseToken(token).execute() }
+        assertFailure { step.releaseToken(token).execute() }.isInstanceOf<InvalidTokenException>()
         server.verifyReleaseToken(token)
     }
 
@@ -374,7 +401,7 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(result)))
         }
         val token = Random.nextString(8)
-        assertEquals(result, step.releaseToken(token).execute())
+        assertThat(step.releaseToken(token).execute(), "response").isEqualTo(result)
         server.verifyReleaseToken(token)
     }
 
@@ -383,7 +410,8 @@ internal class ConferenceStepTest {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
-        assertFailsWith<IllegalStateException> { step.message(request, token).execute() }
+        assertFailure { step.message(request, token).execute() }
+            .isInstanceOf<IllegalStateException>()
         server.verifyMessage(request, token)
     }
 
@@ -392,7 +420,7 @@ internal class ConferenceStepTest {
         server.enqueue { setResponseCode(404) }
         val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
-        assertFailsWith<NoSuchNodeException> { step.message(request, token).execute() }
+        assertFailure { step.message(request, token).execute() }.isInstanceOf<NoSuchNodeException>()
         server.verifyMessage(request, token)
     }
 
@@ -405,7 +433,8 @@ internal class ConferenceStepTest {
         }
         val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
-        assertFailsWith<NoSuchConferenceException> { step.message(request, token).execute() }
+        assertFailure { step.message(request, token).execute() }
+            .isInstanceOf<NoSuchConferenceException>()
         server.verifyMessage(request, token)
     }
 
@@ -418,7 +447,8 @@ internal class ConferenceStepTest {
         }
         val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
-        assertFailsWith<InvalidTokenException> { step.message(request, token).execute() }
+        assertFailure { step.message(request, token).execute() }
+            .isInstanceOf<InvalidTokenException>()
         server.verifyMessage(request, token)
     }
 
@@ -432,7 +462,7 @@ internal class ConferenceStepTest {
             }
             val token = Random.nextString(8)
             val request = Random.nextMessageRequest()
-            assertEquals(result, step.message(request, token).execute())
+            assertThat(step.message(request, token).execute(), "response").isEqualTo(result)
             server.verifyMessage(request, token)
         }
     }
