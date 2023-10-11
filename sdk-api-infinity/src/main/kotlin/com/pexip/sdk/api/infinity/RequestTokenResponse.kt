@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.api.infinity.internal.DurationAsMillisecondsSerializer
 import com.pexip.sdk.api.infinity.internal.UUIDSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -51,6 +52,7 @@ public data class RequestTokenResponse(
     public val useRelayCandidatesOnly: Boolean = false,
     @SerialName("pex_datachannel_id")
     public val dataChannelId: Int? = null,
+    @Serializable(with = DurationAsMillisecondsSerializer::class)
     @SerialName("client_stats_update_interval")
     public val clientStatsUpdateInterval: Duration = Duration.INFINITE,
 ) : Token
