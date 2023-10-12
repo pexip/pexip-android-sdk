@@ -16,6 +16,7 @@
 package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.Call
+import com.pexip.sdk.api.infinity.AckRequest
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidTokenException
@@ -79,6 +80,28 @@ internal class CallStepImpl(
     }
 
     override fun ack(token: Token): Call<Unit> = ack(token.token)
+
+    override fun ack(request: AckRequest, token: String): Call<Unit> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client.newBuilder()
+                .readTimeout(0, TimeUnit.SECONDS)
+                .build(),
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    call(callId)
+                    addPathSegment("ack")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseAck,
+        )
+    }
+
+    override fun ack(request: AckRequest, token: Token): Call<Unit> = ack(request, token.token)
 
     override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> {
         require(token.isNotBlank()) { "token is blank." }

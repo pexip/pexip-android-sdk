@@ -1,3 +1,32 @@
+public final class com/pexip/sdk/api/infinity/AckRequest {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/AckRequest$Companion;
+	public synthetic fun <init> (ILjava/lang/String;Lkotlinx/serialization/internal/SerializationConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/AckRequest;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/AckRequest;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/AckRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSdp ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/AckRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+}
+
+public final class com/pexip/sdk/api/infinity/AckRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/AckRequest$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/AckRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/AckRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/AckRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/pexip/sdk/api/infinity/ByeEvent : com/pexip/sdk/api/Event {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ByeEvent;
 	public fun toString ()Ljava/lang/String;
@@ -326,6 +355,8 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService {
 }
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$CallStep {
+	public abstract fun ack (Lcom/pexip/sdk/api/infinity/AckRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public abstract fun ack (Lcom/pexip/sdk/api/infinity/AckRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun ack (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun ack (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;

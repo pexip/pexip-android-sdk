@@ -553,6 +553,32 @@ public interface InfinityService {
         public fun ack(token: Token): Call<Unit>
 
         /**
+         * Acks the call.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @throws InvalidTokenException if the token is invalid
+         * @throws NoSuchNodeException if the node doesn't exist
+         * @throws NoSuchConferenceException if the conference doesn't exist
+         */
+        public fun ack(request: AckRequest, token: String): Call<Unit>
+
+        /**
+         * Acks the call.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @throws InvalidTokenException if the token is invalid
+         * @throws NoSuchNodeException if the node doesn't exist
+         * @throws NoSuchConferenceException if the conference doesn't exist
+         */
+        public fun ack(request: AckRequest, token: Token): Call<Unit>
+
+        /**
          * Sends a new SDP.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#update).
