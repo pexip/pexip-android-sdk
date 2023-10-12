@@ -20,7 +20,9 @@ import com.pexip.sdk.media.DegradationPreference
 import com.pexip.sdk.media.LocalMediaTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.QualityProfile
+import com.pexip.sdk.media.SecureCheckCode
 import com.pexip.sdk.media.VideoTrack
+import okio.ByteString.Companion.encodeUtf8
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
 import org.webrtc.RtpParameters
 import org.webrtc.RtpParameters.Encoding
@@ -28,6 +30,19 @@ import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import java.util.concurrent.Executor
 import java.util.concurrent.RejectedExecutionException
+
+@Suppress("ktlint:standard:function-naming")
+internal fun SecureCheckCode(
+    localFingerprints: Collection<String>,
+    remoteFingerprints: Collection<String>,
+): SecureCheckCode? {
+    if (localFingerprints.isEmpty()) return null
+    if (remoteFingerprints.isEmpty()) return null
+    val local = localFingerprints.sortAndJoinToString()
+    val remote = remoteFingerprints.sortAndJoinToString()
+    val value = listOf(local, remote).sortAndJoinToString()
+    return SecureCheckCode(value.encodeUtf8().sha256().hex())
+}
 
 internal fun Executor.maybeExecute(block: () -> Unit) = try {
     execute(block)
@@ -125,12 +140,14 @@ internal fun RtpTransceiver.setTrack(track: LocalMediaTrack?) {
     sender.setTrack(t, false)
 }
 
+@Suppress("ktlint:standard:function-naming")
 internal fun RtpTransceiverInit(
     direction: RtpTransceiverDirection = RtpTransceiverDirection.SEND_RECV,
     streamIds: List<String> = emptyList(),
     sendEncodings: List<Encoding> = emptyList(),
 ) = RtpTransceiver.RtpTransceiverInit(direction, streamIds, sendEncodings)
 
+@Suppress("ktlint:standard:function-naming")
 internal fun Encoding(
     rid: String? = null,
     active: Boolean = true,
@@ -139,3 +156,5 @@ internal fun Encoding(
 ) = Encoding(rid, active, scaleResolutionDownBy).apply(block)
 
 internal const val MAX_FRAMERATE = 30
+
+private fun Collection<String>.sortAndJoinToString() = sorted().joinToString(separator = "")

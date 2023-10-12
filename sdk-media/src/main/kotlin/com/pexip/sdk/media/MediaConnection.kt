@@ -15,13 +15,18 @@
  */
 package com.pexip.sdk.media
 
+import kotlinx.coroutines.flow.StateFlow
+
 /**
  * A media connection.
  *
+ * @property secureCheckCode current secure check code, the value may be null
  * @property mainRemoteVideoTrack current main remote video track or null
  * @property presentationRemoteVideoTrack current presentation remote video track or null
  */
 public interface MediaConnection {
+
+    public val secureCheckCode: StateFlow<SecureCheckCode?>
 
     public val mainRemoteVideoTrack: VideoTrack?
 

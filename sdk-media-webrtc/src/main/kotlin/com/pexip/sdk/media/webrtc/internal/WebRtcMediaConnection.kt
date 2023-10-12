@@ -24,6 +24,7 @@ import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionSignaling
+import com.pexip.sdk.media.SecureCheckCode
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
@@ -36,6 +37,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
@@ -47,6 +50,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.webrtc.MediaStreamTrack.MediaType
@@ -86,6 +90,9 @@ internal class WebRtcMediaConnection(
     // CoroutineScope cancellation
     private val _mainRemoteVideoTrack = MutableStateFlow<VideoTrack?>(null)
     private val _presentationRemoteVideoTrack = MutableStateFlow<VideoTrack?>(null)
+
+    override val secureCheckCode: StateFlow<SecureCheckCode?> =
+        wrapper.secureCheckCode.stateIn(scope, SharingStarted.Eagerly, null)
 
     override val mainRemoteVideoTrack: VideoTrack?
         get() = _mainRemoteVideoTrack.value
@@ -362,6 +369,7 @@ internal class WebRtcMediaConnection(
         }
     }
 
+    @Suppress("FunctionName")
     private fun RtpTransceiverInit(direction: RtpTransceiverDirection) = { key: RtpTransceiverKey ->
         RtpTransceiverInit(
             direction = direction,
