@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.runInterruptible
-import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.RTCConfiguration
@@ -132,8 +131,9 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
 
     suspend fun restartIce() = runInterruptible { peerConnection.restartIce() }
 
-    suspend fun getIceCredentials(candidate: IceCandidate) =
-        runInterruptible { candidate.sdpMid?.let(iceCredentials::get) }
+    suspend fun getIceCredentials() = runInterruptible { iceCredentials.toMap() }
+
+    suspend fun getIceCredentials(mid: String) = runInterruptible { iceCredentials[mid] }
 
     suspend fun dispose() = runInterruptible {
         rtpTransceivers.forEach { (_, rtpTransceiver) ->

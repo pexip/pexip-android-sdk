@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package com.pexip.sdk.media
  * @property signaling an instance of [MediaConnectionSignaling] to be used by [MediaConnection]
  * @property iceServers a list of [IceServer]s that [MediaConnection] will use
  * @property dscp true if DSCP is enabled, false otherwise
+ * @property continualGathering true if ICE candidates will be gathered continually, false otherwise
  * @property presentationInMain true if presentation will be mixed with main video feed, false otherwise
  * @property farEndCameraControl true if far end camera control is supported, false otherwise
  */
@@ -28,6 +29,7 @@ public class MediaConnectionConfig private constructor(
     public val signaling: MediaConnectionSignaling,
     public val iceServers: List<IceServer>,
     public val dscp: Boolean,
+    public val continualGathering: Boolean,
     public val presentationInMain: Boolean,
     public val farEndCameraControl: Boolean,
 ) {
@@ -41,6 +43,7 @@ public class MediaConnectionConfig private constructor(
 
         private val iceServers = ArrayList(signaling.iceServers)
         private var dscp = false
+        private var continualGathering = true
         private var presentationInMain = false
         private var farEndCameraControl = false
 
@@ -67,6 +70,19 @@ public class MediaConnectionConfig private constructor(
          */
         public fun dscp(dscp: Boolean): Builder = apply {
             this.dscp = dscp
+        }
+
+        /**
+         * Sets whether continual gathering of ICE candidates is enabled (default is true).
+         *
+         * Continual gathering never completes and generally performs better when roaming between
+         * different networks, but may cause connection failures when no ICE candidates were found.
+         *
+         * @param continualGathering true if ICE candidates will be gathered continually, false otherwise
+         * @return this builder
+         */
+        public fun continualGathering(continualGathering: Boolean): Builder = apply {
+            this.continualGathering = continualGathering
         }
 
         /**
@@ -98,6 +114,7 @@ public class MediaConnectionConfig private constructor(
             signaling = signaling,
             iceServers = iceServers,
             dscp = dscp,
+            continualGathering = continualGathering,
             presentationInMain = presentationInMain,
             farEndCameraControl = farEndCameraControl,
         )
