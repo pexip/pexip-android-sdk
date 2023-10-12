@@ -23,6 +23,18 @@ import kotlinx.serialization.json.Json
 import java.util.UUID
 
 @Serializable
+public data class NewOfferEvent(val sdp: String) : Event
+
+@Serializable
+public data class UpdateSdpEvent(val sdp: String) : Event
+
+@Serializable
+public data class NewCandidateEvent(val candidate: String, val mid: String) : Event
+
+@Serializable
+public data object PeerDisconnectEvent : Event
+
+@Serializable
 public data class PresentationStartEvent(
     @SerialName("presenter_name")
     val presenterName: String,
@@ -31,10 +43,7 @@ public data class PresentationStartEvent(
     val presenterId: UUID,
 ) : Event
 
-public object PresentationStopEvent : Event {
-
-    override fun toString(): String = "PresentationStopEvent"
-}
+public data object PresentationStopEvent : Event
 
 @Serializable
 public data class MessageReceivedEvent(
@@ -65,10 +74,7 @@ public data class ReferEvent(
 @Serializable
 public data class DisconnectEvent(val reason: String) : Event
 
-public object ByeEvent : Event {
-
-    override fun toString(): String = "ByeEvent"
-}
+public data object ByeEvent : Event
 
 @Serializable
 public data class IncomingEvent(
@@ -82,15 +88,29 @@ public data class IncomingEvent(
 @Serializable
 public data class IncomingCancelledEvent(val token: String) : Event
 
-internal fun Event(json: Json, id: String?, type: String?, data: String) = when (type) {
-    "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
-    "presentation_stop" -> PresentationStopEvent
-    "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
-    "fecc" -> json.decodeFromString<FeccEvent>(data)
-    "refer" -> json.decodeFromString<ReferEvent>(data)
-    "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
-    "bye" -> ByeEvent
-    "incoming" -> json.decodeFromString<IncomingEvent>(data)
-    "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
-    else -> null
+@Suppress("ktlint:standard:function-naming")
+internal fun Event(json: Json, id: String?, type: String?, data: String): Event? {
+    val s = buildString {
+        append("type=")
+        append(type)
+        append(",data=")
+        append(data)
+    }
+    println(s)
+    return when (type) {
+        "new_offer" -> json.decodeFromString<NewOfferEvent>(data)
+        "update_sdp" -> json.decodeFromString<UpdateSdpEvent>(data)
+        "new_candidate" -> json.decodeFromString<NewCandidateEvent>(data)
+        "peer_disconnect" -> PeerDisconnectEvent
+        "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
+        "presentation_stop" -> PresentationStopEvent
+        "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
+        "fecc" -> json.decodeFromString<FeccEvent>(data)
+        "refer" -> json.decodeFromString<ReferEvent>(data)
+        "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
+        "bye" -> ByeEvent
+        "incoming" -> json.decodeFromString<IncomingEvent>(data)
+        "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
+        else -> null
+    }
 }
