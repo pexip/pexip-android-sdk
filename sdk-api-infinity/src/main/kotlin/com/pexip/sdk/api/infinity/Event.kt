@@ -89,28 +89,19 @@ public data class IncomingEvent(
 public data class IncomingCancelledEvent(val token: String) : Event
 
 @Suppress("ktlint:standard:function-naming")
-internal fun Event(json: Json, id: String?, type: String?, data: String): Event? {
-    val s = buildString {
-        append("type=")
-        append(type)
-        append(",data=")
-        append(data)
-    }
-    println(s)
-    return when (type) {
-        "new_offer" -> json.decodeFromString<NewOfferEvent>(data)
-        "update_sdp" -> json.decodeFromString<UpdateSdpEvent>(data)
-        "new_candidate" -> json.decodeFromString<NewCandidateEvent>(data)
-        "peer_disconnect" -> PeerDisconnectEvent
-        "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
-        "presentation_stop" -> PresentationStopEvent
-        "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
-        "fecc" -> json.decodeFromString<FeccEvent>(data)
-        "refer" -> json.decodeFromString<ReferEvent>(data)
-        "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
-        "bye" -> ByeEvent
-        "incoming" -> json.decodeFromString<IncomingEvent>(data)
-        "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
-        else -> null
-    }
+internal fun Event(json: Json, id: String?, type: String?, data: String): Event? = when (type) {
+    "new_offer" -> json.decodeFromString<NewOfferEvent>(data)
+    "update_sdp" -> json.decodeFromString<UpdateSdpEvent>(data)
+    "new_candidate" -> json.decodeFromString<NewCandidateEvent>(data)
+    "peer_disconnect" -> PeerDisconnectEvent
+    "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
+    "presentation_stop" -> PresentationStopEvent
+    "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
+    "fecc" -> json.decodeFromString<FeccEvent>(data)
+    "refer" -> json.decodeFromString<ReferEvent>(data)
+    "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
+    "bye" -> ByeEvent
+    "incoming" -> json.decodeFromString<IncomingEvent>(data)
+    "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
+    else -> null
 }
