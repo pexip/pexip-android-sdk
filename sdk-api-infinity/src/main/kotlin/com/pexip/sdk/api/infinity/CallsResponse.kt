@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,4 +26,6 @@ public data class CallsResponse(
     @SerialName("call_uuid")
     public val callId: UUID,
     public val sdp: String,
+    @SerialName("offer_ignored")
+    public val offerIgnored: Boolean = false,
 )
