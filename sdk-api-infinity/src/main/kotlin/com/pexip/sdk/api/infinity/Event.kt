@@ -29,7 +29,12 @@ public data class NewOfferEvent(val sdp: String) : Event
 public data class UpdateSdpEvent(val sdp: String) : Event
 
 @Serializable
-public data class NewCandidateEvent(val candidate: String, val mid: String) : Event
+public data class NewCandidateEvent(
+    val candidate: String,
+    val mid: String,
+    val ufrag: String = "",
+    val pwd: String = "",
+) : Event
 
 @Serializable
 public data object PeerDisconnectEvent : Event

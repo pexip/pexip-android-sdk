@@ -158,6 +158,8 @@ internal class EventTest {
                 val3 = NewCandidateEvent(
                     candidate = "sXyJ0h2vh8",
                     mid = "tyU1tUaHqn",
+                    ufrag = "2WrhfEx9Jh",
+                    pwd = "EBZ0fhSaJt",
                 ),
             )
             .row(
