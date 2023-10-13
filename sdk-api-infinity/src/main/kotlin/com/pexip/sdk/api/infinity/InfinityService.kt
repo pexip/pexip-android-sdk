@@ -555,6 +555,8 @@ public interface InfinityService {
         /**
          * Acks the call.
          *
+         * This is only used for direct media calls and should contain the local SDP.
+         *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack).
          *
          * @param request a request body
@@ -567,6 +569,8 @@ public interface InfinityService {
 
         /**
          * Acks the call.
+         *
+         * This is only used for direct media calls and should contain the local SDP.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack).
          *
