@@ -10,5 +10,5 @@ dependencies {
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description.set("Infinity-based implementation of sdk-conference.")
+    pom.description = "Infinity-based implementation of sdk-conference."
 }

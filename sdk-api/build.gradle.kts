@@ -7,5 +7,5 @@ dependencies {
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description.set("A set of common classes and interfaces to build APIs.")
+    pom.description = "A set of common classes and interfaces to build APIs."
 }

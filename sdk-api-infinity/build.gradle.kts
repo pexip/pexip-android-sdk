@@ -17,5 +17,5 @@ dependencies {
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description.set("A fluent wrapper for Pexip Infinity Client REST API.")
+    pom.description = "A fluent wrapper for Pexip Infinity Client REST API."
 }
