@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.runInterruptible
+import org.webrtc.AddIceObserver
+import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.RTCConfiguration
@@ -127,6 +129,17 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
                 .map { it.removePrefix(FINGERPRINT) }
                 .toList()
         }
+    }
+
+    suspend fun addIceCandidate(candidate: IceCandidate) = suspendCoroutine {
+        val observer = object : AddIceObserver {
+
+            override fun onAddSuccess() = it.resume(Unit)
+
+            override fun onAddFailure(reason: String) =
+                it.resumeWithException(RuntimeException(reason))
+        }
+        peerConnection.addIceCandidate(candidate, observer)
     }
 
     suspend fun restartIce() = runInterruptible { peerConnection.restartIce() }
