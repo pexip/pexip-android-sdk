@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,18 @@
 package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.infinity.UpdateResponse
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 internal object UpdateResponseSerializer :
-    UnboxingSerializer<UpdateResponse>(UpdateResponse.serializer())
+    UnboxingSerializer<UpdateResponse>(UpdateResponse.serializer()) {
+
+    override fun transformDeserialize(element: JsonElement): JsonElement =
+        when (val e = super.transformDeserialize(element)) {
+            is JsonPrimitive -> e
+            is JsonObject -> e.getValue("sdp")
+            else -> throw SerializationException()
+        }
+}
