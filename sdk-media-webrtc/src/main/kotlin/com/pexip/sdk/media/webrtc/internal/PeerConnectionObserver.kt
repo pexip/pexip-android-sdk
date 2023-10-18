@@ -29,13 +29,13 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 internal class PeerConnectionObserver : PeerConnection.Observer {
 
-    private val onRenegotiationNeeded = AtomicBoolean(false)
+    private val renegotiationNeeded = AtomicBoolean(false)
     private val _event = MutableSharedFlow<Event>(extraBufferCapacity = 64)
 
     val event = _event.asSharedFlow()
 
     override fun onRenegotiationNeeded() {
-        if (onRenegotiationNeeded.compareAndSet(false, true)) return
+        if (renegotiationNeeded.compareAndSet(false, true)) return
         _event.tryEmit(Event.OnRenegotiationNeeded)
     }
 
