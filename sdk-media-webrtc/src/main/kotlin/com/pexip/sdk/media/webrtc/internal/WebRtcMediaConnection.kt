@@ -40,8 +40,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -103,9 +101,7 @@ internal class WebRtcMediaConnection(
     init {
         with(scope) {
             launchMaxBitrate()
-            launchOnRenegotiationNeeded()
-            launchOnIceCandidate()
-            launchOnIceConnectionChange()
+            launchWrapperEvent()
             launchDegradationPreference(MainVideo, mainDegradationPreference)
             launchDegradationPreference(PresentationVideo, presentationDegradationPreference)
             launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
@@ -263,25 +259,10 @@ internal class WebRtcMediaConnection(
         .onEach { wrapper.restartIce() }
         .launchIn(this)
 
-    private fun CoroutineScope.launchOnRenegotiationNeeded() = wrapper.event
-        .filterIsInstance<Event.OnRenegotiationNeeded>()
-        .drop(1)
-        .onEach { setLocalDescription() }
-        .launchIn(this)
-
-    private fun CoroutineScope.launchOnIceCandidate() = launch {
-        fun onCandidate(sdp: String, mid: String, credentials: IceCredentials) = launch {
-            runCatching {
-                config.signaling.onCandidate(
-                    candidate = sdp,
-                    mid = mid,
-                    ufrag = credentials.ufrag,
-                    pwd = credentials.pwd,
-                )
-            }
-        }
+    private fun CoroutineScope.launchWrapperEvent() = launch {
         wrapper.event.collect {
             when (it) {
+                is Event.OnRenegotiationNeeded -> setLocalDescription()
                 is Event.OnIceCandidate -> {
                     val sdp = it.candidate.sdp?.takeIf(String::isNotBlank) ?: return@collect
                     val mid = it.candidate.sdpMid ?: return@collect
@@ -294,16 +275,14 @@ internal class WebRtcMediaConnection(
                         onCandidate(sdp = "", mid = mid, credentials = credentials)
                     }
                 }
+                is Event.OnIceConnectionChange -> {
+                    if (it.state != PeerConnection.IceConnectionState.FAILED) return@collect
+                    wrapper.restartIce()
+                }
                 else -> Unit
             }
         }
     }
-
-    private fun CoroutineScope.launchOnIceConnectionChange() = wrapper.event
-        .filterIsInstance<Event.OnIceConnectionChange>()
-        .filter { it.state == PeerConnection.IceConnectionState.FAILED }
-        .onEach { wrapper.restartIce() }
-        .launchIn(this)
 
     private fun CoroutineScope.launchDegradationPreference(
         key: RtpTransceiverKey,
@@ -383,6 +362,18 @@ internal class WebRtcMediaConnection(
             }
         }
     }
+
+    private fun CoroutineScope.onCandidate(sdp: String, mid: String, credentials: IceCredentials) =
+        launch {
+            runCatching {
+                config.signaling.onCandidate(
+                    candidate = sdp,
+                    mid = mid,
+                    ufrag = credentials.ufrag,
+                    pwd = credentials.pwd,
+                )
+            }
+        }
 
     @Suppress("FunctionName")
     private fun RtpTransceiverInit(direction: RtpTransceiverDirection) = { key: RtpTransceiverKey ->
