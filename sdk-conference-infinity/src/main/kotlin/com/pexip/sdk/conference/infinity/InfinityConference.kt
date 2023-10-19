@@ -32,7 +32,7 @@ import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
 import com.pexip.sdk.conference.infinity.internal.RefererImpl
-import com.pexip.sdk.conference.infinity.internal.conferenceEvent
+import com.pexip.sdk.conference.infinity.internal.events
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
@@ -67,9 +68,7 @@ public class InfinityConference private constructor(
         store = store,
         step = step,
     )
-    private val conferenceEvent = step
-        .conferenceEvent(store)
-        .shareIn(scope, SharingStarted.Lazily)
+    private val event = step.events(store).shareIn(scope, SharingStarted.Lazily)
     private val listeners = CopyOnWriteArraySet<ConferenceEventListener>()
     private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
 
@@ -100,7 +99,7 @@ public class InfinityConference private constructor(
             releaseToken = { step.releaseToken(it).await() },
             onFailure = { mutableConferenceEvent.emit(ConferenceEvent(it)) },
         )
-        merge(conferenceEvent, mutableConferenceEvent)
+        merge(event.mapNotNull(::ConferenceEvent), mutableConferenceEvent)
             .onEach { event -> listeners.forEach { it.onConferenceEvent(event) } }
             .flowOn(Dispatchers.Main.immediate)
             .launchIn(scope)
