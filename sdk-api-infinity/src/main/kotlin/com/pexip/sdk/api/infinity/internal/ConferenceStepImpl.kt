@@ -51,6 +51,7 @@ internal class ConferenceStepImpl(
                 conference(conferenceAlias)
                 addPathSegment("request_token")
             }
+            .withTag(request.directMedia)
             .build(),
         mapper = ::parseRequestToken,
     )
@@ -66,6 +67,7 @@ internal class ConferenceStepImpl(
                 conference(conferenceAlias)
                 addPathSegment("request_token")
             }
+            .withTag(request.directMedia)
             .header("pin", if (pin.isBlank()) "none" else pin.trim())
             .build(),
         mapper = ::parseRequestToken,
@@ -148,7 +150,11 @@ internal class ConferenceStepImpl(
         ParticipantStepImpl(this, participantId)
 
     private fun parseRequestToken(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(RequestTokenResponseSerializer, response.body!!)
+        200 -> {
+            val r = json.decodeFromResponseBody(RequestTokenResponseSerializer, response.body!!)
+            val directMediaRequested = response.request.tagOrElse { false }
+            r.copy(directMediaRequested = directMediaRequested)
+        }
         403 -> response.parseRequestToken403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

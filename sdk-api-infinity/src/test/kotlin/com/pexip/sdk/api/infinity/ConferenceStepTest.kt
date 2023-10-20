@@ -50,7 +50,7 @@ internal class ConferenceStepTest {
     fun setUp() {
         node = server.url("/").toUrl()
         conferenceAlias = Random.nextString(8)
-        json = Json { ignoreUnknownKeys = true }
+        json = InfinityService.Json
         val service = InfinityService.create(OkHttpClient(), json)
         step = service.newRequest(node).conference(conferenceAlias)
     }
@@ -197,9 +197,18 @@ internal class ConferenceStepTest {
             clientStatsUpdateInterval = Random.nextDuration(),
         )
         val requests = setOf(
-            RequestTokenRequest(ssoToken = Random.nextString(8)),
-            RequestTokenRequest(incomingToken = Random.nextString(8)),
-            RequestTokenRequest(registrationToken = Random.nextString(8)),
+            RequestTokenRequest(
+                ssoToken = Random.nextString(8),
+                directMedia = response.directMediaRequested,
+            ),
+            RequestTokenRequest(
+                incomingToken = Random.nextString(8),
+                directMedia = response.directMediaRequested,
+            ),
+            RequestTokenRequest(
+                registrationToken = Random.nextString(8),
+                directMedia = response.directMediaRequested,
+            ),
         )
         requests.forEach {
             server.enqueue {
@@ -237,13 +246,20 @@ internal class ConferenceStepTest {
                 )
             },
             directMedia = Random.nextBoolean(),
+            directMediaRequested = Random.nextBoolean(),
             useRelayCandidatesOnly = Random.nextBoolean(),
             dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
             clientStatsUpdateInterval = Random.nextDuration(),
         )
         val requests = setOf(
-            RequestTokenRequest(ssoToken = Random.nextString(8)),
-            RequestTokenRequest(incomingToken = Random.nextString(8)),
+            RequestTokenRequest(
+                ssoToken = Random.nextString(8),
+                directMedia = response.directMediaRequested,
+            ),
+            RequestTokenRequest(
+                incomingToken = Random.nextString(8),
+                directMedia = response.directMediaRequested,
+            ),
         )
         requests.forEach {
             server.enqueue {
@@ -282,6 +298,7 @@ internal class ConferenceStepTest {
                 )
             },
             directMedia = Random.nextBoolean(),
+            directMediaRequested = Random.nextBoolean(),
             useRelayCandidatesOnly = Random.nextBoolean(),
             dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
             clientStatsUpdateInterval = Random.nextDuration(),
@@ -290,7 +307,7 @@ internal class ConferenceStepTest {
             setResponseCode(200)
             setBody(json.encodeToString(Box(response)))
         }
-        val request = RequestTokenRequest()
+        val request = RequestTokenRequest(directMedia = response.directMediaRequested)
         val pin = "   "
         assertThat(step.requestToken(request, pin).execute(), "response").isEqualTo(response)
         server.verifyRequestToken(request, pin)

@@ -28,17 +28,19 @@ import kotlinx.coroutines.CancellationException
 
 internal class RefererImpl(
     private val builder: InfinityService.RequestBuilder,
+    private val directMedia: Boolean,
     private val createConference: (InfinityService.ConferenceStep, RequestTokenResponse) -> Conference,
 ) : Referer {
 
-    constructor(builder: InfinityService.RequestBuilder) : this(
+    constructor(builder: InfinityService.RequestBuilder, directMedia: Boolean) : this(
         builder = builder,
+        directMedia = directMedia,
         createConference = InfinityConference::create,
     )
 
     override suspend fun refer(event: ReferConferenceEvent): Conference = try {
         val step = builder.conference(event.conferenceAlias)
-        val request = RequestTokenRequest(incomingToken = event.token)
+        val request = RequestTokenRequest(incomingToken = event.token, directMedia = directMedia)
         val response = step.requestToken(request).await()
         createConference(step, response)
     } catch (e: CancellationException) {
