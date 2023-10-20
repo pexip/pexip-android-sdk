@@ -192,6 +192,7 @@ internal class ConferenceStepTest {
                 )
             },
             directMedia = Random.nextBoolean(),
+            directMediaRequested = Random.nextBoolean(),
             useRelayCandidatesOnly = Random.nextBoolean(),
             dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
             clientStatsUpdateInterval = Random.nextDuration(),
