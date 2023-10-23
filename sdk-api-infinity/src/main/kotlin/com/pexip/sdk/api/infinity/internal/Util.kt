@@ -71,4 +71,9 @@ internal inline fun Request.Builder.url(
     return url(builder.apply(block).build())
 }
 
+internal inline fun <reified T : Any> Request.Builder.withTag(tag: T?) = tag(T::class.java, tag)
+
+internal inline fun <reified T : Any> Request.tagOrElse(block: () -> T) =
+    tag(T::class.java) ?: block()
+
 private val ApplicationJson by lazy { "application/json; charset=utf-8".toMediaType() }

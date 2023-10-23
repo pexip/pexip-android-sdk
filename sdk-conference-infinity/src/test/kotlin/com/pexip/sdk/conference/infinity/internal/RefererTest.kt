@@ -55,10 +55,12 @@ class RefererTest {
     @Test
     fun `transfer rethrows`() = runTest {
         val t = Throwable()
+        val directMedia = Random.nextBoolean()
         val step = object : TestConferenceStep() {
 
             override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
                 assertThat(request::incomingToken).isEqualTo(event.token)
+                assertThat(request::directMedia).isEqualTo(directMedia)
                 return object : TestCall<RequestTokenResponse> {
 
                     override fun enqueue(callback: Callback<RequestTokenResponse>) =
@@ -73,7 +75,7 @@ class RefererTest {
                 return step
             }
         }
-        val referer = RefererImpl(builder, ::TestConference)
+        val referer = RefererImpl(builder, directMedia, ::TestConference)
         assertFailure { referer.refer(event) }
             .isInstanceOf<ReferException>()
             .hasCause(t)
@@ -87,12 +89,14 @@ class RefererTest {
             conferenceName = Random.nextString(8),
             participantId = UUID.randomUUID(),
             participantName = Random.nextString(8),
+            directMediaRequested = Random.nextBoolean(),
             version = VersionResponse(Random.nextString(8), Random.nextString(8)),
         )
         val step = object : TestConferenceStep() {
 
             override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
                 assertThat(request::incomingToken).isEqualTo(event.token)
+                assertThat(request::directMedia).isEqualTo(response.directMediaRequested)
                 return object : TestCall<RequestTokenResponse> {
 
                     override fun enqueue(callback: Callback<RequestTokenResponse>) =
@@ -107,7 +111,7 @@ class RefererTest {
                 return step
             }
         }
-        val referer = RefererImpl(builder, ::TestConference)
+        val referer = RefererImpl(builder, response.directMediaRequested, ::TestConference)
         assertThat(referer.refer(event), "conference").isEqualTo(TestConference(step, response))
     }
 

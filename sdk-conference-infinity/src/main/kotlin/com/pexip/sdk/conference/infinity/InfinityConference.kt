@@ -74,7 +74,7 @@ public class InfinityConference private constructor(
 
     override val name: String = response.conferenceName
 
-    override val referer: Referer = RefererImpl(step.requestBuilder)
+    override val referer: Referer = RefererImpl(step.requestBuilder, response.directMediaRequested)
 
     override val messenger: Messenger = messengerImpl
 
