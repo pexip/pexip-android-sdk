@@ -22,6 +22,7 @@ import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
+import assertk.tableOf
 import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
 import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
@@ -167,151 +168,79 @@ internal class ConferenceStepTest {
 
     @Test
     fun `requestToken returns`() {
-        val response = RequestTokenResponse(
-            token = Random.nextString(8),
-            conferenceName = Random.nextString(8),
-            participantId = UUID.randomUUID(),
-            participantName = Random.nextString(8),
-            expires = 120,
-            analyticsEnabled = Random.nextBoolean(),
-            chatEnabled = Random.nextBoolean(),
-            guestsCanPresent = Random.nextBoolean(),
-            serviceType = ServiceType.entries.random(),
-            version = VersionResponse(
-                versionId = Random.nextString(8),
-                pseudoVersion = Random.nextString(8),
-            ),
-            stun = List(10) {
-                StunResponse("stun:stun$it.example.com:19302")
-            },
-            turn = List(10) {
-                TurnResponse(
-                    urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
-                    username = "${it shl 1}",
-                    credential = "${it shr 1}",
+        tableOf("request", "pin")
+            .row<_, String?>(RequestTokenRequest(directMedia = Random.nextBoolean()), null)
+            .row(RequestTokenRequest(directMedia = Random.nextBoolean()), "   ")
+            .row(
+                val1 = RequestTokenRequest(
+                    ssoToken = Random.nextString(8),
+                    directMedia = false,
+                ),
+                val2 = Random.nextString(8),
+            )
+            .row(
+                val1 = RequestTokenRequest(
+                    ssoToken = Random.nextString(8),
+                    directMedia = true,
+                ),
+                val2 = Random.nextString(8),
+            )
+            .row(
+                val1 = RequestTokenRequest(
+                    incomingToken = Random.nextString(8),
+                    directMedia = Random.nextBoolean(),
+                ),
+                val2 = Random.nextString(8),
+            )
+            .row(
+                val1 = RequestTokenRequest(
+                    registrationToken = Random.nextString(8),
+                    directMedia = Random.nextBoolean(),
+                ),
+                val2 = Random.nextString(8),
+            )
+            .forAll { request, pin ->
+                val response = RequestTokenResponse(
+                    token = Random.nextString(8),
+                    conferenceName = Random.nextString(8),
+                    participantId = UUID.randomUUID(),
+                    participantName = Random.nextString(8),
+                    expires = 120,
+                    analyticsEnabled = Random.nextBoolean(),
+                    chatEnabled = Random.nextBoolean(),
+                    guestsCanPresent = Random.nextBoolean(),
+                    serviceType = ServiceType.entries.random(),
+                    version = VersionResponse(
+                        versionId = Random.nextString(8),
+                        pseudoVersion = Random.nextString(8),
+                    ),
+                    stun = List(10) {
+                        StunResponse("stun:stun$it.example.com:19302")
+                    },
+                    turn = List(10) {
+                        TurnResponse(
+                            urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
+                            username = "${it shl 1}",
+                            credential = "${it shr 1}",
+                        )
+                    },
+                    directMedia = Random.nextBoolean(),
+                    directMediaRequested = request.directMedia,
+                    useRelayCandidatesOnly = Random.nextBoolean(),
+                    dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
+                    clientStatsUpdateInterval = Random.nextDuration(),
                 )
-            },
-            directMedia = Random.nextBoolean(),
-            directMediaRequested = Random.nextBoolean(),
-            useRelayCandidatesOnly = Random.nextBoolean(),
-            dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
-            clientStatsUpdateInterval = Random.nextDuration(),
-        )
-        val requests = setOf(
-            RequestTokenRequest(
-                ssoToken = Random.nextString(8),
-                directMedia = response.directMediaRequested,
-            ),
-            RequestTokenRequest(
-                incomingToken = Random.nextString(8),
-                directMedia = response.directMediaRequested,
-            ),
-            RequestTokenRequest(
-                registrationToken = Random.nextString(8),
-                directMedia = response.directMediaRequested,
-            ),
-        )
-        requests.forEach {
-            server.enqueue {
-                setResponseCode(200)
-                setBody(json.encodeToString(Box(response)))
+                server.enqueue {
+                    setResponseCode(200)
+                    setBody(json.encodeToString(Box(response)))
+                }
+                val call = when (pin) {
+                    null -> step.requestToken(request)
+                    else -> step.requestToken(request, pin)
+                }
+                assertThat(call.execute(), "response").isEqualTo(response)
+                server.verifyRequestToken(request, pin)
             }
-            assertThat(step.requestToken(it).execute(), "response").isEqualTo(response)
-            server.verifyRequestToken(it)
-        }
-    }
-
-    @Test
-    fun `requestToken returns if service type is not set`() {
-        val response = RequestTokenResponse(
-            token = Random.nextString(8),
-            conferenceName = Random.nextString(8),
-            participantId = UUID.randomUUID(),
-            participantName = Random.nextString(8),
-            expires = 120,
-            analyticsEnabled = Random.nextBoolean(),
-            chatEnabled = Random.nextBoolean(),
-            guestsCanPresent = Random.nextBoolean(),
-            version = VersionResponse(
-                versionId = Random.nextString(8),
-                pseudoVersion = Random.nextString(8),
-            ),
-            stun = List(10) {
-                StunResponse("stun:stun$it.example.com:19302")
-            },
-            turn = List(10) {
-                TurnResponse(
-                    urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
-                    username = "${it shl 1}",
-                    credential = "${it shr 1}",
-                )
-            },
-            directMedia = Random.nextBoolean(),
-            directMediaRequested = Random.nextBoolean(),
-            useRelayCandidatesOnly = Random.nextBoolean(),
-            dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
-            clientStatsUpdateInterval = Random.nextDuration(),
-        )
-        val requests = setOf(
-            RequestTokenRequest(
-                ssoToken = Random.nextString(8),
-                directMedia = response.directMediaRequested,
-            ),
-            RequestTokenRequest(
-                incomingToken = Random.nextString(8),
-                directMedia = response.directMediaRequested,
-            ),
-        )
-        requests.forEach {
-            server.enqueue {
-                setResponseCode(200)
-                setBody(json.encodeToString(Box(response)))
-            }
-            assertThat(step.requestToken(it).execute(), "response").isEqualTo(response)
-            server.verifyRequestToken(it)
-        }
-    }
-
-    @Test
-    fun `requestToken returns if the pin is blank`() {
-        val response = RequestTokenResponse(
-            token = Random.nextString(8),
-            conferenceName = Random.nextString(8),
-            participantId = UUID.randomUUID(),
-            participantName = Random.nextString(8),
-            expires = 120,
-            analyticsEnabled = Random.nextBoolean(),
-            chatEnabled = Random.nextBoolean(),
-            guestsCanPresent = Random.nextBoolean(),
-            serviceType = ServiceType.entries.random(),
-            version = VersionResponse(
-                versionId = Random.nextString(8),
-                pseudoVersion = Random.nextString(8),
-            ),
-            stun = List(10) {
-                StunResponse("stun:stun$it.example.com:19302")
-            },
-            turn = List(10) {
-                TurnResponse(
-                    urls = listOf("turn:turn$it.example.com:3478?transport=udp"),
-                    username = "${it shl 1}",
-                    credential = "${it shr 1}",
-                )
-            },
-            directMedia = Random.nextBoolean(),
-            directMediaRequested = Random.nextBoolean(),
-            useRelayCandidatesOnly = Random.nextBoolean(),
-            dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
-            clientStatsUpdateInterval = Random.nextDuration(),
-        )
-        server.enqueue {
-            setResponseCode(200)
-            setBody(json.encodeToString(Box(response)))
-        }
-        val request = RequestTokenRequest(directMedia = response.directMediaRequested)
-        val pin = "   "
-        assertThat(step.requestToken(request, pin).execute(), "response").isEqualTo(response)
-        server.verifyRequestToken(request, pin)
     }
 
     @Test
