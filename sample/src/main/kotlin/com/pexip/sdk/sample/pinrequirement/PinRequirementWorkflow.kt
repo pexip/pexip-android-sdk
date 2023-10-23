@@ -69,7 +69,7 @@ class PinRequirementWorkflow @Inject constructor(
     ) = runningSideEffect("${props.conferenceAlias}:${state.builder}") {
         val step = state.builder.conference(props.conferenceAlias)
         val action = runCatching { store.getDisplayName().first() }
-            .mapCatching { RequestTokenRequest(displayName = it) }
+            .mapCatching { RequestTokenRequest(displayName = it, directMedia = true) }
             .mapCatching { step.requestToken(it).await() }
             .map { InfinityConference.create(step, it) }
             .fold(

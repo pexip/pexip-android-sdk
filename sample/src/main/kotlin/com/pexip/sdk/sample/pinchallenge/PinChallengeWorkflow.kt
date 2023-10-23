@@ -65,7 +65,7 @@ class PinChallengeWorkflow @Inject constructor(private val store: SettingsStore)
             actionSink.send(OnRequestToken())
             val action = try {
                 val displayName = store.getDisplayName().first()
-                val request = RequestTokenRequest(displayName = displayName)
+                val request = RequestTokenRequest(displayName = displayName, directMedia = true)
                 val response = props.step.requestToken(request, pinToSubmit).await()
                 val conference = InfinityConference.create(props.step, response)
                 OnConference(conference)
