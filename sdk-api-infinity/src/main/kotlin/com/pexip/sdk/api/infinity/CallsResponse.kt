@@ -25,7 +25,7 @@ public data class CallsResponse(
     @Serializable(with = UUIDSerializer::class)
     @SerialName("call_uuid")
     public val callId: UUID,
-    public val sdp: String,
+    public val sdp: String = "",
     @SerialName("offer_ignored")
     public val offerIgnored: Boolean = false,
 )

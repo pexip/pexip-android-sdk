@@ -20,14 +20,15 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
 
 internal object UpdateResponseSerializer :
     UnboxingSerializer<UpdateResponse>(UpdateResponse.serializer()) {
 
     override fun transformDeserialize(element: JsonElement): JsonElement =
         when (val e = super.transformDeserialize(element)) {
-            is JsonPrimitive -> e
-            is JsonObject -> e.getValue("sdp")
+            is JsonPrimitive -> buildJsonObject { put("sdp", e) }
+            is JsonObject -> e
             else -> throw SerializationException()
         }
 }
