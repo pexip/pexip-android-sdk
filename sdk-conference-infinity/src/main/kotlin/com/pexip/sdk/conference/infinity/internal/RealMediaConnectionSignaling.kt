@@ -43,13 +43,13 @@ internal class RealMediaConnectionSignaling(
         description: String,
         presentationInMain: Boolean,
         fecc: Boolean,
-    ): String {
+    ): String? {
         val token = store.get()
         val step = when (callStep.isCompleted) {
             true -> callStep.await()
             else -> null
         }
-        return when (step) {
+        val response = when (step) {
             null -> {
                 val request = CallsRequest(
                     callType = callType,
@@ -59,17 +59,17 @@ internal class RealMediaConnectionSignaling(
                 )
                 val response = participantStep.calls(request, token).await()
                 callStep.complete(participantStep.call(response.callId))
-                response.sdp
+                response
             }
             else -> {
                 val request = UpdateRequest(
                     sdp = description,
                     fecc = fecc,
                 )
-                val response = step.update(request, token).await()
-                response.sdp
+                step.update(request, token).await()
             }
         }
+        return if (response.offerIgnored || response.sdp.isBlank()) null else response.sdp
     }
 
     override suspend fun onAck() {

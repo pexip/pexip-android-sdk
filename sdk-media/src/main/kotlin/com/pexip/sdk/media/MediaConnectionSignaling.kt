@@ -32,14 +32,14 @@ public interface MediaConnectionSignaling {
      * @param description an offer, usually represented by an SDP
      * @param presentationInMain whether presentation should be embedded in main video feed
      * @param fecc whether far end camera control should be enabled
-     * @return an answer
+     * @return an answer, may be null if in a direct media call
      */
     public suspend fun onOffer(
         callType: String,
         description: String,
         presentationInMain: Boolean,
         fecc: Boolean,
-    ): String
+    ): String?
 
     /**
      * Invoked when offer is set and the connection is ready to accept media.

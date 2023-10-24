@@ -240,15 +240,13 @@ internal class WebRtcMediaConnection(
                 presentationVideoMid = it[PresentationVideo],
             )
         }
-        val sdp = SessionDescription(
-            SessionDescription.Type.ANSWER,
-            config.signaling.onOffer(
-                callType = "WEBRTC",
-                description = localDescription.description,
-                presentationInMain = config.presentationInMain,
-                fecc = config.farEndCameraControl,
-            ),
-        )
+        val answer = config.signaling.onOffer(
+            callType = "WEBRTC",
+            description = localDescription.description,
+            presentationInMain = config.presentationInMain,
+            fecc = config.farEndCameraControl,
+        ) ?: return
+        val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
         wrapper.setRemoteDescription(sdp.mangle(bitrate))
         if (shouldAck.compareAndSet(true, false)) {
             runCatching { config.signaling.onAck() }

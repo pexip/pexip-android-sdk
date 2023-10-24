@@ -71,37 +71,57 @@ internal class RealMediaConnectionSignalingTest {
         val sdp = read("session_description_original")
         val presentationInMain = Random.nextBoolean()
         val fecc = Random.nextBoolean()
-        val response = CallsResponse(
-            callId = UUID.randomUUID(),
-            sdp = Random.nextString(8),
+        val responses = setOf(
+            CallsResponse(
+                callId = UUID.randomUUID(),
+                sdp = Random.nextString(8),
+            ),
+            CallsResponse(
+                callId = UUID.randomUUID(),
+                offerIgnored = true,
+            ),
+            // Malformed responses should still be handled correctly
+            CallsResponse(callId = UUID.randomUUID()),
+            CallsResponse(
+                callId = UUID.randomUUID(),
+                sdp = Random.nextString(8),
+                offerIgnored = true,
+            ),
         )
-        val callStep = object : TestCallStep() {}
-        val participantStep = object : TestParticipantStep() {
-            override fun calls(request: CallsRequest, token: String): Call<CallsResponse> =
-                object : TestCall<CallsResponse> {
-                    override fun enqueue(callback: Callback<CallsResponse>) {
-                        assertThat(request::sdp).isEqualTo(sdp)
-                        assertThat(request::present).isEqualTo(if (presentationInMain) "main" else null)
-                        assertThat(request::callType).isEqualTo(callType)
-                        assertThat(store).contains(token)
-                        callback.onSuccess(this, response)
+        responses.forEach { response ->
+            val callStep = object : TestCallStep() {}
+            val participantStep = object : TestParticipantStep() {
+                override fun calls(request: CallsRequest, token: String): Call<CallsResponse> =
+                    object : TestCall<CallsResponse> {
+                        override fun enqueue(callback: Callback<CallsResponse>) {
+                            assertThat(request::sdp).isEqualTo(sdp)
+                            assertThat(request::present).isEqualTo(if (presentationInMain) "main" else null)
+                            assertThat(request::callType).isEqualTo(callType)
+                            assertThat(store).contains(token)
+                            callback.onSuccess(this, response)
+                        }
                     }
-                }
 
-            override fun call(callId: UUID): InfinityService.CallStep {
-                assertThat(callId, "callId").isEqualTo(response.callId)
-                return callStep
+                override fun call(callId: UUID): InfinityService.CallStep {
+                    assertThat(callId, "callId").isEqualTo(response.callId)
+                    return callStep
+                }
             }
+            val signaling = RealMediaConnectionSignaling(store, participantStep, iceServers)
+            val answer = signaling.onOffer(
+                callType = callType,
+                description = sdp,
+                presentationInMain = presentationInMain,
+                fecc = fecc,
+            )
+            val expectedAnswer = when {
+                response.offerIgnored -> null
+                response.sdp.isBlank() -> null
+                else -> response.sdp
+            }
+            assertThat(answer, "answer").isEqualTo(expectedAnswer)
+            assertThat(signaling.callStep.await(), "callStep").isEqualTo(callStep)
         }
-        val signaling = RealMediaConnectionSignaling(store, participantStep, iceServers)
-        val answer = signaling.onOffer(
-            callType = callType,
-            description = sdp,
-            presentationInMain = presentationInMain,
-            fecc = fecc,
-        )
-        assertThat(answer, "answer").isEqualTo(response.sdp)
-        assertThat(signaling.callStep.await(), "callStep").isEqualTo(callStep)
     }
 
     @Test
@@ -110,29 +130,43 @@ internal class RealMediaConnectionSignalingTest {
         val sdp = read("session_description_original")
         val presentationInMain = Random.nextBoolean()
         val fecc = Random.nextBoolean()
-        val response = UpdateResponse(Random.nextString(8))
-        val signaling = RealMediaConnectionSignaling(
-            store = store,
-            participantStep = object : TestParticipantStep() {},
-            iceServers = iceServers,
-            callStep = object : TestCallStep() {
-                override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> =
-                    object : TestCall<UpdateResponse> {
+        val responses = setOf(
+            UpdateResponse(sdp = Random.nextString(8)),
+            UpdateResponse(offerIgnored = true),
+            UpdateResponse(),
+            UpdateResponse(sdp = Random.nextString(8), offerIgnored = true),
+        )
+        responses.forEach { response ->
+            val signaling = RealMediaConnectionSignaling(
+                store = store,
+                participantStep = object : TestParticipantStep() {},
+                iceServers = iceServers,
+                callStep = object : TestCallStep() {
+                    override fun update(
+                        request: UpdateRequest,
+                        token: String,
+                    ): Call<UpdateResponse> = object : TestCall<UpdateResponse> {
                         override fun enqueue(callback: Callback<UpdateResponse>) {
                             assertThat(request::sdp).isEqualTo(sdp)
                             assertThat(store).contains(token)
                             callback.onSuccess(this, response)
                         }
                     }
-            },
-        )
-        val answer = signaling.onOffer(
-            callType = callType,
-            description = sdp,
-            presentationInMain = presentationInMain,
-            fecc = fecc,
-        )
-        assertThat(answer, "answer").isEqualTo(response.sdp)
+                },
+            )
+            val answer = signaling.onOffer(
+                callType = callType,
+                description = sdp,
+                presentationInMain = presentationInMain,
+                fecc = fecc,
+            )
+            val expectedAnswer = when {
+                response.offerIgnored -> null
+                response.sdp.isBlank() -> null
+                else -> response.sdp
+            }
+            assertThat(answer, "answer").isEqualTo(expectedAnswer)
+        }
     }
 
     @Test

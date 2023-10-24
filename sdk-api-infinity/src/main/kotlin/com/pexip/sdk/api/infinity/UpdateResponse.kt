@@ -20,7 +20,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class UpdateResponse(
-    val sdp: String = "",
+    override val sdp: String = "",
     @SerialName("offer_ignored")
-    val offerIgnored: Boolean = false,
-)
+    override val offerIgnored: Boolean = false,
+) : OfferResponse
