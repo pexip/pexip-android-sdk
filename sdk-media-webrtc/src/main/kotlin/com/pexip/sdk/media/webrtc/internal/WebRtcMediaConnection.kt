@@ -67,6 +67,7 @@ internal class WebRtcMediaConnection(
 ) : MediaConnection {
 
     private val started = AtomicBoolean()
+    private val polite = AtomicBoolean()
     private val shouldAck = AtomicBoolean(true)
 
     private val wrapper = factory.createPeerConnection(config)
@@ -245,7 +246,11 @@ internal class WebRtcMediaConnection(
             description = localDescription.description,
             presentationInMain = config.presentationInMain,
             fecc = config.farEndCameraControl,
-        ) ?: return
+        )
+        if (answer == null) {
+            polite.set(true)
+            return
+        }
         val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
         wrapper.setRemoteDescription(sdp.mangle(bitrate))
         if (shouldAck.compareAndSet(true, false)) {
