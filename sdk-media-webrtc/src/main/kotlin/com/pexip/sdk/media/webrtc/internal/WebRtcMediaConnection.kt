@@ -68,6 +68,7 @@ internal class WebRtcMediaConnection(
 
     private val started = AtomicBoolean()
     private val polite = AtomicBoolean()
+    private val makingOffer = AtomicBoolean()
     private val shouldAck = AtomicBoolean(true)
 
     private val wrapper = factory.createPeerConnection(config)
@@ -233,20 +234,25 @@ internal class WebRtcMediaConnection(
 
     private suspend fun setLocalDescription() {
         val bitrate = maxBitrate.value
-        val localDescription = wrapper.setLocalDescription {
-            mangle(
-                bitrate = bitrate,
-                mainAudioMid = it[MainAudio],
-                mainVideoMid = it[MainVideo],
-                presentationVideoMid = it[PresentationVideo],
+        val answer = try {
+            makingOffer.set(true)
+            val localDescription = wrapper.setLocalDescription {
+                mangle(
+                    bitrate = bitrate,
+                    mainAudioMid = it[MainAudio],
+                    mainVideoMid = it[MainVideo],
+                    presentationVideoMid = it[PresentationVideo],
+                )
+            }
+            config.signaling.onOffer(
+                callType = "WEBRTC",
+                description = localDescription.description,
+                presentationInMain = config.presentationInMain,
+                fecc = config.farEndCameraControl,
             )
+        } finally {
+            makingOffer.set(false)
         }
-        val answer = config.signaling.onOffer(
-            callType = "WEBRTC",
-            description = localDescription.description,
-            presentationInMain = config.presentationInMain,
-            fecc = config.farEndCameraControl,
-        )
         if (answer == null) {
             polite.set(true)
             return
