@@ -17,10 +17,14 @@ package com.pexip.sdk.conference.infinity.internal
 
 import assertk.Assert
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import assertk.assertions.support.fail
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
+import com.pexip.sdk.api.infinity.AckRequest
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.CallsResponse
 import com.pexip.sdk.api.infinity.DtmfRequest
@@ -167,6 +171,55 @@ internal class RealMediaConnectionSignalingTest {
             }
             assertThat(answer, "answer").isEqualTo(expectedAnswer)
         }
+    }
+
+    @Test
+    fun `onOfferIgnored() returns`() = runTest {
+        val called = Job()
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {},
+            iceServers = iceServers,
+            callStep = object : TestCallStep() {
+                override fun ack(request: AckRequest, token: String): Call<Unit> =
+                    object : TestCall<Unit> {
+                        override fun enqueue(callback: Callback<Unit>) {
+                            assertThat(request::sdp).isEmpty()
+                            assertThat(request::offerIgnored).isTrue()
+                            assertThat(store).contains(token)
+                            called.complete()
+                            callback.onSuccess(this, Unit)
+                        }
+                    }
+            },
+        )
+        signaling.onOfferIgnored()
+        called.join()
+    }
+
+    @Test
+    fun `onAnswer() returns`() = runTest {
+        val called = Job()
+        val sdp = Random.nextString(8)
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            participantStep = object : TestParticipantStep() {},
+            iceServers = iceServers,
+            callStep = object : TestCallStep() {
+                override fun ack(request: AckRequest, token: String): Call<Unit> =
+                    object : TestCall<Unit> {
+                        override fun enqueue(callback: Callback<Unit>) {
+                            assertThat(request::sdp).isEqualTo(sdp)
+                            assertThat(request::offerIgnored).isFalse()
+                            assertThat(store).contains(token)
+                            called.complete()
+                            callback.onSuccess(this, Unit)
+                        }
+                    }
+            },
+        )
+        signaling.onAnswer(sdp)
+        called.join()
     }
 
     @Test

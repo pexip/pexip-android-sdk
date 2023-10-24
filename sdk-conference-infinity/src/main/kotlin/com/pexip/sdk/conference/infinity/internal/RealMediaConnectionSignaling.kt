@@ -16,6 +16,7 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.api.infinity.AckRequest
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
@@ -70,6 +71,20 @@ internal class RealMediaConnectionSignaling(
             }
         }
         return if (response.offerIgnored || response.sdp.isBlank()) null else response.sdp
+    }
+
+    override suspend fun onOfferIgnored() {
+        val callStep = callStep.await()
+        val token = store.get()
+        val request = AckRequest(offerIgnored = true)
+        callStep.ack(request, token).await()
+    }
+
+    override suspend fun onAnswer(description: String) {
+        val callStep = callStep.await()
+        val token = store.get()
+        val request = AckRequest(sdp = description)
+        callStep.ack(request, token).await()
     }
 
     override suspend fun onAck() {

@@ -42,6 +42,18 @@ public interface MediaConnectionSignaling {
     ): String?
 
     /**
+     * Invoked when the client wants to ignore the offer in a direct media call
+     */
+    public suspend fun onOfferIgnored()
+
+    /**
+     * Invoked when answer is ready to be sent in a direct media call
+     *
+     * @param description an answer, usually represented by an SDP
+     */
+    public suspend fun onAnswer(description: String)
+
+    /**
      * Invoked when offer is set and the connection is ready to accept media.
      */
     public suspend fun onAck()
