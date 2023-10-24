@@ -264,15 +264,18 @@ internal class WebRtcMediaConnection(
             when (it) {
                 is Event.OnRenegotiationNeeded -> setLocalDescription()
                 is Event.OnIceCandidate -> {
-                    val sdp = it.candidate.sdp?.takeIf(String::isNotBlank) ?: return@collect
+                    val sdp = it.candidate.sdp ?: return@collect
                     val mid = it.candidate.sdpMid ?: return@collect
                     val credentials = wrapper.getIceCredentials(mid) ?: return@collect
-                    onCandidate(sdp = sdp, mid = mid, credentials = credentials)
-                }
-                is Event.OnIceGatheringChange -> {
-                    if (it.state != PeerConnection.IceGatheringState.COMPLETE) return@collect
-                    wrapper.getIceCredentials().onEach { (mid, credentials) ->
-                        onCandidate(sdp = "", mid = mid, credentials = credentials)
+                    launch {
+                        runCatching {
+                            config.signaling.onCandidate(
+                                candidate = sdp,
+                                mid = mid,
+                                ufrag = credentials.ufrag,
+                                pwd = credentials.pwd,
+                            )
+                        }
                     }
                 }
                 is Event.OnIceConnectionChange -> {
@@ -362,18 +365,6 @@ internal class WebRtcMediaConnection(
             }
         }
     }
-
-    private fun CoroutineScope.onCandidate(sdp: String, mid: String, credentials: IceCredentials) =
-        launch {
-            runCatching {
-                config.signaling.onCandidate(
-                    candidate = sdp,
-                    mid = mid,
-                    ufrag = credentials.ufrag,
-                    pwd = credentials.pwd,
-                )
-            }
-        }
 
     @Suppress("FunctionName")
     private fun RtpTransceiverInit(direction: RtpTransceiverDirection) = { key: RtpTransceiverKey ->

@@ -42,7 +42,7 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: RTCConfiguration) {
 
-    private val observer = PeerConnectionObserver()
+    private val observer = PeerConnectionObserver(rtcConfig.continualGatheringPolicy)
     private val peerConnection = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
     private val rtpTransceivers = mutableMapOf<RtpTransceiverKey, RtpTransceiver>()
     private val iceCredentials = mutableMapOf<String, IceCredentials>()
@@ -143,8 +143,6 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
     }
 
     suspend fun restartIce() = runInterruptible { peerConnection.restartIce() }
-
-    suspend fun getIceCredentials() = runInterruptible { iceCredentials.toMap() }
 
     suspend fun getIceCredentials(mid: String) = runInterruptible { iceCredentials[mid] }
 
