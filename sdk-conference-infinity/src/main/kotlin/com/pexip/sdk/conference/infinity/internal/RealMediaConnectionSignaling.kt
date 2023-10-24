@@ -45,27 +45,30 @@ internal class RealMediaConnectionSignaling(
         fecc: Boolean,
     ): String {
         val token = store.get()
-        val step = when {
-            callStep.isCompleted -> callStep.await()
+        val step = when (callStep.isCompleted) {
+            true -> callStep.await()
             else -> null
         }
-        if (step == null) {
-            val request = CallsRequest(
-                callType = callType,
-                sdp = description,
-                present = if (presentationInMain) "main" else null,
-                fecc = fecc,
-            )
-            val response = participantStep.calls(request, token).await()
-            callStep.complete(participantStep.call(response.callId))
-            return response.sdp
-        } else {
-            val request = UpdateRequest(
-                sdp = description,
-                fecc = fecc,
-            )
-            val response = step.update(request, token).await()
-            return response.sdp
+        return when (step) {
+            null -> {
+                val request = CallsRequest(
+                    callType = callType,
+                    sdp = description,
+                    present = if (presentationInMain) "main" else null,
+                    fecc = fecc,
+                )
+                val response = participantStep.calls(request, token).await()
+                callStep.complete(participantStep.call(response.callId))
+                response.sdp
+            }
+            else -> {
+                val request = UpdateRequest(
+                    sdp = description,
+                    fecc = fecc,
+                )
+                val response = step.update(request, token).await()
+                response.sdp
+            }
         }
     }
 

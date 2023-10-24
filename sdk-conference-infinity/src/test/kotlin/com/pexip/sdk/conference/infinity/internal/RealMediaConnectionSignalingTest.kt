@@ -15,6 +15,10 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
+import assertk.Assert
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.support.fail
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.infinity.CallsRequest
@@ -34,7 +38,6 @@ import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 internal class RealMediaConnectionSignalingTest {
 
@@ -59,14 +62,14 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
         )
-        assertEquals(iceServers, signaling.iceServers)
+        assertThat(signaling::iceServers).isEqualTo(iceServers)
     }
 
     @Test
     fun `onOffer() returns Answer (first call)`() = runTest {
         val callType = Random.nextString(8)
         val sdp = read("session_description_original")
-        val presentationInMix = Random.nextBoolean()
+        val presentationInMain = Random.nextBoolean()
         val fecc = Random.nextBoolean()
         val response = CallsResponse(
             callId = UUID.randomUUID(),
@@ -77,40 +80,35 @@ internal class RealMediaConnectionSignalingTest {
             override fun calls(request: CallsRequest, token: String): Call<CallsResponse> =
                 object : TestCall<CallsResponse> {
                     override fun enqueue(callback: Callback<CallsResponse>) {
-                        assertEquals(sdp, request.sdp)
-                        assertEquals(
-                            expected = if (presentationInMix) "main" else null,
-                            actual = request.present,
-                        )
-                        assertEquals(callType, request.callType)
-                        assertEquals(store.get().token, token)
+                        assertThat(request::sdp).isEqualTo(sdp)
+                        assertThat(request::present).isEqualTo(if (presentationInMain) "main" else null)
+                        assertThat(request::callType).isEqualTo(callType)
+                        assertThat(store).contains(token)
                         callback.onSuccess(this, response)
                     }
                 }
 
             override fun call(callId: UUID): InfinityService.CallStep {
-                assertEquals(response.callId, callId)
+                assertThat(callId, "callId").isEqualTo(response.callId)
                 return callStep
             }
         }
         val signaling = RealMediaConnectionSignaling(store, participantStep, iceServers)
-        assertEquals(
-            expected = signaling.onOffer(
-                callType = callType,
-                description = sdp,
-                presentationInMain = presentationInMix,
-                fecc = fecc,
-            ),
-            actual = response.sdp,
+        val answer = signaling.onOffer(
+            callType = callType,
+            description = sdp,
+            presentationInMain = presentationInMain,
+            fecc = fecc,
         )
-        assertEquals(callStep, signaling.callStep.await())
+        assertThat(answer, "answer").isEqualTo(response.sdp)
+        assertThat(signaling.callStep.await(), "callStep").isEqualTo(callStep)
     }
 
     @Test
     fun `onOffer() returns Answer (subsequent calls)`() = runTest {
         val callType = Random.nextString(8)
         val sdp = read("session_description_original")
-        val presentationInMix = Random.nextBoolean()
+        val presentationInMain = Random.nextBoolean()
         val fecc = Random.nextBoolean()
         val response = UpdateResponse(Random.nextString(8))
         val signaling = RealMediaConnectionSignaling(
@@ -121,22 +119,20 @@ internal class RealMediaConnectionSignalingTest {
                 override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> =
                     object : TestCall<UpdateResponse> {
                         override fun enqueue(callback: Callback<UpdateResponse>) {
-                            assertEquals(sdp, request.sdp)
-                            assertEquals(store.get().token, token)
+                            assertThat(request::sdp).isEqualTo(sdp)
+                            assertThat(store).contains(token)
                             callback.onSuccess(this, response)
                         }
                     }
             },
         )
-        assertEquals(
-            expected = signaling.onOffer(
-                callType = callType,
-                description = sdp,
-                presentationInMain = presentationInMix,
-                fecc = fecc,
-            ),
-            actual = response.sdp,
+        val answer = signaling.onOffer(
+            callType = callType,
+            description = sdp,
+            presentationInMain = presentationInMain,
+            fecc = fecc,
         )
+        assertThat(answer, "answer").isEqualTo(response.sdp)
     }
 
     @Test
@@ -174,11 +170,11 @@ internal class RealMediaConnectionSignalingTest {
                 override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> =
                     object : TestCall<Unit> {
                         override fun enqueue(callback: Callback<Unit>) {
-                            assertEquals(candidate, request.candidate)
-                            assertEquals(mid, request.mid)
-                            assertEquals(ufrag, request.ufrag)
-                            assertEquals(pwd, request.pwd)
-                            assertEquals(store.get().token, token)
+                            assertThat(request::candidate).isEqualTo(candidate)
+                            assertThat(request::mid).isEqualTo(mid)
+                            assertThat(request::ufrag).isEqualTo(ufrag)
+                            assertThat(request::pwd).isEqualTo(pwd)
+                            assertThat(store).contains(token)
                             called.complete()
                             callback.onSuccess(this, Unit)
                         }
@@ -202,7 +198,7 @@ internal class RealMediaConnectionSignalingTest {
                 override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> =
                     object : TestCall<Boolean> {
                         override fun enqueue(callback: Callback<Boolean>) {
-                            assertEquals(digits, request.digits)
+                            assertThat(request::digits).isEqualTo(digits)
                             called.complete()
                             callback.onSuccess(this, result)
                         }
@@ -221,7 +217,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = object : TestParticipantStep() {
                 override fun mute(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertEquals(store.get().token, token)
+                        assertThat(store).contains(token)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -241,7 +237,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = object : TestParticipantStep() {
                 override fun unmute(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertEquals(store.get().token, token)
+                        assertThat(store).contains(token)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -261,7 +257,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = object : TestParticipantStep() {
                 override fun videoMuted(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertEquals(store.get().token, token)
+                        assertThat(store).contains(token)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -281,7 +277,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = object : TestParticipantStep() {
                 override fun videoUnmuted(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertEquals(store.get().token, token)
+                        assertThat(store).contains(token)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -301,7 +297,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = object : TestParticipantStep() {
                 override fun takeFloor(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertEquals(store.get().token, token)
+                        assertThat(store).contains(token)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -321,7 +317,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = object : TestParticipantStep() {
                 override fun releaseFloor(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertEquals(store.get().token, token)
+                        assertThat(store).contains(token)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -335,4 +331,10 @@ internal class RealMediaConnectionSignalingTest {
 
     @Suppress("SameParameterValue")
     private fun read(fileName: String) = FileSystem.RESOURCES.read(fileName.toPath()) { readUtf8() }
+
+    private fun Assert<TokenStore>.contains(token: String) = given {
+        val actual = store.get().token
+        if (actual == token) return
+        fail(token, actual)
+    }
 }
