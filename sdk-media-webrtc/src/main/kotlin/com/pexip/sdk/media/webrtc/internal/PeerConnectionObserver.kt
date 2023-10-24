@@ -75,6 +75,10 @@ internal class PeerConnectionObserver(
         _event.tryEmit(Event.OnRemoveTrack(receiver))
     }
 
+    override fun onSignalingChange(state: PeerConnection.SignalingState) {
+        _event.tryEmit(Event.OnSignalingChange(state))
+    }
+
     override fun onAddStream(stream: MediaStream) {
     }
 
@@ -94,9 +98,6 @@ internal class PeerConnectionObserver(
     }
 
     override fun onIceConnectionChange(state: PeerConnection.IceConnectionState) {
-    }
-
-    override fun onSignalingChange(state: PeerConnection.SignalingState) {
     }
 
     override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {
