@@ -56,6 +56,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
+import org.webrtc.PeerConnection.SignalingState
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
@@ -71,6 +72,7 @@ internal class WebRtcMediaConnection(
     private val mutex = Mutex()
     private var polite = false
     private var makingOffer = false
+    private var signalingState = SignalingState.STABLE
 
     private val wrapper = factory.createPeerConnection(config)
 
@@ -106,6 +108,7 @@ internal class WebRtcMediaConnection(
             launchMaxBitrate()
             launchWrapperEvent()
             launchRenegotiationNeeded()
+            launchSignalingChange()
             launchDegradationPreference(MainVideo, mainDegradationPreference)
             launchDegradationPreference(PresentationVideo, presentationDegradationPreference)
             launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
@@ -267,6 +270,11 @@ internal class WebRtcMediaConnection(
             wrapper.setRemoteDescription(sdp.mangle(bitrate))
             runCatching { config.signaling.onAck() }
         }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchSignalingChange() = wrapper.event
+        .filterIsInstance<Event.OnSignalingChange>()
+        .onEach { mutex.withLock { signalingState = it.state } }
         .launchIn(this)
 
     private fun CoroutineScope.launchWrapperEvent() = launch {
