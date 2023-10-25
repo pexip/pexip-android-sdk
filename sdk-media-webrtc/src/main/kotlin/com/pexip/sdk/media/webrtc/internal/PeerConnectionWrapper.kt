@@ -53,6 +53,10 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
 
     val event get() = observer.event
 
+    suspend fun start() = runInterruptible {
+        observer.start()
+    }
+
     fun getRemoteVideoTrack(key: RtpTransceiverKey): Flow<VideoTrack?> {
         require(key.mediaType == MediaType.MEDIA_TYPE_VIDEO) { "Illegal mediaType: ${key.mediaType}." }
         val flow = channelFlow {

@@ -66,7 +66,6 @@ internal class WebRtcMediaConnection(
     private val signalingDispatcher: CoroutineDispatcher,
 ) : MediaConnection {
 
-    private val started = AtomicBoolean()
     private val polite = AtomicBoolean()
     private val makingOffer = AtomicBoolean()
     private val shouldAck = AtomicBoolean(true)
@@ -207,9 +206,7 @@ internal class WebRtcMediaConnection(
     }
 
     override fun start() {
-        if (started.compareAndSet(false, true)) {
-            scope.launch { setLocalDescription() }
-        }
+        scope.launch { wrapper.start() }
     }
 
     override fun dispose() {

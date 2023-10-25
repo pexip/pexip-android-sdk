@@ -32,15 +32,22 @@ internal class PeerConnectionObserver(
     private val continualGatheringPolicy: ContinualGatheringPolicy,
 ) : PeerConnection.Observer {
 
+    private val started = AtomicBoolean()
     private val candidates = mutableMapOf<String, IceCandidate>()
-    private val renegotiationNeeded = AtomicBoolean(false)
     private val _event = MutableSharedFlow<Event>(extraBufferCapacity = 64)
 
     val event = _event.asSharedFlow()
 
+    fun start() {
+        if (started.compareAndSet(false, true)) {
+            _event.tryEmit(Event.OnRenegotiationNeeded)
+        }
+    }
+
     override fun onRenegotiationNeeded() {
-        if (renegotiationNeeded.compareAndSet(false, true)) return
-        _event.tryEmit(Event.OnRenegotiationNeeded)
+        if (started.get()) {
+            _event.tryEmit(Event.OnRenegotiationNeeded)
+        }
     }
 
     override fun onIceCandidate(candidate: IceCandidate) {
