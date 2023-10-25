@@ -15,20 +15,30 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
+import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.AckRequest
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewCandidateRequest
+import com.pexip.sdk.api.infinity.NewOfferEvent
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
+import com.pexip.sdk.api.infinity.UpdateSdpEvent
+import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
+import com.pexip.sdk.media.OfferSignalingEvent
+import com.pexip.sdk.media.SignalingEvent
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapNotNull
 
 internal class RealMediaConnectionSignaling(
     private val store: TokenStore,
+    event: Flow<Event>,
     private val participantStep: InfinityService.ParticipantStep,
     override val iceServers: List<IceServer>,
     callStep: InfinityService.CallStep? = null,
@@ -38,6 +48,8 @@ internal class RealMediaConnectionSignaling(
         null -> CompletableDeferred()
         else -> CompletableDeferred(callStep)
     }
+
+    override val event: Flow<SignalingEvent> = event.mapNotNull(::toSignalingEvent)
 
     override suspend fun onOffer(
         callType: String,
@@ -134,5 +146,12 @@ internal class RealMediaConnectionSignaling(
 
     override suspend fun onReleaseFloor() {
         participantStep.releaseFloor(store.get()).await()
+    }
+
+    private fun toSignalingEvent(event: Event) = when (event) {
+        is NewOfferEvent -> OfferSignalingEvent(event.sdp)
+        is UpdateSdpEvent -> OfferSignalingEvent(event.sdp)
+        is NewCandidateEvent -> CandidateSignalingEvent(event.mid, event.candidate)
+        else -> null
     }
 }

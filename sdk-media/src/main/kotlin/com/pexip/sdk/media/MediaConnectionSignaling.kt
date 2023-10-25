@@ -15,15 +15,19 @@
  */
 package com.pexip.sdk.media
 
+import kotlinx.coroutines.flow.Flow
+
 /**
  * Represents a signaling component of [MediaConnection].
+ *
+ * @property iceServers a list of available [IceServer]s
+ * @property event a [Flow] of [SignalingEvent]s
  */
 public interface MediaConnectionSignaling {
 
-    /**
-     * A list of available [IceServer]s.
-     */
     public val iceServers: List<IceServer>
+
+    public val event: Flow<SignalingEvent>
 
     /**
      * Invoked when an offer is available.

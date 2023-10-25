@@ -15,26 +15,37 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
+import app.cash.turbine.test
 import assertk.Assert
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
+import assertk.assertions.prop
 import assertk.assertions.support.fail
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
+import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.AckRequest
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.CallsResponse
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewCandidateRequest
+import com.pexip.sdk.api.infinity.NewOfferEvent
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
+import com.pexip.sdk.api.infinity.UpdateSdpEvent
+import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.IceServer
+import com.pexip.sdk.media.OfferSignalingEvent
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -46,11 +57,13 @@ import kotlin.test.Test
 internal class RealMediaConnectionSignalingTest {
 
     private lateinit var store: TokenStore
+    private lateinit var event: MutableSharedFlow<Event>
     private lateinit var iceServers: List<IceServer>
 
     @BeforeTest
     fun setUp() {
         store = TokenStore.create(Random.nextToken())
+        event = MutableSharedFlow(extraBufferCapacity = 1)
         iceServers = List(10) {
             IceServer.Builder(listOf("turn:turn$it.example.com:3478?transport=udp"))
                 .username("${it shl 1}")
@@ -63,10 +76,76 @@ internal class RealMediaConnectionSignalingTest {
     fun `iceServers return IceServer list`() {
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
         )
         assertThat(signaling::iceServers).isEqualTo(iceServers)
+    }
+
+    @Test
+    fun `NewOfferEvent is mapped to OfferSignalingEvent`() = runTest {
+        val participantStep = object : TestParticipantStep() {}
+        val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
+        signaling.event.test {
+            repeat(10) {
+                val e = NewOfferEvent(Random.nextString(8))
+                event.emit(e)
+                assertThat(awaitItem(), "event")
+                    .isInstanceOf<OfferSignalingEvent>()
+                    .prop(OfferSignalingEvent::description)
+                    .isEqualTo(e.sdp)
+            }
+        }
+    }
+
+    @Test
+    fun `UpdateSdpEvent is mapped to OfferSignalingEvent`() = runTest {
+        val participantStep = object : TestParticipantStep() {}
+        val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
+        signaling.event.test {
+            repeat(10) {
+                val e = UpdateSdpEvent(Random.nextString(8))
+                event.emit(e)
+                assertThat(awaitItem(), "event")
+                    .isInstanceOf<OfferSignalingEvent>()
+                    .prop(OfferSignalingEvent::description)
+                    .isEqualTo(e.sdp)
+            }
+        }
+    }
+
+    @Test
+    fun `NewCandidateEvent is mapped to CandidateSignalingEvent`() = runTest {
+        val participantStep = object : TestParticipantStep() {}
+        val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
+        signaling.event.test {
+            repeat(10) {
+                val e = NewCandidateEvent(
+                    candidate = Random.nextString(8),
+                    mid = Random.nextString(8),
+                    ufrag = Random.nextString(8),
+                    pwd = Random.nextString(8),
+                )
+                event.emit(e)
+                assertThat(awaitItem(), "event")
+                    .isInstanceOf<CandidateSignalingEvent>()
+                    .all {
+                        prop(CandidateSignalingEvent::mid).isEqualTo(e.mid)
+                        prop(CandidateSignalingEvent::candidate).isEqualTo(e.candidate)
+                    }
+            }
+        }
+    }
+
+    @Test
+    fun `ignores unknown Events`() = runTest {
+        val participantStep = object : TestParticipantStep() {}
+        val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
+        signaling.event.test {
+            repeat(10) { event.emit(object : Event {}) }
+            expectNoEvents()
+        }
     }
 
     @Test
@@ -111,7 +190,7 @@ internal class RealMediaConnectionSignalingTest {
                     return callStep
                 }
             }
-            val signaling = RealMediaConnectionSignaling(store, participantStep, iceServers)
+            val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
             val answer = signaling.onOffer(
                 callType = callType,
                 description = sdp,
@@ -143,6 +222,7 @@ internal class RealMediaConnectionSignalingTest {
         responses.forEach { response ->
             val signaling = RealMediaConnectionSignaling(
                 store = store,
+                event = event,
                 participantStep = object : TestParticipantStep() {},
                 iceServers = iceServers,
                 callStep = object : TestCallStep() {
@@ -178,6 +258,7 @@ internal class RealMediaConnectionSignalingTest {
         val called = Job()
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
             callStep = object : TestCallStep() {
@@ -203,6 +284,7 @@ internal class RealMediaConnectionSignalingTest {
         val sdp = Random.nextString(8)
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
             callStep = object : TestCallStep() {
@@ -227,6 +309,7 @@ internal class RealMediaConnectionSignalingTest {
         val called = Job()
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
             callStep = object : TestCallStep() {
@@ -251,6 +334,7 @@ internal class RealMediaConnectionSignalingTest {
         val pwd = Random.nextString(8)
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
             callStep = object : TestCallStep() {
@@ -279,6 +363,7 @@ internal class RealMediaConnectionSignalingTest {
         val result = Random.nextBoolean()
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
             callStep = object : TestCallStep() {
@@ -301,6 +386,7 @@ internal class RealMediaConnectionSignalingTest {
         val called = Job()
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {
                 override fun mute(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
@@ -321,6 +407,7 @@ internal class RealMediaConnectionSignalingTest {
         val called = Job()
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {
                 override fun unmute(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
@@ -341,6 +428,7 @@ internal class RealMediaConnectionSignalingTest {
         val called = Job()
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {
                 override fun videoMuted(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
@@ -361,6 +449,7 @@ internal class RealMediaConnectionSignalingTest {
         val called = Job()
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {
                 override fun videoUnmuted(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
@@ -381,6 +470,7 @@ internal class RealMediaConnectionSignalingTest {
         val called = Job()
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {
                 override fun takeFloor(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
@@ -401,6 +491,7 @@ internal class RealMediaConnectionSignalingTest {
         val called = Job()
         val signaling = RealMediaConnectionSignaling(
             store = store,
+            event = event,
             participantStep = object : TestParticipantStep() {
                 override fun releaseFloor(token: String): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {

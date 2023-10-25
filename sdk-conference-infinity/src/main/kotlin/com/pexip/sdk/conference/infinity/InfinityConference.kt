@@ -80,6 +80,7 @@ public class InfinityConference private constructor(
 
     override val signaling: MediaConnectionSignaling = RealMediaConnectionSignaling(
         store = store,
+        event = event,
         participantStep = step.participant(response.participantId),
         iceServers = buildList(response.stun.size + response.turn.size) {
             this += response.stun.map { IceServer.Builder(it.url).build() }

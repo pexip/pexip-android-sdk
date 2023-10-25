@@ -97,6 +97,19 @@ public abstract interface class com/pexip/sdk/media/CameraVideoTrackFactory {
 	public abstract fun isFrontFacing (Ljava/lang/String;)Z
 }
 
+public final class com/pexip/sdk/media/CandidateSignalingEvent : com/pexip/sdk/media/SignalingEvent {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/media/CandidateSignalingEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/media/CandidateSignalingEvent;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/media/CandidateSignalingEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCandidate ()Ljava/lang/String;
+	public final fun getMid ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/pexip/sdk/media/DegradationPreference : java/lang/Enum {
 	public static final field BALANCED Lcom/pexip/sdk/media/DegradationPreference;
 	public static final field DISABLED Lcom/pexip/sdk/media/DegradationPreference;
@@ -200,6 +213,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionFactory : com
 }
 
 public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
+	public abstract fun getEvent ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getIceServers ()Ljava/util/List;
 	public abstract fun onAck (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onAnswer (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -213,6 +227,20 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
 	public abstract fun onTakeFloor (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onVideoMuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onVideoUnmuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/pexip/sdk/media/OfferSignalingEvent : com/pexip/sdk/media/SignalingEvent {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/media/OfferSignalingEvent;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
 public final class com/pexip/sdk/media/QualityProfile {
@@ -253,6 +281,9 @@ public final class com/pexip/sdk/media/SecureCheckCode {
 	public fun toString ()Ljava/lang/String;
 	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public abstract interface class com/pexip/sdk/media/SignalingEvent {
 }
 
 public abstract interface class com/pexip/sdk/media/VideoTrack {
