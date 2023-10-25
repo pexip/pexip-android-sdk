@@ -69,7 +69,6 @@ internal class WebRtcMediaConnection(
 
     private val polite = AtomicBoolean()
     private val makingOffer = AtomicBoolean()
-    private val shouldAck = AtomicBoolean(true)
 
     private val wrapper = factory.createPeerConnection(config)
 
@@ -264,9 +263,7 @@ internal class WebRtcMediaConnection(
             }
             val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
             wrapper.setRemoteDescription(sdp.mangle(bitrate))
-            if (shouldAck.compareAndSet(true, false)) {
-                runCatching { config.signaling.onAck() }
-            }
+            runCatching { config.signaling.onAck() }
         }
         .launchIn(this)
 
