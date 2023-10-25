@@ -17,6 +17,7 @@ package com.pexip.sdk.media.webrtc.internal
 
 import com.pexip.sdk.media.Bitrate
 import com.pexip.sdk.media.Bitrate.Companion.bps
+import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.DegradationPreference
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
@@ -24,10 +25,12 @@ import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionSignaling
+import com.pexip.sdk.media.OfferSignalingEvent
 import com.pexip.sdk.media.SecureCheckCode
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,9 +57,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
-import org.webrtc.PeerConnection.SignalingState
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
@@ -72,7 +75,8 @@ internal class WebRtcMediaConnection(
     private val mutex = Mutex()
     private var polite = false
     private var makingOffer = false
-    private var signalingState = SignalingState.STABLE
+    private var ignoreOffer = false
+    private var signalingState = PeerConnection.SignalingState.STABLE
 
     private val wrapper = factory.createPeerConnection(config)
 
@@ -109,6 +113,8 @@ internal class WebRtcMediaConnection(
             launchWrapperEvent()
             launchRenegotiationNeeded()
             launchSignalingChange()
+            launchOffer()
+            launchCandidate()
             launchDegradationPreference(MainVideo, mainDegradationPreference)
             launchDegradationPreference(PresentationVideo, presentationDegradationPreference)
             launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
@@ -275,6 +281,49 @@ internal class WebRtcMediaConnection(
     private fun CoroutineScope.launchSignalingChange() = wrapper.event
         .filterIsInstance<Event.OnSignalingChange>()
         .onEach { mutex.withLock { signalingState = it.state } }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchOffer() = config.signaling.event
+        .filterIsInstance<OfferSignalingEvent>()
+        .onEach { event ->
+            val ignoreOffer = mutex.withLock {
+                val stable = signalingState == PeerConnection.SignalingState.STABLE
+                val offerCollision = makingOffer || !stable
+                (!polite && offerCollision).also { ignoreOffer = it }
+            }
+            if (ignoreOffer) {
+                runCatching { config.signaling.onOfferIgnored() }
+                return@onEach
+            }
+            val description = SessionDescription(SessionDescription.Type.OFFER, event.description)
+            wrapper.setRemoteDescription(description)
+            val localDescription = wrapper.setLocalDescription { mids ->
+                mangle(
+                    bitrate = maxBitrate.value,
+                    mainAudioMid = mids[MainAudio],
+                    mainVideoMid = mids[MainVideo],
+                    presentationVideoMid = mids[PresentationVideo],
+                )
+            }
+            runCatching { config.signaling.onAnswer(localDescription.description) }
+        }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchCandidate() = config.signaling.event
+        .filterIsInstance<CandidateSignalingEvent>()
+        .onEach {
+            try {
+                if (it.candidate.isBlank()) return@onEach
+                val candidate = IceCandidate(it.mid, -1, it.candidate)
+                wrapper.addIceCandidate(candidate)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (t: Throwable) {
+                if (!mutex.withLock { ignoreOffer }) {
+                    throw t
+                }
+            }
+        }
         .launchIn(this)
 
     private fun CoroutineScope.launchWrapperEvent() = launch {
