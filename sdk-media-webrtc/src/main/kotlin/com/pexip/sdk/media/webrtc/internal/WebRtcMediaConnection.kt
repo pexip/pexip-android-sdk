@@ -51,13 +51,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.atomic.AtomicBoolean
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class WebRtcMediaConnection(
@@ -67,8 +68,9 @@ internal class WebRtcMediaConnection(
     private val signalingDispatcher: CoroutineDispatcher,
 ) : MediaConnection {
 
-    private val polite = AtomicBoolean()
-    private val makingOffer = AtomicBoolean()
+    private val mutex = Mutex()
+    private var polite = false
+    private var makingOffer = false
 
     private val wrapper = factory.createPeerConnection(config)
 
@@ -239,7 +241,7 @@ internal class WebRtcMediaConnection(
         .onEach {
             val bitrate = maxBitrate.value
             val answer = try {
-                makingOffer.set(true)
+                mutex.withLock { makingOffer = true }
                 val localDescription = wrapper.setLocalDescription {
                     mangle(
                         bitrate = bitrate,
@@ -255,10 +257,10 @@ internal class WebRtcMediaConnection(
                     fecc = config.farEndCameraControl,
                 )
             } finally {
-                makingOffer.set(false)
+                mutex.withLock { makingOffer = false }
             }
             if (answer == null) {
-                polite.set(true)
+                mutex.withLock { polite = true }
                 return@onEach
             }
             val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
