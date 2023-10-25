@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -103,6 +104,7 @@ internal class WebRtcMediaConnection(
         with(scope) {
             launchMaxBitrate()
             launchWrapperEvent()
+            launchRenegotiationNeeded()
             launchDegradationPreference(MainVideo, mainDegradationPreference)
             launchDegradationPreference(PresentationVideo, presentationDegradationPreference)
             launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
@@ -229,46 +231,48 @@ internal class WebRtcMediaConnection(
         presentationRemoteVideoTrackListeners -= listener
     }
 
-    private suspend fun setLocalDescription() {
-        val bitrate = maxBitrate.value
-        val answer = try {
-            makingOffer.set(true)
-            val localDescription = wrapper.setLocalDescription {
-                mangle(
-                    bitrate = bitrate,
-                    mainAudioMid = it[MainAudio],
-                    mainVideoMid = it[MainVideo],
-                    presentationVideoMid = it[PresentationVideo],
-                )
-            }
-            config.signaling.onOffer(
-                callType = "WEBRTC",
-                description = localDescription.description,
-                presentationInMain = config.presentationInMain,
-                fecc = config.farEndCameraControl,
-            )
-        } finally {
-            makingOffer.set(false)
-        }
-        if (answer == null) {
-            polite.set(true)
-            return
-        }
-        val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
-        wrapper.setRemoteDescription(sdp.mangle(bitrate))
-        if (shouldAck.compareAndSet(true, false)) {
-            runCatching { config.signaling.onAck() }
-        }
-    }
-
     private fun CoroutineScope.launchMaxBitrate() = maxBitrate.drop(1)
         .onEach { wrapper.restartIce() }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchRenegotiationNeeded() = wrapper.event
+        .filterIsInstance<Event.OnRenegotiationNeeded>()
+        .onEach {
+            val bitrate = maxBitrate.value
+            val answer = try {
+                makingOffer.set(true)
+                val localDescription = wrapper.setLocalDescription {
+                    mangle(
+                        bitrate = bitrate,
+                        mainAudioMid = it[MainAudio],
+                        mainVideoMid = it[MainVideo],
+                        presentationVideoMid = it[PresentationVideo],
+                    )
+                }
+                config.signaling.onOffer(
+                    callType = "WEBRTC",
+                    description = localDescription.description,
+                    presentationInMain = config.presentationInMain,
+                    fecc = config.farEndCameraControl,
+                )
+            } finally {
+                makingOffer.set(false)
+            }
+            if (answer == null) {
+                polite.set(true)
+                return@onEach
+            }
+            val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
+            wrapper.setRemoteDescription(sdp.mangle(bitrate))
+            if (shouldAck.compareAndSet(true, false)) {
+                runCatching { config.signaling.onAck() }
+            }
+        }
         .launchIn(this)
 
     private fun CoroutineScope.launchWrapperEvent() = launch {
         wrapper.event.collect {
             when (it) {
-                is Event.OnRenegotiationNeeded -> setLocalDescription()
                 is Event.OnIceCandidate -> {
                     val sdp = it.candidate.sdp ?: return@collect
                     val mid = it.candidate.sdpMid ?: return@collect
