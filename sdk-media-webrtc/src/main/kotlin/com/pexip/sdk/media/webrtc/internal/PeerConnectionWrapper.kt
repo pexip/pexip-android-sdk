@@ -24,7 +24,8 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.webrtc.AddIceObserver
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack.MediaType
@@ -42,6 +43,7 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: RTCConfiguration) {
 
+    private val mutex = Mutex()
     private val observer = PeerConnectionObserver(rtcConfig.continualGatheringPolicy)
     private val peerConnection = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
     private val rtpTransceivers = mutableMapOf<RtpTransceiverKey, RtpTransceiver>()
@@ -53,29 +55,31 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
 
     val event get() = observer.event
 
-    suspend fun start() = runInterruptible {
+    suspend fun start() = mutex.withLock {
         observer.start()
     }
 
     fun getRemoteVideoTrack(key: RtpTransceiverKey): Flow<VideoTrack?> {
         require(key.mediaType == MediaType.MEDIA_TYPE_VIDEO) { "Illegal mediaType: ${key.mediaType}." }
         val flow = channelFlow {
-            val rtpTransceiver = rtpTransceivers[key]
+            val rtpTransceiver = mutex.withLock { rtpTransceivers[key] }
             val track = when (rtpTransceiver?.direction) {
                 RtpTransceiver.RtpTransceiverDirection.RECV_ONLY -> rtpTransceiver.receiver.track()
                 RtpTransceiver.RtpTransceiverDirection.SEND_RECV -> rtpTransceiver.receiver.track()
                 else -> null
             }
             send(track as? VideoTrack)
-            val predicate = { owner: RtpReceiverOwner ->
+
+            suspend fun predicate(owner: RtpReceiverOwner) = mutex.withLock {
                 owner.receiver.id() == rtpTransceivers[key]?.receiver?.id()
             }
+
             val flow = merge(
                 event.filterIsInstance<Event.OnAddTrack>()
-                    .filter(predicate)
+                    .filter(::predicate)
                     .map { it.receiver.track() as VideoTrack },
                 event.filterIsInstance<Event.OnRemoveTrack>()
-                    .filter(predicate)
+                    .filter(::predicate)
                     .map { null },
             )
             flow.collect(::send)
@@ -87,7 +91,7 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
         key: RtpTransceiverKey,
         init: ((RtpTransceiverKey) -> RtpTransceiver.RtpTransceiverInit)? = null,
         block: (RtpTransceiver?) -> T,
-    ): T = runInterruptible {
+    ): T = mutex.withLock {
         val rtpTransceiver = when (init) {
             null -> rtpTransceivers[key]
             else -> rtpTransceivers.getOrPut(key) {
@@ -97,9 +101,9 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
         block(rtpTransceiver)
     }
 
-    suspend fun setLocalDescription(block: SessionDescription.(Map<RtpTransceiverKey, String>) -> SessionDescription = { this }): SessionDescription {
-        peerConnection.setLocalDescription()
-        return runInterruptible {
+    suspend fun setLocalDescription(block: SessionDescription.(Map<RtpTransceiverKey, String>) -> SessionDescription = { this }): SessionDescription =
+        mutex.withLock {
+            peerConnection.setLocalDescription()
             iceCredentials.clear()
             val description = peerConnection.localDescription
             var ufrag: String? = null
@@ -123,34 +127,33 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
             localFingerprints.value = fingerprints.toList()
             description.block(mids)
         }
-    }
 
-    suspend fun setRemoteDescription(description: SessionDescription) {
+    suspend fun setRemoteDescription(description: SessionDescription) = mutex.withLock {
         peerConnection.setRemoteDescription(description)
-        runInterruptible {
-            remoteFingerprints.value = description.splitToLineSequence()
-                .filter { it.startsWith(FINGERPRINT) }
-                .map { it.removePrefix(FINGERPRINT) }
-                .toList()
+        remoteFingerprints.value = description.splitToLineSequence()
+            .filter { it.startsWith(FINGERPRINT) }
+            .map { it.removePrefix(FINGERPRINT) }
+            .toList()
+    }
+
+    suspend fun addIceCandidate(candidate: IceCandidate) = mutex.withLock {
+        suspendCoroutine {
+            val observer = object : AddIceObserver {
+
+                override fun onAddSuccess() = it.resume(Unit)
+
+                override fun onAddFailure(reason: String) =
+                    it.resumeWithException(RuntimeException(reason))
+            }
+            peerConnection.addIceCandidate(candidate, observer)
         }
     }
 
-    suspend fun addIceCandidate(candidate: IceCandidate) = suspendCoroutine {
-        val observer = object : AddIceObserver {
+    suspend fun restartIce() = mutex.withLock { peerConnection.restartIce() }
 
-            override fun onAddSuccess() = it.resume(Unit)
+    suspend fun getIceCredentials(mid: String) = mutex.withLock { iceCredentials[mid] }
 
-            override fun onAddFailure(reason: String) =
-                it.resumeWithException(RuntimeException(reason))
-        }
-        peerConnection.addIceCandidate(candidate, observer)
-    }
-
-    suspend fun restartIce() = runInterruptible { peerConnection.restartIce() }
-
-    suspend fun getIceCredentials(mid: String) = runInterruptible { iceCredentials[mid] }
-
-    suspend fun dispose() = runInterruptible {
+    suspend fun dispose() = mutex.withLock {
         rtpTransceivers.forEach { (_, rtpTransceiver) ->
             rtpTransceiver.sender.setTrack(null, false)
         }
