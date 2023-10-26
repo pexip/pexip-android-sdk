@@ -16,8 +16,11 @@
 package com.pexip.sdk.media.webrtc.internal
 
 import org.webrtc.MediaStreamTrack
+import org.webrtc.RtpParameters
 
 internal interface RtpTransceiverKey {
 
     val mediaType: MediaStreamTrack.MediaType
+    val streamIds: List<String> get() = emptyList()
+    val sendEncodings: List<RtpParameters.Encoding> get() = emptyList()
 }

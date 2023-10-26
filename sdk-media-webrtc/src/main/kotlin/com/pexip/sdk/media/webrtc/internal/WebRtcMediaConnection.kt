@@ -60,6 +60,7 @@ import kotlinx.coroutines.withContext
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
+import org.webrtc.RtpParameters
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
@@ -436,25 +437,30 @@ internal class WebRtcMediaConnection(
     private fun RtpTransceiverInit(direction: RtpTransceiverDirection) = { key: RtpTransceiverKey ->
         RtpTransceiverInit(
             direction = direction,
-            sendEncodings = when (key.mediaType) {
-                MediaType.MEDIA_TYPE_VIDEO -> listOf(Encoding { maxFramerate = MAX_FRAMERATE })
-                MediaType.MEDIA_TYPE_AUDIO -> emptyList()
-            },
+            streamIds = key.streamIds,
+            sendEncodings = key.sendEncodings,
         )
     }
 
     private data object MainAudio : RtpTransceiverKey {
 
         override val mediaType: MediaType = MediaType.MEDIA_TYPE_AUDIO
+        override val streamIds: List<String> = listOf("main")
     }
 
     private data object MainVideo : RtpTransceiverKey {
 
         override val mediaType: MediaType = MediaType.MEDIA_TYPE_VIDEO
+        override val streamIds: List<String> = listOf("main")
+        override val sendEncodings: List<RtpParameters.Encoding> =
+            listOf(Encoding { maxFramerate = MAX_FRAMERATE })
     }
 
     private data object PresentationVideo : RtpTransceiverKey {
 
         override val mediaType: MediaType = MediaType.MEDIA_TYPE_VIDEO
+        override val streamIds: List<String> = listOf("slides")
+        override val sendEncodings: List<RtpParameters.Encoding> =
+            listOf(Encoding { maxFramerate = MAX_FRAMERATE })
     }
 }
