@@ -215,6 +215,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionFactory : com
 public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
 	public abstract fun getEvent ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getIceServers ()Ljava/util/List;
+	public abstract fun getIceTransportsRelayOnly ()Z
 	public abstract fun onAck (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onAnswer (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onAudioMuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

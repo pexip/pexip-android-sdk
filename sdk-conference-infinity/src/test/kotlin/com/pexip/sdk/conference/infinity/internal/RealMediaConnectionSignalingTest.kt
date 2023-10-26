@@ -26,6 +26,7 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import assertk.assertions.support.fail
+import assertk.tableOf
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
@@ -79,14 +80,38 @@ internal class RealMediaConnectionSignalingTest {
             event = event,
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         assertThat(signaling::iceServers).isEqualTo(iceServers)
     }
 
     @Test
+    fun `iceTransportsRelayOnly returns correct value`() {
+        tableOf("iceTransportsRelayOnly")
+            .row(false)
+            .row(true)
+            .forAll {
+                val signaling = RealMediaConnectionSignaling(
+                    store = store,
+                    event = event,
+                    participantStep = object : TestParticipantStep() {},
+                    iceServers = iceServers,
+                    iceTransportsRelayOnly = it,
+                )
+                assertThat(signaling::iceTransportsRelayOnly).isEqualTo(it)
+            }
+    }
+
+    @Test
     fun `NewOfferEvent is mapped to OfferSignalingEvent`() = runTest {
         val participantStep = object : TestParticipantStep() {}
-        val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            event = event,
+            participantStep = participantStep,
+            iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
+        )
         signaling.event.test {
             repeat(10) {
                 val e = NewOfferEvent(Random.nextString(8))
@@ -102,7 +127,13 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `UpdateSdpEvent is mapped to OfferSignalingEvent`() = runTest {
         val participantStep = object : TestParticipantStep() {}
-        val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            event = event,
+            participantStep = participantStep,
+            iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
+        )
         signaling.event.test {
             repeat(10) {
                 val e = UpdateSdpEvent(Random.nextString(8))
@@ -118,7 +149,13 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `NewCandidateEvent is mapped to CandidateSignalingEvent`() = runTest {
         val participantStep = object : TestParticipantStep() {}
-        val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            event = event,
+            participantStep = participantStep,
+            iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
+        )
         signaling.event.test {
             repeat(10) {
                 val e = NewCandidateEvent(
@@ -141,7 +178,13 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `ignores unknown Events`() = runTest {
         val participantStep = object : TestParticipantStep() {}
-        val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            event = event,
+            participantStep = participantStep,
+            iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
+        )
         signaling.event.test {
             repeat(10) { event.emit(object : Event {}) }
             expectNoEvents()
@@ -190,7 +233,13 @@ internal class RealMediaConnectionSignalingTest {
                     return callStep
                 }
             }
-            val signaling = RealMediaConnectionSignaling(store, event, participantStep, iceServers)
+            val signaling = RealMediaConnectionSignaling(
+                store = store,
+                event = event,
+                participantStep = participantStep,
+                iceServers = iceServers,
+                iceTransportsRelayOnly = Random.nextBoolean(),
+            )
             val answer = signaling.onOffer(
                 callType = callType,
                 description = sdp,
@@ -237,6 +286,7 @@ internal class RealMediaConnectionSignalingTest {
                         }
                     }
                 },
+                iceTransportsRelayOnly = Random.nextBoolean(),
             )
             val answer = signaling.onOffer(
                 callType = callType,
@@ -273,6 +323,7 @@ internal class RealMediaConnectionSignalingTest {
                         }
                     }
             },
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onOfferIgnored()
         called.join()
@@ -299,6 +350,7 @@ internal class RealMediaConnectionSignalingTest {
                         }
                     }
             },
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onAnswer(sdp)
         called.join()
@@ -320,6 +372,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 }
             },
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onAck()
         called.join()
@@ -351,6 +404,7 @@ internal class RealMediaConnectionSignalingTest {
                         }
                     }
             },
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onCandidate(candidate, mid, ufrag, pwd)
         called.join()
@@ -376,6 +430,7 @@ internal class RealMediaConnectionSignalingTest {
                         }
                     }
             },
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onDtmf(digits)
         called.join()
@@ -397,6 +452,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             },
             iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onAudioMuted()
         called.join()
@@ -418,6 +474,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             },
             iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onAudioUnmuted()
         called.join()
@@ -439,6 +496,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             },
             iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onVideoMuted()
         called.join()
@@ -460,6 +518,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             },
             iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onVideoUnmuted()
         called.join()
@@ -481,6 +540,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             },
             iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onTakeFloor()
         called.join()
@@ -502,6 +562,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             },
             iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
         )
         signaling.onReleaseFloor()
         called.join()

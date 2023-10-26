@@ -91,6 +91,7 @@ public class InfinityConference private constructor(
                     .build()
             }
         },
+        iceTransportsRelayOnly = response.useRelayCandidatesOnly,
     )
 
     init {

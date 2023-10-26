@@ -21,11 +21,14 @@ import kotlinx.coroutines.flow.Flow
  * Represents a signaling component of [MediaConnection].
  *
  * @property iceServers a list of available [IceServer]s
+ * @property iceTransportsRelayOnly whether relay only mode should be used
  * @property event a [Flow] of [SignalingEvent]s
  */
 public interface MediaConnectionSignaling {
 
     public val iceServers: List<IceServer>
+
+    public val iceTransportsRelayOnly: Boolean
 
     public val event: Flow<SignalingEvent>
 

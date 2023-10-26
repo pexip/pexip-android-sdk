@@ -245,6 +245,10 @@ public class WebRtcMediaConnectionFactory private constructor(
         val rtcConfig = PeerConnection.RTCConfiguration(iceServers).apply {
             enableDscp = config.dscp
             sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
+            iceTransportsType = when (config.signaling.iceTransportsRelayOnly) {
+                true -> PeerConnection.IceTransportsType.RELAY
+                else -> PeerConnection.IceTransportsType.ALL
+            }
             enableImplicitRollback = true
             continualGatheringPolicy = when (config.continualGathering) {
                 true -> PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
