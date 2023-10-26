@@ -50,6 +50,7 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
     private val iceCredentials = mutableMapOf<String, IceCredentials>()
     private val localFingerprints = MutableStateFlow(emptyList<String>())
     private val remoteFingerprints = MutableStateFlow(emptyList<String>())
+    private val remoteIceCandidates = mutableListOf<IceCandidate>()
 
     val secureCheckCode = localFingerprints.combine(remoteFingerprints, ::SecureCheckCode)
 
@@ -130,6 +131,8 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
 
     suspend fun setRemoteDescription(description: SessionDescription) = mutex.withLock {
         peerConnection.setRemoteDescription(description)
+        remoteIceCandidates.forEach { peerConnection.doAddIceCandidate(it) }
+        remoteIceCandidates.clear()
         remoteFingerprints.value = description.splitToLineSequence()
             .filter { it.startsWith(FINGERPRINT) }
             .map { it.removePrefix(FINGERPRINT) }
@@ -137,15 +140,10 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
     }
 
     suspend fun addIceCandidate(candidate: IceCandidate) = mutex.withLock {
-        suspendCoroutine {
-            val observer = object : AddIceObserver {
-
-                override fun onAddSuccess() = it.resume(Unit)
-
-                override fun onAddFailure(reason: String) =
-                    it.resumeWithException(RuntimeException(reason))
-            }
-            peerConnection.addIceCandidate(candidate, observer)
+        if (peerConnection.remoteDescription == null) {
+            remoteIceCandidates += candidate
+        } else {
+            peerConnection.doAddIceCandidate(candidate)
         }
     }
 
@@ -167,6 +165,18 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
 
     private suspend fun PeerConnection.setRemoteDescription(description: SessionDescription) =
         suspendCoroutine { setRemoteDescription(SdpObserver(it), description) }
+
+    private suspend fun PeerConnection.doAddIceCandidate(candidate: IceCandidate) =
+        suspendCoroutine {
+            val observer = object : AddIceObserver {
+
+                override fun onAddSuccess() = it.resume(Unit)
+
+                override fun onAddFailure(reason: String) =
+                    it.resumeWithException(RuntimeException(reason))
+            }
+            addIceCandidate(candidate, observer)
+        }
 
     private fun SdpObserver(continuation: Continuation<Unit>): SdpObserver = object : SdpObserver {
 
