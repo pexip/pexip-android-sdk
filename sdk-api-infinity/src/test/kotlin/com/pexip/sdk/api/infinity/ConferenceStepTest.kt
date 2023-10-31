@@ -227,7 +227,7 @@ internal class ConferenceStepTest {
                     directMedia = Random.nextBoolean(),
                     directMediaRequested = request.directMedia,
                     useRelayCandidatesOnly = Random.nextBoolean(),
-                    dataChannelId = if (Random.nextBoolean()) Random.nextInt() else null,
+                    dataChannelId = Random.nextInt(-1, 65536),
                     clientStatsUpdateInterval = Random.nextDuration(),
                 )
                 server.enqueue {

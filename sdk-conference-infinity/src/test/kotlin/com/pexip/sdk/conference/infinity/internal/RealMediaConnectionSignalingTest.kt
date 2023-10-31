@@ -81,6 +81,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = object : TestParticipantStep() {},
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         assertThat(signaling::iceServers).isEqualTo(iceServers)
     }
@@ -97,9 +98,24 @@ internal class RealMediaConnectionSignalingTest {
                     participantStep = object : TestParticipantStep() {},
                     iceServers = iceServers,
                     iceTransportsRelayOnly = it,
+                    dataChannelId = Random.nextDataChannelId(),
                 )
                 assertThat(signaling::iceTransportsRelayOnly).isEqualTo(it)
             }
+    }
+
+    @Test
+    fun `dataChannelId returns correct value`() {
+        val dataChannelId = Random.nextDataChannelId()
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            event = event,
+            participantStep = object : TestParticipantStep() {},
+            iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = dataChannelId,
+        )
+        assertThat(signaling::dataChannelId).isEqualTo(dataChannelId)
     }
 
     @Test
@@ -111,6 +127,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = participantStep,
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.event.test {
             repeat(10) {
@@ -133,6 +150,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = participantStep,
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.event.test {
             repeat(10) {
@@ -155,6 +173,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = participantStep,
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.event.test {
             repeat(10) {
@@ -184,6 +203,7 @@ internal class RealMediaConnectionSignalingTest {
             participantStep = participantStep,
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.event.test {
             repeat(10) { event.emit(object : Event {}) }
@@ -239,6 +259,7 @@ internal class RealMediaConnectionSignalingTest {
                 participantStep = participantStep,
                 iceServers = iceServers,
                 iceTransportsRelayOnly = Random.nextBoolean(),
+                dataChannelId = Random.nextDataChannelId(),
             )
             val answer = signaling.onOffer(
                 callType = callType,
@@ -287,6 +308,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 },
                 iceTransportsRelayOnly = Random.nextBoolean(),
+                dataChannelId = Random.nextDataChannelId(),
             )
             val answer = signaling.onOffer(
                 callType = callType,
@@ -324,6 +346,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
             },
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onOfferIgnored()
         called.join()
@@ -351,6 +374,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
             },
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onAnswer(sdp)
         called.join()
@@ -373,6 +397,7 @@ internal class RealMediaConnectionSignalingTest {
                 }
             },
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onAck()
         called.join()
@@ -405,6 +430,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
             },
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onCandidate(candidate, mid, ufrag, pwd)
         called.join()
@@ -431,6 +457,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
             },
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onDtmf(digits)
         called.join()
@@ -453,6 +480,7 @@ internal class RealMediaConnectionSignalingTest {
             },
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onAudioMuted()
         called.join()
@@ -475,6 +503,7 @@ internal class RealMediaConnectionSignalingTest {
             },
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onAudioUnmuted()
         called.join()
@@ -497,6 +526,7 @@ internal class RealMediaConnectionSignalingTest {
             },
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onVideoMuted()
         called.join()
@@ -519,6 +549,7 @@ internal class RealMediaConnectionSignalingTest {
             },
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onVideoUnmuted()
         called.join()
@@ -541,6 +572,7 @@ internal class RealMediaConnectionSignalingTest {
             },
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onTakeFloor()
         called.join()
@@ -563,6 +595,7 @@ internal class RealMediaConnectionSignalingTest {
             },
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
         )
         signaling.onReleaseFloor()
         called.join()
@@ -576,4 +609,6 @@ internal class RealMediaConnectionSignalingTest {
         if (actual == token) return
         fail(token, actual)
     }
+
+    private fun Random.nextDataChannelId() = nextInt(-1, 65536)
 }

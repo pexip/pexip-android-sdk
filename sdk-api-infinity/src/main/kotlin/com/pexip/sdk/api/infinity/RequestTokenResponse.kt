@@ -52,7 +52,7 @@ public data class RequestTokenResponse(
     @SerialName("use_relay_candidates_only")
     public val useRelayCandidatesOnly: Boolean = false,
     @SerialName("pex_datachannel_id")
-    public val dataChannelId: Int? = null,
+    public val dataChannelId: Int = -1,
     @Serializable(with = DurationAsMillisecondsSerializer::class)
     @SerialName("client_stats_update_interval")
     public val clientStatsUpdateInterval: Duration = Duration.INFINITE,

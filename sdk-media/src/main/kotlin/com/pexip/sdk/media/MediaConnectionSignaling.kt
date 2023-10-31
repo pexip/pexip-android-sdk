@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * @property iceServers a list of available [IceServer]s
  * @property iceTransportsRelayOnly whether relay only mode should be used
+ * @property dataChannelId an ID of a data channel, -1 if not used
  * @property event a [Flow] of [SignalingEvent]s
  */
 public interface MediaConnectionSignaling {
@@ -29,6 +30,8 @@ public interface MediaConnectionSignaling {
     public val iceServers: List<IceServer>
 
     public val iceTransportsRelayOnly: Boolean
+
+    public val dataChannelId: Int
 
     public val event: Flow<SignalingEvent>
 

@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.webrtc.AddIceObserver
+import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
@@ -41,11 +42,19 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: RTCConfiguration) {
+internal class PeerConnectionWrapper(
+    factory: PeerConnectionFactory,
+    rtcConfig: RTCConfiguration,
+    init: DataChannel.Init?,
+) {
 
     private val mutex = Mutex()
-    private val observer = PeerConnectionObserver(rtcConfig.continualGatheringPolicy)
+    private val observer = Observer(rtcConfig.continualGatheringPolicy)
     private val peerConnection = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
+    private val dataChannel = when (init) {
+        null -> null
+        else -> peerConnection.createDataChannel("pexChannel", init)
+    }
     private val rtpTransceivers = mutableMapOf<RtpTransceiverKey, RtpTransceiver>()
     private val iceCredentials = mutableMapOf<String, IceCredentials>()
     private val localFingerprints = MutableStateFlow(emptyList<String>())
@@ -56,9 +65,11 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
 
     val event get() = observer.event
 
-    suspend fun start() = mutex.withLock {
-        observer.start()
+    init {
+        dataChannel?.registerObserver(observer)
     }
+
+    suspend fun start() = mutex.withLock { observer.start() }
 
     fun getRemoteVideoTrack(key: RtpTransceiverKey): Flow<VideoTrack?> {
         require(key.mediaType == MediaType.MEDIA_TYPE_VIDEO) { "Illegal mediaType: ${key.mediaType}." }
@@ -157,6 +168,8 @@ internal class PeerConnectionWrapper(factory: PeerConnectionFactory, rtcConfig: 
         }
         rtpTransceivers.clear()
         iceCredentials.clear()
+        dataChannel?.unregisterObserver()
+        dataChannel?.dispose()
         peerConnection.dispose()
     }
 

@@ -29,8 +29,10 @@ import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionFactory
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
+import com.pexip.sdk.media.webrtc.internal.DataChannelInit
 import com.pexip.sdk.media.webrtc.internal.PeerConnectionWrapper
 import com.pexip.sdk.media.webrtc.internal.SimpleCameraEventsHandler
+import com.pexip.sdk.media.webrtc.internal.ValidDataChannelIds
 import com.pexip.sdk.media.webrtc.internal.WebRtcCameraVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
@@ -255,7 +257,14 @@ public class WebRtcMediaConnectionFactory private constructor(
                 else -> PeerConnection.ContinualGatheringPolicy.GATHER_ONCE
             }
         }
-        return PeerConnectionWrapper(factory, rtcConfig)
+        val init = when (val dataChannelId = config.signaling.dataChannelId) {
+            in ValidDataChannelIds -> DataChannelInit {
+                id = dataChannelId
+                negotiated = true
+            }
+            else -> null
+        }
+        return PeerConnectionWrapper(factory, rtcConfig, init)
     }
 
     private fun createMediaTrackId() = UUID.randomUUID().toString()

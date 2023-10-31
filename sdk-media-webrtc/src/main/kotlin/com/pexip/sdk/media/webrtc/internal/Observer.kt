@@ -28,9 +28,8 @@ import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class PeerConnectionObserver(
-    private val continualGatheringPolicy: ContinualGatheringPolicy,
-) : PeerConnection.Observer {
+internal class Observer(private val continualGatheringPolicy: ContinualGatheringPolicy) :
+    PeerConnection.Observer, DataChannel.Observer {
 
     private val started = AtomicBoolean()
     private val candidates = mutableMapOf<String, IceCandidate>()
@@ -42,6 +41,16 @@ internal class PeerConnectionObserver(
         if (started.compareAndSet(false, true)) {
             _event.tryEmit(Event.OnRenegotiationNeeded)
         }
+    }
+
+    override fun onBufferedAmountChange(previousAmount: Long) {
+    }
+
+    override fun onStateChange() {
+    }
+
+    override fun onMessage(buffer: DataChannel.Buffer) {
+        _event.tryEmit(Event.OnMessage(buffer.data))
     }
 
     override fun onRenegotiationNeeded() {

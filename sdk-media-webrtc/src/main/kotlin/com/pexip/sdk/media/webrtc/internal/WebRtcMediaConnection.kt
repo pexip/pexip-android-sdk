@@ -110,6 +110,14 @@ internal class WebRtcMediaConnection(
 
     init {
         with(scope) {
+            if (config.signaling.dataChannelId in ValidDataChannelIds) {
+                scope.launch {
+                    val init = RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
+                    wrapper.withRtpTransceiver(MainAudio, init) { }
+                    wrapper.withRtpTransceiver(MainVideo, init) { }
+                    wrapper.withRtpTransceiver(PresentationVideo, init) { }
+                }
+            }
             launchMaxBitrate()
             launchWrapperEvent()
             launchRenegotiationNeeded()

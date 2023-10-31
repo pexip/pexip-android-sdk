@@ -213,6 +213,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionFactory : com
 }
 
 public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
+	public abstract fun getDataChannelId ()I
 	public abstract fun getEvent ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getIceServers ()Ljava/util/List;
 	public abstract fun getIceTransportsRelayOnly ()Z

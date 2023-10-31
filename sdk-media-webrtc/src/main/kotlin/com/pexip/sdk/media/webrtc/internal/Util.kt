@@ -24,6 +24,7 @@ import com.pexip.sdk.media.SecureCheckCode
 import com.pexip.sdk.media.VideoTrack
 import okio.ByteString.Companion.encodeUtf8
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
+import org.webrtc.DataChannel
 import org.webrtc.RtpParameters
 import org.webrtc.RtpParameters.Encoding
 import org.webrtc.RtpTransceiver
@@ -140,6 +141,9 @@ internal fun RtpTransceiver.setTrack(track: LocalMediaTrack?) {
     sender.setTrack(t, false)
 }
 
+@Suppress("FunctionName")
+internal fun DataChannelInit(block: DataChannel.Init.() -> Unit) = DataChannel.Init().apply(block)
+
 @Suppress("ktlint:standard:function-naming")
 internal fun RtpTransceiverInit(
     direction: RtpTransceiverDirection = RtpTransceiverDirection.SEND_RECV,
@@ -156,5 +160,7 @@ internal fun Encoding(
 ) = Encoding(rid, active, scaleResolutionDownBy).apply(block)
 
 internal const val MAX_FRAMERATE = 30
+
+internal val ValidDataChannelIds = 0..65535
 
 private fun Collection<String>.sortAndJoinToString() = sorted().joinToString(separator = "")

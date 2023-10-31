@@ -42,6 +42,7 @@ internal class RealMediaConnectionSignaling(
     private val participantStep: InfinityService.ParticipantStep,
     override val iceServers: List<IceServer>,
     override val iceTransportsRelayOnly: Boolean,
+    override val dataChannelId: Int,
     callStep: InfinityService.CallStep? = null,
 ) : MediaConnectionSignaling {
 
