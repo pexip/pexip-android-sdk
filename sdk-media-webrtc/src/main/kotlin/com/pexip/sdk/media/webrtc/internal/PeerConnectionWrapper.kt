@@ -41,6 +41,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.properties.Delegates
 
 internal class PeerConnectionWrapper(
     factory: PeerConnectionFactory,
@@ -51,9 +52,13 @@ internal class PeerConnectionWrapper(
     private val mutex = Mutex()
     private val observer = Observer(rtcConfig.continualGatheringPolicy)
     private val peerConnection = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
-    private val dataChannel = when (init) {
-        null -> null
-        else -> peerConnection.createDataChannel("pexChannel", init)
+    private var dataChannel by Delegates.observable<DataChannel?>(null) { _, old, new ->
+        if (old != null) {
+            old.unregisterObserver()
+            old.close()
+            old.dispose()
+        }
+        new?.registerObserver(observer)
     }
     private val rtpTransceivers = mutableMapOf<RtpTransceiverKey, RtpTransceiver>()
     private val iceCredentials = mutableMapOf<String, IceCredentials>()
@@ -66,7 +71,7 @@ internal class PeerConnectionWrapper(
     val event get() = observer.event
 
     init {
-        dataChannel?.registerObserver(observer)
+        dataChannel = peerConnection.createDataChannel("pexChannel", init)
     }
 
     suspend fun start() = mutex.withLock { observer.start() }
@@ -181,8 +186,7 @@ internal class PeerConnectionWrapper(
         }
         rtpTransceivers.clear()
         iceCredentials.clear()
-        dataChannel?.unregisterObserver()
-        dataChannel?.dispose()
+        dataChannel = null
         peerConnection.dispose()
     }
 
