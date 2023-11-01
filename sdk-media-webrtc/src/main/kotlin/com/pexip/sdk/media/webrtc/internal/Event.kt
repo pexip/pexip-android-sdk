@@ -21,6 +21,7 @@ import org.webrtc.IceCandidate
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.SignalingState
 import org.webrtc.RtpReceiver
+import org.webrtc.RtpTransceiver
 import java.nio.ByteBuffer
 
 internal sealed interface Event {
@@ -32,6 +33,9 @@ internal sealed interface Event {
 
         constructor(message: ByteBuffer) : this(message.toByteString())
     }
+
+    @JvmInline
+    value class OnTrack(val transceiver: RtpTransceiver) : Event
 
     @JvmInline
     value class OnAddTrack(override val receiver: RtpReceiver) : Event, RtpReceiverOwner

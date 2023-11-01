@@ -120,8 +120,6 @@ internal class WebRtcMediaConnection(
             }
             launchMaxBitrate()
             launchWrapperEvent()
-            launchRenegotiationNeeded()
-            launchSignalingChange()
             launchOffer()
             launchCandidate()
             launchDegradationPreference(MainVideo, mainDegradationPreference)
@@ -254,44 +252,6 @@ internal class WebRtcMediaConnection(
         .onEach { wrapper.restartIce() }
         .launchIn(this)
 
-    private fun CoroutineScope.launchRenegotiationNeeded() = wrapper.event
-        .filterIsInstance<Event.OnRenegotiationNeeded>()
-        .onEach {
-            val bitrate = maxBitrate.value
-            val answer = try {
-                mutex.withLock { makingOffer = true }
-                val localDescription = wrapper.setLocalDescription {
-                    mangle(
-                        bitrate = bitrate,
-                        mainAudioMid = it[MainAudio],
-                        mainVideoMid = it[MainVideo],
-                        presentationVideoMid = it[PresentationVideo],
-                    )
-                }
-                config.signaling.onOffer(
-                    callType = "WEBRTC",
-                    description = localDescription.description,
-                    presentationInMain = config.presentationInMain,
-                    fecc = config.farEndCameraControl,
-                )
-            } finally {
-                mutex.withLock { makingOffer = false }
-            }
-            if (answer == null) {
-                mutex.withLock { polite = true }
-                return@onEach
-            }
-            val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
-            wrapper.setRemoteDescription(sdp.mangle(bitrate))
-            runCatching { config.signaling.onAck() }
-        }
-        .launchIn(this)
-
-    private fun CoroutineScope.launchSignalingChange() = wrapper.event
-        .filterIsInstance<Event.OnSignalingChange>()
-        .onEach { mutex.withLock { signalingState = it.state } }
-        .launchIn(this)
-
     private fun CoroutineScope.launchOffer() = config.signaling.event
         .filterIsInstance<OfferSignalingEvent>()
         .onEach { event ->
@@ -305,7 +265,7 @@ internal class WebRtcMediaConnection(
                 return@onEach
             }
             val description = SessionDescription(SessionDescription.Type.OFFER, event.description)
-            wrapper.setRemoteDescription(description)
+            wrapper.setRemoteDescription(description.mangle(maxBitrate.value))
             val localDescription = wrapper.setLocalDescription { mids ->
                 mangle(
                     bitrate = maxBitrate.value,
@@ -338,6 +298,41 @@ internal class WebRtcMediaConnection(
     private fun CoroutineScope.launchWrapperEvent() = launch {
         wrapper.event.collect {
             when (it) {
+                is Event.OnSignalingChange -> mutex.withLock {
+                    signalingState = it.state
+                }
+                is Event.OnRenegotiationNeeded -> {
+                    val bitrate = maxBitrate.value
+                    val answer = try {
+                        mutex.withLock { makingOffer = true }
+                        val localDescription = wrapper.setLocalDescription {
+                            mangle(
+                                bitrate = bitrate,
+                                mainAudioMid = it[MainAudio],
+                                mainVideoMid = it[MainVideo],
+                                presentationVideoMid = it[PresentationVideo],
+                            )
+                        }
+                        config.signaling.onOffer(
+                            callType = "WEBRTC",
+                            description = localDescription.description,
+                            presentationInMain = config.presentationInMain,
+                            fecc = config.farEndCameraControl,
+                        )
+                    } finally {
+                        mutex.withLock { makingOffer = false }
+                    }
+                    if (answer == null) {
+                        mutex.withLock { polite = true }
+                        return@collect
+                    }
+                    val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
+                    wrapper.setRemoteDescription(sdp.mangle(bitrate))
+                    runCatching { config.signaling.onAck() }
+                }
+                is Event.OnTrack -> {
+                    wrapper.syncRtpTransceiver(it.transceiver)
+                }
                 is Event.OnIceCandidate -> {
                     val sdp = it.candidate.sdp ?: return@collect
                     val mid = it.candidate.sdpMid ?: return@collect

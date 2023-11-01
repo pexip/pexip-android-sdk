@@ -113,6 +113,19 @@ internal class PeerConnectionWrapper(
         block(rtpTransceiver)
     }
 
+    suspend fun syncRtpTransceiver(transceiver: RtpTransceiver) = mutex.withLock {
+        val (key, t) = rtpTransceivers.entries
+            .find { (_, t) -> t.mid == null && t.mediaType == transceiver.mediaType }
+            ?: return@withLock
+        transceiver.direction = t.direction
+        transceiver.sender.streams = t.sender.streams
+        transceiver.sender.parameters = t.sender.parameters
+        transceiver.sender.setTrack(t.sender.track(), false)
+        t.sender.setTrack(null, false)
+        rtpTransceivers[key] = transceiver
+        t.stopInternal()
+    }
+
     suspend fun setLocalDescription(block: SessionDescription.(Map<RtpTransceiverKey, String>) -> SessionDescription = { this }): SessionDescription =
         mutex.withLock {
             peerConnection.setLocalDescription()
