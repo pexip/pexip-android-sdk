@@ -43,6 +43,10 @@ internal class Observer(private val continualGatheringPolicy: ContinualGathering
         }
     }
 
+    fun stop() {
+        started.set(false)
+    }
+
     override fun onBufferedAmountChange(previousAmount: Long) {
     }
 

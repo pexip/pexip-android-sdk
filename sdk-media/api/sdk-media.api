@@ -271,6 +271,13 @@ public final class com/pexip/sdk/media/QualityProfile$Companion {
 public abstract interface class com/pexip/sdk/media/Renderer {
 }
 
+public final class com/pexip/sdk/media/RestartSignalingEvent : com/pexip/sdk/media/SignalingEvent {
+	public static final field INSTANCE Lcom/pexip/sdk/media/RestartSignalingEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/pexip/sdk/media/SecureCheckCode {
 	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/media/SecureCheckCode;
 	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;

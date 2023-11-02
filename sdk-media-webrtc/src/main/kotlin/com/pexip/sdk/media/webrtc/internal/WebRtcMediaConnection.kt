@@ -26,6 +26,7 @@ import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.media.OfferSignalingEvent
+import com.pexip.sdk.media.RestartSignalingEvent
 import com.pexip.sdk.media.SecureCheckCode
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.coroutines.getCapturing
@@ -43,7 +44,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -120,8 +120,7 @@ internal class WebRtcMediaConnection(
             }
             launchMaxBitrate()
             launchWrapperEvent()
-            launchOffer()
-            launchCandidate()
+            launchSignalingEvent()
             launchDegradationPreference(MainVideo, mainDegradationPreference)
             launchDegradationPreference(PresentationVideo, presentationDegradationPreference)
             launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
@@ -252,49 +251,6 @@ internal class WebRtcMediaConnection(
         .onEach { wrapper.restartIce() }
         .launchIn(this)
 
-    private fun CoroutineScope.launchOffer() = config.signaling.event
-        .filterIsInstance<OfferSignalingEvent>()
-        .onEach { event ->
-            val ignoreOffer = mutex.withLock {
-                val stable = signalingState == PeerConnection.SignalingState.STABLE
-                val offerCollision = makingOffer || !stable
-                (!polite && offerCollision).also { ignoreOffer = it }
-            }
-            if (ignoreOffer) {
-                runCatching { config.signaling.onOfferIgnored() }
-                return@onEach
-            }
-            val description = SessionDescription(SessionDescription.Type.OFFER, event.description)
-            wrapper.setRemoteDescription(description.mangle(maxBitrate.value))
-            val localDescription = wrapper.setLocalDescription { mids ->
-                mangle(
-                    bitrate = maxBitrate.value,
-                    mainAudioMid = mids[MainAudio],
-                    mainVideoMid = mids[MainVideo],
-                    presentationVideoMid = mids[PresentationVideo],
-                )
-            }
-            runCatching { config.signaling.onAnswer(localDescription.description) }
-        }
-        .launchIn(this)
-
-    private fun CoroutineScope.launchCandidate() = config.signaling.event
-        .filterIsInstance<CandidateSignalingEvent>()
-        .onEach {
-            try {
-                if (it.candidate.isBlank()) return@onEach
-                val candidate = IceCandidate(it.mid, -1, it.candidate)
-                wrapper.addIceCandidate(candidate)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (t: Throwable) {
-                if (!mutex.withLock { ignoreOffer }) {
-                    throw t
-                }
-            }
-        }
-        .launchIn(this)
-
     private fun CoroutineScope.launchWrapperEvent() = launch {
         wrapper.event.collect {
             when (it) {
@@ -305,12 +261,12 @@ internal class WebRtcMediaConnection(
                     val bitrate = maxBitrate.value
                     val answer = try {
                         mutex.withLock { makingOffer = true }
-                        val localDescription = wrapper.setLocalDescription {
+                        val localDescription = wrapper.setLocalDescription { mids ->
                             mangle(
                                 bitrate = bitrate,
-                                mainAudioMid = it[MainAudio],
-                                mainVideoMid = it[MainVideo],
-                                presentationVideoMid = it[PresentationVideo],
+                                mainAudioMid = mids[MainAudio],
+                                mainVideoMid = mids[MainVideo],
+                                presentationVideoMid = mids[PresentationVideo],
                             )
                         }
                         config.signaling.onOffer(
@@ -353,6 +309,50 @@ internal class WebRtcMediaConnection(
                     wrapper.restartIce()
                 }
                 else -> Unit
+            }
+        }
+    }
+
+    private fun CoroutineScope.launchSignalingEvent() = launch {
+        config.signaling.event.collect { event ->
+            when (event) {
+                is OfferSignalingEvent -> {
+                    val ignoreOffer = mutex.withLock {
+                        val stable = signalingState == PeerConnection.SignalingState.STABLE
+                        val offerCollision = makingOffer || !stable
+                        (!polite && offerCollision).also { ignoreOffer = it }
+                    }
+                    if (ignoreOffer) {
+                        runCatching { config.signaling.onOfferIgnored() }
+                        return@collect
+                    }
+                    val description =
+                        SessionDescription(SessionDescription.Type.OFFER, event.description)
+                    wrapper.setRemoteDescription(description.mangle(maxBitrate.value))
+                    val localDescription = wrapper.setLocalDescription { mids ->
+                        mangle(
+                            bitrate = maxBitrate.value,
+                            mainAudioMid = mids[MainAudio],
+                            mainVideoMid = mids[MainVideo],
+                            presentationVideoMid = mids[PresentationVideo],
+                        )
+                    }
+                    runCatching { config.signaling.onAnswer(localDescription.description) }
+                }
+                is CandidateSignalingEvent -> try {
+                    if (event.candidate.isBlank()) return@collect
+                    val candidate = IceCandidate(event.mid, -1, event.candidate)
+                    wrapper.addIceCandidate(candidate)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (t: Throwable) {
+                    if (mutex.withLock { !ignoreOffer }) {
+                        throw t
+                    }
+                }
+                is RestartSignalingEvent -> {
+                    wrapper.restart()
+                }
             }
         }
     }

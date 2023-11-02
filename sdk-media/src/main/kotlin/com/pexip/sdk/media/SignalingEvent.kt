@@ -21,3 +21,5 @@ public sealed interface SignalingEvent
 public value class OfferSignalingEvent(public val description: String) : SignalingEvent
 
 public data class CandidateSignalingEvent(val mid: String, val candidate: String) : SignalingEvent
+
+public data object RestartSignalingEvent : SignalingEvent

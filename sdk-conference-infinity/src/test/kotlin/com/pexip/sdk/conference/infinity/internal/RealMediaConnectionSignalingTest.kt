@@ -38,6 +38,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.NewOfferEvent
+import com.pexip.sdk.api.infinity.PeerDisconnectEvent
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
@@ -45,6 +46,7 @@ import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.OfferSignalingEvent
+import com.pexip.sdk.media.RestartSignalingEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
@@ -190,6 +192,25 @@ internal class RealMediaConnectionSignalingTest {
                         prop(CandidateSignalingEvent::mid).isEqualTo(e.mid)
                         prop(CandidateSignalingEvent::candidate).isEqualTo(e.candidate)
                     }
+            }
+        }
+    }
+
+    @Test
+    fun `PeerDisconnectedEvent is mapped to RestartSignalingEvent`() = runTest {
+        val participantStep = object : TestParticipantStep() {}
+        val signaling = RealMediaConnectionSignaling(
+            store = store,
+            event = event,
+            participantStep = participantStep,
+            iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannelId = Random.nextDataChannelId(),
+        )
+        signaling.event.test {
+            repeat(10) {
+                event.emit(PeerDisconnectEvent)
+                assertThat(awaitItem(), "event").isInstanceOf<RestartSignalingEvent>()
             }
         }
     }

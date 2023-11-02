@@ -24,6 +24,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.NewOfferEvent
+import com.pexip.sdk.api.infinity.PeerDisconnectEvent
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
@@ -31,6 +32,7 @@ import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.media.OfferSignalingEvent
+import com.pexip.sdk.media.RestartSignalingEvent
 import com.pexip.sdk.media.SignalingEvent
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
@@ -154,6 +156,7 @@ internal class RealMediaConnectionSignaling(
         is NewOfferEvent -> OfferSignalingEvent(event.sdp)
         is UpdateSdpEvent -> OfferSignalingEvent(event.sdp)
         is NewCandidateEvent -> CandidateSignalingEvent(event.mid, event.candidate)
+        is PeerDisconnectEvent -> RestartSignalingEvent
         else -> null
     }
 }
