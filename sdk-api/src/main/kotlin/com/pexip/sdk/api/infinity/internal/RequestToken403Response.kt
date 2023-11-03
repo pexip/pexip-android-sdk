@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ internal object RequestToken403ResponseSerializer :
 private object PolymorphicRequestToken403ResponseSerializer :
     JsonContentPolymorphicSerializer<RequestToken403Response>(RequestToken403Response::class) {
 
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out RequestToken403Response> {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<RequestToken403Response> {
         if (element is JsonPrimitive) {
             if (element.isString) return ErrorResponse.serializer()
         } else if (element is JsonObject) {

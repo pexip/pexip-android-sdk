@@ -30,7 +30,7 @@ internal class DtmfRequestTest {
         assertThat(request::digits).isEqualTo(digits)
     }
 
-    @Test(IllegalArgumentException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun `invalid digits throw`() {
         DtmfRequest(Random.nextString(100))
     }

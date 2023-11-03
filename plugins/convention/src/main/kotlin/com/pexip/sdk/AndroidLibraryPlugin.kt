@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@ package com.pexip.sdk
 
 import com.android.build.api.dsl.LibraryExtension
 import com.pexip.sdk.internal.Android
-import com.pexip.sdk.internal.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionConstraint
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -45,11 +43,6 @@ class AndroidLibraryPlugin : Plugin<Project> {
             compileOptions {
                 sourceCompatibility = Android.sourceCompatibility
                 targetCompatibility = Android.targetCompatibility
-            }
-            composeOptions {
-                kotlinCompilerExtensionVersion = libs.findVersion("androidx-compose-compiler")
-                    .map(VersionConstraint::toString)
-                    .get()
             }
             testOptions {
                 unitTests {
