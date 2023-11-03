@@ -49,7 +49,7 @@ class OnScreenCaptureVideoTrack(private val localVideoTrack: LocalVideoTrack) : 
             screenCaptureVideoTrack = localVideoTrack,
         )
         state.connection.setPresentationVideoTrack(localVideoTrack)
-        localVideoTrack.startCapture(QualityProfile.High)
+        localVideoTrack.startCapture(QualityProfile.VeryHigh)
     }
 }
 

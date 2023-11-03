@@ -50,6 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -129,8 +130,10 @@ fun ConferenceCallScreen(
                     .fillMaxSize()
                     .safeContentPadding(),
             ) {
-                val aspectRatio = remember(landscape) {
-                    if (landscape) ASPECT_RATIO_LANDSCAPE else ASPECT_RATIO_PORTRAIT
+                val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
+                val aspectRatioModifier = when (aspectRatio) {
+                    0f -> Modifier
+                    else -> Modifier.aspectRatio(aspectRatio)
                 }
                 AnimatedVisibility(
                     visible = rendering.cameraVideoTrackRendering?.capturing == true,
@@ -139,10 +142,12 @@ fun ConferenceCallScreen(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .fillMaxWidth(0.25f)
-                        .aspectRatio(aspectRatio),
+                        .then(aspectRatioModifier),
                 ) {
                     VideoTrackRenderer(
                         videoTrack = rendering.cameraVideoTrack,
+                        onAspectRatioChange = onAspectRatioChange,
+                        zOrderMediaOverlay = true,
                         mirror = true,
                     )
                 }
@@ -194,9 +199,14 @@ private fun MainVideoTrackRenderer(
     rendering: ConferenceCallRendering,
     modifier: Modifier = Modifier,
 ) {
+    val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
     VideoTrackRenderer(
         videoTrack = rendering.mainRemoteVideoTrack,
-        modifier = modifier.aspectRatio(ASPECT_RATIO_LANDSCAPE),
+        onAspectRatioChange = onAspectRatioChange,
+        modifier = when (aspectRatio) {
+            0f -> modifier
+            else -> modifier.aspectRatio(aspectRatio)
+        },
     )
 }
 
@@ -206,9 +216,14 @@ private fun PresentationVideoTrackRenderer(
     modifier: Modifier = Modifier,
 ) {
     if (rendering.presentationRemoteVideoTrack != null) {
+        val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
         VideoTrackRenderer(
             videoTrack = rendering.presentationRemoteVideoTrack,
-            modifier = modifier.aspectRatio(ASPECT_RATIO_LANDSCAPE),
+            onAspectRatioChange = onAspectRatioChange,
+            modifier = when (aspectRatio) {
+                0f -> modifier
+                else -> modifier.aspectRatio(aspectRatio)
+            },
         )
     }
 }
@@ -357,6 +372,3 @@ private fun rememberMediaProjectionManager(): MediaProjectionManager {
     val context = LocalContext.current.applicationContext
     return remember(context) { context.getSystemService()!! }
 }
-
-private const val ASPECT_RATIO_PORTRAIT = 9 / 16f
-private const val ASPECT_RATIO_LANDSCAPE = 16 / 9f

@@ -17,10 +17,11 @@ package com.pexip.sdk.sample.preflight
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material.icons.Icons
@@ -31,6 +32,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,13 +54,22 @@ fun PreflightScreen(
 ) {
     BackHandler(onBack = rendering.onBackClick)
     Surface(modifier = modifier) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val landscape = remember(maxWidth, maxHeight) { maxWidth > maxHeight }
+            val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
+            val aspectRatioModifier = when (aspectRatio) {
+                0f -> Modifier
+                else -> Modifier.aspectRatio(aspectRatio, landscape)
+            }
             VideoTrackRenderer(
                 videoTrack = rendering.cameraVideoTrack?.takeIf {
                     rendering.cameraVideoTrackRendering?.capturing == true
                 },
+                onAspectRatioChange = onAspectRatioChange,
                 mirror = true,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(aspectRatioModifier),
             )
             if (rendering.cameraVideoTrack == null) {
                 Column(
