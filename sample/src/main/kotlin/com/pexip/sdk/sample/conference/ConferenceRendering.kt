@@ -16,7 +16,7 @@
 package com.pexip.sdk.sample.conference
 
 import android.content.Intent
-import com.pexip.sdk.conference.ConferenceEvent
+import com.pexip.sdk.conference.Message
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.sample.audio.AudioDeviceRendering
 import com.pexip.sdk.sample.bandwidth.BandwidthRendering
@@ -43,12 +43,12 @@ data class ConferenceCallRendering(
     val onBandwidthChange: (Boolean) -> Unit,
     val onDtmfChange: (Boolean) -> Unit,
     val onStopScreenCapture: () -> Unit,
-    val onConferenceEventsClick: () -> Unit,
+    val onChatClick: () -> Unit,
     override val onBackClick: () -> Unit,
 ) : ConferenceRendering
 
-data class ConferenceEventsRendering(
-    val conferenceEvents: List<ConferenceEvent>,
+data class ChatRendering(
+    val messages: List<Message>,
     val composerRendering: ComposerRendering,
     override val onBackClick: () -> Unit,
 ) : ConferenceRendering

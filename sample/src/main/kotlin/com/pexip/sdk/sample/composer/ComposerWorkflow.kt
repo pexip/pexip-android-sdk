@@ -15,7 +15,6 @@
  */
 package com.pexip.sdk.sample.composer
 
-import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import javax.inject.Inject
@@ -35,8 +34,10 @@ class ComposerWorkflow @Inject constructor() :
         context: RenderContext,
     ): ComposerRendering = ComposerRendering(
         message = renderState.message,
-        submitEnabled = renderState.submitEnabled,
-        onMessageChange = context.send(::OnMessageChange),
-        onSubmitClick = context.send(::OnSubmitClick),
+        onSubmitClick = context.eventHandler {
+            val output = ComposerOutput.Submit(state.message.textValue.trim())
+            state.message.textValue = ""
+            setOutput(output)
+        },
     )
 }

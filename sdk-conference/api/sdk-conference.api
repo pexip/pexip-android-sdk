@@ -95,10 +95,16 @@ public final class com/pexip/sdk/conference/MessageReceivedConferenceEvent : com
 }
 
 public abstract interface class com/pexip/sdk/conference/Messenger {
+	public abstract fun getMessage ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun registerMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
 	public abstract fun send (Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
+	public abstract fun send (Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun send (Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
 	public abstract fun unregisterMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
+}
+
+public final class com/pexip/sdk/conference/Messenger$DefaultImpls {
+	public static synthetic fun send$default (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class com/pexip/sdk/conference/PresentationStartConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {

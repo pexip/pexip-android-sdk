@@ -15,12 +15,28 @@
  */
 package com.pexip.sdk.conference
 
+import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 /**
  * Handles sending and receiving messages.
+ *
+ * @property message a [Flow] of incoming [Message]s
  */
 public interface Messenger {
+
+    public val message: Flow<Message>
+
+    /**
+     * Suspends until the message is sent or until an error is encountered.
+     *
+     * @param type a MIME type (e.g. "text/plain")
+     * @param payload actual content of the message
+     * @param participantId an optional unique identifier of the participant to send the message to
+     * @return a message
+     * @throws MessageNotSentException when there was an issue when sending the message
+     */
+    public suspend fun send(type: String, payload: String, participantId: UUID? = null): Message
 
     /**
      * Sends a message to all participants in the conference.
@@ -29,6 +45,7 @@ public interface Messenger {
      * @param payload actual content of the message
      * @param callback a callback to be invoked upon completion
      */
+    @Deprecated(message = "Use the coroutines version of this method.")
     public fun send(type: String, payload: String, callback: SendCallback)
 
     /**
@@ -39,6 +56,7 @@ public interface Messenger {
      * @param payload actual content of the message
      * @param callback a callback to be invoked upon completion
      */
+    @Deprecated(message = "Use the coroutines version of this method.")
     public fun send(participantId: UUID, type: String, payload: String, callback: SendCallback)
 
     /**
@@ -46,6 +64,7 @@ public interface Messenger {
      *
      * @param listener a message listener
      */
+    @Deprecated(message = "Use getMessages() that returns a Flow")
     public fun registerMessageListener(listener: MessageListener)
 
     /**
@@ -53,5 +72,6 @@ public interface Messenger {
      *
      * @param listener a message listener
      */
+    @Deprecated(message = "Use getMessages() that returns a Flow")
     public fun unregisterMessageListener(listener: MessageListener)
 }

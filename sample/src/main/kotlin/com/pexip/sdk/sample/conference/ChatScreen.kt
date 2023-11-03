@@ -39,18 +39,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.pexip.sdk.conference.ConferenceEvent
-import com.pexip.sdk.conference.MessageReceivedConferenceEvent
-import com.pexip.sdk.conference.PresentationStartConferenceEvent
-import com.pexip.sdk.conference.PresentationStopConferenceEvent
+import com.pexip.sdk.conference.Message
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConferenceEventsScreen(
-    rendering: ConferenceEventsRendering,
+fun ChatScreen(
+    rendering: ChatRendering,
     environment: ViewEnvironment,
     modifier: Modifier = Modifier,
 ) {
@@ -59,7 +56,7 @@ fun ConferenceEventsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Events")
+                    Text(text = "Chat")
                 },
                 navigationIcon = {
                     IconButton(onClick = rendering.onBackClick) {
@@ -72,20 +69,23 @@ fun ConferenceEventsScreen(
             )
         },
         modifier = modifier,
-    ) {
-        Column(modifier = Modifier.padding(it)) {
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
             val state = rememberLazyListState()
-            LaunchedEffect(state, rendering.conferenceEvents.size) {
+            LaunchedEffect(state, rendering.messages.size) {
                 state.animateScrollToItem(0)
             }
+            val context = LocalContext.current
+            val format = remember(context) { DateFormat.getTimeFormat(context) }
+            val reversedMessages = remember(rendering.messages) { rendering.messages.asReversed() }
             LazyColumn(
                 state = state,
                 reverseLayout = true,
                 contentPadding = PaddingValues(vertical = 8.dp),
                 modifier = Modifier.weight(1f),
             ) {
-                items(rendering.conferenceEvents.asReversed()) {
-                    ConferenceEvent(conferenceEvent = it)
+                items(reversedMessages, Message::at) {
+                    Message(it, format::format)
                 }
             }
             Divider()
@@ -98,82 +98,21 @@ fun ConferenceEventsScreen(
 }
 
 @Composable
-private fun ConferenceEvent(conferenceEvent: ConferenceEvent, modifier: Modifier = Modifier) {
-    when (conferenceEvent) {
-        is MessageReceivedConferenceEvent -> MessageReceivedConferenceEvent(
-            conferenceEvent = conferenceEvent,
-            modifier = modifier,
-        )
-        is PresentationStartConferenceEvent -> PresentationStartConferenceEvent(
-            conferenceEvent = conferenceEvent,
-            modifier = modifier,
-        )
-        is PresentationStopConferenceEvent -> PresentationStopConferenceEvent(
-            conferenceEvent = conferenceEvent,
-            modifier = modifier,
-        )
-        else -> {}
-    }
-}
-
-@Composable
-private fun MessageReceivedConferenceEvent(
-    conferenceEvent: MessageReceivedConferenceEvent,
+private fun Message(
+    message: Message,
+    format: (Date) -> String,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val format = remember(context) { DateFormat.getTimeFormat(context) }
-    val date = remember(conferenceEvent.at) { Date(conferenceEvent.at) }
+    val date = remember(message.at) { Date(message.at) }
     ListItem(
         overlineContent = {
-            Text(text = conferenceEvent.participantName)
+            Text(text = message.participantName)
         },
         headlineContent = {
-            Text(text = conferenceEvent.payload)
+            Text(text = message.payload)
         },
         trailingContent = {
-            Text(text = format.format(date))
-        },
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun PresentationStartConferenceEvent(
-    conferenceEvent: PresentationStartConferenceEvent,
-    modifier: Modifier = Modifier,
-) {
-    val context = LocalContext.current
-    val format = remember(context) { DateFormat.getTimeFormat(context) }
-    val date = remember(conferenceEvent.at) { Date(conferenceEvent.at) }
-    ListItem(
-        overlineContent = {
-            Text(text = conferenceEvent.presenterName)
-        },
-        headlineContent = {
-            Text(text = "Presentation started")
-        },
-        trailingContent = {
-            Text(text = format.format(date))
-        },
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun PresentationStopConferenceEvent(
-    conferenceEvent: PresentationStopConferenceEvent,
-    modifier: Modifier = Modifier,
-) {
-    val context = LocalContext.current
-    val format = remember(context) { DateFormat.getTimeFormat(context) }
-    val date = remember(conferenceEvent.at) { Date(conferenceEvent.at) }
-    ListItem(
-        headlineContent = {
-            Text(text = "Presentation stopped")
-        },
-        trailingContent = {
-            Text(text = format.format(date))
+            Text(text = format(date))
         },
         modifier = modifier,
     )
