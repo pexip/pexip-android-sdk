@@ -3,6 +3,7 @@ plugins {
     id("com.pexip.sdk.kotlin.android")
     id("com.pexip.sdk.licensee")
     alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.wire)
 }

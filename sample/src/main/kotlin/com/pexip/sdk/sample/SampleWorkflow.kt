@@ -34,7 +34,6 @@ import com.pexip.sdk.sample.preflight.PreflightWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
-import com.squareup.workflow1.ui.toParcelable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.awaitCancellation
 import javax.inject.Inject
@@ -59,7 +58,7 @@ class SampleWorkflow @Inject constructor(
         val allGranted = permissions.all(context::isPermissionGranted)
         return SampleState(
             destination = when (allGranted) {
-                true -> snapshot?.toParcelable() ?: SampleDestination.Preflight
+                true -> SampleDestination.Preflight
                 else -> SampleDestination.Permissions
             },
             createCameraVideoTrackCount = if (allGranted) 1u else 0u,
