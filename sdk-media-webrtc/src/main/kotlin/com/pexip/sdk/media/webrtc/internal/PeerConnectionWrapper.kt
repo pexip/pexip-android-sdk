@@ -160,19 +160,6 @@ internal class PeerConnectionWrapper(
         block(rtpTransceiver)
     }
 
-    suspend fun syncRtpTransceiver(transceiver: RtpTransceiver) = mutex.withLock {
-        val (key, t) = rtpTransceivers.entries
-            .find { (_, t) -> t.mid == null && t.mediaType == transceiver.mediaType }
-            ?: return@withLock
-        transceiver.direction = t.direction
-        transceiver.sender.streams = t.sender.streams
-        transceiver.sender.parameters = t.sender.parameters
-        transceiver.sender.setTrack(t.sender.track(), false)
-        t.sender.setTrack(null, false)
-        rtpTransceivers[key] = transceiver
-        t.stopInternal()
-    }
-
     suspend fun setLocalDescription(block: SessionDescription.(Map<RtpTransceiverKey, String>) -> SessionDescription = { this }): SessionDescription =
         mutex.withLock {
             peerConnection!!.setLocalDescription()
@@ -202,6 +189,7 @@ internal class PeerConnectionWrapper(
 
     suspend fun setRemoteDescription(description: SessionDescription) = mutex.withLock {
         peerConnection!!.setRemoteDescription(description)
+        peerConnection!!.withTransceivers(::syncRtpTransceiver)
         remoteIceCandidates.forEach { peerConnection!!.doAddIceCandidate(it) }
         remoteIceCandidates.clear()
         remoteFingerprints.value = description.splitToLineSequence()
@@ -231,6 +219,27 @@ internal class PeerConnectionWrapper(
         iceCredentials.clear()
         dataChannel = null
         peerConnection = null
+    }
+
+    private fun syncRtpTransceiver(transceiver: RtpTransceiver) {
+        if (transceiver.mid == null) return
+        val (key, t) = rtpTransceivers.entries
+            .find { (_, t) -> t.mid == null && t.mediaType == transceiver.mediaType }
+            ?: return
+        transceiver.direction = t.direction
+        transceiver.sender.streams = t.sender.streams
+        transceiver.sender.parameters = t.sender.parameters
+        transceiver.sender.setTrack(t.sender.track(), false)
+        t.sender.setTrack(null, false)
+        rtpTransceivers[key] = transceiver
+        t.stopStandard()
+    }
+
+    // https://bugs.chromium.org/p/webrtc/issues/detail?id=10788
+    @Suppress("UNCHECKED_CAST")
+    private inline fun PeerConnection.withTransceivers(block: (RtpTransceiver) -> Unit) {
+        val transceivers = NativeGetTransceivers.invoke(this) as List<RtpTransceiver>
+        transceivers.forEach(block)
     }
 
     private suspend fun PeerConnection.setLocalDescription() =
@@ -264,6 +273,12 @@ internal class PeerConnectionWrapper(
     }
 
     companion object {
+
+        private val NativeGetTransceivers by lazy {
+            PeerConnection::class.java.declaredMethods
+                .first { it.name == "nativeGetTransceivers" }
+                .also { it.isAccessible = true }
+        }
 
         private const val FINGERPRINT = "a=fingerprint:"
         private const val MID = "a=mid:"

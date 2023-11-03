@@ -286,9 +286,6 @@ internal class WebRtcMediaConnection(
                     wrapper.setRemoteDescription(sdp.mangle(bitrate))
                     runCatching { config.signaling.onAck() }
                 }
-                is Event.OnTrack -> {
-                    wrapper.syncRtpTransceiver(it.transceiver)
-                }
                 is Event.OnIceCandidate -> {
                     val sdp = it.candidate.sdp ?: return@collect
                     val mid = it.candidate.sdpMid ?: return@collect

@@ -87,10 +87,6 @@ internal class Observer(private val continualGatheringPolicy: ContinualGathering
         _event.tryEmit(Event.OnIceConnectionChange(newState))
     }
 
-    override fun onTrack(transceiver: RtpTransceiver) {
-        _event.tryEmit(Event.OnTrack(transceiver))
-    }
-
     override fun onAddTrack(receiver: RtpReceiver, streams: Array<out MediaStream>) {
         _event.tryEmit(Event.OnAddTrack(receiver))
     }
@@ -128,5 +124,8 @@ internal class Observer(private val continualGatheringPolicy: ContinualGathering
     }
 
     override fun onSelectedCandidatePairChanged(event: CandidatePairChangeEvent) {
+    }
+
+    override fun onTrack(transceiver: RtpTransceiver) {
     }
 }
