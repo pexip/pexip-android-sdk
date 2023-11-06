@@ -23,12 +23,16 @@ import org.webrtc.IceCandidate
 import org.webrtc.IceCandidateErrorEvent
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
+import org.webrtc.PeerConnection.ContinualGatheringPolicy
 import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class PeerConnectionObserver : PeerConnection.Observer {
+internal class PeerConnectionObserver(
+    private val continualGatheringPolicy: ContinualGatheringPolicy,
+) : PeerConnection.Observer {
 
+    private val candidates = mutableMapOf<String, IceCandidate>()
     private val renegotiationNeeded = AtomicBoolean(false)
     private val _event = MutableSharedFlow<Event>(extraBufferCapacity = 64)
 
@@ -40,11 +44,23 @@ internal class PeerConnectionObserver : PeerConnection.Observer {
     }
 
     override fun onIceCandidate(candidate: IceCandidate) {
+        if (continualGatheringPolicy == ContinualGatheringPolicy.GATHER_ONCE) {
+            if (candidate.sdpMid in candidates) return
+            candidates[candidate.sdpMid] =
+                IceCandidate(candidate.sdpMid, candidate.sdpMLineIndex, "")
+        }
         _event.tryEmit(Event.OnIceCandidate(candidate))
     }
 
     override fun onIceGatheringChange(state: PeerConnection.IceGatheringState) {
-        _event.tryEmit(Event.OnIceGatheringChange(state))
+        if (continualGatheringPolicy == ContinualGatheringPolicy.GATHER_ONCE) {
+            if (state == PeerConnection.IceGatheringState.COMPLETE) {
+                candidates.forEach { (_, candidate) ->
+                    _event.tryEmit(Event.OnIceCandidate(candidate))
+                }
+                candidates.clear()
+            }
+        }
     }
 
     override fun onStandardizedIceConnectionChange(newState: PeerConnection.IceConnectionState) {

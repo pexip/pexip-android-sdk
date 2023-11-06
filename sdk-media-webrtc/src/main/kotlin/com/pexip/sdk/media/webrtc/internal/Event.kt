@@ -17,7 +17,6 @@ package com.pexip.sdk.media.webrtc.internal
 
 import org.webrtc.IceCandidate
 import org.webrtc.PeerConnection
-import org.webrtc.PeerConnection.IceGatheringState
 import org.webrtc.RtpReceiver
 
 internal sealed interface Event {
@@ -32,9 +31,6 @@ internal sealed interface Event {
 
     @JvmInline
     value class OnIceCandidate(val candidate: IceCandidate) : Event
-
-    @JvmInline
-    value class OnIceGatheringChange(val state: IceGatheringState) : Event
 
     @JvmInline
     value class OnIceConnectionChange(val state: PeerConnection.IceConnectionState) : Event
