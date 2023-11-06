@@ -18,13 +18,16 @@ package com.pexip.sdk.media.webrtc.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.webrtc.SurfaceViewRenderer
 import org.webrtc.GlRectDrawer
+import org.webrtc.RendererCommon
 
 /**
  * Composes [SurfaceViewRenderer] and renders a [VideoTrack].
@@ -38,6 +41,8 @@ import org.webrtc.GlRectDrawer
  * @param mirror defines if the video should rendered mirrored
  * @param zOrderMediaOverlay control whether the video is rendered on top of another video
  * @param zOrderOnTop control whether the video is rendered on top of its window. This overrides [zOrderMediaOverlay] if set
+ * @param onFirstFrame called when the first frame has been rendered
+ * @param onAspectRatioChange called when aspect ratio of the rendered video changes
  */
 @Composable
 public fun VideoTrackRenderer(
@@ -47,14 +52,32 @@ public fun VideoTrackRenderer(
     mirror: Boolean = false,
     zOrderMediaOverlay: Boolean = false,
     zOrderOnTop: Boolean = false,
+    onFirstFrame: () -> Unit = { },
+    onAspectRatioChange: (Float) -> Unit = { },
 ) {
     val eglBase = LocalEglBase.current
     val eglBaseContext = remember(eglBase) { eglBase?.eglBaseContext }
     val eglBaseConfigAttributes = LocalEglBaseConfigAttributes.current
     val context = LocalContext.current
     val renderer = remember(context) { SurfaceViewRenderer(context) }
+    val currentOnFirstFrame by rememberUpdatedState(onFirstFrame)
+    val currentOnAspectRatioChange by rememberUpdatedState(onAspectRatioChange)
     DisposableEffect(renderer, eglBaseContext) {
-        renderer.init(eglBaseContext, null, eglBaseConfigAttributes, GlRectDrawer())
+        val events = object : RendererCommon.RendererEvents {
+
+            override fun onFirstFrameRendered() {
+                currentOnFirstFrame()
+            }
+
+            override fun onFrameResolutionChanged(width: Int, height: Int, rotation: Int) {
+                val aspectRatio = when (rotation) {
+                    0, 180 -> width / height.toFloat()
+                    else -> height / width.toFloat()
+                }
+                currentOnAspectRatioChange(aspectRatio)
+            }
+        }
+        renderer.init(eglBaseContext, events, eglBaseConfigAttributes, GlRectDrawer())
         onDispose {
             renderer.clearImage()
             renderer.release()

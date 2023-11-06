@@ -22,6 +22,7 @@ import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.CameraVideoTrackFactory
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalAudioTrackFactory
+import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.sample.conference.ConferenceProps
 import com.pexip.sdk.sample.conference.ConferenceWorkflow
 import com.pexip.sdk.sample.permissions.PermissionsProps
@@ -127,7 +128,7 @@ class SampleWorkflow @Inject constructor(
         if (track != null) {
             runningSideEffect("cameraVideoTrackSideEffect($track)") {
                 try {
-                    track.startCapture()
+                    track.startCapture(QualityProfile.VeryHigh)
                     awaitCancellation()
                 } finally {
                     actionSink.send(OnCameraVideoTrackChange(null))

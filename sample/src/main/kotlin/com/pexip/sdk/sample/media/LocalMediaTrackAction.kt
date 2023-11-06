@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.pexip.sdk.sample.media
 
+import com.pexip.sdk.media.LocalVideoTrack
+import com.pexip.sdk.media.QualityProfile
 import com.squareup.workflow1.WorkflowAction
 
 typealias LocalMediaTrackAction = WorkflowAction<LocalMediaTrackProps, LocalMediaTrackState, Nothing>
@@ -24,7 +26,10 @@ class OnCapturingChange(private val capturing: Boolean) : LocalMediaTrackAction(
     override fun Updater.apply() {
         val track = props.localMediaTrack
         when (capturing) {
-            true -> track.startCapture()
+            true -> when (track) {
+                is LocalVideoTrack -> track.startCapture(QualityProfile.VeryHigh)
+                else -> track.startCapture()
+            }
             else -> track.stopCapture()
         }
     }
