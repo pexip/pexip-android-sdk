@@ -27,7 +27,6 @@ import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.Referer
-import com.pexip.sdk.conference.coroutines.send
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
@@ -62,12 +61,6 @@ public class InfinityConference private constructor(
     private val executor = Executors.newSingleThreadScheduledExecutor()
     private val scope = CoroutineScope(SupervisorJob() + executor.asCoroutineDispatcher())
     private val store = TokenStore.create(response)
-    private val messengerImpl = MessengerImpl(
-        senderId = response.participantId,
-        senderName = response.participantName,
-        store = store,
-        step = step,
-    )
     private val event = step.events(store).shareIn(scope, SharingStarted.Lazily)
     private val listeners = CopyOnWriteArraySet<ConferenceEventListener>()
     private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
@@ -76,7 +69,14 @@ public class InfinityConference private constructor(
 
     override val referer: Referer = RefererImpl(step.requestBuilder, response.directMediaRequested)
 
-    override val messenger: Messenger = messengerImpl
+    override val messenger: Messenger = MessengerImpl(
+        scope = scope,
+        event = event,
+        senderId = response.participantId,
+        senderName = response.participantName,
+        store = store,
+        step = step,
+    )
 
     override val signaling: MediaConnectionSignaling = RealMediaConnectionSignaling(
         store = store,

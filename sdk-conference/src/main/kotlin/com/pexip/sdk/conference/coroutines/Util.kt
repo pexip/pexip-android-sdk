@@ -19,17 +19,12 @@ import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.Message
-import com.pexip.sdk.conference.MessageListener
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.Messenger
-import com.pexip.sdk.conference.SendCallback
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.util.UUID
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * Converts this [Conference] to a [Flow] that emits [ConferenceEvent]s.
@@ -51,31 +46,20 @@ public fun Conference.getConferenceEvents(): Flow<ConferenceEvent> = callbackFlo
  * @return a message
  * @throws MessageNotSentException when there was an issue when sending the message
  */
+@Deprecated(message = "Use the member method instead.", level = DeprecationLevel.ERROR)
 public suspend fun Messenger.send(
     type: String,
     payload: String,
     participantId: UUID? = null,
-): Message = suspendCoroutine {
-    val callback = object : SendCallback {
-
-        override fun onSuccess(message: Message) = it.resume(message)
-
-        override fun onFailure(e: MessageNotSentException) = it.resumeWithException(e)
-    }
-    if (participantId == null) {
-        send(type, payload, callback)
-    } else {
-        send(participantId, type, payload, callback)
-    }
-}
+): Message = send(type, payload, participantId)
 
 /**
  * Converts this [Messenger] to a [Flow] that emits [Message]s.
  *
  * @return a flow of messages
  */
-public fun Messenger.getMessages(): Flow<Message> = callbackFlow {
-    val listener = MessageListener(::trySend)
-    registerMessageListener(listener)
-    awaitClose { unregisterMessageListener(listener) }
-}
+@Deprecated(
+    message = "Use the member method instead.",
+    replaceWith = ReplaceWith("this.message"),
+)
+public fun Messenger.getMessages(): Flow<Message> = message

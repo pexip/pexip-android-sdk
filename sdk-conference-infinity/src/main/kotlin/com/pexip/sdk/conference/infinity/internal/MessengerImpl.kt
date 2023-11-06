@@ -15,11 +15,8 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
-import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
-import com.pexip.sdk.api.EventSource
-import com.pexip.sdk.api.EventSourceListener
+import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.MessageRequest
@@ -29,70 +26,53 @@ import com.pexip.sdk.conference.MessageListener
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.SendCallback
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArraySet
 
 internal class MessengerImpl(
+    private val scope: CoroutineScope,
+    event: Flow<Event>,
     private val senderId: UUID,
     private val senderName: String,
     private val store: TokenStore,
     private val step: InfinityService.ConferenceStep,
     private val atProvider: () -> Long = System::currentTimeMillis,
-) : Messenger, EventSourceListener {
+) : Messenger {
 
     private val listeners = CopyOnWriteArraySet<MessageListener>()
 
-    override fun send(type: String, payload: String, callback: SendCallback) =
-        sendInternal(type, payload, callback)
+    override val message: Flow<Message> = event
+        .filterIsInstance<MessageReceivedEvent>()
+        .map {
+            Message(
+                at = atProvider(),
+                participantId = it.participantId,
+                participantName = it.participantName,
+                type = it.type,
+                payload = it.payload,
+                direct = it.direct,
+            )
+        }
 
-    override fun send(
-        participantId: UUID,
-        type: String,
-        payload: String,
-        callback: SendCallback,
-    ) = sendInternal(type, payload, callback, participantId)
-
-    override fun registerMessageListener(listener: MessageListener) {
-        listeners += listener
+    init {
+        message
+            .onEach { message -> listeners.forEach { it.onMessage(message) } }
+            .flowOn(Dispatchers.Main.immediate)
+            .launchIn(scope)
     }
 
-    override fun unregisterMessageListener(listener: MessageListener) {
-        listeners -= listener
-    }
-
-    override fun onOpen(eventSource: EventSource) {
-        // noop
-    }
-
-    override fun onEvent(eventSource: EventSource, event: Event) {
-        if (event !is MessageReceivedEvent) return
-        val message = Message(
-            at = atProvider(),
-            participantId = event.participantId,
-            participantName = event.participantName,
-            type = event.type,
-            payload = event.payload,
-            direct = event.direct,
-        )
-        listeners.forEach { it.onMessage(message) }
-    }
-
-    override fun onClosed(eventSource: EventSource, t: Throwable?) {
-        // noop
-    }
-
-    private fun sendInternal(
-        type: String,
-        payload: String,
-        callback: SendCallback,
-        participantId: UUID? = null,
-    ) {
-        require(type.isNotBlank()) { "type is blank." }
-        require(payload.isNotBlank()) { "payload is blank." }
-        val request = MessageRequest(
-            type = type,
-            payload = payload,
-        )
+    override suspend fun send(type: String, payload: String, participantId: UUID?): Message {
+        val request = MessageRequest(type = type, payload = payload)
         val token = store.get()
         val call = when (participantId) {
             null -> step.message(request, token)
@@ -106,16 +86,54 @@ internal class MessengerImpl(
             payload = payload,
             direct = participantId != null,
         )
-        val c = object : Callback<Boolean> {
-
-            override fun onSuccess(call: Call<Boolean>, response: Boolean) = when (response) {
-                true -> callback.onSuccess(message)
-                else -> callback.onFailure(MessageNotSentException(message))
-            }
-
-            override fun onFailure(call: Call<Boolean>, t: Throwable) =
-                callback.onFailure(MessageNotSentException(message, t))
+        val result = try {
+            call.await()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (t: Throwable) {
+            throw MessageNotSentException(message, t)
         }
-        call.enqueue(c)
+        return when (result) {
+            true -> message
+            else -> throw MessageNotSentException(message)
+        }
+    }
+
+    @Deprecated(message = "Use the coroutines version of this method.")
+    override fun send(type: String, payload: String, callback: SendCallback) =
+        sendInternal(type, payload, callback)
+
+    @Deprecated(message = "Use the coroutines version of this method.")
+    override fun send(
+        participantId: UUID,
+        type: String,
+        payload: String,
+        callback: SendCallback,
+    ) = sendInternal(type, payload, callback, participantId)
+
+    @Deprecated(message = "Use getMessages() that returns a Flow")
+    override fun registerMessageListener(listener: MessageListener) {
+        listeners += listener
+    }
+
+    @Deprecated(message = "Use getMessages() that returns a Flow")
+    override fun unregisterMessageListener(listener: MessageListener) {
+        listeners -= listener
+    }
+
+    private fun sendInternal(
+        type: String,
+        payload: String,
+        callback: SendCallback,
+        participantId: UUID? = null,
+    ) {
+        scope.launch {
+            try {
+                val message = send(type, payload, participantId)
+                callback.onSuccess(message)
+            } catch (e: MessageNotSentException) {
+                callback.onFailure(e)
+            }
+        }
     }
 }

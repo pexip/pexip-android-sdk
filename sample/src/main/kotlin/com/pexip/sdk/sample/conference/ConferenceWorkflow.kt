@@ -51,12 +51,15 @@ import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.renderChild
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import javax.inject.Inject
@@ -109,11 +112,12 @@ class ConferenceWorkflow @Inject constructor(
         context.screenCapturingSideEffect(renderState.screenCaptureVideoTrack)
         context.screenCaptureVideoTrackSideEffect(renderState.screenCaptureData)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
+        context.messageSideEffect(renderProps, renderState)
         context.conferenceEventsSideEffect(renderProps)
         context.presentationRemoteVideoTrackSideEffect(renderState.connection)
-        return when (renderState.showingConferenceEvents) {
-            true -> ConferenceEventsRendering(
-                conferenceEvents = renderState.conferenceEvents,
+        return when (renderState.showingChat) {
+            true -> ChatRendering(
+                messages = renderState.messages,
                 composerRendering = context.renderChild(
                     child = composerWorkflow,
                     handler = ::OnComposerOutput,
@@ -157,7 +161,7 @@ class ConferenceWorkflow @Inject constructor(
                 onBandwidthChange = context.send(::OnBandwidthChange),
                 onDtmfChange = context.send(::OnDtmfChange),
                 onStopScreenCapture = context.send(::OnStopScreenCapture),
-                onConferenceEventsClick = context.send(::OnConferenceEventsClick),
+                onChatClick = context.send(::OnChatClick),
                 onBackClick = context.send(::OnBackClick),
             )
         }
@@ -243,12 +247,35 @@ class ConferenceWorkflow @Inject constructor(
                 .collectLatest(actionSink::send)
         }
 
+    private fun RenderContext.messageSideEffect(
+        renderProps: ConferenceProps,
+        renderState: ConferenceState,
+    ) {
+        val messenger = renderProps.conference.messenger
+        val message = renderState.message
+        runningSideEffect("messageSideEffect($messenger, $message)") {
+            val flow = merge(
+                messenger.message,
+                message.mapNotNull {
+                    try {
+                        messenger.send(type = "text/plain", payload = it)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (t: Throwable) {
+                        null
+                    }
+                },
+            )
+            flow.map(::OnMessage).collect(actionSink::send)
+        }
+    }
+
     private fun RenderContext.conferenceEventsSideEffect(renderProps: ConferenceProps) {
         val conference = renderProps.conference
         runningSideEffect("conferenceEventsSideEffect($conference)") {
             val events = conference.getConferenceEvents().shareIn(this, SharingStarted.Lazily)
             events
-                .map(::toConferenceAction)
+                .mapNotNull(::toConferenceAction)
                 .onEach(actionSink::send)
                 .launchIn(this)
             events.filterIsInstance<ReferConferenceEvent>()
@@ -266,7 +293,7 @@ class ConferenceWorkflow @Inject constructor(
         is PresentationStopConferenceEvent -> OnPresentationStopConferenceEvent(event)
         is DisconnectConferenceEvent -> OnDisconnectConferenceEvent(event)
         is FailureConferenceEvent -> OnFailureConferenceEvent(event)
-        else -> OnConferenceEvent(event)
+        else -> null
     }
 
     private companion object {

@@ -339,11 +339,11 @@ private fun ConferenceEventsItem(
 ) {
     DropdownMenuItem(
         text = {
-            Text(text = "Events")
+            Text(text = "Chat")
         },
         onClick = {
             onDismissRequest()
-            rendering.onConferenceEventsClick()
+            rendering.onChatClick()
         },
         leadingIcon = {
             Icon(imageVector = Icons.Rounded.Message, contentDescription = null)

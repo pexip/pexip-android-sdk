@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ object ConferenceViewFactoryModule {
     @Provides
     @Singleton
     @IntoSet
-    fun provideConferenceEventsViewFactory(): ViewFactory<*> =
-        composeViewFactory<ConferenceEventsRendering> { rendering, environment ->
-            ConferenceEventsScreen(rendering, environment)
+    fun provideChatViewFactory(): ViewFactory<*> =
+        composeViewFactory<ChatRendering> { rendering, environment ->
+            ChatScreen(rendering, environment)
         }
 }

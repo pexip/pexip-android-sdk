@@ -15,45 +15,49 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
+import app.cash.turbine.test
+import assertk.all
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
+import assertk.assertions.prop
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
-import com.pexip.sdk.api.EventSource
+import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Message
-import com.pexip.sdk.conference.MessageListener
 import com.pexip.sdk.conference.MessageNotSentException
-import com.pexip.sdk.conference.SendCallback
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.runTest
 import java.util.UUID
-import java.util.concurrent.CountDownLatch
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.fail
 
 class MessengerImplTest {
 
+    private lateinit var event: MutableSharedFlow<Event>
     private lateinit var store: TokenStore
-    private lateinit var latch: CountDownLatch
 
     @BeforeTest
     fun setUp() {
+        event = MutableSharedFlow(extraBufferCapacity = 1)
         store = TokenStore.create(Random.nextToken())
-        latch = CountDownLatch(1)
     }
 
     @Test
-    fun `send() to all is successful`() {
+    fun `send() to all is successful`() = runTest {
         val expected = Random.nextMessage()
         val step = object : TestConferenceStep() {
 
             override fun message(request: MessageRequest, token: String): Call<Boolean> {
-                assertEquals(expected.type, request.type)
-                assertEquals(expected.payload, request.payload)
+                assertThat(request::type).isEqualTo(expected.type)
+                assertThat(request::payload).isEqualTo(expected.payload)
                 return object : TestCall<Boolean> {
 
                     override fun enqueue(callback: Callback<Boolean>) =
@@ -62,31 +66,26 @@ class MessengerImplTest {
             }
         }
         val messenger = MessengerImpl(
+            scope = backgroundScope,
+            event = event,
             senderId = expected.participantId,
             senderName = expected.participantName,
             store = store,
             step = step,
             atProvider = expected::at,
         )
-        val callback = object : TestSendCallback {
-
-            override fun onSuccess(message: Message) {
-                assertEquals(expected, message)
-                latch.countDown()
-            }
-        }
-        messenger.send(expected.type, expected.payload, callback)
-        latch.await()
+        val message = messenger.send(expected.type, expected.payload)
+        assertThat(message, "message").isEqualTo(expected)
     }
 
     @Test
-    fun `send() to all failed to send`() {
+    fun `send() to all failed to send`() = runTest {
         val expected = Random.nextMessage()
         val step = object : TestConferenceStep() {
 
             override fun message(request: MessageRequest, token: String): Call<Boolean> {
-                assertEquals(expected.type, request.type)
-                assertEquals(expected.payload, request.payload)
+                assertThat(request::type).isEqualTo(expected.type)
+                assertThat(request::payload).isEqualTo(expected.payload)
                 return object : TestCall<Boolean> {
 
                     override fun enqueue(callback: Callback<Boolean>) =
@@ -95,33 +94,31 @@ class MessengerImplTest {
             }
         }
         val messenger = MessengerImpl(
+            scope = backgroundScope,
+            event = event,
             senderId = expected.participantId,
             senderName = expected.participantName,
             store = store,
             step = step,
             atProvider = expected::at,
         )
-        val callback = object : TestSendCallback {
-
-            override fun onFailure(e: MessageNotSentException) {
-                assertEquals(expected, e.msg)
-                assertNull(e.cause)
-                latch.countDown()
+        assertFailure { messenger.send(expected.type, expected.payload) }
+            .isInstanceOf<MessageNotSentException>()
+            .all {
+                prop(MessageNotSentException::msg).isEqualTo(expected)
+                prop(MessageNotSentException::cause).isNull()
             }
-        }
-        messenger.send(expected.type, expected.payload, callback)
-        latch.await()
     }
 
     @Test
-    fun `send() to all throws`() {
+    fun `send() to all throws`() = runTest {
         val expected = Random.nextMessage()
         val expectedThrowable = Throwable()
         val step = object : TestConferenceStep() {
 
             override fun message(request: MessageRequest, token: String): Call<Boolean> {
-                assertEquals(expected.type, request.type)
-                assertEquals(expected.payload, request.payload)
+                assertThat(request::type).isEqualTo(expected.type)
+                assertThat(request::payload).isEqualTo(expected.payload)
                 return object : TestCall<Boolean> {
 
                     override fun enqueue(callback: Callback<Boolean>) =
@@ -130,37 +127,35 @@ class MessengerImplTest {
             }
         }
         val messenger = MessengerImpl(
+            scope = backgroundScope,
+            event = event,
             senderId = expected.participantId,
             senderName = expected.participantName,
             store = store,
             step = step,
             atProvider = expected::at,
         )
-        val callback = object : TestSendCallback {
-
-            override fun onFailure(e: MessageNotSentException) {
-                assertEquals(expected, e.msg)
-                assertEquals(expectedThrowable, e.cause)
-                latch.countDown()
+        assertFailure { messenger.send(expected.type, expected.payload) }
+            .isInstanceOf<MessageNotSentException>()
+            .all {
+                prop(MessageNotSentException::msg).isEqualTo(expected)
+                prop(MessageNotSentException::cause).isEqualTo(expectedThrowable)
             }
-        }
-        messenger.send(expected.type, expected.payload, callback)
-        latch.await()
     }
 
     @Test
-    fun `send() to a participant is successful`() {
+    fun `send() to a participant is successful`() = runTest {
         val expected = Random.nextMessage(direct = true)
         val id = UUID.randomUUID()
         val step = object : TestConferenceStep() {
 
             override fun participant(participantId: UUID): InfinityService.ParticipantStep {
-                assertEquals(id, participantId)
+                assertThat(participantId, "participantId").isEqualTo(id)
                 return object : TestParticipantStep() {
 
                     override fun message(request: MessageRequest, token: String): Call<Boolean> {
-                        assertEquals(expected.type, request.type)
-                        assertEquals(expected.payload, request.payload)
+                        assertThat(request::type).isEqualTo(expected.type)
+                        assertThat(request::payload).isEqualTo(expected.payload)
                         return object : TestCall<Boolean> {
 
                             override fun enqueue(callback: Callback<Boolean>) =
@@ -171,36 +166,31 @@ class MessengerImplTest {
             }
         }
         val messenger = MessengerImpl(
+            scope = backgroundScope,
+            event = event,
             senderId = expected.participantId,
             senderName = expected.participantName,
             store = store,
             step = step,
             atProvider = expected::at,
         )
-        val callback = object : TestSendCallback {
-
-            override fun onSuccess(message: Message) {
-                assertEquals(expected, message)
-                latch.countDown()
-            }
-        }
-        messenger.send(id, expected.type, expected.payload, callback)
-        latch.await()
+        val message = messenger.send(expected.type, expected.payload, id)
+        assertThat(message, "message").isEqualTo(expected)
     }
 
     @Test
-    fun `send() to a participant failed to send`() {
+    fun `send() to a participant failed to send`() = runTest {
         val expected = Random.nextMessage(direct = true)
         val id = UUID.randomUUID()
         val step = object : TestConferenceStep() {
 
             override fun participant(participantId: UUID): InfinityService.ParticipantStep {
-                assertEquals(id, participantId)
+                assertThat(participantId, "participantId").isEqualTo(id)
                 return object : TestParticipantStep() {
 
                     override fun message(request: MessageRequest, token: String): Call<Boolean> {
-                        assertEquals(expected.type, request.type)
-                        assertEquals(expected.payload, request.payload)
+                        assertThat(request::type).isEqualTo(expected.type)
+                        assertThat(request::payload).isEqualTo(expected.payload)
                         return object : TestCall<Boolean> {
 
                             override fun enqueue(callback: Callback<Boolean>) =
@@ -211,38 +201,36 @@ class MessengerImplTest {
             }
         }
         val messenger = MessengerImpl(
+            scope = backgroundScope,
+            event = event,
             senderId = expected.participantId,
             senderName = expected.participantName,
             store = store,
             step = step,
             atProvider = expected::at,
         )
-        val callback = object : TestSendCallback {
-
-            override fun onFailure(e: MessageNotSentException) {
-                assertEquals(expected, e.msg)
-                assertNull(e.cause)
-                latch.countDown()
+        assertFailure { messenger.send(expected.type, expected.payload, id) }
+            .isInstanceOf<MessageNotSentException>()
+            .all {
+                prop(MessageNotSentException::msg).isEqualTo(expected)
+                prop(MessageNotSentException::cause).isNull()
             }
-        }
-        messenger.send(id, expected.type, expected.payload, callback)
-        latch.await()
     }
 
     @Test
-    fun `send() to a participant throws`() {
+    fun `send() to a participant throws`() = runTest {
         val expected = Random.nextMessage(direct = true)
         val expectedThrowable = Throwable()
         val id = UUID.randomUUID()
         val step = object : TestConferenceStep() {
 
             override fun participant(participantId: UUID): InfinityService.ParticipantStep {
-                assertEquals(id, participantId)
+                assertThat(participantId, "participantId").isEqualTo(id)
                 return object : TestParticipantStep() {
 
                     override fun message(request: MessageRequest, token: String): Call<Boolean> {
-                        assertEquals(expected.type, request.type)
-                        assertEquals(expected.payload, request.payload)
+                        assertThat(request::type).isEqualTo(expected.type)
+                        assertThat(request::payload).isEqualTo(expected.payload)
                         return object : TestCall<Boolean> {
 
                             override fun enqueue(callback: Callback<Boolean>) =
@@ -253,44 +241,48 @@ class MessengerImplTest {
             }
         }
         val messenger = MessengerImpl(
+            scope = backgroundScope,
+            event = event,
             senderId = expected.participantId,
             senderName = expected.participantName,
             store = store,
             step = step,
             atProvider = expected::at,
         )
-        val callback = object : TestSendCallback {
-
-            override fun onFailure(e: MessageNotSentException) {
-                assertEquals(expected, e.msg)
-                assertEquals(expectedThrowable, e.cause)
-                latch.countDown()
+        assertFailure { messenger.send(expected.type, expected.payload, id) }
+            .isInstanceOf<MessageNotSentException>()
+            .all {
+                prop(MessageNotSentException::msg).isEqualTo(expected)
+                prop(MessageNotSentException::cause).isEqualTo(expectedThrowable)
             }
-        }
-        messenger.send(id, expected.type, expected.payload, callback)
-        latch.await()
     }
 
     @Test
-    fun `onEvent maps MessageReceivedEvent to Message`() {
+    fun `onEvent maps MessageReceivedEvent to Message`() = runTest {
         val at = System.currentTimeMillis()
         val messenger = MessengerImpl(
+            scope = backgroundScope,
+            event = event,
             senderId = UUID.randomUUID(),
             senderName = Random.nextString(8),
             store = store,
             step = object : TestConferenceStep() {},
             atProvider = { at },
         )
-        val message = Random.nextMessage(at = at, direct = false)
-        val directMessage = Random.nextMessage(at = at, direct = true)
-        val messages = mutableListOf<Message>()
-        val listener = MessageListener(messages::add)
-        val eventSource = EventSource(::fail)
-        messenger.registerMessageListener(listener)
-        messenger.onEvent(eventSource, message.toMessageReceivedEvent())
-        messenger.onEvent(eventSource, directMessage.toMessageReceivedEvent())
-        messenger.unregisterMessageListener(listener)
-        assertEquals(listOf(message, directMessage), messages)
+        messenger.message.test {
+            val messages = List(10) { Random.nextMessage(at = at, direct = it % 2 == 0) }
+            messages.forEach {
+                val e = MessageReceivedEvent(
+                    participantId = it.participantId,
+                    participantName = it.participantName,
+                    type = it.type,
+                    payload = it.payload,
+                    direct = it.direct,
+                )
+                event.emit(e)
+                assertThat(awaitItem(), "message").isEqualTo(it)
+            }
+        }
     }
 
     private fun Random.nextMessage(at: Long = System.currentTimeMillis(), direct: Boolean = false) =
@@ -302,19 +294,4 @@ class MessengerImplTest {
             payload = nextString(64),
             direct = direct,
         )
-
-    private fun Message.toMessageReceivedEvent() = MessageReceivedEvent(
-        participantId = participantId,
-        participantName = participantName,
-        type = type,
-        payload = payload,
-        direct = direct,
-    )
-
-    private interface TestSendCallback : SendCallback {
-
-        override fun onSuccess(message: Message): Unit = fail()
-
-        override fun onFailure(e: MessageNotSentException): Unit = fail()
-    }
 }

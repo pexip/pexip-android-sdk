@@ -17,9 +17,9 @@ package com.pexip.sdk.sample.conference
 
 import android.content.Intent
 import com.pexip.sdk.conference.Conference
-import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
+import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.media.LocalVideoTrack
@@ -106,18 +106,18 @@ class OnDtmfOutput(private val output: DtmfOutput) : ConferenceAction() {
     }
 }
 
-class OnConferenceEventsClick : ConferenceAction() {
+class OnChatClick : ConferenceAction() {
 
     override fun Updater.apply() {
-        state = state.copy(showingConferenceEvents = true)
+        state = state.copy(showingChat = true)
     }
 }
 
 class OnBackClick : ConferenceAction() {
 
     override fun Updater.apply() {
-        if (state.showingConferenceEvents) {
-            state = state.copy(showingConferenceEvents = false)
+        if (state.showingChat) {
+            state = state.copy(showingChat = false)
         } else {
             setOutput(ConferenceOutput.Back)
         }
@@ -138,6 +138,14 @@ class OnScreenCapturing(private val capturing: Boolean) : ConferenceAction() {
     }
 }
 
+class OnMessage(private val message: Message) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(messages = state.messages + message)
+    }
+}
+
+@Suppress("unused")
 class OnPresentationStartConferenceEvent(private val event: PresentationStartConferenceEvent) :
     ConferenceAction() {
 
@@ -153,6 +161,7 @@ class OnPresentationStartConferenceEvent(private val event: PresentationStartCon
     }
 }
 
+@Suppress("unused")
 class OnPresentationStopConferenceEvent(private val event: PresentationStopConferenceEvent) :
     ConferenceAction() {
 
@@ -186,18 +195,6 @@ class OnFailureConferenceEvent(private val event: FailureConferenceEvent) : Conf
     }
 }
 
-class OnConferenceEvent(private val event: ConferenceEvent) : ConferenceAction() {
-
-    override fun Updater.apply() {
-        state = state.copy(
-            conferenceEvents = state.conferenceEvents.asSequence()
-                .plus(event)
-                .sortedBy { it.at }
-                .toList(),
-        )
-    }
-}
-
 class OnPresentationRemoteVideoTrack(private val videoTrack: VideoTrack?) : ConferenceAction() {
 
     override fun Updater.apply() {
@@ -218,7 +215,7 @@ class OnComposerOutput(private val output: ComposerOutput) : ConferenceAction() 
 
     override fun Updater.apply() {
         when (output) {
-            is ComposerOutput.Submit -> props.conference.message(output.message)
+            is ComposerOutput.Submit -> state.message.tryEmit(output.message)
         }
     }
 }
