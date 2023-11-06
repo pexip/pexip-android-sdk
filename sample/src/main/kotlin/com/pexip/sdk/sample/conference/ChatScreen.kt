@@ -19,7 +19,9 @@ import android.text.format.DateFormat
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -68,6 +70,7 @@ fun ChatScreen(
                 },
             )
         },
+        contentWindowInsets = WindowInsets.safeDrawing,
         modifier = modifier,
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {

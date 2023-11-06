@@ -19,12 +19,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -45,13 +40,7 @@ import com.squareup.workflow1.ui.compose.asMutableState
 
 @Composable
 fun Composer(rendering: ComposerRendering, modifier: Modifier = Modifier) {
-    val paddingValues = WindowInsets.safeDrawing
-        .only(WindowInsetsSides.Bottom)
-        .asPaddingValues()
-    Row(
-        verticalAlignment = Alignment.Bottom,
-        modifier = modifier.padding(paddingValues),
-    ) {
+    Row(verticalAlignment = Alignment.Bottom, modifier = modifier) {
         var value by rendering.message.asMutableState()
         val enabled by remember { derivedStateOf { value.isNotBlank() } }
         ComposerTextField(
