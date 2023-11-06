@@ -17,18 +17,19 @@ apiValidation {
 }
 
 spotless {
+    val ktlintVersion = libs.versions.ktlint.get()
     kotlin {
         ratchetFrom = "origin/main"
         target("**/*.kt")
         targetExclude("**/build/**")
-        ktlint()
+        ktlint(ktlintVersion)
         licenseHeaderFile("LICENSE_HEADER")
     }
     kotlinGradle {
         ratchetFrom = "origin/main"
         target("**/*.gradle.kts")
         targetExclude("**/build/**")
-        ktlint()
+        ktlint(ktlintVersion)
     }
     format("misc") {
         target(".gitignore", "*.md")
