@@ -32,7 +32,6 @@ import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
 import com.pexip.sdk.media.webrtc.internal.DataChannelInit
 import com.pexip.sdk.media.webrtc.internal.PeerConnectionWrapper
 import com.pexip.sdk.media.webrtc.internal.SimpleCameraEventsHandler
-import com.pexip.sdk.media.webrtc.internal.ValidDataChannelIds
 import com.pexip.sdk.media.webrtc.internal.WebRtcCameraVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
@@ -257,12 +256,12 @@ public class WebRtcMediaConnectionFactory private constructor(
                 else -> PeerConnection.ContinualGatheringPolicy.GATHER_ONCE
             }
         }
-        val init = when (val dataChannelId = config.signaling.dataChannelId) {
-            in ValidDataChannelIds -> DataChannelInit {
-                id = dataChannelId
+        val init = when (val dataChannel = config.signaling.dataChannel) {
+            null -> null
+            else -> DataChannelInit {
+                id = dataChannel.id
                 negotiated = true
             }
-            else -> null
         }
         return PeerConnectionWrapper(factory, rtcConfig, init)
     }

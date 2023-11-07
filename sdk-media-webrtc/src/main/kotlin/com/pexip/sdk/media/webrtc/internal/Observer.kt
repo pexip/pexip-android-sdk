@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.media.webrtc.internal
 
+import com.pexip.sdk.media.Data
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import org.webrtc.CandidatePairChangeEvent
@@ -54,7 +55,11 @@ internal class Observer(private val continualGatheringPolicy: ContinualGathering
     }
 
     override fun onMessage(buffer: DataChannel.Buffer) {
-        _event.tryEmit(Event.OnMessage(buffer.data))
+        val data = Data(
+            data = ByteArray(buffer.data.remaining(), buffer.data::get),
+            binary = buffer.binary,
+        )
+        _event.tryEmit(Event.OnData(data))
     }
 
     override fun onRenegotiationNeeded() {

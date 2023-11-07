@@ -15,47 +15,32 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
-import com.pexip.sdk.api.Event
-import com.pexip.sdk.api.coroutines.await
-import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.MessageReceivedEvent
-import com.pexip.sdk.api.infinity.MessageRequest
-import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
+import com.pexip.sdk.media.Data
+import com.pexip.sdk.media.DataChannel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.util.UUID
 
-internal class MessengerImpl(
+internal class DataChannelMessengerImpl(
     scope: CoroutineScope,
-    event: Flow<Event>,
     private val senderId: UUID,
     private val senderName: String,
-    private val store: TokenStore,
-    private val step: InfinityService.ConferenceStep,
+    private val dataChannel: DataChannel,
     private val atProvider: () -> Long = System::currentTimeMillis,
 ) : AbstractMessenger(scope) {
 
-    override val message: Flow<Message> = event
-        .filterIsInstance<MessageReceivedEvent>()
-        .map {
-            Message(
-                at = atProvider(),
-                participantId = it.participantId,
-                participantName = it.participantName,
-                type = it.type,
-                payload = it.payload,
-                direct = it.direct,
-            )
-        }
+    override val message: Flow<Message> = dataChannel.data.mapNotNull(::onData)
 
     init {
         message
@@ -65,12 +50,6 @@ internal class MessengerImpl(
     }
 
     override suspend fun send(type: String, payload: String, participantId: UUID?): Message {
-        val request = MessageRequest(type = type, payload = payload)
-        val token = store.get()
-        val call = when (participantId) {
-            null -> step.message(request, token)
-            else -> step.participant(participantId).message(request, token)
-        }
         val message = Message(
             at = atProvider(),
             participantId = senderId,
@@ -79,16 +58,48 @@ internal class MessengerImpl(
             payload = payload,
             direct = participantId != null,
         )
-        val result = try {
-            call.await()
+        return try {
+            val m = Box(
+                type = BoxType.MESSAGE,
+                body = MessageBody(
+                    type = message.type,
+                    uuid = message.participantId,
+                    origin = message.participantName,
+                    payload = message.payload,
+                ),
+            )
+            val json = Json.encodeToString(m)
+            val data = Data(json.toByteArray(), false)
+            dataChannel.send(data)
+            message
         } catch (e: CancellationException) {
             throw e
         } catch (t: Throwable) {
             throw MessageNotSentException(message, t)
         }
-        return when (result) {
-            true -> message
-            else -> throw MessageNotSentException(message)
+    }
+
+    private fun onData(data: Data): Message? {
+        if (data.binary) return null
+        val (type, body) = try {
+            Json.decodeFromString<Box<MessageBody>>(data.data.decodeToString())
+        } catch (e: SerializationException) {
+            return null
         }
+        return when (type) {
+            BoxType.MESSAGE -> Message(
+                at = atProvider(),
+                participantId = body.uuid,
+                participantName = body.origin,
+                type = body.type,
+                payload = body.payload,
+                direct = false,
+            )
+        }
+    }
+
+    companion object {
+
+        val Json = Json { ignoreUnknownKeys = true }
     }
 }

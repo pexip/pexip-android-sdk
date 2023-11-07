@@ -110,6 +110,28 @@ public final class com/pexip/sdk/media/CandidateSignalingEvent : com/pexip/sdk/m
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/pexip/sdk/media/Data {
+	public fun <init> ([BZ)V
+	public final fun component1 ()[B
+	public final fun component2 ()Z
+	public final fun copy ([BZ)Lcom/pexip/sdk/media/Data;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/media/Data;[BZILjava/lang/Object;)Lcom/pexip/sdk/media/Data;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBinary ()Z
+	public final fun getData ()[B
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/pexip/sdk/media/DataChannel : com/pexip/sdk/media/DataSender {
+	public abstract fun getData ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getId ()I
+}
+
+public abstract interface class com/pexip/sdk/media/DataSender {
+	public abstract fun send (Lcom/pexip/sdk/media/Data;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public final class com/pexip/sdk/media/DegradationPreference : java/lang/Enum {
 	public static final field BALANCED Lcom/pexip/sdk/media/DegradationPreference;
 	public static final field DISABLED Lcom/pexip/sdk/media/DegradationPreference;
@@ -213,7 +235,9 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionFactory : com
 }
 
 public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
-	public abstract fun getDataChannelId ()I
+	public abstract fun attach (Lcom/pexip/sdk/media/DataSender;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun detach (Lcom/pexip/sdk/media/DataSender;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getDataChannel ()Lcom/pexip/sdk/media/DataChannel;
 	public abstract fun getEvent ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getIceServers ()Ljava/util/List;
 	public abstract fun getIceTransportsRelayOnly ()Z
@@ -222,6 +246,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
 	public abstract fun onAudioMuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onAudioUnmuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onCandidate (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onData (Lcom/pexip/sdk/media/Data;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onDtmf (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onOffer (Ljava/lang/String;Ljava/lang/String;ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onOfferIgnored (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

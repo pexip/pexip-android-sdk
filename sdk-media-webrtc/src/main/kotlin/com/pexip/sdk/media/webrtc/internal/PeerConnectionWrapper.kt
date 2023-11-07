@@ -38,6 +38,7 @@ import org.webrtc.RtpTransceiver
 import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription
 import org.webrtc.VideoTrack
+import java.nio.ByteBuffer
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -209,6 +210,12 @@ internal class PeerConnectionWrapper(
     suspend fun restartIce() = mutex.withLock { peerConnection!!.restartIce() }
 
     suspend fun getIceCredentials(mid: String) = mutex.withLock { iceCredentials[mid] }
+
+    suspend fun send(data: ByteArray, binary: Boolean) = mutex.withLock {
+        val dataChannel = dataChannel ?: return@withLock
+        val buffer = DataChannel.Buffer(ByteBuffer.wrap(data), binary)
+        dataChannel.send(buffer)
+    }
 
     suspend fun dispose() = mutex.withLock {
         observer.stop()

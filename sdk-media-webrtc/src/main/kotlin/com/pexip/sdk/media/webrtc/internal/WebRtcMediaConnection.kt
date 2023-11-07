@@ -18,6 +18,7 @@ package com.pexip.sdk.media.webrtc.internal
 import com.pexip.sdk.media.Bitrate
 import com.pexip.sdk.media.Bitrate.Companion.bps
 import com.pexip.sdk.media.CandidateSignalingEvent
+import com.pexip.sdk.media.DataSender
 import com.pexip.sdk.media.DegradationPreference
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
@@ -110,7 +111,8 @@ internal class WebRtcMediaConnection(
 
     init {
         with(scope) {
-            if (config.signaling.dataChannelId in ValidDataChannelIds) {
+            launchDataSender()
+            if (config.signaling.dataChannel != null) {
                 scope.launch {
                     val init = RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
                     wrapper.withRtpTransceiver(MainAudio, init) { }
@@ -247,6 +249,18 @@ internal class WebRtcMediaConnection(
         presentationRemoteVideoTrackListeners -= listener
     }
 
+    private fun CoroutineScope.launchDataSender() = launch {
+        val sender = DataSender { (data, binary) -> wrapper.send(data, binary) }
+        try {
+            config.signaling.attach(sender)
+            awaitCancellation()
+        } finally {
+            withContext(NonCancellable) {
+                config.signaling.detach(sender)
+            }
+        }
+    }
+
     private fun CoroutineScope.launchMaxBitrate() = maxBitrate.drop(1)
         .onEach { wrapper.restartIce() }
         .launchIn(this)
@@ -304,6 +318,9 @@ internal class WebRtcMediaConnection(
                 is Event.OnIceConnectionChange -> {
                     if (it.state != PeerConnection.IceConnectionState.FAILED) return@collect
                     wrapper.restartIce()
+                }
+                is Event.OnData -> {
+                    config.signaling.onData(it.data)
                 }
                 else -> Unit
             }

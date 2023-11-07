@@ -29,6 +29,8 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.media.CandidateSignalingEvent
+import com.pexip.sdk.media.Data
+import com.pexip.sdk.media.DataSender
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.media.OfferSignalingEvent
@@ -44,7 +46,7 @@ internal class RealMediaConnectionSignaling(
     private val participantStep: InfinityService.ParticipantStep,
     override val iceServers: List<IceServer>,
     override val iceTransportsRelayOnly: Boolean,
-    override val dataChannelId: Int,
+    override val dataChannel: DataChannelImpl?,
     callStep: InfinityService.CallStep? = null,
 ) : MediaConnectionSignaling {
 
@@ -151,6 +153,12 @@ internal class RealMediaConnectionSignaling(
     override suspend fun onReleaseFloor() {
         participantStep.releaseFloor(store.get()).await()
     }
+
+    override suspend fun attach(sender: DataSender) = dataChannel?.attach(sender) ?: Unit
+
+    override suspend fun detach(sender: DataSender) = dataChannel?.detach(sender) ?: Unit
+
+    override suspend fun onData(data: Data) = dataChannel?.onData(data) ?: Unit
 
     private fun toSignalingEvent(event: Event) = when (event) {
         is NewOfferEvent -> OfferSignalingEvent(event.sdp)

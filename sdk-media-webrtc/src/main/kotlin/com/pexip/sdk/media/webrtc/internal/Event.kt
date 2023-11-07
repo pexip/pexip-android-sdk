@@ -15,23 +15,15 @@
  */
 package com.pexip.sdk.media.webrtc.internal
 
-import okio.ByteString
-import okio.ByteString.Companion.toByteString
+import com.pexip.sdk.media.Data
 import org.webrtc.IceCandidate
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.SignalingState
 import org.webrtc.RtpReceiver
-import java.nio.ByteBuffer
 
 internal sealed interface Event {
 
     data object OnRenegotiationNeeded : Event
-
-    @JvmInline
-    value class OnMessage(val message: ByteString) : Event {
-
-        constructor(message: ByteBuffer) : this(message.toByteString())
-    }
 
     @JvmInline
     value class OnAddTrack(override val receiver: RtpReceiver) : Event, RtpReceiverOwner
@@ -47,4 +39,7 @@ internal sealed interface Event {
 
     @JvmInline
     value class OnSignalingChange(val state: SignalingState) : Event
+
+    @JvmInline
+    value class OnData(val data: Data) : Event
 }

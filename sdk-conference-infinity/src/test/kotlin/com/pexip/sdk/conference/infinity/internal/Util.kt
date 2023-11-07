@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
+import com.pexip.sdk.conference.Message
+import java.util.UUID
 import kotlin.random.Random
 
 private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -31,3 +33,13 @@ internal fun Random.nextToken() = RefreshTokenResponse(
     token = nextString(8),
     expires = (60L..600L).random(this),
 )
+
+internal fun Random.nextMessage(at: Long = System.currentTimeMillis(), direct: Boolean = false) =
+    Message(
+        at = at,
+        participantId = UUID.randomUUID(),
+        participantName = nextString(8),
+        type = nextString(8),
+        payload = nextString(64),
+        direct = direct,
+    )

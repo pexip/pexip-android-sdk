@@ -22,8 +22,8 @@ import kotlinx.coroutines.flow.Flow
  *
  * @property iceServers a list of available [IceServer]s
  * @property iceTransportsRelayOnly whether relay only mode should be used
- * @property dataChannelId an ID of a data channel, -1 if not used
  * @property event a [Flow] of [SignalingEvent]s
+ * @property dataChannel an optional [DataChannel] for messaging between peers
  */
 public interface MediaConnectionSignaling {
 
@@ -31,9 +31,9 @@ public interface MediaConnectionSignaling {
 
     public val iceTransportsRelayOnly: Boolean
 
-    public val dataChannelId: Int
-
     public val event: Flow<SignalingEvent>
+
+    public val dataChannel: DataChannel?
 
     /**
      * Invoked when an offer is available.
@@ -114,4 +114,23 @@ public interface MediaConnectionSignaling {
      * Invoked when local presentation feed is removed.
      */
     public suspend fun onReleaseFloor()
+
+    /**
+     * Invoked when [Data] is received.
+     */
+    public suspend fun onData(data: Data)
+
+    /**
+     * Attaches [DataSender] to this [MediaConnectionSignaling]
+     *
+     * @param sender a [DataSender] to attach
+     */
+    public suspend fun attach(sender: DataSender)
+
+    /**
+     * Detaches [DataSender] from this [MediaConnectionSignaling]
+     *
+     * @param sender a [DataSender] to detach
+     */
+    public suspend fun detach(sender: DataSender)
 }
