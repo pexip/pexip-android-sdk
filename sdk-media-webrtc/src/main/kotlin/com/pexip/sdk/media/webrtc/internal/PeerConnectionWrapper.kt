@@ -29,11 +29,16 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.webrtc.AddIceObserver
 import org.webrtc.DataChannel
+import org.webrtc.DtmfSender
 import org.webrtc.IceCandidate
+import org.webrtc.JniCommon
+import org.webrtc.MediaStreamTrack
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.RTCConfiguration
 import org.webrtc.PeerConnectionFactory
+import org.webrtc.RtpReceiver
+import org.webrtc.RtpSender
 import org.webrtc.RtpTransceiver
 import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription
@@ -239,14 +244,43 @@ internal class PeerConnectionWrapper(
         transceiver.sender.setTrack(t.sender.track(), false)
         t.sender.setTrack(null, false)
         rtpTransceivers[key] = transceiver
-        t.stopStandard()
+        t.stopInternal()
     }
 
     // https://bugs.chromium.org/p/webrtc/issues/detail?id=10788
-    @Suppress("UNCHECKED_CAST")
+    // Due to the bug above it's not safe to use PeerConnection.getTransceivers() directly as
+    // they will be disposed and a new list will be returned.
+    // To protect ourselves at least to some extent from potential memory issues we simulate the
+    // aforementioned method, but instead of calling .dispose() we only decrease the ref count
+    // for native-managed pointers.
     private inline fun PeerConnection.withTransceivers(block: (RtpTransceiver) -> Unit) {
-        val transceivers = NativeGetTransceivers.invoke(this) as List<RtpTransceiver>
-        transceivers.forEach(block)
+        val oldTransceivers = currentTransceivers
+        val newTransceivers = nativeTransceivers
+        currentTransceivers = newTransceivers
+        newTransceivers.forEach(block)
+        oldTransceivers.forEach {
+            val dtmfSender = it.sender.dtmf()
+            if (dtmfSender != null) {
+                safeNativeReleaseRef(dtmfSender.ref)
+            }
+            val senderTrack = it.sender.track()
+            if (senderTrack != null && it.sender.ownsTrack) {
+                safeNativeReleaseRef(senderTrack.ref)
+            }
+            safeNativeReleaseRef(it.sender.ref)
+            val receiverTrack = it.receiver.track()
+            if (receiverTrack != null) {
+                safeNativeReleaseRef(receiverTrack.ref)
+            }
+            val receiverRef = it.receiver.ref
+            val observerRef = it.receiver.observerRef
+            if (observerRef != 0L) {
+                it.receiver.nativeUnsetObserver(receiverRef, observerRef)
+                it.receiver.observerRef = 0L
+            }
+            safeNativeReleaseRef(receiverRef)
+            safeNativeReleaseRef(it.ref)
+        }
     }
 
     private suspend fun PeerConnection.setLocalDescription() =
@@ -279,11 +313,95 @@ internal class PeerConnectionWrapper(
             continuation.resumeWithException(RuntimeException(reason))
     }
 
+    private fun safeNativeReleaseRef(ref: Long) {
+        if (ref == 0L) return
+        JniCommon.nativeReleaseRef(ref)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private val PeerConnection.nativeTransceivers: List<RtpTransceiver>
+        get() = NativeGetTransceivers.invoke(this) as List<RtpTransceiver>
+
+    @Suppress("UNCHECKED_CAST")
+    private var PeerConnection.currentTransceivers: List<RtpTransceiver>
+        get() = Transceivers.get(this) as List<RtpTransceiver>
+        set(value) = Transceivers.set(this, value)
+
+    private val DtmfSender.ref: Long
+        get() = NativeDtmfSender.getLong(this)
+
+    private val MediaStreamTrack.ref: Long
+        get() = NativeTrack.getLong(this)
+
+    private val RtpSender.ownsTrack: Boolean
+        get() = OwnsTrack.getBoolean(this)
+
+    private val RtpSender.ref: Long
+        get() = NativeRtpSender.getLong(this)
+
+    private var RtpReceiver.observerRef: Long
+        get() = NativeObserver.getLong(this)
+        set(value) = NativeObserver.setLong(this, value)
+
+    private val RtpReceiver.ref: Long
+        get() = NativeRtpReceiver.getLong(this)
+
+    private val RtpTransceiver.ref: Long
+        get() = NativeRtpTransceiver.getLong(this)
+
+    private fun RtpReceiver.nativeUnsetObserver(ref: Long, observerRef: Long) =
+        NativeUnsetObserver.invoke(this, ref, observerRef)
+
     companion object {
 
         private val NativeGetTransceivers by lazy {
-            PeerConnection::class.java.declaredMethods
-                .first { it.name == "nativeGetTransceivers" }
+            PeerConnection::class.java
+                .getDeclaredMethod("nativeGetTransceivers")
+                .also { it.isAccessible = true }
+        }
+        private val Transceivers by lazy {
+            PeerConnection::class.java
+                .getDeclaredField("transceivers")
+                .also { it.isAccessible = true }
+        }
+        private val NativeDtmfSender by lazy {
+            DtmfSender::class.java
+                .getDeclaredField("nativeDtmfSender")
+                .also { it.isAccessible = true }
+        }
+        private val NativeTrack by lazy {
+            MediaStreamTrack::class.java
+                .getDeclaredField("nativeTrack")
+                .also { it.isAccessible = true }
+        }
+        private val OwnsTrack by lazy {
+            RtpSender::class.java
+                .getDeclaredField("ownsTrack")
+                .also { it.isAccessible = true }
+        }
+        private val NativeRtpSender by lazy {
+            RtpSender::class.java
+                .getDeclaredField("nativeRtpSender")
+                .also { it.isAccessible = true }
+        }
+        private val NativeObserver by lazy {
+            RtpReceiver::class.java
+                .getDeclaredField("nativeObserver")
+                .also { it.isAccessible = true }
+        }
+        private val NativeUnsetObserver by lazy {
+            RtpReceiver::class.java
+                .getDeclaredMethod("nativeUnsetObserver", Long::class.java, Long::class.java)
+                .also { it.isAccessible = true }
+        }
+        private val NativeRtpReceiver by lazy {
+            RtpReceiver::class.java
+                .getDeclaredField("nativeRtpReceiver")
+                .also { it.isAccessible = true }
+        }
+        private val NativeRtpTransceiver by lazy {
+            RtpTransceiver::class.java
+                .getDeclaredField("nativeRtpTransceiver")
                 .also { it.isAccessible = true }
         }
 
