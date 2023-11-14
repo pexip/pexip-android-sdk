@@ -297,7 +297,11 @@ internal class WebRtcMediaConnection(
                         return@collect
                     }
                     val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
-                    wrapper.setRemoteDescription(sdp.mangle(bitrate))
+                    try {
+                        wrapper.setRemoteDescription(sdp.mangle(bitrate))
+                    } catch (e: RuntimeException) {
+                        return@collect
+                    }
                     runCatching { config.signaling.onAck() }
                 }
                 is Event.OnIceCandidate -> {
