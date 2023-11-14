@@ -44,6 +44,9 @@ class DataChannelMessengerImplTest {
         val expectedThrowable = Throwable()
         val dataChannel = object : DataChannel {
 
+            override val id: Int
+                get() = Random.nextInt()
+
             override val data: Flow<Data> = emptyFlow()
 
             override suspend fun send(data: Data) {
@@ -81,6 +84,9 @@ class DataChannelMessengerImplTest {
         val expected = Random.nextMessage()
         val dataChannel = object : DataChannel {
 
+            override val id: Int
+                get() = Random.nextInt()
+
             override val data: Flow<Data> = emptyFlow()
 
             override suspend fun send(data: Data) {
@@ -113,6 +119,9 @@ class DataChannelMessengerImplTest {
         val flow = MutableSharedFlow<Data>()
         val dataChannel = object : DataChannel {
 
+            override val id: Int
+                get() = Random.nextInt()
+
             override val data: Flow<Data> = flow
 
             override suspend fun send(data: Data): Unit = fail("")
@@ -135,6 +144,9 @@ class DataChannelMessengerImplTest {
     fun `onData ignores malformed messages`() = runTest {
         val flow = MutableSharedFlow<Data>()
         val dataChannel = object : DataChannel {
+
+            override val id: Int
+                get() = Random.nextInt()
 
             override val data: Flow<Data> = flow
 
@@ -159,6 +171,9 @@ class DataChannelMessengerImplTest {
         val at = System.currentTimeMillis()
         val flow = MutableSharedFlow<Data>()
         val dataChannel = object : DataChannel {
+
+            override val id: Int
+                get() = Random.nextInt()
 
             override val data: Flow<Data> = flow
 

@@ -20,12 +20,15 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Represents a signaling component of [MediaConnection].
  *
+ * @property directMedia whether this is a direct media call
  * @property iceServers a list of available [IceServer]s
  * @property iceTransportsRelayOnly whether relay only mode should be used
  * @property event a [Flow] of [SignalingEvent]s
  * @property dataChannel an optional [DataChannel] for messaging between peers
  */
 public interface MediaConnectionSignaling {
+
+    public val directMedia: Boolean
 
     public val iceServers: List<IceServer>
 

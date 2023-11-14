@@ -44,6 +44,7 @@ internal class RealMediaConnectionSignaling(
     private val store: TokenStore,
     event: Flow<Event>,
     private val participantStep: InfinityService.ParticipantStep,
+    override val directMedia: Boolean,
     override val iceServers: List<IceServer>,
     override val iceTransportsRelayOnly: Boolean,
     override val dataChannel: DataChannelImpl?,

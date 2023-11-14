@@ -76,11 +76,31 @@ internal class RealMediaConnectionSignalingTest {
     }
 
     @Test
+    fun `directMedia returns correct value`() {
+        tableOf("directMedia")
+            .row(false)
+            .row(true)
+            .forAll {
+                val signaling = RealMediaConnectionSignaling(
+                    store = store,
+                    event = event,
+                    participantStep = object : TestParticipantStep() {},
+                    directMedia = it,
+                    iceServers = iceServers,
+                    iceTransportsRelayOnly = Random.nextBoolean(),
+                    dataChannel = null,
+                )
+                assertThat(signaling::directMedia).isEqualTo(it)
+            }
+    }
+
+    @Test
     fun `iceServers return IceServer list`() {
         val signaling = RealMediaConnectionSignaling(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -98,6 +118,7 @@ internal class RealMediaConnectionSignalingTest {
                     store = store,
                     event = event,
                     participantStep = object : TestParticipantStep() {},
+                    directMedia = Random.nextBoolean(),
                     iceServers = iceServers,
                     iceTransportsRelayOnly = it,
                     dataChannel = null,
@@ -113,6 +134,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = dataChannel,
@@ -127,6 +149,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = participantStep,
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -150,6 +173,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = participantStep,
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -173,6 +197,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = participantStep,
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -203,6 +228,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = participantStep,
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -222,6 +248,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = participantStep,
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -278,6 +305,7 @@ internal class RealMediaConnectionSignalingTest {
                 store = store,
                 event = event,
                 participantStep = participantStep,
+                directMedia = Random.nextBoolean(),
                 iceServers = iceServers,
                 iceTransportsRelayOnly = Random.nextBoolean(),
                 dataChannel = null,
@@ -315,6 +343,7 @@ internal class RealMediaConnectionSignalingTest {
                 store = store,
                 event = event,
                 participantStep = object : TestParticipantStep() {},
+                directMedia = Random.nextBoolean(),
                 iceServers = iceServers,
                 callStep = object : TestCallStep() {
                     override fun update(
@@ -353,6 +382,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : TestCallStep() {
                 override fun ack(request: AckRequest, token: String): Call<Unit> =
@@ -381,6 +411,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : TestCallStep() {
                 override fun ack(request: AckRequest, token: String): Call<Unit> =
@@ -408,6 +439,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : TestCallStep() {
                 override fun ack(token: String): Call<Unit> = object : TestCall<Unit> {
@@ -435,6 +467,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : TestCallStep() {
                 override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> =
@@ -466,6 +499,7 @@ internal class RealMediaConnectionSignalingTest {
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : TestCallStep() {
                 override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> =
@@ -499,6 +533,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 }
             },
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -522,6 +557,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 }
             },
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -545,6 +581,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 }
             },
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -568,6 +605,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 }
             },
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -591,6 +629,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 }
             },
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,
@@ -614,6 +653,7 @@ internal class RealMediaConnectionSignalingTest {
                     }
                 }
             },
+            directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
             dataChannel = null,

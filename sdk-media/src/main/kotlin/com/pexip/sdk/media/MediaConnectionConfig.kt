@@ -22,7 +22,7 @@ package com.pexip.sdk.media
  * @property iceServers a list of [IceServer]s that [MediaConnection] will use
  * @property dscp true if DSCP is enabled, false otherwise
  * @property continualGathering true if ICE candidates will be gathered continually, false otherwise
- * @property presentationInMain true if presentation will be mixed with main video feed, false otherwise
+ * @property presentationInMain true if presentation will be mixed with main video feed, false otherwise; ignored for direct media calls
  * @property farEndCameraControl true if far end camera control is supported, false otherwise
  */
 public class MediaConnectionConfig private constructor(
@@ -88,6 +88,8 @@ public class MediaConnectionConfig private constructor(
         /**
          * Sets whether presentation will be mixed with main video feed (default is false).
          *
+         * This value is ignored for direct media calls.
+         *
          * @param presentationInMain true if presentation will be mixed with main video feed, false otherwise
          * @return this builder
          */
@@ -115,7 +117,7 @@ public class MediaConnectionConfig private constructor(
             iceServers = iceServers,
             dscp = dscp,
             continualGathering = continualGathering,
-            presentationInMain = presentationInMain,
+            presentationInMain = presentationInMain && !signaling.directMedia,
             farEndCameraControl = farEndCameraControl,
         )
     }

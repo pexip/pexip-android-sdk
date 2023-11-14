@@ -112,7 +112,7 @@ internal class WebRtcMediaConnection(
     init {
         with(scope) {
             launchDataSender()
-            if (config.signaling.dataChannel != null) {
+            if (config.signaling.directMedia) {
                 scope.launch {
                     val init = RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
                     wrapper.withRtpTransceiver(MainAudio, init) { }

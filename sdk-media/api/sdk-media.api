@@ -238,6 +238,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
 	public abstract fun attach (Lcom/pexip/sdk/media/DataSender;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun detach (Lcom/pexip/sdk/media/DataSender;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getDataChannel ()Lcom/pexip/sdk/media/DataChannel;
+	public abstract fun getDirectMedia ()Z
 	public abstract fun getEvent ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getIceServers ()Ljava/util/List;
 	public abstract fun getIceTransportsRelayOnly ()Z
