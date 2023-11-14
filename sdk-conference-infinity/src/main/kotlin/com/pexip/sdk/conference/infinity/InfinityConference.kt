@@ -30,8 +30,8 @@ import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.DataChannelImpl
 import com.pexip.sdk.conference.infinity.internal.DataChannelMessengerImpl
+import com.pexip.sdk.conference.infinity.internal.MediaConnectionSignalingImpl
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
-import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
 import com.pexip.sdk.conference.infinity.internal.RefererImpl
 import com.pexip.sdk.conference.infinity.internal.events
 import com.pexip.sdk.media.IceServer
@@ -71,7 +71,7 @@ public class InfinityConference private constructor(
 
     override val referer: Referer = RefererImpl(step.requestBuilder, response.directMediaRequested)
 
-    override val signaling: MediaConnectionSignaling = RealMediaConnectionSignaling(
+    override val signaling: MediaConnectionSignaling = MediaConnectionSignalingImpl(
         store = store,
         event = event,
         participantStep = step.participant(response.participantId),

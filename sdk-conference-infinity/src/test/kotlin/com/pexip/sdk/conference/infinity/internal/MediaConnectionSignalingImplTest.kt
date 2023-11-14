@@ -57,7 +57,7 @@ import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-internal class RealMediaConnectionSignalingTest {
+internal class MediaConnectionSignalingImplTest {
 
     private lateinit var store: TokenStore
     private lateinit var event: MutableSharedFlow<Event>
@@ -81,7 +81,7 @@ internal class RealMediaConnectionSignalingTest {
             .row(false)
             .row(true)
             .forAll {
-                val signaling = RealMediaConnectionSignaling(
+                val signaling = MediaConnectionSignalingImpl(
                     store = store,
                     event = event,
                     participantStep = object : TestParticipantStep() {},
@@ -96,7 +96,7 @@ internal class RealMediaConnectionSignalingTest {
 
     @Test
     fun `iceServers return IceServer list`() {
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
@@ -114,7 +114,7 @@ internal class RealMediaConnectionSignalingTest {
             .row(false)
             .row(true)
             .forAll {
-                val signaling = RealMediaConnectionSignaling(
+                val signaling = MediaConnectionSignalingImpl(
                     store = store,
                     event = event,
                     participantStep = object : TestParticipantStep() {},
@@ -130,7 +130,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `dataChannel returns the correct value`() {
         val dataChannel = DataChannelImpl(Random.nextInt())
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
@@ -145,7 +145,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `NewOfferEvent is mapped to OfferSignalingEvent`() = runTest {
         val participantStep = object : TestParticipantStep() {}
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = participantStep,
@@ -169,7 +169,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `UpdateSdpEvent is mapped to OfferSignalingEvent`() = runTest {
         val participantStep = object : TestParticipantStep() {}
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = participantStep,
@@ -193,7 +193,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `NewCandidateEvent is mapped to CandidateSignalingEvent`() = runTest {
         val participantStep = object : TestParticipantStep() {}
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = participantStep,
@@ -224,7 +224,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `PeerDisconnectedEvent is mapped to RestartSignalingEvent`() = runTest {
         val participantStep = object : TestParticipantStep() {}
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = participantStep,
@@ -244,7 +244,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `ignores unknown Events`() = runTest {
         val participantStep = object : TestParticipantStep() {}
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = participantStep,
@@ -301,7 +301,7 @@ internal class RealMediaConnectionSignalingTest {
                     return callStep
                 }
             }
-            val signaling = RealMediaConnectionSignaling(
+            val signaling = MediaConnectionSignalingImpl(
                 store = store,
                 event = event,
                 participantStep = participantStep,
@@ -339,7 +339,7 @@ internal class RealMediaConnectionSignalingTest {
             UpdateResponse(sdp = Random.nextString(8), offerIgnored = true),
         )
         responses.forEach { response ->
-            val signaling = RealMediaConnectionSignaling(
+            val signaling = MediaConnectionSignalingImpl(
                 store = store,
                 event = event,
                 participantStep = object : TestParticipantStep() {},
@@ -378,7 +378,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onOfferIgnored() returns`() = runTest {
         val called = Job()
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
@@ -407,7 +407,7 @@ internal class RealMediaConnectionSignalingTest {
     fun `onAnswer() returns`() = runTest {
         val called = Job()
         val sdp = Random.nextString(8)
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
@@ -435,7 +435,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onAck() returns`() = runTest {
         val called = Job()
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
@@ -463,7 +463,7 @@ internal class RealMediaConnectionSignalingTest {
         val mid = Random.nextString(8)
         val ufrag = Random.nextString(8)
         val pwd = Random.nextString(8)
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
@@ -495,7 +495,7 @@ internal class RealMediaConnectionSignalingTest {
         val called = Job()
         val digits = Random.nextDigits(8)
         val result = Random.nextBoolean()
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {},
@@ -521,7 +521,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onAudioMuted() returns`() = runTest {
         val called = Job()
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {
@@ -545,7 +545,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onAudioUnmuted() returns`() = runTest {
         val called = Job()
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {
@@ -569,7 +569,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onVideoMuted() returns`() = runTest {
         val called = Job()
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {
@@ -593,7 +593,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onVideoUnmuted() returns`() = runTest {
         val called = Job()
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {
@@ -617,7 +617,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onTakeFloor() returns`() = runTest {
         val called = Job()
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {
@@ -641,7 +641,7 @@ internal class RealMediaConnectionSignalingTest {
     @Test
     fun `onReleaseFloor() returns`() = runTest {
         val called = Job()
-        val signaling = RealMediaConnectionSignaling(
+        val signaling = MediaConnectionSignalingImpl(
             store = store,
             event = event,
             participantStep = object : TestParticipantStep() {

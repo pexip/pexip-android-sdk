@@ -40,7 +40,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 
-internal class RealMediaConnectionSignaling(
+internal class MediaConnectionSignalingImpl(
     private val store: TokenStore,
     event: Flow<Event>,
     private val participantStep: InfinityService.ParticipantStep,
