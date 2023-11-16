@@ -7,6 +7,7 @@ public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pe
 	public fun getName ()Ljava/lang/String;
 	public fun getReferer ()Lcom/pexip/sdk/conference/Referer;
 	public fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
+	public fun getTheme ()Lcom/pexip/sdk/conference/Theme;
 	public fun leave ()V
 	public fun message (Ljava/lang/String;)V
 	public fun registerConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V

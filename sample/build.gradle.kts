@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.startup.runtime)
     implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.coil.compose)
     implementation(libs.dagger.hilt.android.runtime)
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.minidns.android21)

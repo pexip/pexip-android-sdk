@@ -17,6 +17,7 @@ package com.pexip.sdk.sample.conference
 
 import android.content.Intent
 import com.pexip.sdk.conference.Message
+import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.VideoTrack
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 
 data class ConferenceState(
     val connection: MediaConnection,
+    val splashScreen: SplashScreen? = null,
     val screenCaptureData: Intent? = null,
     val screenCaptureVideoTrack: LocalVideoTrack? = null,
     val screenCapturing: Boolean = screenCaptureVideoTrack?.capturing ?: false,

@@ -45,6 +45,8 @@ internal inline fun EventSources.createFactory(
 
 internal fun HttpUrl.Builder.addPathSegment(uuid: UUID) = addPathSegment(uuid.toString())
 
+internal fun HttpUrl.newApiClientV2Builder() = checkNotNull(newBuilder("/api/client/v2"))
+
 internal fun HttpUrl.Builder.conference(conferenceAlias: String): HttpUrl.Builder = apply {
     require(conferenceAlias.isNotBlank()) { "conferenceAlias is blank." }
     addPathSegment("conferences")
@@ -66,10 +68,7 @@ internal fun HttpUrl.Builder.registration(deviceAlias: String? = null): HttpUrl.
 internal inline fun Request.Builder.url(
     url: HttpUrl,
     block: HttpUrl.Builder.() -> Unit,
-): Request.Builder {
-    val builder = checkNotNull(url.newBuilder("/api/client/v2"))
-    return url(builder.apply(block).build())
-}
+): Request.Builder = url(url.newApiClientV2Builder().apply(block).build())
 
 internal inline fun <reified T : Any> Request.Builder.withTag(tag: T?) = tag(T::class.java, tag)
 

@@ -3,6 +3,7 @@ public abstract interface class com/pexip/sdk/conference/Conference {
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getReferer ()Lcom/pexip/sdk/conference/Referer;
 	public abstract fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
+	public abstract fun getTheme ()Lcom/pexip/sdk/conference/Theme;
 	public abstract fun leave ()V
 	public abstract fun message (Ljava/lang/String;)V
 	public abstract fun registerConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
@@ -26,6 +27,22 @@ public final class com/pexip/sdk/conference/DisconnectConferenceEvent : com/pexi
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getAt ()J
 	public final fun getReason ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/pexip/sdk/conference/Element {
+}
+
+public final class com/pexip/sdk/conference/Element$Text : com/pexip/sdk/conference/Element {
+	public fun <init> (JLjava/lang/String;)V
+	public final fun component1 ()J
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (JLjava/lang/String;)Lcom/pexip/sdk/conference/Element$Text;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/Element$Text;JLjava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/Element$Text;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColor ()J
+	public final fun getText ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -161,6 +178,25 @@ public abstract interface class com/pexip/sdk/conference/Referer {
 public abstract interface class com/pexip/sdk/conference/SendCallback {
 	public abstract fun onFailure (Lcom/pexip/sdk/conference/MessageNotSentException;)V
 	public abstract fun onSuccess (Lcom/pexip/sdk/conference/Message;)V
+}
+
+public final class com/pexip/sdk/conference/SplashScreen {
+	public fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;)Lcom/pexip/sdk/conference/SplashScreen;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/SplashScreen;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/SplashScreen;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBackground ()Ljava/lang/String;
+	public final fun getElements ()Ljava/util/List;
+	public final fun getKey ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/pexip/sdk/conference/Theme {
+	public abstract fun getSplashScreen ()Lkotlinx/coroutines/flow/StateFlow;
 }
 
 public final class com/pexip/sdk/conference/coroutines/UtilKt {

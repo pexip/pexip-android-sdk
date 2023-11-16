@@ -1,0 +1,13 @@
+{
+  "layout_type": "direct_media",
+  "background": {
+    "path": "background.jpg"
+  },
+  "elements": [
+    {
+      "type": "text",
+      "color": 4294967295,
+      "text": "Welcome"
+    }
+  ]
+}

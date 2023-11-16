@@ -33,6 +33,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CallEnd
 import androidx.compose.material.icons.rounded.Message
@@ -61,7 +63,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.core.view.WindowInsetsControllerCompat
+import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.pexip.sdk.conference.Element
+import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.AudioDevice
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.pexip.sdk.sample.CameraIconButton
@@ -93,6 +98,12 @@ fun ConferenceCallScreen(
     }
     Surface(color = Color.Black, modifier = modifier) {
         BoxWithConstraints {
+            if (rendering.splashScreen != null) {
+                SplashScreen(
+                    splashScreen = rendering.splashScreen,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
             val landscape = remember(maxWidth, maxHeight) { maxWidth > maxHeight }
             if (landscape) {
                 Row(
@@ -199,15 +210,17 @@ private fun MainVideoTrackRenderer(
     rendering: ConferenceCallRendering,
     modifier: Modifier = Modifier,
 ) {
-    val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
-    VideoTrackRenderer(
-        videoTrack = rendering.mainRemoteVideoTrack,
-        onAspectRatioChange = onAspectRatioChange,
-        modifier = when (aspectRatio) {
-            0f -> modifier
-            else -> modifier.aspectRatio(aspectRatio)
-        },
-    )
+    if (rendering.mainRemoteVideoTrack != null) {
+        val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
+        VideoTrackRenderer(
+            videoTrack = rendering.mainRemoteVideoTrack,
+            onAspectRatioChange = onAspectRatioChange,
+            modifier = when (aspectRatio) {
+                0f -> modifier
+                else -> modifier.aspectRatio(aspectRatio)
+            },
+        )
+    }
 }
 
 @Composable
@@ -365,6 +378,30 @@ private fun ConferenceEventsItem(
         },
         modifier = modifier,
     )
+}
+
+@Composable
+private fun SplashScreen(splashScreen: SplashScreen, modifier: Modifier = Modifier) {
+    Box(contentAlignment = Alignment.Center, modifier = modifier) {
+        AsyncImage(
+            model = splashScreen.background,
+            contentDescription = null,
+        )
+        LazyColumn {
+            items(splashScreen.elements) {
+                when (it) {
+                    is Element.Text -> {
+                        val color = remember(it.color) { Color(it.color) }
+                        Text(
+                            text = it.text,
+                            color = color,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable

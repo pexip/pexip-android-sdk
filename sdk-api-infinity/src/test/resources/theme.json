@@ -1,0 +1,69 @@
+{
+  "result": {
+    "direct_media_welcome": {
+      "layout_type": "direct_media",
+      "background": {
+        "path": "background.jpg"
+      },
+      "elements": [
+        {
+          "type": "text",
+          "color": 4294967295,
+          "text": "Welcome"
+        }
+      ]
+    },
+    "direct_media_waiting_for_host": {
+      "layout_type": "direct_media",
+      "background": {
+        "path": "background.jpg"
+      },
+      "elements": [
+        {
+          "type": "text",
+          "color": 4294967295,
+          "text": "Waiting for the host..."
+        }
+      ]
+    },
+    "direct_media_other_participants_audio_only": {
+      "layout_type": "direct_media",
+      "background": {
+        "path": "background.jpg"
+      },
+      "elements": [
+        {
+          "type": "text",
+          "color": 4294967295,
+          "text": "The other participants\n are audio only"
+        }
+      ]
+    },
+    "direct_media_escalate": {
+      "layout_type": "direct_media",
+      "background": {
+        "path": "background.jpg"
+      },
+      "elements": [
+        {
+          "type": "text",
+          "color": 4294967295,
+          "text": "You are about to be transferred\ninto a multi-party conference"
+        }
+      ]
+    },
+    "direct_media_deescalate": {
+      "layout_type": "direct_media",
+      "background": {
+        "path": "background.jpg"
+      },
+      "elements": [
+        {
+          "type": "text",
+          "color": 4294967295,
+          "text": "You are about to be transferred\ninto a one-to-one call"
+        }
+      ]
+    }
+  }
+}

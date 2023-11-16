@@ -19,6 +19,7 @@ import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.internal.UUIDSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.util.UUID
 
@@ -77,6 +78,9 @@ public data class ReferEvent(
 ) : Event
 
 @Serializable
+public data class SplashScreenEvent(@SerialName("screen_key") val screenKey: String? = null) : Event
+
+@Serializable
 public data class DisconnectEvent(val reason: String) : Event
 
 public data object ByeEvent : Event
@@ -104,6 +108,11 @@ internal fun Event(json: Json, id: String?, type: String?, data: String): Event?
     "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
     "fecc" -> json.decodeFromString<FeccEvent>(data)
     "refer" -> json.decodeFromString<ReferEvent>(data)
+    "splash_screen" -> try {
+        json.decodeFromString<SplashScreenEvent>(data)
+    } catch (e: SerializationException) {
+        SplashScreenEvent()
+    }
     "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
     "bye" -> ByeEvent
     "incoming" -> json.decodeFromString<IncomingEvent>(data)
