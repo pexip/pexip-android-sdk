@@ -88,3 +88,21 @@ public final class com/pexip/sdk/registration/coroutines/UtilKt {
 	public static final fun getRegistrationEvents (Lcom/pexip/sdk/registration/Registration;)Lkotlinx/coroutines/flow/Flow;
 }
 
+public final class com/pexip/sdk/registration/infinity/InfinityRegistration : com/pexip/sdk/registration/Registration {
+	public static final field Companion Lcom/pexip/sdk/registration/infinity/InfinityRegistration$Companion;
+	public synthetic fun <init> (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;)Lcom/pexip/sdk/registration/infinity/InfinityRegistration;
+	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService;Ljava/net/URL;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;)Lcom/pexip/sdk/registration/infinity/InfinityRegistration;
+	public fun dispose ()V
+	public fun getDirectoryEnabled ()Z
+	public fun getRegisteredDevices (Ljava/lang/String;Lcom/pexip/sdk/registration/RegisteredDevicesCallback;)V
+	public fun getRouteViaRegistrar ()Z
+	public fun registerRegistrationEventListener (Lcom/pexip/sdk/registration/RegistrationEventListener;)V
+	public fun unregisterRegistrationEventListener (Lcom/pexip/sdk/registration/RegistrationEventListener;)V
+}
+
+public final class com/pexip/sdk/registration/infinity/InfinityRegistration$Companion {
+	public final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;)Lcom/pexip/sdk/registration/infinity/InfinityRegistration;
+	public final fun create (Lcom/pexip/sdk/api/infinity/InfinityService;Ljava/net/URL;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;)Lcom/pexip/sdk/registration/infinity/InfinityRegistration;
+}
+
