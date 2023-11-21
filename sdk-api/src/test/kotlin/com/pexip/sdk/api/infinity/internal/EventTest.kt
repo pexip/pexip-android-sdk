@@ -32,13 +32,22 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewOfferEvent
+import com.pexip.sdk.api.infinity.ParticipantCreateEvent
+import com.pexip.sdk.api.infinity.ParticipantDeleteEvent
+import com.pexip.sdk.api.infinity.ParticipantResponse
+import com.pexip.sdk.api.infinity.ParticipantSyncBeginEvent
+import com.pexip.sdk.api.infinity.ParticipantSyncEndEvent
+import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
 import com.pexip.sdk.api.infinity.PeerDisconnectEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.ReferEvent
+import com.pexip.sdk.api.infinity.Role
+import com.pexip.sdk.api.infinity.ServiceType
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.api.infinity.nextString
+import kotlinx.datetime.Instant
 import okio.BufferedSource
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -177,6 +186,77 @@ internal class EventTest {
                 val1 = "splash_screen",
                 val2 = "splash_screen_null.json",
                 val3 = SplashScreenEvent(),
+            )
+            .row(
+                val1 = "participant_sync_begin",
+                val2 = "participant_sync_begin.json",
+                val3 = ParticipantSyncBeginEvent,
+            )
+            .row(
+                val1 = "participant_sync_end",
+                val2 = "participant_sync_end.json",
+                val3 = ParticipantSyncEndEvent,
+            )
+            .row(
+                val1 = "participant_create",
+                val2 = "participant_create.json",
+                val3 = ParticipantCreateEvent(
+                    response = ParticipantResponse(
+                        id = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                        startTime = Instant.fromEpochSeconds(
+                            epochSeconds = 1700484383,
+                            nanosecondAdjustment = 846972000,
+                        ),
+                        displayName = "George R",
+                        overlayText = "George",
+                        audioMuted = true,
+                        videoMuted = false,
+                        presenting = false,
+                        muteSupported = true,
+                        transferSupported = true,
+                        disconnectSupported = true,
+                        role = Role.GUEST,
+                        serviceType = ServiceType.CONFERENCE,
+                    ),
+                ),
+            )
+            .row(
+                val1 = "participant_update",
+                val2 = "participant_update.json",
+                val3 = ParticipantUpdateEvent(
+                    response = ParticipantResponse(
+                        id = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                        startTime = Instant.fromEpochSeconds(
+                            epochSeconds = 1700486477,
+                            nanosecondAdjustment = 114828000,
+                        ),
+                        buzzTime = Instant.fromEpochSeconds(
+                            epochSeconds = 1700486478,
+                            nanosecondAdjustment = 98765000,
+                        ),
+                        spotlightTime = Instant.fromEpochSeconds(
+                            epochSeconds = 1700486479,
+                            nanosecondAdjustment = 123456000,
+                        ),
+                        displayName = "George R",
+                        overlayText = "George",
+                        audioMuted = true,
+                        videoMuted = false,
+                        presenting = false,
+                        muteSupported = true,
+                        transferSupported = true,
+                        disconnectSupported = true,
+                        role = Role.HOST,
+                        serviceType = ServiceType.GATEWAY,
+                    ),
+                ),
+            )
+            .row(
+                val1 = "participant_delete",
+                val2 = "participant_delete.json",
+                val3 = ParticipantDeleteEvent(
+                    id = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                ),
             )
             .forAll { type, filename, event ->
                 val data = FileSystem.RESOURCES.read(filename.toPath(), BufferedSource::readUtf8)

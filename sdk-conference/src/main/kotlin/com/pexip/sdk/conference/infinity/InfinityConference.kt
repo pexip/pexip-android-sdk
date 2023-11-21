@@ -25,6 +25,7 @@ import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.Referer
+import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.Theme
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.DataChannelImpl
@@ -32,6 +33,7 @@ import com.pexip.sdk.conference.infinity.internal.DataChannelMessengerImpl
 import com.pexip.sdk.conference.infinity.internal.MediaConnectionSignalingImpl
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RefererImpl
+import com.pexip.sdk.conference.infinity.internal.RosterImpl
 import com.pexip.sdk.conference.infinity.internal.ThemeImpl
 import com.pexip.sdk.conference.infinity.internal.events
 import com.pexip.sdk.media.IceServer
@@ -72,6 +74,11 @@ public class InfinityConference private constructor(
         event = event,
         step = step,
         store = store,
+    )
+
+    override val roster: Roster = RosterImpl(
+        scope = scope,
+        event = event,
     )
 
     override val referer: Referer = RefererImpl(step.requestBuilder, response.directMediaRequested)

@@ -2,6 +2,7 @@ public abstract interface class com/pexip/sdk/conference/Conference {
 	public abstract fun getMessenger ()Lcom/pexip/sdk/conference/Messenger;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getReferer ()Lcom/pexip/sdk/conference/Referer;
+	public abstract fun getRoster ()Lcom/pexip/sdk/conference/Roster;
 	public abstract fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public abstract fun getTheme ()Lcom/pexip/sdk/conference/Theme;
 	public abstract fun leave ()V
@@ -128,6 +129,43 @@ public final class com/pexip/sdk/conference/Messenger$DefaultImpls {
 	public static synthetic fun send$default (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
+public final class com/pexip/sdk/conference/Participant {
+	public fun <init> (Ljava/util/UUID;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZ)V
+	public final fun component1 ()Ljava/util/UUID;
+	public final fun component10 ()Z
+	public final fun component11 ()Z
+	public final fun component12 ()Z
+	public final fun component13 ()Z
+	public final fun component14 ()Z
+	public final fun component2 ()Lcom/pexip/sdk/conference/Role;
+	public final fun component3 ()Lcom/pexip/sdk/conference/ServiceType;
+	public final fun component4 ()Lkotlinx/datetime/Instant;
+	public final fun component5 ()Lkotlinx/datetime/Instant;
+	public final fun component6 ()Lkotlinx/datetime/Instant;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Z
+	public final fun copy (Ljava/util/UUID;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZ)Lcom/pexip/sdk/conference/Participant;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/Participant;Ljava/util/UUID;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZILjava/lang/Object;)Lcom/pexip/sdk/conference/Participant;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAudioMuted ()Z
+	public final fun getBuzzTime ()Lkotlinx/datetime/Instant;
+	public final fun getDisconnectSupported ()Z
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getId ()Ljava/util/UUID;
+	public final fun getMuteSupported ()Z
+	public final fun getOverlayText ()Ljava/lang/String;
+	public final fun getPresenting ()Z
+	public final fun getRole ()Lcom/pexip/sdk/conference/Role;
+	public final fun getServiceType ()Lcom/pexip/sdk/conference/ServiceType;
+	public final fun getSpotlightTime ()Lkotlinx/datetime/Instant;
+	public final fun getStartTime ()Lkotlinx/datetime/Instant;
+	public final fun getTransferSupported ()Z
+	public final fun getVideoMuted ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/pexip/sdk/conference/PresentationStartConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
 	public fun <init> (JLjava/util/UUID;Ljava/lang/String;)V
 	public final fun component1 ()J
@@ -179,9 +217,36 @@ public abstract interface class com/pexip/sdk/conference/Referer {
 	public abstract fun refer (Lcom/pexip/sdk/conference/ReferConferenceEvent;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class com/pexip/sdk/conference/Role : java/lang/Enum {
+	public static final field GUEST Lcom/pexip/sdk/conference/Role;
+	public static final field HOST Lcom/pexip/sdk/conference/Role;
+	public static final field UNKNOWN Lcom/pexip/sdk/conference/Role;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/conference/Role;
+	public static fun values ()[Lcom/pexip/sdk/conference/Role;
+}
+
+public abstract interface class com/pexip/sdk/conference/Roster {
+	public abstract fun getParticipants ()Lkotlinx/coroutines/flow/StateFlow;
+}
+
 public abstract interface class com/pexip/sdk/conference/SendCallback {
 	public abstract fun onFailure (Lcom/pexip/sdk/conference/MessageNotSentException;)V
 	public abstract fun onSuccess (Lcom/pexip/sdk/conference/Message;)V
+}
+
+public final class com/pexip/sdk/conference/ServiceType : java/lang/Enum {
+	public static final field CONFERENCE Lcom/pexip/sdk/conference/ServiceType;
+	public static final field CONNECTING Lcom/pexip/sdk/conference/ServiceType;
+	public static final field GATEWAY Lcom/pexip/sdk/conference/ServiceType;
+	public static final field IVR Lcom/pexip/sdk/conference/ServiceType;
+	public static final field LECTURE Lcom/pexip/sdk/conference/ServiceType;
+	public static final field TEST_CALL Lcom/pexip/sdk/conference/ServiceType;
+	public static final field UNKNOWN Lcom/pexip/sdk/conference/ServiceType;
+	public static final field WAITING_ROOM Lcom/pexip/sdk/conference/ServiceType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/conference/ServiceType;
+	public static fun values ()[Lcom/pexip/sdk/conference/ServiceType;
 }
 
 public final class com/pexip/sdk/conference/SplashScreen {
@@ -218,6 +283,7 @@ public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pe
 	public fun getMessenger ()Lcom/pexip/sdk/conference/Messenger;
 	public fun getName ()Ljava/lang/String;
 	public fun getReferer ()Lcom/pexip/sdk/conference/Referer;
+	public fun getRoster ()Lcom/pexip/sdk/conference/Roster;
 	public fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public fun getTheme ()Lcom/pexip/sdk/conference/Theme;
 	public fun leave ()V

@@ -6,6 +6,7 @@ plugins {
 dependencies {
     api(project(":sdk-infinity"))
     api(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.datetime)
     api(libs.minidns.hla)
     api(libs.okhttp)
     api(libs.okio)

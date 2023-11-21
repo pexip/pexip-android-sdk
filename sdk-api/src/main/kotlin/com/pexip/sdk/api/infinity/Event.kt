@@ -13,15 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:UseSerializers(UUIDSerializer::class, ParticipantResponseSerializer::class)
+
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.Event
+import com.pexip.sdk.api.infinity.internal.ParticipantResponseSerializer
 import com.pexip.sdk.api.infinity.internal.UUIDSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.Json
 import java.util.UUID
+
+public data object ParticipantSyncBeginEvent : Event
+
+public data object ParticipantSyncEndEvent : Event
+
+@Serializable
+@JvmInline
+public value class ParticipantCreateEvent(public val response: ParticipantResponse) : Event
+
+@Serializable
+@JvmInline
+public value class ParticipantUpdateEvent(public val response: ParticipantResponse) : Event
+
+@Serializable
+public data class ParticipantDeleteEvent(@SerialName("uuid") val id: UUID) : Event
 
 @Serializable
 public data class NewOfferEvent(val sdp: String) : Event
@@ -44,7 +63,6 @@ public data object PeerDisconnectEvent : Event
 public data class PresentationStartEvent(
     @SerialName("presenter_name")
     val presenterName: String,
-    @Serializable(with = UUIDSerializer::class)
     @SerialName("presenter_uuid")
     val presenterId: UUID,
 ) : Event
@@ -55,7 +73,6 @@ public data object PresentationStopEvent : Event
 public data class MessageReceivedEvent(
     @SerialName("origin")
     val participantName: String,
-    @Serializable(with = UUIDSerializer::class)
     @SerialName("uuid")
     val participantId: UUID,
     val type: String,
@@ -98,24 +115,38 @@ public data class IncomingEvent(
 public data class IncomingCancelledEvent(val token: String) : Event
 
 @Suppress("ktlint:standard:function-naming")
-internal fun Event(json: Json, id: String?, type: String?, data: String): Event? = when (type) {
-    "new_offer" -> json.decodeFromString<NewOfferEvent>(data)
-    "update_sdp" -> json.decodeFromString<UpdateSdpEvent>(data)
-    "new_candidate" -> json.decodeFromString<NewCandidateEvent>(data)
-    "peer_disconnect" -> PeerDisconnectEvent
-    "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
-    "presentation_stop" -> PresentationStopEvent
-    "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
-    "fecc" -> json.decodeFromString<FeccEvent>(data)
-    "refer" -> json.decodeFromString<ReferEvent>(data)
-    "splash_screen" -> try {
-        json.decodeFromString<SplashScreenEvent>(data)
-    } catch (e: SerializationException) {
-        SplashScreenEvent()
+internal fun Event(json: Json, id: String?, type: String?, data: String): Event? {
+    val s = buildString {
+        append("type: ")
+        append(type)
+        append(", data: ")
+        append(data)
     }
-    "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
-    "bye" -> ByeEvent
-    "incoming" -> json.decodeFromString<IncomingEvent>(data)
-    "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
-    else -> null
+    println(s)
+    return when (type) {
+        "participant_sync_begin" -> ParticipantSyncBeginEvent
+        "participant_sync_end" -> ParticipantSyncEndEvent
+        "participant_create" -> json.decodeFromString<ParticipantCreateEvent>(data)
+        "participant_update" -> json.decodeFromString<ParticipantUpdateEvent>(data)
+        "participant_delete" -> json.decodeFromString<ParticipantDeleteEvent>(data)
+        "new_offer" -> json.decodeFromString<NewOfferEvent>(data)
+        "update_sdp" -> json.decodeFromString<UpdateSdpEvent>(data)
+        "new_candidate" -> json.decodeFromString<NewCandidateEvent>(data)
+        "peer_disconnect" -> PeerDisconnectEvent
+        "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
+        "presentation_stop" -> PresentationStopEvent
+        "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
+        "fecc" -> json.decodeFromString<FeccEvent>(data)
+        "refer" -> json.decodeFromString<ReferEvent>(data)
+        "splash_screen" -> try {
+            json.decodeFromString<SplashScreenEvent>(data)
+        } catch (e: SerializationException) {
+            SplashScreenEvent()
+        }
+        "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
+        "bye" -> ByeEvent
+        "incoming" -> json.decodeFromString<IncomingEvent>(data)
+        "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
+        else -> null
+    }
 }
