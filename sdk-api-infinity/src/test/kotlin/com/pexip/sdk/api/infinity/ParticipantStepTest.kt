@@ -15,7 +15,6 @@
  */
 package com.pexip.sdk.api.infinity
 
-import com.pexip.sdk.api.infinity.internal.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.internal.addPathSegment
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

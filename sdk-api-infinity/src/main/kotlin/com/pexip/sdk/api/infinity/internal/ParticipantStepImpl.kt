@@ -24,6 +24,7 @@ import com.pexip.sdk.api.infinity.InvalidTokenException
 import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
+import com.pexip.sdk.api.infinity.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
 import okhttp3.Request

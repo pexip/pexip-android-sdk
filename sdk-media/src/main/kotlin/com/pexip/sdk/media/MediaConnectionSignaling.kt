@@ -124,6 +124,11 @@ public interface MediaConnectionSignaling {
     public suspend fun onData(data: Data)
 
     /**
+     * Invoked when preferred aspect ratio has changed.
+     */
+    public suspend fun onPreferredAspectRatio(aspectRatio: Float)
+
+    /**
      * Attaches [DataSender] to this [MediaConnectionSignaling]
      *
      * @param sender a [DataSender] to attach

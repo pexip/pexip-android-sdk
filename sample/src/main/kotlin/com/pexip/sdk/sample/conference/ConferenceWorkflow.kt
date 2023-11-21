@@ -116,6 +116,7 @@ class ConferenceWorkflow @Inject constructor(
         context.messageSideEffect(renderProps, renderState)
         context.conferenceEventsSideEffect(renderProps)
         context.presentationRemoteVideoTrackSideEffect(renderState.connection)
+        context.aspectRatioSideEffect(renderState)
         return when (renderState.showingChat) {
             true -> ChatRendering(
                 messages = renderState.messages,
@@ -159,6 +160,7 @@ class ConferenceWorkflow @Inject constructor(
                 },
                 screenCapturing = renderState.screenCapturing,
                 onScreenCapture = context.send(::OnScreenCapture),
+                onAspectRatioChange = context.send(::OnAspectRatioChange),
                 onAudioDevicesChange = context.send(::OnAudioDevicesChange),
                 onBandwidthChange = context.send(::OnBandwidthChange),
                 onDtmfChange = context.send(::OnDtmfChange),
@@ -296,6 +298,14 @@ class ConferenceWorkflow @Inject constructor(
                 }
                 .onEach(actionSink::send)
                 .launchIn(this)
+        }
+    }
+
+    private fun RenderContext.aspectRatioSideEffect(renderState: ConferenceState) {
+        val connection = renderState.connection
+        val aspectRatio = renderState.aspectRatio.takeUnless(Float::isNaN) ?: return
+        runningSideEffect("aspectRatioSideEffect($connection, $aspectRatio)") {
+            connection.setMainRemoteVideoTrackPreferredAspectRatio(aspectRatio)
         }
     }
 

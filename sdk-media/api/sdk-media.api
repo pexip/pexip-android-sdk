@@ -193,6 +193,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnection {
 	public abstract fun setMainDegradationPreference (Lcom/pexip/sdk/media/DegradationPreference;)V
 	public abstract fun setMainRemoteAudioTrackEnabled (Z)V
 	public abstract fun setMainRemoteVideoTrackEnabled (Z)V
+	public abstract fun setMainRemoteVideoTrackPreferredAspectRatio (F)V
 	public abstract fun setMainVideoTrack (Lcom/pexip/sdk/media/LocalVideoTrack;)V
 	public abstract fun setMaxBitrate-8YD4EQA (I)V
 	public abstract fun setPresentationDegradationPreference (Lcom/pexip/sdk/media/DegradationPreference;)V
@@ -251,6 +252,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
 	public abstract fun onDtmf (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onOffer (Ljava/lang/String;Ljava/lang/String;ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onOfferIgnored (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onPreferredAspectRatio (FLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onReleaseFloor (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onTakeFloor (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onVideoMuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

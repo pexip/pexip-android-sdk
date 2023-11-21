@@ -38,4 +38,5 @@ data class ConferenceState(
     val showingChat: Boolean = false,
     val messages: List<Message> = emptyList(),
     val message: MutableSharedFlow<String> = MutableSharedFlow(extraBufferCapacity = 1),
+    val aspectRatio: Float = Float.NaN,
 )

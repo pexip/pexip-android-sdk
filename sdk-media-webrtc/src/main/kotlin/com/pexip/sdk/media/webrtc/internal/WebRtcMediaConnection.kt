@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -86,6 +87,8 @@ internal class WebRtcMediaConnection(
     private val mainDegradationPreference = MutableStateFlow(DegradationPreference.BALANCED)
     private val presentationDegradationPreference = MutableStateFlow(DegradationPreference.BALANCED)
 
+    private val mainRemoteVideoTrackPreferredAspectRatio = MutableStateFlow(Float.NaN)
+
     private val mainLocalAudioTrack = MutableSharedFlow<LocalAudioTrack?>()
     private val mainLocalVideoTrack = MutableSharedFlow<LocalVideoTrack?>()
     private val presentationLocalVideoTrack = MutableSharedFlow<LocalVideoTrack?>()
@@ -123,6 +126,7 @@ internal class WebRtcMediaConnection(
             launchMaxBitrate()
             launchWrapperEvent()
             launchSignalingEvent()
+            launchPreferredAspectRatio()
             launchDegradationPreference(MainVideo, mainDegradationPreference)
             launchDegradationPreference(PresentationVideo, presentationDegradationPreference)
             launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
@@ -207,6 +211,10 @@ internal class WebRtcMediaConnection(
 
     override fun setPresentationDegradationPreference(preference: DegradationPreference) {
         presentationDegradationPreference.value = preference
+    }
+
+    override fun setMainRemoteVideoTrackPreferredAspectRatio(aspectRatio: Float) {
+        mainRemoteVideoTrackPreferredAspectRatio.value = aspectRatio
     }
 
     @Deprecated(
@@ -400,6 +408,12 @@ internal class WebRtcMediaConnection(
         }
         emit(track)
     }
+
+    private fun CoroutineScope.launchPreferredAspectRatio() =
+        mainRemoteVideoTrackPreferredAspectRatio
+            .filterNot(Float::isNaN)
+            .onEach(config.signaling::onPreferredAspectRatio)
+            .launchIn(this)
 
     private fun CoroutineScope.launchLocalMediaTrackCapturing(
         flow: Flow<LocalMediaTrack?>,

@@ -41,6 +41,7 @@ data class ConferenceCallRendering(
     val microphoneAudioTrackRendering: LocalMediaTrackRendering?,
     val screenCapturing: Boolean,
     val onScreenCapture: (Intent) -> Unit,
+    val onAspectRatioChange: (Float) -> Unit,
     val onAudioDevicesChange: (Boolean) -> Unit,
     val onBandwidthChange: (Boolean) -> Unit,
     val onDtmfChange: (Boolean) -> Unit,

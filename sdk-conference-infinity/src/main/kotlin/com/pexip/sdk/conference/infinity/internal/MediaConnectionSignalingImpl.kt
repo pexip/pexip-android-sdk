@@ -25,6 +25,7 @@ import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewCandidateRequest
 import com.pexip.sdk.api.infinity.NewOfferEvent
 import com.pexip.sdk.api.infinity.PeerDisconnectEvent
+import com.pexip.sdk.api.infinity.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
@@ -36,6 +37,7 @@ import com.pexip.sdk.media.MediaConnectionSignaling
 import com.pexip.sdk.media.OfferSignalingEvent
 import com.pexip.sdk.media.RestartSignalingEvent
 import com.pexip.sdk.media.SignalingEvent
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
@@ -153,6 +155,18 @@ internal class MediaConnectionSignalingImpl(
 
     override suspend fun onReleaseFloor() {
         participantStep.releaseFloor(store.get()).await()
+    }
+
+    override suspend fun onPreferredAspectRatio(aspectRatio: Float) {
+        try {
+            val request = PreferredAspectRatioRequest(aspectRatio.coerceIn(0f, 2f))
+            val token = store.get()
+            participantStep.preferredAspectRatio(request, token).await()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (t: Throwable) {
+            // noop
+        }
     }
 
     override suspend fun attach(sender: DataSender) = dataChannel?.attach(sender) ?: Unit

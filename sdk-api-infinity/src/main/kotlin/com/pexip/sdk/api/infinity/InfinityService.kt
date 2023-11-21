@@ -18,7 +18,6 @@ package com.pexip.sdk.api.infinity
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.internal.InfinityServiceImpl
-import com.pexip.sdk.api.infinity.internal.PreferredAspectRatioRequest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import okhttp3.OkHttpClient
