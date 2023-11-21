@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,7 @@ internal object FeccMovementSerializer : KSerializer<FeccMovement> {
             FeccMovement.UNKNOWN -> error("Invalid value: $this.")
         }
 
+    @Suppress("ktlint:standard:function-naming")
     private fun FeccMovement(axis: String?, direction: String?) = when (axis) {
         AXIS_PAN -> when (direction) {
             DIRECTION_LEFT -> FeccMovement.PAN_LEFT

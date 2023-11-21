@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import java.util.concurrent.atomic.AtomicReference
 
 internal class RealTokenStore(token: Token) : TokenStore {
 
-    private val _token = AtomicReference(token)
+    private val token = AtomicReference(token)
 
-    override fun get(): Token = _token.get()
+    override fun get(): Token = token.get()
 
-    override fun set(token: Token): Unit = _token.set(token)
+    override fun set(token: Token): Unit = this.token.set(token)
 }

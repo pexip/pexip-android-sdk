@@ -31,6 +31,7 @@ internal class RegisteredDevicesFetcher(
             .await()
             .map(::RegisteredDevice)
 
+    @Suppress("ktlint:standard:function-naming")
     private fun RegisteredDevice(response: RegistrationResponse) = RegisteredDevice(
         alias = response.alias,
         description = response.description,

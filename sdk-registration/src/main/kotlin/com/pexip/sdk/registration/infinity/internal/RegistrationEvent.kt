@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.retryWhen
 import kotlin.time.Duration.Companion.seconds
 
+@Suppress("ktlint:standard:function-naming")
 internal inline fun RegistrationEvent(
     event: Event,
     at: () -> Long = System::currentTimeMillis,
@@ -49,6 +50,7 @@ internal inline fun RegistrationEvent(
     else -> null
 }
 
+@Suppress("ktlint:standard:function-naming")
 internal inline fun RegistrationEvent(t: Throwable, at: () -> Long = System::currentTimeMillis) =
     FailureRegistrationEvent(at(), t)
 
