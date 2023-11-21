@@ -206,3 +206,24 @@ public final class com/pexip/sdk/conference/coroutines/UtilKt {
 	public static synthetic fun send$default (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
+public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pexip/sdk/conference/Conference {
+	public static final field Companion Lcom/pexip/sdk/conference/infinity/InfinityConference$Companion;
+	public synthetic fun <init> (Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
+	public static final fun create (Lcom/pexip/sdk/api/infinity/InfinityService;Ljava/net/URL;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
+	public fun getMessenger ()Lcom/pexip/sdk/conference/Messenger;
+	public fun getName ()Ljava/lang/String;
+	public fun getReferer ()Lcom/pexip/sdk/conference/Referer;
+	public fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
+	public fun getTheme ()Lcom/pexip/sdk/conference/Theme;
+	public fun leave ()V
+	public fun message (Ljava/lang/String;)V
+	public fun registerConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
+	public fun unregisterConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
+}
+
+public final class com/pexip/sdk/conference/infinity/InfinityConference$Companion {
+	public final fun create (Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
+	public final fun create (Lcom/pexip/sdk/api/infinity/InfinityService;Ljava/net/URL;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)Lcom/pexip/sdk/conference/infinity/InfinityConference;
+}
+
