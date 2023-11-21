@@ -18,6 +18,7 @@ package com.pexip.sdk.api.infinity
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.internal.InfinityServiceImpl
+import com.pexip.sdk.api.infinity.internal.PreferredAspectRatioRequest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import okhttp3.OkHttpClient
@@ -529,6 +530,32 @@ public interface InfinityService {
          * @return true if operation was successful, false otherwise
          */
         public fun message(request: MessageRequest, token: Token): Call<Boolean>
+
+        /**
+         * Specifies the aspect ratio the participant would like to receive.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#preferred_aspect_ratio).
+         *
+         * @param request a request body
+         * @param token a valid token
+         */
+        public fun preferredAspectRatio(
+            request: PreferredAspectRatioRequest,
+            token: String,
+        ): Call<Boolean>
+
+        /**
+         * Specifies the aspect ratio the participant would like to receive.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#preferred_aspect_ratio).
+         *
+         * @param request a request body
+         * @param token a valid token
+         */
+        public fun preferredAspectRatio(
+            request: PreferredAspectRatioRequest,
+            token: Token,
+        ): Call<Boolean>
 
         /**
          * Sets the call ID.

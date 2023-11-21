@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.api.infinity.internal.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.internal.addPathSegment
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -516,6 +517,71 @@ internal class ParticipantStepTest {
         }
     }
 
+    @Test
+    fun `preferredAspectRatio throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        val request = Random.nextPreferredAspectRatioRequest()
+        assertFailsWith<IllegalStateException> {
+            step.preferredAspectRatio(request, token).execute()
+        }
+        server.verifyPreferredAspectRatio(request, token)
+    }
+
+    @Test
+    fun `preferredAspectRatio throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        val request = Random.nextPreferredAspectRatioRequest()
+        assertFailsWith<NoSuchNodeException> { step.preferredAspectRatio(request, token).execute() }
+        server.verifyPreferredAspectRatio(request, token)
+    }
+
+    @Test
+    fun `preferredAspectRatio throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        val request = Random.nextPreferredAspectRatioRequest()
+        assertFailsWith<NoSuchConferenceException> {
+            step.preferredAspectRatio(request, token).execute()
+        }
+        server.verifyPreferredAspectRatio(request, token)
+    }
+
+    @Test
+    fun `preferredAspectRatio throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        val request = Random.nextPreferredAspectRatioRequest()
+        assertFailsWith<InvalidTokenException> {
+            step.preferredAspectRatio(request, token).execute()
+        }
+        server.verifyPreferredAspectRatio(request, token)
+    }
+
+    @Test
+    fun `preferredAspectRatio returns result on 200`() {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            val token = Random.nextString(8)
+            val request = Random.nextPreferredAspectRatioRequest()
+            assertEquals(result, step.preferredAspectRatio(request, token).execute())
+            server.verifyPreferredAspectRatio(request, token)
+        }
+    }
+
     private fun MockWebServer.verifyCalls(request: CallsRequest, token: String) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
@@ -634,10 +700,28 @@ internal class ParticipantStepTest {
             assertPost(json, request)
         }
 
+    private fun MockWebServer.verifyPreferredAspectRatio(
+        request: PreferredAspectRatioRequest,
+        token: String,
+    ) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId)
+            addPathSegment("preferred_aspect_ratio")
+        }
+        assertToken(token)
+        assertPost(json, request)
+    }
+
     private fun Random.nextCallsRequest() = CallsRequest(
         sdp = nextString(8),
         present = nextString(8),
         callType = nextString(8),
         fecc = nextBoolean(),
     )
+
+    private fun Random.nextPreferredAspectRatioRequest() = PreferredAspectRatioRequest(nextFloat())
 }
