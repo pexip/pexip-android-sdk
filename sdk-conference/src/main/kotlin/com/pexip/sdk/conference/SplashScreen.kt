@@ -21,11 +21,11 @@ package com.pexip.sdk.conference
  * Only available in direct media calls.
  *
  * @property key a unique key that identifies this [SplashScreen]
- * @property elements a list of [Element]s that should be drawn over the [background]
- * @property background a URL that contains the background image
+ * @property elements a list of [Element]s that should be drawn over the [backgroundUrl]
+ * @property backgroundUrl a URL that contains the background image
  */
 public data class SplashScreen(
     val key: String,
     val elements: List<Element>,
-    val background: String,
+    val backgroundUrl: String,
 )

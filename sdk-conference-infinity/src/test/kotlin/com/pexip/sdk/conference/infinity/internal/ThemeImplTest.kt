@@ -105,7 +105,7 @@ class ThemeImplTest {
                             is ElementResponse.Unknown -> null
                         }
                     },
-                    background = pathToUrl(response.background.path),
+                    backgroundUrl = pathToUrl(response.background.path),
                 )
                 assertThat(awaitItem()).isEqualTo(expected)
             }

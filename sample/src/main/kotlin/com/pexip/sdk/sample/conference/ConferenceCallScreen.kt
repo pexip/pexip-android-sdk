@@ -384,7 +384,7 @@ private fun ConferenceEventsItem(
 private fun SplashScreen(splashScreen: SplashScreen, modifier: Modifier = Modifier) {
     Box(contentAlignment = Alignment.Center, modifier = modifier) {
         AsyncImage(
-            model = splashScreen.background,
+            model = splashScreen.backgroundUrl,
             contentDescription = null,
         )
         LazyColumn {

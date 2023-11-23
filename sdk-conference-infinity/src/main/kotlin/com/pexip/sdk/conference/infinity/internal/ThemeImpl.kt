@@ -59,7 +59,7 @@ internal class ThemeImpl(
         return SplashScreen(
             key = key,
             elements = response.elements.mapNotNull(::toElement),
-            background = step.theme(response.background.path, store.get()),
+            backgroundUrl = step.theme(response.background.path, store.get()),
         )
     }
 
