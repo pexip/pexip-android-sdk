@@ -161,6 +161,4 @@ internal fun Encoding(
 
 internal const val MAX_FRAMERATE = 30
 
-internal val ValidDataChannelIds = 0..65535
-
 private fun Collection<String>.sortAndJoinToString() = sorted().joinToString(separator = "")
