@@ -53,21 +53,19 @@ internal class ThemeImpl(
     private fun toSplashScreen(
         event: SplashScreenEvent,
         responses: Map<String, SplashScreenResponse>,
-    ) = when (val key = event.screenKey) {
-        null -> null
-        else -> when (val response = responses[key]) {
-            null -> null
-            else -> SplashScreen(
-                key = key,
-                elements = response.elements.mapNotNull {
-                    when (it) {
-                        is ElementResponse.Text -> Element.Text(it.color, it.text)
-                        is ElementResponse.Unknown -> null
-                    }
-                },
-                background = step.theme(response.background.path, store.get()),
-            )
-        }
+    ): SplashScreen? {
+        val key = event.screenKey ?: return null
+        val response = responses[key] ?: return null
+        return SplashScreen(
+            key = key,
+            elements = response.elements.mapNotNull(::toElement),
+            background = step.theme(response.background.path, store.get()),
+        )
+    }
+
+    private fun toElement(response: ElementResponse) = when (response) {
+        is ElementResponse.Text -> Element.Text(response.color, response.text)
+        is ElementResponse.Unknown -> null
     }
 
     private fun InfinityService.ConferenceStep.theme(store: TokenStore) = flow { emit(store.get()) }
