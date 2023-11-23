@@ -354,57 +354,6 @@ internal class PeerConnectionWrapper(
 
     companion object {
 
-        private val NativeGetTransceivers by lazy {
-            PeerConnection::class.java
-                .getDeclaredMethod("nativeGetTransceivers")
-                .also { it.isAccessible = true }
-        }
-        private val Transceivers by lazy {
-            PeerConnection::class.java
-                .getDeclaredField("transceivers")
-                .also { it.isAccessible = true }
-        }
-        private val NativeDtmfSender by lazy {
-            DtmfSender::class.java
-                .getDeclaredField("nativeDtmfSender")
-                .also { it.isAccessible = true }
-        }
-        private val NativeTrack by lazy {
-            MediaStreamTrack::class.java
-                .getDeclaredField("nativeTrack")
-                .also { it.isAccessible = true }
-        }
-        private val OwnsTrack by lazy {
-            RtpSender::class.java
-                .getDeclaredField("ownsTrack")
-                .also { it.isAccessible = true }
-        }
-        private val NativeRtpSender by lazy {
-            RtpSender::class.java
-                .getDeclaredField("nativeRtpSender")
-                .also { it.isAccessible = true }
-        }
-        private val NativeObserver by lazy {
-            RtpReceiver::class.java
-                .getDeclaredField("nativeObserver")
-                .also { it.isAccessible = true }
-        }
-        private val NativeUnsetObserver by lazy {
-            RtpReceiver::class.java
-                .getDeclaredMethod("nativeUnsetObserver", Long::class.java, Long::class.java)
-                .also { it.isAccessible = true }
-        }
-        private val NativeRtpReceiver by lazy {
-            RtpReceiver::class.java
-                .getDeclaredField("nativeRtpReceiver")
-                .also { it.isAccessible = true }
-        }
-        private val NativeRtpTransceiver by lazy {
-            RtpTransceiver::class.java
-                .getDeclaredField("nativeRtpTransceiver")
-                .also { it.isAccessible = true }
-        }
-
         private const val FINGERPRINT = "a=fingerprint:"
         private const val MID = "a=mid:"
         private const val ICE_UFRAG = "a=ice-ufrag:"
