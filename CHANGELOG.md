@@ -20,10 +20,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Kotlin to 1.9.10
+- Merged all `-infinity` modules with their respective bases
 
 ### Fixed
 
 - Crash in `TokenStore.refreshTokenIn` when `release_token` throws
+
+### Notes
+
+`-infinity` modules now only contain their base modules as the sole dependency and can be skipped
+in consumer modules. They will continue to be published for some time to provide a clean migration
+path and will be removed at a later point.
 
 ## [0.13.1] - 2023-08-29
 

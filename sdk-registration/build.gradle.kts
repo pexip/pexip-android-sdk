@@ -3,7 +3,9 @@ plugins {
 }
 
 dependencies {
-    api(libs.kotlinx.coroutines.core)
+    api(project(":sdk-api"))
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {

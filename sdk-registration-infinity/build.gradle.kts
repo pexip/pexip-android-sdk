@@ -4,9 +4,6 @@ plugins {
 
 dependencies {
     api(project(":sdk-registration"))
-    api(project(":sdk-api-infinity"))
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.turbine)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
