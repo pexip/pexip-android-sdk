@@ -18,8 +18,8 @@ package com.pexip.sdk.api.infinity.internal
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.tableOf
-import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.UpdateResponse
+import com.pexip.sdk.infinity.Infinity
 import kotlinx.serialization.json.Json
 import okio.BufferedSource
 import okio.FileSystem
@@ -33,7 +33,7 @@ class UpdateResponseSerializerTest {
 
     @BeforeTest
     fun setUp() {
-        json = InfinityService.Json
+        json = Infinity.Json
     }
 
     @Test

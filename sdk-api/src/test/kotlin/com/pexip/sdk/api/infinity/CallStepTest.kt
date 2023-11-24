@@ -22,10 +22,9 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.internal.addPathSegment
+import com.pexip.sdk.infinity.Infinity
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import java.net.URL
@@ -43,7 +42,6 @@ internal class CallStepTest {
     private lateinit var conferenceAlias: String
     private lateinit var participantId: UUID
     private lateinit var callId: UUID
-    private lateinit var json: Json
     private lateinit var step: InfinityService.CallStep
 
     @BeforeTest
@@ -52,8 +50,7 @@ internal class CallStepTest {
         conferenceAlias = Random.nextString(8)
         participantId = UUID.randomUUID()
         callId = UUID.randomUUID()
-        json = Json { ignoreUnknownKeys = true }
-        val service = InfinityService.create(OkHttpClient(), json)
+        val service = InfinityService.create()
         step = service.newRequest(node)
             .conference(conferenceAlias)
             .participant(participantId)
@@ -85,7 +82,7 @@ internal class CallStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val request = Random.nextNewCandidateRequest()
         val token = Random.nextString(8)
@@ -99,7 +96,7 @@ internal class CallStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val request = Random.nextNewCandidateRequest()
         val token = Random.nextString(8)
@@ -148,7 +145,7 @@ internal class CallStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         val request = Random.maybe { nextAckRequest() }
@@ -165,7 +162,7 @@ internal class CallStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         val request = Random.maybe { nextAckRequest() }
@@ -213,7 +210,7 @@ internal class CallStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         val request = Random.nextUpdateRequest()
@@ -228,7 +225,7 @@ internal class CallStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         val request = Random.nextUpdateRequest()
@@ -243,7 +240,7 @@ internal class CallStepTest {
         val response = UpdateResponse(Random.nextString(8))
         server.enqueue {
             setResponseCode(200)
-            setBody(json.encodeToString(Box(response)))
+            setBody(Infinity.Json.encodeToString(Box(response)))
         }
         val token = Random.nextString(8)
         val request = Random.nextUpdateRequest()
@@ -274,7 +271,7 @@ internal class CallStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
         val token = Random.nextString(8)
@@ -288,7 +285,7 @@ internal class CallStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
         val token = Random.nextString(8)
@@ -301,7 +298,7 @@ internal class CallStepTest {
         val response = Random.nextBoolean()
         server.enqueue {
             setResponseCode(200)
-            setBody(json.encodeToString(Box(response)))
+            setBody(Infinity.Json.encodeToString(Box(response)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
         val token = Random.nextString(8)
@@ -324,7 +321,7 @@ internal class CallStepTest {
             addPathSegment("new_candidate")
         }
         assertToken(token)
-        assertPost(json, request)
+        assertPost(Infinity.Json, request)
     }
 
     private fun MockWebServer.verifyAck(request: AckRequest?, token: String) = takeRequest {
@@ -341,7 +338,7 @@ internal class CallStepTest {
         assertToken(token)
         when (request) {
             null -> assertPostEmptyBody()
-            else -> assertPost(json, request)
+            else -> assertPost(Infinity.Json, request)
         }
     }
 
@@ -357,7 +354,7 @@ internal class CallStepTest {
             addPathSegment("update")
         }
         assertToken(token)
-        assertPost(json, request)
+        assertPost(Infinity.Json, request)
     }
 
     private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: String) = takeRequest {
@@ -372,7 +369,7 @@ internal class CallStepTest {
             addPathSegment("dtmf")
         }
         assertToken(token)
-        assertPost(json, request)
+        assertPost(Infinity.Json, request)
     }
 
     private fun Random.nextNewCandidateRequest() = NewCandidateRequest(

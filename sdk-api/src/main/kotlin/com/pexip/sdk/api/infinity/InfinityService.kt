@@ -18,8 +18,10 @@ package com.pexip.sdk.api.infinity
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.internal.InfinityServiceImpl
+import com.pexip.sdk.infinity.Infinity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.plus
 import okhttp3.OkHttpClient
 import java.net.URL
 import java.util.UUID
@@ -706,10 +708,8 @@ public interface InfinityService {
 
     public companion object {
 
-        internal val Json = Json {
-            ignoreUnknownKeys = true
-            coerceInputValues = true
-            serializersModule = SerializersModule {
+        internal val Json = Json(from = Infinity.Json) {
+            serializersModule += SerializersModule {
                 polymorphicDefaultDeserializer(ElementResponse::class) {
                     ElementResponse.Unknown.serializer()
                 }
