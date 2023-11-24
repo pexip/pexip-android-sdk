@@ -48,7 +48,7 @@ internal class ThemeImpl(
     override val splashScreen: StateFlow<SplashScreen?> = event
         .filterIsInstance<SplashScreenEvent>()
         .combine(step.theme(store), ::toSplashScreen)
-        .stateIn(scope, SharingStarted.Lazily, null)
+        .stateIn(scope, SharingStarted.Eagerly, null)
 
     private fun toSplashScreen(
         event: SplashScreenEvent,
