@@ -713,6 +713,9 @@ public interface InfinityService {
                 polymorphicDefaultDeserializer(ElementResponse::class) {
                     ElementResponse.Unknown.serializer()
                 }
+                polymorphicDefaultDeserializer(DataChannelMessage::class) {
+                    DataChannelMessage.Unknown.serializer()
+                }
             }
         }
 
