@@ -28,6 +28,7 @@ import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.api.infinity.RequiredPinException
 import com.pexip.sdk.api.infinity.RequiredSsoException
+import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.SsoRedirectException
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
@@ -128,6 +129,37 @@ internal class ConferenceStepImpl(
     override fun message(request: MessageRequest, token: Token): Call<Boolean> =
         message(request, token.token)
 
+    override fun theme(token: String): Call<Map<String, SplashScreenResponse>> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .get()
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("theme")
+                    addPathSegment("")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseTheme,
+        )
+    }
+
+    override fun theme(token: Token): Call<Map<String, SplashScreenResponse>> = theme(token.token)
+
+    override fun theme(path: String, token: String): String {
+        require(path.isNotBlank()) { "path is blank." }
+        return node.newApiClientV2Builder()
+            .conference(conferenceAlias)
+            .addPathSegment("theme")
+            .addPathSegment(path)
+            .addQueryParameter("token", token)
+            .toString()
+    }
+
+    override fun theme(path: String, token: Token): String = theme(path, token.token)
+
     override fun events(token: String): EventSourceFactory {
         require(token.isNotBlank()) { "token is blank." }
         return RealEventSourceFactory(
@@ -186,6 +218,14 @@ internal class ConferenceStepImpl(
 
     private fun parseMessage(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseTheme(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(ThemeSerializer, response.body!!)
+        204 -> mapOf()
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

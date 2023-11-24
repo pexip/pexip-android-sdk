@@ -17,6 +17,7 @@ package com.pexip.sdk.sample.conference
 
 import android.content.Intent
 import com.pexip.sdk.conference.Message
+import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.sample.audio.AudioDeviceRendering
 import com.pexip.sdk.sample.bandwidth.BandwidthRendering
@@ -29,6 +30,7 @@ sealed interface ConferenceRendering {
 }
 
 data class ConferenceCallRendering(
+    val splashScreen: SplashScreen?,
     val cameraVideoTrack: VideoTrack?,
     val mainRemoteVideoTrack: VideoTrack?,
     val presentationRemoteVideoTrack: VideoTrack?,

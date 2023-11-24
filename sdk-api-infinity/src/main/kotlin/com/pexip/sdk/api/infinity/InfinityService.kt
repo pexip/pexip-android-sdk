@@ -19,6 +19,7 @@ import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.internal.InfinityServiceImpl
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import okhttp3.OkHttpClient
 import java.net.URL
 import java.util.UUID
@@ -164,6 +165,50 @@ public interface InfinityService {
          * @return true if operation was successful, false otherwise
          */
         public fun message(request: MessageRequest, token: Token): Call<Boolean>
+
+        /**
+         * Provides the theme resources of the conference (direct media only). Used in conjunction
+         * with the **splash_screen** server event, the relevant theme resources can be used to
+         * locally render a particular splash screen on the client.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#theme).
+         *
+         * @param token a valid token
+         * @return a [Map] of [SplashScreenResponse]
+         */
+        public fun theme(token: String): Call<Map<String, SplashScreenResponse>>
+
+        /**
+         * Provides the theme resources of the conference (direct media only). Used in conjunction
+         * with the **splash_screen** server event, the relevant theme resources can be used to
+         * locally render a particular splash screen on the client.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#theme).
+         *
+         * @param token a valid token
+         * @return a [Map] of [SplashScreenResponse]
+         */
+        public fun theme(token: Token): Call<Map<String, SplashScreenResponse>>
+
+        /**
+         * Creates a URL that points to a specific theme resource, such as an image.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#theme).
+         *
+         * @param token a valid token
+         * @return a URL of the resource
+         */
+        public fun theme(path: String, token: String): String
+
+        /**
+         * Creates a URL that points to a specific theme resource, such as an image.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#theme).
+         *
+         * @param token a valid token
+         * @return a URL of the resource
+         */
+        public fun theme(path: String, token: Token): String
 
         /**
          * Subscribes to server-side events.
@@ -638,6 +683,11 @@ public interface InfinityService {
         internal val Json = Json {
             ignoreUnknownKeys = true
             coerceInputValues = true
+            serializersModule = SerializersModule {
+                polymorphicDefaultDeserializer(ElementResponse::class) {
+                    ElementResponse.Unknown.serializer()
+                }
+            }
         }
 
         @JvmStatic

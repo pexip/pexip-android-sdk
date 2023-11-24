@@ -36,6 +36,7 @@ import com.pexip.sdk.api.infinity.PeerDisconnectEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.ReferEvent
+import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.api.infinity.nextString
 import okio.BufferedSource
@@ -49,7 +50,7 @@ internal class EventTest {
 
     @Test
     fun `returns Event if the type is registered`() {
-        tableOf("type", "event", "filename")
+        tableOf("type", "filename", "event")
             .row<String, String, Event>(
                 val1 = "bye",
                 val2 = "bye.json",
@@ -167,12 +168,23 @@ internal class EventTest {
                 val2 = "peer_disconnect.json",
                 val3 = PeerDisconnectEvent,
             )
+            .row(
+                val1 = "splash_screen",
+                val2 = "splash_screen.json",
+                val3 = SplashScreenEvent("direct_media_welcome"),
+            )
+            .row(
+                val1 = "splash_screen",
+                val2 = "splash_screen_null.json",
+                val3 = SplashScreenEvent(),
+            )
             .forAll { type, filename, event ->
+                val data = FileSystem.RESOURCES.read(filename.toPath(), BufferedSource::readUtf8)
                 val actual = Event(
                     json = InfinityService.Json,
                     id = Random.nextString(8),
                     type = type,
-                    data = FileSystem.RESOURCES.read(filename.toPath(), BufferedSource::readUtf8),
+                    data = data.trim(),
                 )
                 assertThat(actual, "event").isEqualTo(event)
             }

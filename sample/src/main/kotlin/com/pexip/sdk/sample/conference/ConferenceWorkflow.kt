@@ -109,6 +109,7 @@ class ConferenceWorkflow @Inject constructor(
         )
         context.bindConferenceServiceSideEffect()
         context.leaveSideEffect(renderProps, renderState)
+        context.splashScreenSideEffect(renderProps)
         context.screenCapturingSideEffect(renderState.screenCaptureVideoTrack)
         context.screenCaptureVideoTrackSideEffect(renderState.screenCaptureData)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
@@ -125,6 +126,7 @@ class ConferenceWorkflow @Inject constructor(
                 onBackClick = context.send(::OnBackClick),
             )
             else -> ConferenceCallRendering(
+                splashScreen = renderState.splashScreen,
                 cameraVideoTrack = renderProps.cameraVideoTrack,
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
@@ -202,6 +204,15 @@ class ConferenceWorkflow @Inject constructor(
             renderState.connection.dispose()
             renderProps.conference.leave()
             renderState.screenCaptureVideoTrack?.dispose()
+        }
+    }
+
+    private fun RenderContext.splashScreenSideEffect(renderProps: ConferenceProps) {
+        val conference = renderProps.conference
+        runningSideEffect("splashScreenSideEffect($conference)") {
+            conference.theme.splashScreen
+                .map(::OnSplashScreen)
+                .collect(actionSink::send)
         }
     }
 

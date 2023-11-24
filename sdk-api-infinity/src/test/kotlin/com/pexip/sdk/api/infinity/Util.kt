@@ -73,6 +73,9 @@ internal inline fun <reified T> RecordedRequest.assertPost(json: Json, request: 
 internal fun RecordedRequest.assertRequestUrl(url: URL, block: HttpUrl.Builder.() -> Unit) =
     assertEquals(url.toString().toHttpUrl().newBuilder().apply(block).build(), requestUrl)
 
+internal fun RecordedRequest.assertRequestUrl(url: HttpUrl, block: HttpUrl.Builder.() -> Unit) =
+    assertEquals(url.newBuilder().apply(block).build(), requestUrl)
+
 internal fun RecordedRequest.assertToken(token: String?) = assertEquals(token, getHeader("token"))
 
 internal fun RecordedRequest.assertAuthorization(username: String, password: String) {

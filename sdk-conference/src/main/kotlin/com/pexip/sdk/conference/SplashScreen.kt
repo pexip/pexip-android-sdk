@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample
+package com.pexip.sdk.conference
 
-import android.app.Application
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import dagger.hilt.android.HiltAndroidApp
-import okhttp3.OkHttpClient
-import javax.inject.Inject
-
-@HiltAndroidApp
-class SampleApplication : Application(), ImageLoaderFactory {
-
-    @Inject
-    lateinit var client: OkHttpClient
-
-    override fun newImageLoader(): ImageLoader = ImageLoader.Builder(this)
-        .okHttpClient(client)
-        .build()
-}
+/**
+ * A splash screen that should be rendered to the user whenever available.
+ *
+ * Only available in direct media calls.
+ *
+ * @property key a unique key that identifies this [SplashScreen]
+ * @property elements a list of [Element]s that should be drawn over the [backgroundUrl]
+ * @property backgroundUrl a URL that contains the background image
+ */
+public data class SplashScreen(
+    val key: String,
+    val elements: List<Element>,
+    val backgroundUrl: String,
+)

@@ -22,6 +22,7 @@ import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
+import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.VideoTrack
@@ -33,6 +34,13 @@ import com.pexip.sdk.sample.dtmf.DtmfOutput
 import com.squareup.workflow1.WorkflowAction
 
 typealias ConferenceAction = WorkflowAction<ConferenceProps, ConferenceState, ConferenceOutput>
+
+class OnSplashScreen(private val splashScreen: SplashScreen?) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(splashScreen = splashScreen)
+    }
+}
 
 class OnScreenCapture(private val data: Intent) : ConferenceAction() {
 

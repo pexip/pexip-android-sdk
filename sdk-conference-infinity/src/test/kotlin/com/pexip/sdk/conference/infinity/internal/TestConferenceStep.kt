@@ -22,6 +22,7 @@ import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
 import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequestTokenResponse
+import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.Token
 import java.util.UUID
 
@@ -49,6 +50,15 @@ internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
 
     final override fun message(request: MessageRequest, token: Token): Call<Boolean> =
         message(request, token.token)
+
+    override fun theme(token: String): Call<Map<String, SplashScreenResponse>> = TODO()
+
+    final override fun theme(token: Token): Call<Map<String, SplashScreenResponse>> =
+        theme(token.token)
+
+    override fun theme(path: String, token: String): String = TODO()
+
+    final override fun theme(path: String, token: Token): String = theme(path, token.token)
 
     override fun events(token: String): EventSourceFactory = TODO()
 

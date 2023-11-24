@@ -19,6 +19,7 @@ import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasMessage
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
@@ -28,10 +29,10 @@ import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
-import java.net.URL
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
@@ -42,18 +43,18 @@ internal class ConferenceStepTest {
     @get:Rule
     val server = MockWebServer()
 
-    private lateinit var node: URL
+    private lateinit var node: HttpUrl
     private lateinit var conferenceAlias: String
     private lateinit var json: Json
     private lateinit var step: InfinityService.ConferenceStep
 
     @BeforeTest
     fun setUp() {
-        node = server.url("/").toUrl()
+        node = server.url("/")
         conferenceAlias = Random.nextString(8)
         json = InfinityService.Json
         val service = InfinityService.create(OkHttpClient(), json)
-        step = service.newRequest(node).conference(conferenceAlias)
+        step = service.newRequest(node.toUrl()).conference(conferenceAlias)
     }
 
     @Test
@@ -414,6 +415,90 @@ internal class ConferenceStepTest {
         }
     }
 
+    @Test
+    fun `theme throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailure { step.theme(token).execute() }.isInstanceOf<IllegalStateException>()
+        server.verifyTheme(token)
+    }
+
+    @Test
+    fun `theme throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailure { step.theme(token).execute() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyTheme(token)
+    }
+
+    @Test
+    fun `theme throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.theme(token).execute() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyTheme(token)
+    }
+
+    @Test
+    fun `theme throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.theme(token).execute() }.isInstanceOf<InvalidTokenException>()
+        server.verifyTheme(token)
+    }
+
+    @Test
+    fun `theme returns empty map on 204`() {
+        server.enqueue { setResponseCode(204) }
+        val token = Random.nextString(8)
+        assertThat(step.theme(token).execute(), "response").isEmpty()
+        server.verifyTheme(token)
+    }
+
+    @Test
+    fun `theme returns a map on 200`() {
+        val map = mapOf(
+            Random.nextString(8) to SplashScreenResponse(
+                background = BackgroundResponse("background.jpg"),
+                elements = List(10) {
+                    ElementResponse.Text(
+                        color = Random.nextLong(Long.MAX_VALUE),
+                        text = Random.nextString(8),
+                    )
+                },
+            ),
+        )
+        server.enqueue {
+            setResponseCode(200)
+            setBody(json.encodeToString(Box(map)))
+        }
+        val token = Random.nextString(8)
+        assertThat(step.theme(token).execute(), "response").isEqualTo(map)
+        server.verifyTheme(token)
+    }
+
+    @Test
+    fun `theme with path returns correct URL with token`() {
+        val path = Random.nextString(8)
+        val token = Random.nextString(8)
+        val actual = step.theme(path, token)
+        val expected = node.newBuilder("/api/client/v2/conferences")!!
+            .addPathSegment(conferenceAlias)
+            .addPathSegment("theme")
+            .addPathSegment(path)
+            .addQueryParameter("token", token)
+            .build()
+        assertThat(actual).isEqualTo(expected.toString())
+    }
+
     private fun MockWebServer.verifyRequestToken(
         request: RequestTokenRequest,
         pin: String? = null,
@@ -461,4 +546,16 @@ internal class ConferenceStepTest {
             assertToken(token)
             assertPost(json, request)
         }
+
+    private fun MockWebServer.verifyTheme(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("theme")
+            addPathSegment("")
+        }
+        assertToken(token)
+        assertGet()
+    }
 }

@@ -27,12 +27,14 @@ import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.Referer
+import com.pexip.sdk.conference.Theme
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.DataChannelImpl
 import com.pexip.sdk.conference.infinity.internal.DataChannelMessengerImpl
 import com.pexip.sdk.conference.infinity.internal.MediaConnectionSignalingImpl
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RefererImpl
+import com.pexip.sdk.conference.infinity.internal.ThemeImpl
 import com.pexip.sdk.conference.infinity.internal.events
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
@@ -56,7 +58,7 @@ import java.util.concurrent.Executors
 import java.util.logging.Logger
 
 public class InfinityConference private constructor(
-    step: InfinityService.ConferenceStep,
+    private val step: InfinityService.ConferenceStep,
     response: RequestTokenResponse,
 ) : Conference {
 
@@ -68,6 +70,13 @@ public class InfinityConference private constructor(
     private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
 
     override val name: String = response.conferenceName
+
+    override val theme: Theme = ThemeImpl(
+        scope = scope,
+        event = event,
+        step = step,
+        store = store,
+    )
 
     override val referer: Referer = RefererImpl(step.requestBuilder, response.directMediaRequested)
 
