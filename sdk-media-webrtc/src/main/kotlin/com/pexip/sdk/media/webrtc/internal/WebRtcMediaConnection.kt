@@ -17,6 +17,8 @@ package com.pexip.sdk.media.webrtc.internal
 
 import com.pexip.sdk.media.Bitrate
 import com.pexip.sdk.media.Bitrate.Companion.bps
+import com.pexip.sdk.media.CandidateSignalingEvent
+import com.pexip.sdk.media.DataSender
 import com.pexip.sdk.media.DegradationPreference
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
@@ -24,10 +26,13 @@ import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionSignaling
+import com.pexip.sdk.media.OfferSignalingEvent
+import com.pexip.sdk.media.RestartSignalingEvent
 import com.pexip.sdk.media.SecureCheckCode
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,13 +55,16 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack.MediaType
 import org.webrtc.PeerConnection
+import org.webrtc.RtpParameters
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.atomic.AtomicBoolean
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class WebRtcMediaConnection(
@@ -66,8 +74,11 @@ internal class WebRtcMediaConnection(
     private val signalingDispatcher: CoroutineDispatcher,
 ) : MediaConnection {
 
-    private val started = AtomicBoolean()
-    private val shouldAck = AtomicBoolean(true)
+    private val mutex = Mutex()
+    private var polite = false
+    private var makingOffer = false
+    private var ignoreOffer = false
+    private var signalingState = PeerConnection.SignalingState.STABLE
 
     private val wrapper = factory.createPeerConnection(config)
 
@@ -100,8 +111,18 @@ internal class WebRtcMediaConnection(
 
     init {
         with(scope) {
+            launchDataSender()
+            if (config.signaling.directMedia) {
+                scope.launch {
+                    val init = RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
+                    wrapper.withRtpTransceiver(MainAudio, init) { }
+                    wrapper.withRtpTransceiver(MainVideo, init) { }
+                    wrapper.withRtpTransceiver(PresentationVideo, init) { }
+                }
+            }
             launchMaxBitrate()
             launchWrapperEvent()
+            launchSignalingEvent()
             launchDegradationPreference(MainVideo, mainDegradationPreference)
             launchDegradationPreference(PresentationVideo, presentationDegradationPreference)
             launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
@@ -205,9 +226,7 @@ internal class WebRtcMediaConnection(
     }
 
     override fun start() {
-        if (started.compareAndSet(false, true)) {
-            scope.launch { setLocalDescription() }
-        }
+        scope.launch { wrapper.start() }
     }
 
     override fun dispose() {
@@ -230,28 +249,15 @@ internal class WebRtcMediaConnection(
         presentationRemoteVideoTrackListeners -= listener
     }
 
-    private suspend fun setLocalDescription() {
-        val bitrate = maxBitrate.value
-        val localDescription = wrapper.setLocalDescription {
-            mangle(
-                bitrate = bitrate,
-                mainAudioMid = it[MainAudio],
-                mainVideoMid = it[MainVideo],
-                presentationVideoMid = it[PresentationVideo],
-            )
-        }
-        val sdp = SessionDescription(
-            SessionDescription.Type.ANSWER,
-            config.signaling.onOffer(
-                callType = "WEBRTC",
-                description = localDescription.description,
-                presentationInMain = config.presentationInMain,
-                fecc = config.farEndCameraControl,
-            ),
-        )
-        wrapper.setRemoteDescription(sdp.mangle(bitrate))
-        if (shouldAck.compareAndSet(true, false)) {
-            runCatching { config.signaling.onAck() }
+    private fun CoroutineScope.launchDataSender() = launch {
+        val sender = DataSender { (data, binary) -> wrapper.send(data, binary) }
+        try {
+            config.signaling.attach(sender)
+            awaitCancellation()
+        } finally {
+            withContext(NonCancellable) {
+                config.signaling.detach(sender)
+            }
         }
     }
 
@@ -262,7 +268,42 @@ internal class WebRtcMediaConnection(
     private fun CoroutineScope.launchWrapperEvent() = launch {
         wrapper.event.collect {
             when (it) {
-                is Event.OnRenegotiationNeeded -> setLocalDescription()
+                is Event.OnSignalingChange -> mutex.withLock {
+                    signalingState = it.state
+                }
+                is Event.OnRenegotiationNeeded -> {
+                    val bitrate = maxBitrate.value
+                    val answer = try {
+                        mutex.withLock { makingOffer = true }
+                        val localDescription = wrapper.setLocalDescription { mids ->
+                            mangle(
+                                bitrate = bitrate,
+                                mainAudioMid = mids[MainAudio],
+                                mainVideoMid = mids[MainVideo],
+                                presentationVideoMid = mids[PresentationVideo],
+                            )
+                        }
+                        config.signaling.onOffer(
+                            callType = "WEBRTC",
+                            description = localDescription.description,
+                            presentationInMain = config.presentationInMain,
+                            fecc = config.farEndCameraControl,
+                        )
+                    } finally {
+                        mutex.withLock { makingOffer = false }
+                    }
+                    if (answer == null) {
+                        mutex.withLock { polite = true }
+                        return@collect
+                    }
+                    val sdp = SessionDescription(SessionDescription.Type.ANSWER, answer)
+                    try {
+                        wrapper.setRemoteDescription(sdp.mangle(bitrate))
+                    } catch (e: RuntimeException) {
+                        return@collect
+                    }
+                    runCatching { config.signaling.onAck() }
+                }
                 is Event.OnIceCandidate -> {
                     val sdp = it.candidate.sdp ?: return@collect
                     val mid = it.candidate.sdpMid ?: return@collect
@@ -282,7 +323,54 @@ internal class WebRtcMediaConnection(
                     if (it.state != PeerConnection.IceConnectionState.FAILED) return@collect
                     wrapper.restartIce()
                 }
+                is Event.OnData -> {
+                    config.signaling.onData(it.data)
+                }
                 else -> Unit
+            }
+        }
+    }
+
+    private fun CoroutineScope.launchSignalingEvent() = launch {
+        config.signaling.event.collect { event ->
+            when (event) {
+                is OfferSignalingEvent -> {
+                    val ignoreOffer = mutex.withLock {
+                        val stable = signalingState == PeerConnection.SignalingState.STABLE
+                        val offerCollision = makingOffer || !stable
+                        (!polite && offerCollision).also { ignoreOffer = it }
+                    }
+                    if (ignoreOffer) {
+                        runCatching { config.signaling.onOfferIgnored() }
+                        return@collect
+                    }
+                    val description =
+                        SessionDescription(SessionDescription.Type.OFFER, event.description)
+                    wrapper.setRemoteDescription(description.mangle(maxBitrate.value))
+                    val localDescription = wrapper.setLocalDescription { mids ->
+                        mangle(
+                            bitrate = maxBitrate.value,
+                            mainAudioMid = mids[MainAudio],
+                            mainVideoMid = mids[MainVideo],
+                            presentationVideoMid = mids[PresentationVideo],
+                        )
+                    }
+                    runCatching { config.signaling.onAnswer(localDescription.description) }
+                }
+                is CandidateSignalingEvent -> try {
+                    if (event.candidate.isBlank()) return@collect
+                    val candidate = IceCandidate(event.mid, -1, event.candidate)
+                    wrapper.addIceCandidate(candidate)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (t: Throwable) {
+                    if (mutex.withLock { !ignoreOffer }) {
+                        throw t
+                    }
+                }
+                is RestartSignalingEvent -> {
+                    wrapper.restart()
+                }
             }
         }
     }
@@ -370,25 +458,30 @@ internal class WebRtcMediaConnection(
     private fun RtpTransceiverInit(direction: RtpTransceiverDirection) = { key: RtpTransceiverKey ->
         RtpTransceiverInit(
             direction = direction,
-            sendEncodings = when (key.mediaType) {
-                MediaType.MEDIA_TYPE_VIDEO -> listOf(Encoding { maxFramerate = MAX_FRAMERATE })
-                MediaType.MEDIA_TYPE_AUDIO -> emptyList()
-            },
+            streamIds = key.streamIds,
+            sendEncodings = key.sendEncodings,
         )
     }
 
     private data object MainAudio : RtpTransceiverKey {
 
         override val mediaType: MediaType = MediaType.MEDIA_TYPE_AUDIO
+        override val streamIds: List<String> = listOf("main")
     }
 
     private data object MainVideo : RtpTransceiverKey {
 
         override val mediaType: MediaType = MediaType.MEDIA_TYPE_VIDEO
+        override val streamIds: List<String> = listOf("main")
+        override val sendEncodings: List<RtpParameters.Encoding> =
+            listOf(Encoding { maxFramerate = MAX_FRAMERATE })
     }
 
     private data object PresentationVideo : RtpTransceiverKey {
 
         override val mediaType: MediaType = MediaType.MEDIA_TYPE_VIDEO
+        override val streamIds: List<String> = listOf("slides")
+        override val sendEncodings: List<RtpParameters.Encoding> =
+            listOf(Encoding { maxFramerate = MAX_FRAMERATE })
     }
 }

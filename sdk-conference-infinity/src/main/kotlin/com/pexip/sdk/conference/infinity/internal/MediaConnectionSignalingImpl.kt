@@ -15,21 +15,39 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
+import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.api.infinity.AckRequest
 import com.pexip.sdk.api.infinity.CallsRequest
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewCandidateRequest
+import com.pexip.sdk.api.infinity.NewOfferEvent
+import com.pexip.sdk.api.infinity.PeerDisconnectEvent
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
+import com.pexip.sdk.api.infinity.UpdateSdpEvent
+import com.pexip.sdk.media.CandidateSignalingEvent
+import com.pexip.sdk.media.Data
+import com.pexip.sdk.media.DataSender
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
+import com.pexip.sdk.media.OfferSignalingEvent
+import com.pexip.sdk.media.RestartSignalingEvent
+import com.pexip.sdk.media.SignalingEvent
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapNotNull
 
-internal class RealMediaConnectionSignaling(
+internal class MediaConnectionSignalingImpl(
     private val store: TokenStore,
+    event: Flow<Event>,
     private val participantStep: InfinityService.ParticipantStep,
+    override val directMedia: Boolean,
     override val iceServers: List<IceServer>,
+    override val iceTransportsRelayOnly: Boolean,
+    override val dataChannel: DataChannelImpl?,
     callStep: InfinityService.CallStep? = null,
 ) : MediaConnectionSignaling {
 
@@ -38,35 +56,54 @@ internal class RealMediaConnectionSignaling(
         else -> CompletableDeferred(callStep)
     }
 
+    override val event: Flow<SignalingEvent> = event.mapNotNull(::toSignalingEvent)
+
     override suspend fun onOffer(
         callType: String,
         description: String,
         presentationInMain: Boolean,
         fecc: Boolean,
-    ): String {
+    ): String? {
         val token = store.get()
-        val step = when {
-            callStep.isCompleted -> callStep.await()
+        val step = when (callStep.isCompleted) {
+            true -> callStep.await()
             else -> null
         }
-        if (step == null) {
-            val request = CallsRequest(
-                callType = callType,
-                sdp = description,
-                present = if (presentationInMain) "main" else null,
-                fecc = fecc,
-            )
-            val response = participantStep.calls(request, token).await()
-            callStep.complete(participantStep.call(response.callId))
-            return response.sdp
-        } else {
-            val request = UpdateRequest(
-                sdp = description,
-                fecc = fecc,
-            )
-            val response = step.update(request, token).await()
-            return response.sdp
+        val response = when (step) {
+            null -> {
+                val request = CallsRequest(
+                    callType = callType,
+                    sdp = description,
+                    present = if (presentationInMain) "main" else null,
+                    fecc = fecc,
+                )
+                val response = participantStep.calls(request, token).await()
+                callStep.complete(participantStep.call(response.callId))
+                response
+            }
+            else -> {
+                val request = UpdateRequest(
+                    sdp = description,
+                    fecc = fecc,
+                )
+                step.update(request, token).await()
+            }
         }
+        return if (response.offerIgnored || response.sdp.isBlank()) null else response.sdp
+    }
+
+    override suspend fun onOfferIgnored() {
+        val callStep = callStep.await()
+        val token = store.get()
+        val request = AckRequest(offerIgnored = true)
+        callStep.ack(request, token).await()
+    }
+
+    override suspend fun onAnswer(description: String) {
+        val callStep = callStep.await()
+        val token = store.get()
+        val request = AckRequest(sdp = description)
+        callStep.ack(request, token).await()
     }
 
     override suspend fun onAck() {
@@ -116,5 +153,19 @@ internal class RealMediaConnectionSignaling(
 
     override suspend fun onReleaseFloor() {
         participantStep.releaseFloor(store.get()).await()
+    }
+
+    override suspend fun attach(sender: DataSender) = dataChannel?.attach(sender) ?: Unit
+
+    override suspend fun detach(sender: DataSender) = dataChannel?.detach(sender) ?: Unit
+
+    override suspend fun onData(data: Data) = dataChannel?.onData(data) ?: Unit
+
+    private fun toSignalingEvent(event: Event) = when (event) {
+        is NewOfferEvent -> OfferSignalingEvent(event.sdp)
+        is UpdateSdpEvent -> OfferSignalingEvent(event.sdp)
+        is NewCandidateEvent -> CandidateSignalingEvent(event.mid, event.candidate)
+        is PeerDisconnectEvent -> RestartSignalingEvent
+        else -> null
     }
 }

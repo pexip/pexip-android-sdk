@@ -28,8 +28,10 @@ import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
+import com.pexip.sdk.conference.infinity.internal.DataChannelImpl
+import com.pexip.sdk.conference.infinity.internal.DataChannelMessengerImpl
+import com.pexip.sdk.conference.infinity.internal.MediaConnectionSignalingImpl
 import com.pexip.sdk.conference.infinity.internal.MessengerImpl
-import com.pexip.sdk.conference.infinity.internal.RealMediaConnectionSignaling
 import com.pexip.sdk.conference.infinity.internal.RefererImpl
 import com.pexip.sdk.conference.infinity.internal.events
 import com.pexip.sdk.media.IceServer
@@ -69,18 +71,11 @@ public class InfinityConference private constructor(
 
     override val referer: Referer = RefererImpl(step.requestBuilder, response.directMediaRequested)
 
-    override val messenger: Messenger = MessengerImpl(
-        scope = scope,
+    override val signaling: MediaConnectionSignaling = MediaConnectionSignalingImpl(
+        store = store,
         event = event,
-        senderId = response.participantId,
-        senderName = response.participantName,
-        store = store,
-        step = step,
-    )
-
-    override val signaling: MediaConnectionSignaling = RealMediaConnectionSignaling(
-        store = store,
         participantStep = step.participant(response.participantId),
+        directMedia = response.directMedia,
         iceServers = buildList(response.stun.size + response.turn.size) {
             this += response.stun.map { IceServer.Builder(it.url).build() }
             this += response.turn.map {
@@ -90,7 +85,29 @@ public class InfinityConference private constructor(
                     .build()
             }
         },
+        iceTransportsRelayOnly = response.useRelayCandidatesOnly,
+        dataChannel = when (val id = response.dataChannelId) {
+            -1 -> null
+            else -> DataChannelImpl(id)
+        },
     )
+
+    override val messenger: Messenger = when (val dataChannel = signaling.dataChannel) {
+        null -> MessengerImpl(
+            scope = scope,
+            event = event,
+            senderId = response.participantId,
+            senderName = response.participantName,
+            store = store,
+            step = step,
+        )
+        else -> DataChannelMessengerImpl(
+            scope = scope,
+            senderId = response.participantId,
+            senderName = response.participantName,
+            dataChannel = dataChannel,
+        )
+    }
 
     init {
         store.refreshTokenIn(

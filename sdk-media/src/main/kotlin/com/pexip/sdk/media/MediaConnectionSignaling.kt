@@ -15,15 +15,28 @@
  */
 package com.pexip.sdk.media
 
+import kotlinx.coroutines.flow.Flow
+
 /**
  * Represents a signaling component of [MediaConnection].
+ *
+ * @property directMedia whether this is a direct media call
+ * @property iceServers a list of available [IceServer]s
+ * @property iceTransportsRelayOnly whether relay only mode should be used
+ * @property event a [Flow] of [SignalingEvent]s
+ * @property dataChannel an optional [DataChannel] for messaging between peers
  */
 public interface MediaConnectionSignaling {
 
-    /**
-     * A list of available [IceServer]s.
-     */
+    public val directMedia: Boolean
+
     public val iceServers: List<IceServer>
+
+    public val iceTransportsRelayOnly: Boolean
+
+    public val event: Flow<SignalingEvent>
+
+    public val dataChannel: DataChannel?
 
     /**
      * Invoked when an offer is available.
@@ -32,14 +45,26 @@ public interface MediaConnectionSignaling {
      * @param description an offer, usually represented by an SDP
      * @param presentationInMain whether presentation should be embedded in main video feed
      * @param fecc whether far end camera control should be enabled
-     * @return an answer
+     * @return an answer, may be null if in a direct media call
      */
     public suspend fun onOffer(
         callType: String,
         description: String,
         presentationInMain: Boolean,
         fecc: Boolean,
-    ): String
+    ): String?
+
+    /**
+     * Invoked when the client wants to ignore the offer in a direct media call
+     */
+    public suspend fun onOfferIgnored()
+
+    /**
+     * Invoked when answer is ready to be sent in a direct media call
+     *
+     * @param description an answer, usually represented by an SDP
+     */
+    public suspend fun onAnswer(description: String)
 
     /**
      * Invoked when offer is set and the connection is ready to accept media.
@@ -92,4 +117,23 @@ public interface MediaConnectionSignaling {
      * Invoked when local presentation feed is removed.
      */
     public suspend fun onReleaseFloor()
+
+    /**
+     * Invoked when [Data] is received.
+     */
+    public suspend fun onData(data: Data)
+
+    /**
+     * Attaches [DataSender] to this [MediaConnectionSignaling]
+     *
+     * @param sender a [DataSender] to attach
+     */
+    public suspend fun attach(sender: DataSender)
+
+    /**
+     * Detaches [DataSender] from this [MediaConnectionSignaling]
+     *
+     * @param sender a [DataSender] to detach
+     */
+    public suspend fun detach(sender: DataSender)
 }

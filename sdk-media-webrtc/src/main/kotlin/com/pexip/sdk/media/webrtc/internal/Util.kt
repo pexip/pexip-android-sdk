@@ -24,8 +24,14 @@ import com.pexip.sdk.media.SecureCheckCode
 import com.pexip.sdk.media.VideoTrack
 import okio.ByteString.Companion.encodeUtf8
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
+import org.webrtc.DataChannel
+import org.webrtc.DtmfSender
+import org.webrtc.MediaStreamTrack
+import org.webrtc.PeerConnection
 import org.webrtc.RtpParameters
 import org.webrtc.RtpParameters.Encoding
+import org.webrtc.RtpReceiver
+import org.webrtc.RtpSender
 import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import java.util.concurrent.Executor
@@ -140,6 +146,9 @@ internal fun RtpTransceiver.setTrack(track: LocalMediaTrack?) {
     sender.setTrack(t, false)
 }
 
+@Suppress("FunctionName")
+internal fun DataChannelInit(block: DataChannel.Init.() -> Unit) = DataChannel.Init().apply(block)
+
 @Suppress("ktlint:standard:function-naming")
 internal fun RtpTransceiverInit(
     direction: RtpTransceiverDirection = RtpTransceiverDirection.SEND_RECV,
@@ -156,5 +165,57 @@ internal fun Encoding(
 ) = Encoding(rid, active, scaleResolutionDownBy).apply(block)
 
 internal const val MAX_FRAMERATE = 30
+
+internal val NativeGetTransceivers by lazy {
+    PeerConnection::class.java
+        .getDeclaredMethod("nativeGetTransceivers")
+        .also { it.isAccessible = true }
+}
+internal val Transceivers by lazy {
+    PeerConnection::class.java
+        .getDeclaredField("transceivers")
+        .also { it.isAccessible = true }
+}
+
+internal val NativeDtmfSender by lazy {
+    DtmfSender::class.java
+        .getDeclaredField("nativeDtmfSender")
+        .also { it.isAccessible = true }
+}
+internal val NativeTrack by lazy {
+    MediaStreamTrack::class.java
+        .getDeclaredField("nativeTrack")
+        .also { it.isAccessible = true }
+}
+internal val OwnsTrack by lazy {
+    RtpSender::class.java
+        .getDeclaredField("ownsTrack")
+        .also { it.isAccessible = true }
+}
+internal val NativeRtpSender by lazy {
+    RtpSender::class.java
+        .getDeclaredField("nativeRtpSender")
+        .also { it.isAccessible = true }
+}
+internal val NativeObserver by lazy {
+    RtpReceiver::class.java
+        .getDeclaredField("nativeObserver")
+        .also { it.isAccessible = true }
+}
+internal val NativeUnsetObserver by lazy {
+    RtpReceiver::class.java
+        .getDeclaredMethod("nativeUnsetObserver", Long::class.java, Long::class.java)
+        .also { it.isAccessible = true }
+}
+internal val NativeRtpReceiver by lazy {
+    RtpReceiver::class.java
+        .getDeclaredField("nativeRtpReceiver")
+        .also { it.isAccessible = true }
+}
+internal val NativeRtpTransceiver by lazy {
+    RtpTransceiver::class.java
+        .getDeclaredField("nativeRtpTransceiver")
+        .also { it.isAccessible = true }
+}
 
 private fun Collection<String>.sortAndJoinToString() = sorted().joinToString(separator = "")

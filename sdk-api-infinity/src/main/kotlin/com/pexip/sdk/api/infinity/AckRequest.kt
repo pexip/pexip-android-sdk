@@ -15,7 +15,12 @@
  */
 package com.pexip.sdk.api.infinity
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class AckRequest(val sdp: String)
+public data class AckRequest(
+    val sdp: String = "",
+    @SerialName("offer_ignored")
+    val offerIgnored: Boolean = false,
+)

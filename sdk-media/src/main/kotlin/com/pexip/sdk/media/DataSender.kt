@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.api.infinity
+package com.pexip.sdk.media
 
-import com.pexip.sdk.api.infinity.internal.UUIDSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import java.util.UUID
+/**
+ * A data sender.
+ */
+public fun interface DataSender {
 
-@Serializable
-public data class CallsResponse(
-    @Serializable(with = UUIDSerializer::class)
-    @SerialName("call_uuid")
-    public val callId: UUID,
-    override val sdp: String = "",
-    @SerialName("offer_ignored")
-    override val offerIgnored: Boolean = false,
-) : OfferResponse
+    /**
+     * Sends data.
+     *
+     * @param data the data to send
+     * @throws IllegalStateException if failed to send the data
+     */
+    public suspend fun send(data: Data)
+}

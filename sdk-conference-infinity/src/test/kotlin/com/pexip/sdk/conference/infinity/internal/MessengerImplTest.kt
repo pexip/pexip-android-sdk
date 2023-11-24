@@ -30,7 +30,6 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.TokenStore
-import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
@@ -284,14 +283,4 @@ class MessengerImplTest {
             }
         }
     }
-
-    private fun Random.nextMessage(at: Long = System.currentTimeMillis(), direct: Boolean = false) =
-        Message(
-            at = at,
-            participantId = UUID.randomUUID(),
-            participantName = nextString(8),
-            type = nextString(8),
-            payload = nextString(64),
-            direct = direct,
-        )
 }

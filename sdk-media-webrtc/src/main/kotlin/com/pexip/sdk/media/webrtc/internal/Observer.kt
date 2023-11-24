@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.media.webrtc.internal
 
+import com.pexip.sdk.media.Data
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import org.webrtc.CandidatePairChangeEvent
@@ -28,19 +29,43 @@ import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class PeerConnectionObserver(
-    private val continualGatheringPolicy: ContinualGatheringPolicy,
-) : PeerConnection.Observer {
+internal class Observer(private val continualGatheringPolicy: ContinualGatheringPolicy) :
+    PeerConnection.Observer, DataChannel.Observer {
 
+    private val started = AtomicBoolean()
     private val candidates = mutableMapOf<String, IceCandidate>()
-    private val renegotiationNeeded = AtomicBoolean(false)
     private val _event = MutableSharedFlow<Event>(extraBufferCapacity = 64)
 
     val event = _event.asSharedFlow()
 
+    fun start() {
+        if (started.compareAndSet(false, true)) {
+            _event.tryEmit(Event.OnRenegotiationNeeded)
+        }
+    }
+
+    fun stop() {
+        started.set(false)
+    }
+
+    override fun onBufferedAmountChange(previousAmount: Long) {
+    }
+
+    override fun onStateChange() {
+    }
+
+    override fun onMessage(buffer: DataChannel.Buffer) {
+        val data = Data(
+            data = ByteArray(buffer.data.remaining(), buffer.data::get),
+            binary = buffer.binary,
+        )
+        _event.tryEmit(Event.OnData(data))
+    }
+
     override fun onRenegotiationNeeded() {
-        if (renegotiationNeeded.compareAndSet(false, true)) return
-        _event.tryEmit(Event.OnRenegotiationNeeded)
+        if (started.get()) {
+            _event.tryEmit(Event.OnRenegotiationNeeded)
+        }
     }
 
     override fun onIceCandidate(candidate: IceCandidate) {
@@ -75,6 +100,10 @@ internal class PeerConnectionObserver(
         _event.tryEmit(Event.OnRemoveTrack(receiver))
     }
 
+    override fun onSignalingChange(state: PeerConnection.SignalingState) {
+        _event.tryEmit(Event.OnSignalingChange(state))
+    }
+
     override fun onAddStream(stream: MediaStream) {
     }
 
@@ -94,9 +123,6 @@ internal class PeerConnectionObserver(
     }
 
     override fun onIceConnectionChange(state: PeerConnection.IceConnectionState) {
-    }
-
-    override fun onSignalingChange(state: PeerConnection.SignalingState) {
     }
 
     override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {

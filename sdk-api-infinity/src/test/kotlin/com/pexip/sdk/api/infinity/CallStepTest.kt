@@ -387,7 +387,13 @@ internal class CallStepTest {
         fecc = nextBoolean(),
     )
 
-    private fun Random.nextAckRequest() = AckRequest(nextString(8))
+    private fun Random.nextAckRequest(): AckRequest {
+        val offerIgnored = nextBoolean()
+        return AckRequest(
+            sdp = if (offerIgnored) "" else nextString(8),
+            offerIgnored = offerIgnored,
+        )
+    }
 
     private inline fun <T : Any> Random.maybe(block: Random.() -> T) = when (nextBoolean()) {
         true -> block()
