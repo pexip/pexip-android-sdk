@@ -489,6 +489,8 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Parti
 	public abstract fun message (Lcom/pexip/sdk/api/infinity/MessageRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun mute (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun mute (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public abstract fun preferredAspectRatio (Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public abstract fun preferredAspectRatio (Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun releaseFloor (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun releaseFloor (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun takeFloor (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
@@ -750,6 +752,35 @@ public final class com/pexip/sdk/api/infinity/PeerDisconnectEvent : com/pexip/sd
 	public fun hashCode ()I
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/api/infinity/PreferredAspectRatioRequest {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest$Companion;
+	public fun <init> (F)V
+	public synthetic fun <init> (IFLkotlinx/serialization/internal/SerializationConstructorMarker;)V
+	public final fun component1 ()F
+	public final fun copy (F)Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;FILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAspectRatio ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public static final synthetic fun write$Self (Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;Lkotlinx/serialization/encoding/CompositeEncoder;Lkotlinx/serialization/descriptors/SerialDescriptor;)V
+}
+
+public final class com/pexip/sdk/api/infinity/PreferredAspectRatioRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/PreferredAspectRatioRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/PresentationStartEvent : com/pexip/sdk/api/Event {

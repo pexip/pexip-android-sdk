@@ -21,6 +21,7 @@ import com.pexip.sdk.api.infinity.CallsResponse
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageRequest
+import com.pexip.sdk.api.infinity.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.Token
 import java.util.UUID
 
@@ -66,6 +67,16 @@ internal abstract class TestParticipantStep : InfinityService.ParticipantStep {
 
     final override fun message(request: MessageRequest, token: Token): Call<Boolean> =
         message(request, token.token)
+
+    override fun preferredAspectRatio(
+        request: PreferredAspectRatioRequest,
+        token: String,
+    ): Call<Boolean> = TODO()
+
+    final override fun preferredAspectRatio(
+        request: PreferredAspectRatioRequest,
+        token: Token,
+    ): Call<Boolean> = preferredAspectRatio(request, token.token)
 
     override fun call(callId: UUID): InfinityService.CallStep = TODO()
 }

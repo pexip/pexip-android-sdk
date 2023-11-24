@@ -24,6 +24,7 @@ import com.pexip.sdk.api.infinity.InvalidTokenException
 import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
+import com.pexip.sdk.api.infinity.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
@@ -212,6 +213,32 @@ internal class ParticipantStepImpl(
     override fun message(request: MessageRequest, token: Token): Call<Boolean> =
         message(request, token.token)
 
+    override fun preferredAspectRatio(
+        request: PreferredAspectRatioRequest,
+        token: String,
+    ): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(request))
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("preferred_aspect_ratio")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parsePreferredAspectRatio,
+        )
+    }
+
+    override fun preferredAspectRatio(
+        request: PreferredAspectRatioRequest,
+        token: Token,
+    ): Call<Boolean> =
+        preferredAspectRatio(request, token.token)
+
     override fun call(callId: UUID): InfinityService.CallStep = CallStepImpl(this, callId)
 
     private fun parseCalls(response: Response) = when (response.code) {
@@ -245,6 +272,13 @@ internal class ParticipantStepImpl(
     }
 
     private fun parseMessage(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parsePreferredAspectRatio(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()

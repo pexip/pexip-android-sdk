@@ -531,6 +531,32 @@ public interface InfinityService {
         public fun message(request: MessageRequest, token: Token): Call<Boolean>
 
         /**
+         * Specifies the aspect ratio the participant would like to receive.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#preferred_aspect_ratio).
+         *
+         * @param request a request body
+         * @param token a valid token
+         */
+        public fun preferredAspectRatio(
+            request: PreferredAspectRatioRequest,
+            token: String,
+        ): Call<Boolean>
+
+        /**
+         * Specifies the aspect ratio the participant would like to receive.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#preferred_aspect_ratio).
+         *
+         * @param request a request body
+         * @param token a valid token
+         */
+        public fun preferredAspectRatio(
+            request: PreferredAspectRatioRequest,
+            token: Token,
+        ): Call<Boolean>
+
+        /**
          * Sets the call ID.
          *
          * @param callId an ID of the call

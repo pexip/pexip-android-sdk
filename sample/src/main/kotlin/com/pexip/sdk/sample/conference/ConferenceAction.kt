@@ -227,3 +227,10 @@ class OnComposerOutput(private val output: ComposerOutput) : ConferenceAction() 
         }
     }
 }
+
+class OnAspectRatioChange(private val aspectRatio: Float) : ConferenceAction() {
+
+    override fun Updater.apply() {
+        state = state.copy(aspectRatio = aspectRatio)
+    }
+}

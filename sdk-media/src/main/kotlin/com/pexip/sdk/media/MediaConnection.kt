@@ -122,6 +122,13 @@ public interface MediaConnection {
     public fun setPresentationDegradationPreference(preference: DegradationPreference)
 
     /**
+     * Sets the preferred aspect ratio for remote video.
+     *
+     * @param aspectRatio a preferred aspect ratio
+     */
+    public fun setMainRemoteVideoTrackPreferredAspectRatio(aspectRatio: Float)
+
+    /**
      * Allows this [MediaConnection] to receive ongoing remote presentation.
      */
     @Deprecated(
