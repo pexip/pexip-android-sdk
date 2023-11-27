@@ -16,9 +16,8 @@
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.infinity.internal.addPathSegment
+import com.pexip.sdk.infinity.Infinity
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import java.net.URL
@@ -37,7 +36,6 @@ internal class ParticipantStepTest {
     private lateinit var node: URL
     private lateinit var conferenceAlias: String
     private lateinit var participantId: UUID
-    private lateinit var json: Json
     private lateinit var step: InfinityService.ParticipantStep
 
     @BeforeTest
@@ -45,8 +43,7 @@ internal class ParticipantStepTest {
         node = server.url("/").toUrl()
         conferenceAlias = Random.nextString(8)
         participantId = UUID.randomUUID()
-        json = Json { ignoreUnknownKeys = true }
-        val service = InfinityService.create(OkHttpClient(), json)
+        val service = InfinityService.create()
         step = service.newRequest(node)
             .conference(conferenceAlias)
             .participant(participantId)
@@ -75,7 +72,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val request = Random.nextCallsRequest()
         val token = Random.nextString(8)
@@ -88,7 +85,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val request = Random.nextCallsRequest()
         val token = Random.nextString(8)
@@ -104,7 +101,7 @@ internal class ParticipantStepTest {
         )
         server.enqueue {
             setResponseCode(200)
-            setBody(json.encodeToString(Box(response)))
+            setBody(Infinity.Json.encodeToString(Box(response)))
         }
         val request = Random.nextCallsRequest()
         val token = Random.nextString(8)
@@ -135,7 +132,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
         val token = Random.nextString(8)
@@ -148,7 +145,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
         val token = Random.nextString(8)
@@ -161,7 +158,7 @@ internal class ParticipantStepTest {
         val response = Random.nextBoolean()
         server.enqueue {
             setResponseCode(200)
-            setBody(json.encodeToString(Box(response)))
+            setBody(Infinity.Json.encodeToString(Box(response)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
         val token = Random.nextString(8)
@@ -190,7 +187,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.mute(token).execute() }
@@ -202,7 +199,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.mute(token).execute() }
@@ -238,7 +235,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.unmute(token).execute() }
@@ -250,7 +247,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.unmute(token).execute() }
@@ -286,7 +283,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.videoMuted(token).execute() }
@@ -298,7 +295,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.videoMuted(token).execute() }
@@ -334,7 +331,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.videoUnmuted(token).execute() }
@@ -346,7 +343,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.videoUnmuted(token).execute() }
@@ -382,7 +379,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.takeFloor(token).execute() }
@@ -394,7 +391,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.takeFloor(token).execute() }
@@ -430,7 +427,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.releaseFloor(token).execute() }
@@ -442,7 +439,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.releaseFloor(token).execute() }
@@ -480,7 +477,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
@@ -493,7 +490,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
@@ -507,7 +504,7 @@ internal class ParticipantStepTest {
         results.forEach { result ->
             server.enqueue {
                 setResponseCode(200)
-                setBody(json.encodeToString(Box(result)))
+                setBody(Infinity.Json.encodeToString(Box(result)))
             }
             val token = Random.nextString(8)
             val request = Random.nextMessageRequest()
@@ -541,7 +538,7 @@ internal class ParticipantStepTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         val request = Random.nextPreferredAspectRatioRequest()
@@ -556,7 +553,7 @@ internal class ParticipantStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         val request = Random.nextPreferredAspectRatioRequest()
@@ -572,7 +569,7 @@ internal class ParticipantStepTest {
         results.forEach { result ->
             server.enqueue {
                 setResponseCode(200)
-                setBody(json.encodeToString(Box(result)))
+                setBody(Infinity.Json.encodeToString(Box(result)))
             }
             val token = Random.nextString(8)
             val request = Random.nextPreferredAspectRatioRequest()
@@ -591,7 +588,7 @@ internal class ParticipantStepTest {
             addPathSegment("calls")
         }
         assertToken(token)
-        assertPost(json, request)
+        assertPost(Infinity.Json, request)
     }
 
     private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: String) = takeRequest {
@@ -604,7 +601,7 @@ internal class ParticipantStepTest {
             addPathSegment("dtmf")
         }
         assertToken(token)
-        assertPost(json, request)
+        assertPost(Infinity.Json, request)
     }
 
     private fun MockWebServer.verifyMute(token: String) = takeRequest {
@@ -696,7 +693,7 @@ internal class ParticipantStepTest {
                 addPathSegment("message")
             }
             assertToken(token)
-            assertPost(json, request)
+            assertPost(Infinity.Json, request)
         }
 
     private fun MockWebServer.verifyPreferredAspectRatio(
@@ -712,7 +709,7 @@ internal class ParticipantStepTest {
             addPathSegment("preferred_aspect_ratio")
         }
         assertToken(token)
-        assertPost(json, request)
+        assertPost(Infinity.Json, request)
     }
 
     private fun Random.nextCallsRequest() = CallsRequest(

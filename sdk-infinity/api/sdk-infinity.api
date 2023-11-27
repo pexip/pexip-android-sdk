@@ -1,0 +1,5 @@
+public final class com/pexip/sdk/infinity/Infinity {
+	public static final field INSTANCE Lcom/pexip/sdk/infinity/Infinity;
+	public final fun getJson ()Lkotlinx/serialization/json/Json;
+}
+

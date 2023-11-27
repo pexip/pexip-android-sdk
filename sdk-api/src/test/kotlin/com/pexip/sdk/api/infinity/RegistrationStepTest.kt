@@ -15,9 +15,8 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.infinity.Infinity
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import java.net.URL
@@ -37,7 +36,6 @@ internal class RegistrationStepTest {
     private lateinit var deviceAlias: String
     private lateinit var username: String
     private lateinit var password: String
-    private lateinit var json: Json
     private lateinit var step: InfinityService.RegistrationStep
 
     @BeforeTest
@@ -46,8 +44,7 @@ internal class RegistrationStepTest {
         deviceAlias = Random.nextString(8)
         username = Random.nextString(8)
         password = Random.nextString(8)
-        json = Json { ignoreUnknownKeys = true }
-        val service = InfinityService.create(OkHttpClient(), json)
+        val service = InfinityService.create()
         step = service.newRequest(node).registration(deviceAlias)
     }
 
@@ -94,7 +91,7 @@ internal class RegistrationStepTest {
         )
         server.enqueue {
             setResponseCode(200)
-            setBody(json.encodeToString(Box(response)))
+            setBody(Infinity.Json.encodeToString(Box(response)))
         }
         assertEquals(response, step.requestToken(username, password).execute())
         server.verifyRequestToken()
@@ -134,7 +131,7 @@ internal class RegistrationStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         val e = assertFailsWith<InvalidTokenException> { step.refreshToken(token).execute() }
@@ -148,7 +145,7 @@ internal class RegistrationStepTest {
             token = Random.nextString(8),
             expires = 120,
         )
-        server.enqueue { setBody(json.encodeToString(Box(response))) }
+        server.enqueue { setBody(Infinity.Json.encodeToString(Box(response))) }
         val token = Random.nextString(8)
         assertEquals(response, step.refreshToken(token).execute())
         server.verifyRefreshToken(token)
@@ -188,7 +185,7 @@ internal class RegistrationStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.releaseToken(token).execute() }
@@ -200,7 +197,7 @@ internal class RegistrationStepTest {
         val result = Random.nextBoolean()
         server.enqueue {
             setResponseCode(200)
-            setBody(json.encodeToString(Box(result)))
+            setBody(Infinity.Json.encodeToString(Box(result)))
         }
         val token = Random.nextString(8)
         assertEquals(result, step.releaseToken(token).execute())
@@ -241,7 +238,7 @@ internal class RegistrationStepTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
-            setBody(json.encodeToString(Box(message)))
+            setBody(Infinity.Json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.registrations(token).execute() }
@@ -262,7 +259,7 @@ internal class RegistrationStepTest {
             }
             server.enqueue {
                 setResponseCode(200)
-                setBody(json.encodeToString(Box(result)))
+                setBody(Infinity.Json.encodeToString(Box(result)))
             }
             val token = Random.nextString(8)
             assertEquals(result, step.registrations(token, query).execute())

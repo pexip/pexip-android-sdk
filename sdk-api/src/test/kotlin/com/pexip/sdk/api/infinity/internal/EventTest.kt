@@ -28,7 +28,6 @@ import com.pexip.sdk.api.infinity.FeccEvent
 import com.pexip.sdk.api.infinity.FeccMovement
 import com.pexip.sdk.api.infinity.IncomingCancelledEvent
 import com.pexip.sdk.api.infinity.IncomingEvent
-import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewOfferEvent
@@ -39,6 +38,7 @@ import com.pexip.sdk.api.infinity.ReferEvent
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.api.infinity.nextString
+import com.pexip.sdk.infinity.Infinity
 import okio.BufferedSource
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -181,7 +181,7 @@ internal class EventTest {
             .forAll { type, filename, event ->
                 val data = FileSystem.RESOURCES.read(filename.toPath(), BufferedSource::readUtf8)
                 val actual = Event(
-                    json = InfinityService.Json,
+                    json = Infinity.Json,
                     id = Random.nextString(8),
                     type = type,
                     data = data.trim(),
@@ -193,7 +193,7 @@ internal class EventTest {
     @Test
     fun `returns null if the type is not registered`() {
         val actual = Event(
-            json = InfinityService.Json,
+            json = Infinity.Json,
             id = Random.nextString(8),
             type = Random.nextString(8),
             data = Random.nextString(8),
