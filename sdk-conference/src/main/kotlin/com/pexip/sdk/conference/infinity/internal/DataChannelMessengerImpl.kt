@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
+import com.pexip.sdk.api.infinity.DataChannelMessage
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.media.Data
@@ -27,9 +28,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.util.UUID
 
 internal class DataChannelMessengerImpl(
@@ -40,7 +38,7 @@ internal class DataChannelMessengerImpl(
     private val atProvider: () -> Long = System::currentTimeMillis,
 ) : AbstractMessenger(scope) {
 
-    override val message: Flow<Message> = dataChannel.data.mapNotNull(::onData)
+    override val message: Flow<Message> = dataChannel.data.mapNotNull(::toMessage)
 
     init {
         message
@@ -59,16 +57,15 @@ internal class DataChannelMessengerImpl(
             direct = participantId != null,
         )
         return try {
-            val m = Box(
-                type = BoxType.MESSAGE,
-                body = MessageBody(
+            val m = DataChannelMessage.Message(
+                body = DataChannelMessage.Message.Body(
+                    senderId = message.participantId,
+                    senderName = message.participantName,
                     type = message.type,
-                    uuid = message.participantId,
-                    origin = message.participantName,
                     payload = message.payload,
                 ),
             )
-            val json = Json.encodeToString(m)
+            val json = m.encodeToString()
             val data = Data(json.toByteArray(), false)
             dataChannel.send(data)
             message
@@ -79,27 +76,23 @@ internal class DataChannelMessengerImpl(
         }
     }
 
-    private fun onData(data: Data): Message? {
+    private fun toMessage(data: Data): Message? {
         if (data.binary) return null
-        val (type, body) = try {
-            Json.decodeFromString<Box<MessageBody>>(data.data.decodeToString())
-        } catch (e: SerializationException) {
+        val message = try {
+            DataChannelMessage.decodeFromString(data.data.decodeToString())
+        } catch (e: Exception) {
             return null
         }
-        return when (type) {
-            BoxType.MESSAGE -> Message(
+        return when (message) {
+            is DataChannelMessage.Message -> Message(
                 at = atProvider(),
-                participantId = body.uuid,
-                participantName = body.origin,
-                type = body.type,
-                payload = body.payload,
+                participantId = message.body.senderId,
+                participantName = message.body.senderName,
+                type = message.body.type,
+                payload = message.body.payload,
                 direct = false,
             )
+            is DataChannelMessage.Unknown -> null
         }
-    }
-
-    companion object {
-
-        val Json = Json { ignoreUnknownKeys = true }
     }
 }

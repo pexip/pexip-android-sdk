@@ -16,6 +16,7 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import app.cash.turbine.test
+import assertk.Assert
 import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
@@ -24,6 +25,8 @@ import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import assertk.fail
+import com.pexip.sdk.api.infinity.DataChannelMessage
+import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.media.Data
 import com.pexip.sdk.media.DataChannel
@@ -31,7 +34,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.encodeToString
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.Test
@@ -50,17 +52,7 @@ class DataChannelMessengerImplTest {
             override val data: Flow<Data> = emptyFlow()
 
             override suspend fun send(data: Data) {
-                val json = data.data.decodeToString()
-                val box = DataChannelMessengerImpl.Json.decodeFromString<Box<MessageBody>>(json)
-                assertThat(box::type).isEqualTo(BoxType.MESSAGE)
-                val expectedBody = MessageBody(
-                    type = expected.type,
-                    payload = expected.payload,
-                    uuid = expected.participantId,
-                    origin = expected.participantName,
-                )
-                assertThat(box.body).isEqualTo(expectedBody)
-                assertThat(data::binary).isFalse()
+                assertThat(data).correspondsTo(expected)
                 throw expectedThrowable
             }
         }
@@ -90,17 +82,7 @@ class DataChannelMessengerImplTest {
             override val data: Flow<Data> = emptyFlow()
 
             override suspend fun send(data: Data) {
-                val json = data.data.decodeToString()
-                val box = DataChannelMessengerImpl.Json.decodeFromString<Box<MessageBody>>(json)
-                assertThat(box::type).isEqualTo(BoxType.MESSAGE)
-                val expectedBody = MessageBody(
-                    type = expected.type,
-                    payload = expected.payload,
-                    uuid = expected.participantId,
-                    origin = expected.participantName,
-                )
-                assertThat(box.body).isEqualTo(expectedBody)
-                assertThat(data::binary).isFalse()
+                assertThat(data).correspondsTo(expected)
             }
         }
         val messenger = DataChannelMessengerImpl(
@@ -187,16 +169,23 @@ class DataChannelMessengerImplTest {
             atProvider = { at },
         )
         messenger.message.test {
+            val strings = List(10) { "{\"type\": \"${Random.nextString(8)}\"}" }
+            strings.forEach {
+                val data = Data(it.encodeToByteArray(), false)
+                flow.emit(data)
+            }
+            expectNoEvents()
             val messages = List(10) { Random.nextMessage(at) }
             messages.forEach {
-                val body = MessageBody(
-                    type = it.type,
-                    payload = it.payload,
-                    uuid = it.participantId,
-                    origin = it.participantName,
+                val message = DataChannelMessage.Message(
+                    body = DataChannelMessage.Message.Body(
+                        type = it.type,
+                        payload = it.payload,
+                        senderId = it.participantId,
+                        senderName = it.participantName,
+                    ),
                 )
-                val box = Box(BoxType.MESSAGE, body)
-                val json = DataChannelMessengerImpl.Json.encodeToString(box)
+                val json = message.encodeToString()
                 val data = Data(
                     data = json.encodeToByteArray(),
                     binary = false,
@@ -205,5 +194,20 @@ class DataChannelMessengerImplTest {
                 assertThat(awaitItem(), "message").isEqualTo(it)
             }
         }
+    }
+
+    private fun Assert<Data>.correspondsTo(message: Message) = all {
+        prop(Data::binary).isFalse()
+        val body = DataChannelMessage.Message.Body(
+            type = message.type,
+            payload = message.payload,
+            senderId = message.participantId,
+            senderName = message.participantName,
+        )
+        prop(Data::data)
+            .transform { DataChannelMessage.decodeFromString(it.decodeToString()) }
+            .isInstanceOf<DataChannelMessage.Message>()
+            .prop(DataChannelMessage.Message::body)
+            .isEqualTo(body)
     }
 }
