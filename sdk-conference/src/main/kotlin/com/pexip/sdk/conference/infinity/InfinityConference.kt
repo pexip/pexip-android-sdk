@@ -55,7 +55,6 @@ import kotlinx.coroutines.launch
 import java.net.URL
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executors
-import java.util.logging.Logger
 
 public class InfinityConference private constructor(
     private val step: InfinityService.ConferenceStep,
@@ -183,14 +182,13 @@ public class InfinityConference private constructor(
             response: RequestTokenResponse,
         ): InfinityConference {
             if (response.version.versionId < "29") {
-                val logger = Logger.getLogger("InfinityConference")
-                val msg = buildString {
+                val s = buildString {
                     append("Infinity ")
                     append(response.version.versionId)
                     append(" is not officially supported by the SDK.")
                     append(" Please upgrade your Infinity deployment to 29 or newer.")
                 }
-                logger.warning(msg)
+                throw IllegalArgumentException(s)
             }
             return InfinityConference(step, response)
         }
