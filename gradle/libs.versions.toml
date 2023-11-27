@@ -77,6 +77,6 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-binarycompatibilityvalidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.13.2" }
-ksp = { id = "com.google.devtools.ksp", version = "1.9.10-1.0.13" }
+ksp = { id = "com.google.devtools.ksp", version = "1.9.20-1.0.14" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 wire = { id = "com.squareup.wire", version.ref = "wire" }
