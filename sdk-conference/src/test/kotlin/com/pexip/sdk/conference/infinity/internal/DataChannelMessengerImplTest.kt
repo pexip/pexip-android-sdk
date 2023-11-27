@@ -169,6 +169,12 @@ class DataChannelMessengerImplTest {
             atProvider = { at },
         )
         messenger.message.test {
+            val strings = List(10) { "{\"type\": \"${Random.nextString(8)}\"}" }
+            strings.forEach {
+                val data = Data(it.encodeToByteArray(), false)
+                flow.emit(data)
+            }
+            expectNoEvents()
             val messages = List(10) { Random.nextMessage(at) }
             messages.forEach {
                 val message = DataChannelMessage.Message(
