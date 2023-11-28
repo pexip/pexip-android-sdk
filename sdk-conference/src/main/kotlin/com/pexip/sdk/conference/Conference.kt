@@ -58,7 +58,10 @@ public interface Conference {
      *
      * @param payload a plain text message
      */
-    @Deprecated("Use Conference.messenger.send() instead.")
+    @Deprecated(
+        message = "Use Conference.messenger.send() instead.",
+        level = DeprecationLevel.ERROR,
+    )
     public fun message(payload: String)
 
     /**

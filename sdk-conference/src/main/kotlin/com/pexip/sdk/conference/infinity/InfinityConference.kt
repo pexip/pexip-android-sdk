@@ -23,8 +23,6 @@ import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
-import com.pexip.sdk.conference.MessageNotSentException
-import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.Theme
@@ -51,7 +49,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.launch
 import java.net.URL
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executors
@@ -139,24 +136,11 @@ public class InfinityConference private constructor(
         listeners -= listener
     }
 
-    @Deprecated("Use Conference.messenger.send() instead.")
-    override fun message(payload: String) {
-        scope.launch {
-            val message = try {
-                messenger.send(type = "text/plain", payload = payload)
-            } catch (e: MessageNotSentException) {
-                return@launch
-            }
-            val event = MessageReceivedConferenceEvent(
-                at = message.at,
-                participantId = message.participantId,
-                participantName = message.participantName,
-                type = message.type,
-                payload = message.payload,
-            )
-            mutableConferenceEvent.emit(event)
-        }
-    }
+    @Deprecated(
+        message = "Use Conference.messenger.send() instead.",
+        level = DeprecationLevel.ERROR,
+    )
+    override fun message(payload: String): Unit = error("Use Conference.messenger.send() instead.")
 
     override fun leave() {
         scope.cancel()
