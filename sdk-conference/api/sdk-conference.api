@@ -10,6 +10,10 @@ public abstract interface class com/pexip/sdk/conference/Conference {
 	public abstract fun unregisterConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
 }
 
+public final class com/pexip/sdk/conference/Conference$DefaultImpls {
+	public static fun message (Lcom/pexip/sdk/conference/Conference;Ljava/lang/String;)V
+}
+
 public abstract interface class com/pexip/sdk/conference/ConferenceEvent {
 	public abstract fun getAt ()J
 }
