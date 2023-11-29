@@ -17,7 +17,6 @@ package com.pexip.sdk.media.webrtc.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -43,6 +42,8 @@ import org.webrtc.RendererCommon
  * @param zOrderOnTop control whether the video is rendered on top of its window. This overrides [zOrderMediaOverlay] if set
  * @param onFirstFrame called when the first frame has been rendered
  * @param onAspectRatioChange called when aspect ratio of the rendered video changes
+ * @param scalingTypeMatchOrientation controls how the video scales when the video and layout orientations match
+ * @param scalingTypeMismatchOrientation controls how the video scales when the video and layout orientations do not match
  */
 @Composable
 public fun VideoTrackRenderer(
@@ -54,6 +55,8 @@ public fun VideoTrackRenderer(
     zOrderOnTop: Boolean = false,
     onFirstFrame: () -> Unit = { },
     onAspectRatioChange: (Float) -> Unit = { },
+    scalingTypeMatchOrientation: RendererCommon.ScalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED,
+    scalingTypeMismatchOrientation: RendererCommon.ScalingType = scalingTypeMatchOrientation,
 ) {
     val eglBase = LocalEglBase.current
     val eglBaseContext = remember(eglBase) { eglBase?.eglBaseContext }
@@ -83,9 +86,6 @@ public fun VideoTrackRenderer(
             renderer.release()
         }
     }
-    LaunchedEffect(renderer, mirror) {
-        renderer.setMirror(mirror)
-    }
     DisposableEffect(renderer, videoTrack) {
         videoTrack?.addRenderer(renderer)
         onDispose {
@@ -100,7 +100,11 @@ public fun VideoTrackRenderer(
                 if (zOrderOnTop) setZOrderOnTop(true)
             }
         },
-        update = { it.keepScreenOn = keepScreenOn },
+        update = {
+            it.keepScreenOn = keepScreenOn
+            it.setMirror(mirror)
+            it.setScalingType(scalingTypeMatchOrientation, scalingTypeMismatchOrientation)
+        },
         modifier = modifier,
     )
 }

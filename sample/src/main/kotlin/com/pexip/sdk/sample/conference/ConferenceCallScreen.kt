@@ -29,10 +29,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -53,7 +53,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -79,6 +78,7 @@ import com.pexip.sdk.sample.MicrophoneIconButton
 import com.pexip.sdk.sample.audio.AudioDeviceIcon
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
+import org.webrtc.RendererCommon
 
 @Composable
 fun ConferenceCallScreen(
@@ -143,25 +143,19 @@ fun ConferenceCallScreen(
                     .fillMaxSize()
                     .safeContentPadding(),
             ) {
-                val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
-                val aspectRatioModifier = when (aspectRatio) {
-                    0f -> Modifier
-                    else -> Modifier.aspectRatio(aspectRatio)
-                }
                 AnimatedVisibility(
                     visible = rendering.cameraVideoTrackRendering?.capturing == true,
                     enter = slideInHorizontally { it * 2 },
                     exit = slideOutHorizontally { it * 2 },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .fillMaxWidth(0.25f)
-                        .then(aspectRatioModifier),
+                        .fillMaxWidth(0.25f),
                 ) {
                     VideoTrackRenderer(
                         videoTrack = rendering.cameraVideoTrack,
-                        onAspectRatioChange = onAspectRatioChange,
-                        zOrderMediaOverlay = true,
                         mirror = true,
+                        zOrderMediaOverlay = true,
+                        scalingTypeMatchOrientation = RendererCommon.ScalingType.SCALE_ASPECT_FIT,
                     )
                 }
                 Row(
@@ -219,14 +213,10 @@ private fun MainVideoTrackRenderer(
             LaunchedEffect(viewportAspectRatio) {
                 currentOnAspectRatioChange(viewportAspectRatio)
             }
-            val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
             VideoTrackRenderer(
                 videoTrack = rendering.mainRemoteVideoTrack,
-                onAspectRatioChange = onAspectRatioChange,
-                modifier = when (aspectRatio) {
-                    0f -> Modifier
-                    else -> Modifier.aspectRatio(aspectRatio)
-                },
+                scalingTypeMatchOrientation = RendererCommon.ScalingType.SCALE_ASPECT_FIT,
+                modifier = Modifier.wrapContentSize(),
             )
         }
     }
@@ -238,14 +228,10 @@ private fun PresentationVideoTrackRenderer(
     modifier: Modifier = Modifier,
 ) {
     if (rendering.presentationRemoteVideoTrack != null) {
-        val (aspectRatio, onAspectRatioChange) = remember { mutableFloatStateOf(0f) }
         VideoTrackRenderer(
             videoTrack = rendering.presentationRemoteVideoTrack,
-            onAspectRatioChange = onAspectRatioChange,
-            modifier = when (aspectRatio) {
-                0f -> modifier
-                else -> modifier.aspectRatio(aspectRatio)
-            },
+            scalingTypeMatchOrientation = RendererCommon.ScalingType.SCALE_ASPECT_FIT,
+            modifier = modifier.wrapContentSize(),
         )
     }
 }
