@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
@@ -69,6 +70,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.pexip.sdk.conference.Element
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.AudioDevice
+import com.pexip.sdk.media.webrtc.compose.FrameResolution
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.pexip.sdk.sample.CameraIconButton
 import com.pexip.sdk.sample.IconButton
@@ -143,18 +145,27 @@ fun ConferenceCallScreen(
                     .fillMaxSize()
                     .safeContentPadding(),
             ) {
+                val (frameResolution, onFrameResolutionChange) = remember {
+                    mutableStateOf<FrameResolution?>(null)
+                }
+                val aspectRatioModifier = when (frameResolution) {
+                    null -> Modifier
+                    else -> Modifier.aspectRatio(frameResolution.rotatedAspectRatio)
+                }
                 AnimatedVisibility(
                     visible = rendering.cameraVideoTrackRendering?.capturing == true,
                     enter = slideInHorizontally { it * 2 },
                     exit = slideOutHorizontally { it * 2 },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .fillMaxWidth(0.25f),
+                        .fillMaxWidth(0.25f)
+                        .then(aspectRatioModifier),
                 ) {
                     VideoTrackRenderer(
                         videoTrack = rendering.cameraVideoTrack,
                         mirror = true,
                         zOrderMediaOverlay = true,
+                        onFrameResolutionChange = onFrameResolutionChange,
                         scalingTypeMatchOrientation = RendererCommon.ScalingType.SCALE_ASPECT_FIT,
                     )
                 }

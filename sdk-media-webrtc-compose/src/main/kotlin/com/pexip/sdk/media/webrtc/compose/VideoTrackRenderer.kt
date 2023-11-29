@@ -17,6 +17,7 @@ package com.pexip.sdk.media.webrtc.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -41,7 +42,7 @@ import org.webrtc.RendererCommon
  * @param zOrderMediaOverlay control whether the video is rendered on top of another video
  * @param zOrderOnTop control whether the video is rendered on top of its window. This overrides [zOrderMediaOverlay] if set
  * @param onFirstFrame called when the first frame has been rendered
- * @param onAspectRatioChange called when aspect ratio of the rendered video changes
+ * @param onFrameResolutionChange called when frame resolution or rotation change
  * @param scalingTypeMatchOrientation controls how the video scales when the video and layout orientations match
  * @param scalingTypeMismatchOrientation controls how the video scales when the video and layout orientations do not match
  */
@@ -54,7 +55,7 @@ public fun VideoTrackRenderer(
     zOrderMediaOverlay: Boolean = false,
     zOrderOnTop: Boolean = false,
     onFirstFrame: () -> Unit = { },
-    onAspectRatioChange: (Float) -> Unit = { },
+    onFrameResolutionChange: (FrameResolution) -> Unit = { },
     scalingTypeMatchOrientation: RendererCommon.ScalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED,
     scalingTypeMismatchOrientation: RendererCommon.ScalingType = scalingTypeMatchOrientation,
 ) {
@@ -64,7 +65,7 @@ public fun VideoTrackRenderer(
     val context = LocalContext.current
     val renderer = remember(context) { SurfaceViewRenderer(context) }
     val currentOnFirstFrame by rememberUpdatedState(onFirstFrame)
-    val currentOnAspectRatioChange by rememberUpdatedState(onAspectRatioChange)
+    val currentOnFrameResolutionChange by rememberUpdatedState(onFrameResolutionChange)
     DisposableEffect(renderer, eglBaseContext) {
         val events = object : RendererCommon.RendererEvents {
 
@@ -73,11 +74,7 @@ public fun VideoTrackRenderer(
             }
 
             override fun onFrameResolutionChanged(width: Int, height: Int, rotation: Int) {
-                val aspectRatio = when (rotation) {
-                    0, 180 -> width / height.toFloat()
-                    else -> height / width.toFloat()
-                }
-                currentOnAspectRatioChange(aspectRatio)
+                currentOnFrameResolutionChange(FrameResolution(width, height, rotation))
             }
         }
         renderer.init(eglBaseContext, events, eglBaseConfigAttributes, GlRectDrawer())
@@ -107,4 +104,30 @@ public fun VideoTrackRenderer(
         },
         modifier = modifier,
     )
+}
+
+/**
+ * Contains the information about frame's resolution and orientation.
+ *
+ * @property width the width of the frame
+ * @property height the height of the frame
+ * @property orientation the orientation of the frame, in degrees (0, 180, etc.)
+ */
+@Immutable
+public data class FrameResolution(val width: Int, val height: Int, val orientation: Int) {
+
+    /**
+     * Frame's width, taking orientation into the account.
+     */
+    val rotatedWidth: Int = if (orientation % 180 == 0) width else height
+
+    /**
+     * Frame's height, taking orientation into the account.
+     */
+    val rotatedHeight: Int = if (orientation % 180 == 0) height else width
+
+    /**
+     * Frame's aspect ratio, taking orientation into the account.
+     */
+    val rotatedAspectRatio: Float = rotatedWidth / rotatedHeight.toFloat()
 }
