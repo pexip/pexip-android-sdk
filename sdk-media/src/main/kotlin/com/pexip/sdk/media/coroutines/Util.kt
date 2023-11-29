@@ -68,13 +68,6 @@ public suspend fun CameraVideoTrack.switchCamera(deviceName: String? = null): St
                 it.resume(deviceName)
             }
 
-            @Deprecated(
-                "Use onSuccess that contains deviceName as an argument.",
-                level = DeprecationLevel.ERROR,
-            )
-            override fun onSuccess(front: Boolean) {
-            }
-
             override fun onFailure(error: String) {
                 it.resumeWithException(SwitchCameraException(error))
             }

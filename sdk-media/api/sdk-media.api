@@ -83,7 +83,6 @@ public abstract interface class com/pexip/sdk/media/CameraVideoTrack$Callback {
 public abstract interface class com/pexip/sdk/media/CameraVideoTrack$SwitchCameraCallback {
 	public abstract fun onFailure (Ljava/lang/String;)V
 	public abstract fun onSuccess (Ljava/lang/String;)V
-	public abstract fun onSuccess (Z)V
 }
 
 public abstract interface class com/pexip/sdk/media/CameraVideoTrackFactory {
