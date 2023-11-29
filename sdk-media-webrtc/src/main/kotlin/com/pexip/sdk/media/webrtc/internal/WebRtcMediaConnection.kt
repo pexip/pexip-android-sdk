@@ -217,18 +217,6 @@ internal class WebRtcMediaConnection(
         mainRemoteVideoTrackPreferredAspectRatio.value = aspectRatio
     }
 
-    @Deprecated(
-        message = "Use setPresentationVideoReceive(true) instead.",
-        replaceWith = ReplaceWith("setPresentationVideoReceive(true)"),
-    )
-    override fun startPresentationReceive() = setPresentationRemoteVideoTrackEnabled(true)
-
-    @Deprecated(
-        message = "Use setPresentationVideoReceive(false) instead.",
-        replaceWith = ReplaceWith("setPresentationVideoReceive(false)"),
-    )
-    override fun stopPresentationReceive() = setPresentationRemoteVideoTrackEnabled(false)
-
     override fun dtmf(digits: String) {
         scope.launch { runCatching { config.signaling.onDtmf(digits) } }
     }

@@ -205,6 +205,11 @@ public abstract interface class com/pexip/sdk/media/MediaConnection {
 	public abstract fun unregisterPresentationRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
 }
 
+public final class com/pexip/sdk/media/MediaConnection$DefaultImpls {
+	public static fun startPresentationReceive (Lcom/pexip/sdk/media/MediaConnection;)V
+	public static fun stopPresentationReceive (Lcom/pexip/sdk/media/MediaConnection;)V
+}
+
 public abstract interface class com/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener {
 	public abstract fun onRemoteVideoTrack (Lcom/pexip/sdk/media/VideoTrack;)V
 }
