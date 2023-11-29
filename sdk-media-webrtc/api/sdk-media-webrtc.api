@@ -11,9 +11,7 @@ public final class com/pexip/sdk/media/webrtc/WebRtcMediaConnectionFactory : com
 	public fun <init> (Landroid/content/Context;Lorg/webrtc/EglBase;Lorg/webrtc/CameraEnumerator;Lorg/webrtc/VideoDecoderFactory;Lorg/webrtc/VideoEncoderFactory;)V
 	public synthetic fun <init> (Landroid/content/Context;Lorg/webrtc/EglBase;Lorg/webrtc/CameraEnumerator;Lorg/webrtc/VideoDecoderFactory;Lorg/webrtc/VideoEncoderFactory;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Landroid/content/Context;Lorg/webrtc/EglBase;Lorg/webrtc/CameraEnumerator;Lorg/webrtc/audio/AudioDeviceModule;Lorg/webrtc/VideoDecoderFactory;Lorg/webrtc/VideoEncoderFactory;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun createCameraVideoTrack ()Lcom/pexip/sdk/media/CameraVideoTrack;
 	public fun createCameraVideoTrack (Lcom/pexip/sdk/media/CameraVideoTrack$Callback;)Lcom/pexip/sdk/media/CameraVideoTrack;
-	public fun createCameraVideoTrack (Ljava/lang/String;)Lcom/pexip/sdk/media/CameraVideoTrack;
 	public fun createCameraVideoTrack (Ljava/lang/String;Lcom/pexip/sdk/media/CameraVideoTrack$Callback;)Lcom/pexip/sdk/media/CameraVideoTrack;
 	public fun createLocalAudioTrack ()Lcom/pexip/sdk/media/LocalAudioTrack;
 	public final fun createLocalVideoTrack (Lorg/webrtc/VideoCapturer;)Lcom/pexip/sdk/media/LocalVideoTrack;

@@ -86,9 +86,7 @@ public abstract interface class com/pexip/sdk/media/CameraVideoTrack$SwitchCamer
 }
 
 public abstract interface class com/pexip/sdk/media/CameraVideoTrackFactory {
-	public abstract fun createCameraVideoTrack ()Lcom/pexip/sdk/media/CameraVideoTrack;
 	public abstract fun createCameraVideoTrack (Lcom/pexip/sdk/media/CameraVideoTrack$Callback;)Lcom/pexip/sdk/media/CameraVideoTrack;
-	public abstract fun createCameraVideoTrack (Ljava/lang/String;)Lcom/pexip/sdk/media/CameraVideoTrack;
 	public abstract fun createCameraVideoTrack (Ljava/lang/String;Lcom/pexip/sdk/media/CameraVideoTrack$Callback;)Lcom/pexip/sdk/media/CameraVideoTrack;
 	public abstract fun getDeviceNames ()Ljava/util/List;
 	public abstract fun getQualityProfiles (Ljava/lang/String;)Ljava/util/List;

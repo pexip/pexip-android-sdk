@@ -138,22 +138,6 @@ public class WebRtcMediaConnectionFactory private constructor(
         )
     }
 
-    @Deprecated(
-        message = "Use createCameraVideoTrack() that also accepts a Callback.",
-        level = DeprecationLevel.ERROR,
-    )
-    override fun createCameraVideoTrack(): CameraVideoTrack {
-        throw UnsupportedOperationException()
-    }
-
-    @Deprecated(
-        message = "Use createCameraVideoTrack() that also accepts a Callback.",
-        level = DeprecationLevel.ERROR,
-    )
-    override fun createCameraVideoTrack(deviceName: String): CameraVideoTrack {
-        throw UnsupportedOperationException()
-    }
-
     override fun createCameraVideoTrack(callback: CameraVideoTrack.Callback): CameraVideoTrack {
         checkNotDisposed()
         val deviceNames = cameraEnumerator.deviceNames
