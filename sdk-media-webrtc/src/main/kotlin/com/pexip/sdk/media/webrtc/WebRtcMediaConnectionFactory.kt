@@ -77,26 +77,6 @@ public class WebRtcMediaConnectionFactory private constructor(
     CameraVideoTrackFactory,
     MediaProjectionVideoTrackFactory {
 
-    @Deprecated(
-        message = "Use WebRtcMediaConnectionFactory.Builder instead.",
-        level = DeprecationLevel.ERROR,
-    )
-    @JvmOverloads
-    public constructor(
-        context: Context,
-        eglBase: EglBase,
-        cameraEnumerator: CameraEnumerator = CameraEnumerator(context),
-        videoDecoderFactory: VideoDecoderFactory = DefaultVideoDecoderFactory(eglBase),
-        videoEncoderFactory: VideoEncoderFactory = DefaultVideoEncoderFactory(eglBase),
-    ) : this(
-        applicationContext = context.applicationContext,
-        eglBase = eglBase,
-        cameraEnumerator = cameraEnumerator,
-        audioDeviceModule = JavaAudioDeviceModule(context),
-        videoDecoderFactory = videoDecoderFactory,
-        videoEncoderFactory = videoEncoderFactory,
-    )
-
     private val factory = PeerConnectionFactory.builder()
         .setAudioDeviceModule(audioDeviceModule)
         .setVideoDecoderFactory(videoDecoderFactory)
