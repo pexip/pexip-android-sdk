@@ -3,7 +3,26 @@ public final class com/pexip/sdk/media/webrtc/compose/CompositionLocalsKt {
 	public static final fun getLocalEglBaseConfigAttributes ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
+public final class com/pexip/sdk/media/webrtc/compose/FrameResolution {
+	public static final field $stable I
+	public fun <init> (III)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun copy (III)Lcom/pexip/sdk/media/webrtc/compose/FrameResolution;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/media/webrtc/compose/FrameResolution;IIIILjava/lang/Object;)Lcom/pexip/sdk/media/webrtc/compose/FrameResolution;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHeight ()I
+	public final fun getOrientation ()I
+	public final fun getRotatedAspectRatio ()F
+	public final fun getRotatedHeight ()I
+	public final fun getRotatedWidth ()I
+	public final fun getWidth ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/pexip/sdk/media/webrtc/compose/VideoTrackRendererKt {
-	public static final fun VideoTrackRenderer (Lcom/pexip/sdk/media/VideoTrack;Landroidx/compose/ui/Modifier;ZZZZLkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function3;Lorg/webrtc/RendererCommon$ScalingType;Lorg/webrtc/RendererCommon$ScalingType;Landroidx/compose/runtime/Composer;II)V
+	public static final fun VideoTrackRenderer (Lcom/pexip/sdk/media/VideoTrack;Landroidx/compose/ui/Modifier;ZZZZLkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lorg/webrtc/RendererCommon$ScalingType;Lorg/webrtc/RendererCommon$ScalingType;Landroidx/compose/runtime/Composer;II)V
 }
 

@@ -17,6 +17,7 @@ package com.pexip.sdk.media.webrtc.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -54,7 +55,7 @@ public fun VideoTrackRenderer(
     zOrderMediaOverlay: Boolean = false,
     zOrderOnTop: Boolean = false,
     onFirstFrame: () -> Unit = { },
-    onFrameResolutionChange: (width: Int, height: Int, rotation: Int) -> Unit = { _, _, _ -> },
+    onFrameResolutionChange: (FrameResolution) -> Unit = { },
     scalingTypeMatchOrientation: RendererCommon.ScalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED,
     scalingTypeMismatchOrientation: RendererCommon.ScalingType = scalingTypeMatchOrientation,
 ) {
@@ -73,7 +74,7 @@ public fun VideoTrackRenderer(
             }
 
             override fun onFrameResolutionChanged(width: Int, height: Int, rotation: Int) {
-                currentOnFrameResolutionChange(width, height, rotation)
+                currentOnFrameResolutionChange(FrameResolution(width, height, rotation))
             }
         }
         renderer.init(eglBaseContext, events, eglBaseConfigAttributes, GlRectDrawer())
@@ -103,4 +104,30 @@ public fun VideoTrackRenderer(
         },
         modifier = modifier,
     )
+}
+
+/**
+ * Contains the information about frame's resolution and orientation.
+ *
+ * @property width the width of the frame
+ * @property height the height of the frame
+ * @property orientation the orientation of the frame, in degrees (0, 180, etc.)
+ */
+@Immutable
+public data class FrameResolution(val width: Int, val height: Int, val orientation: Int) {
+
+    /**
+     * Frame's width, taking orientation into the account.
+     */
+    val rotatedWidth: Int = if (orientation % 180 == 0) width else height
+
+    /**
+     * Frame's height, taking orientation into the account.
+     */
+    val rotatedHeight: Int = if (orientation % 180 == 0) height else width
+
+    /**
+     * Frame's aspect ratio, taking orientation into the account.
+     */
+    val rotatedAspectRatio: Float = rotatedWidth / rotatedHeight.toFloat()
 }
