@@ -723,13 +723,15 @@ public interface InfinityService {
         @JvmStatic
         @JvmOverloads
         public fun create(client: OkHttpClient = OkHttpClient()): InfinityService = create(
-            client = client.newBuilder()
-                .readTimeout(1, TimeUnit.MINUTES)
-                .build(),
+            client = client,
             json = Json,
         )
 
-        internal fun create(client: OkHttpClient, json: Json): InfinityService =
-            InfinityServiceImpl(client, json)
+        internal fun create(client: OkHttpClient, json: Json) = InfinityServiceImpl(
+            client = client.newBuilder()
+                .readTimeout(1, TimeUnit.MINUTES)
+                .build(),
+            json = json,
+        )
     }
 }
