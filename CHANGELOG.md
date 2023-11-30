@@ -21,10 +21,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Kotlin to 1.9.10
 - Merged all `-infinity` modules with their respective bases
+- Various deprecated methods `DeprecationLevel` to `DeprecationLevel.ERROR`
 
 ### Fixed
 
 - Crash in `TokenStore.refreshTokenIn` when `release_token` throws
+
+### Removed
+
+- Various deprecated methods with `DeprecationLevel.ERROR`
 
 ### Notes
 

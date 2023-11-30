@@ -62,7 +62,7 @@ public interface Conference {
         message = "Use Conference.messenger.send() instead.",
         level = DeprecationLevel.ERROR,
     )
-    public fun message(payload: String)
+    public fun message(payload: String): Unit = error("Use Conference.messenger.send() instead.")
 
     /**
      * Leaves the conference. Once left, the [Conference] object is no longer valid.

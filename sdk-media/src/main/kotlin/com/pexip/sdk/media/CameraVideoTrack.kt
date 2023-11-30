@@ -53,17 +53,6 @@ public interface CameraVideoTrack : LocalVideoTrack {
         public fun onSuccess(deviceName: String)
 
         /**
-         * Invoked when camera switch completed successfully.
-         *
-         * @param front true if the newly switched camera is front-facing, false otherwise
-         */
-        @Deprecated(
-            message = "Use onSuccess that contains deviceName as an argument.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun onSuccess(front: Boolean)
-
-        /**
          * Invoked when camera switch failed.
          *
          * @param error an error that occurred during the switch

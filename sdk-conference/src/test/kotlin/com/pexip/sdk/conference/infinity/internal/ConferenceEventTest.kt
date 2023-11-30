@@ -17,14 +17,12 @@ package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.DisconnectEvent
-import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.ReferEvent
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
-import com.pexip.sdk.conference.MessageReceivedConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
@@ -64,19 +62,6 @@ class ConferenceEventTest {
                 presenterName = presentationStartEvent.presenterName,
             )
             this[PresentationStopEvent] = PresentationStopConferenceEvent(at)
-            val messageReceivedEvent = MessageReceivedEvent(
-                participantId = UUID.randomUUID(),
-                participantName = Random.nextString(8),
-                type = Random.nextString(8),
-                payload = Random.nextString(8),
-            )
-            this[messageReceivedEvent] = MessageReceivedConferenceEvent(
-                at = at,
-                participantId = messageReceivedEvent.participantId,
-                participantName = messageReceivedEvent.participantName,
-                type = messageReceivedEvent.type,
-                payload = messageReceivedEvent.payload,
-            )
             val referEvent = ReferEvent(
                 conferenceAlias = Random.nextString(8),
                 token = Random.nextString(8),

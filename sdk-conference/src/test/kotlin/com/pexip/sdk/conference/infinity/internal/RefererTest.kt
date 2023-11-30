@@ -133,9 +133,6 @@ class RefererTest {
         override fun unregisterConferenceEventListener(listener: ConferenceEventListener): Unit =
             TODO()
 
-        @Deprecated("Use Conference.messenger.send() instead.")
-        override fun message(payload: String): Unit = TODO()
-
         override fun leave(): Unit = TODO()
     }
 }

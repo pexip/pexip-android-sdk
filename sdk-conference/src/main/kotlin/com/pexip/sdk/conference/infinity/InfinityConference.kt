@@ -135,12 +135,6 @@ public class InfinityConference private constructor(
         listeners -= listener
     }
 
-    @Deprecated(
-        message = "Use Conference.messenger.send() instead.",
-        level = DeprecationLevel.ERROR,
-    )
-    override fun message(payload: String): Unit = error("Use Conference.messenger.send() instead.")
-
     override fun leave() {
         scope.cancel()
         executor.shutdown()

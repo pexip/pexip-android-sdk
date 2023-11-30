@@ -30,7 +30,10 @@ public data class PresentationStartConferenceEvent(
 
 public data class PresentationStopConferenceEvent(override val at: Long) : ConferenceEvent
 
-@Deprecated("Use Messenger to receive messages instead.")
+@Deprecated(
+    message = "Use Messenger to receive messages instead.",
+    level = DeprecationLevel.ERROR,
+)
 public data class MessageReceivedConferenceEvent(
     override val at: Long,
     val participantId: UUID,

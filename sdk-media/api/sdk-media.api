@@ -83,13 +83,10 @@ public abstract interface class com/pexip/sdk/media/CameraVideoTrack$Callback {
 public abstract interface class com/pexip/sdk/media/CameraVideoTrack$SwitchCameraCallback {
 	public abstract fun onFailure (Ljava/lang/String;)V
 	public abstract fun onSuccess (Ljava/lang/String;)V
-	public abstract fun onSuccess (Z)V
 }
 
 public abstract interface class com/pexip/sdk/media/CameraVideoTrackFactory {
-	public abstract fun createCameraVideoTrack ()Lcom/pexip/sdk/media/CameraVideoTrack;
 	public abstract fun createCameraVideoTrack (Lcom/pexip/sdk/media/CameraVideoTrack$Callback;)Lcom/pexip/sdk/media/CameraVideoTrack;
-	public abstract fun createCameraVideoTrack (Ljava/lang/String;)Lcom/pexip/sdk/media/CameraVideoTrack;
 	public abstract fun createCameraVideoTrack (Ljava/lang/String;Lcom/pexip/sdk/media/CameraVideoTrack$Callback;)Lcom/pexip/sdk/media/CameraVideoTrack;
 	public abstract fun getDeviceNames ()Ljava/util/List;
 	public abstract fun getQualityProfiles (Ljava/lang/String;)Ljava/util/List;
@@ -204,6 +201,11 @@ public abstract interface class com/pexip/sdk/media/MediaConnection {
 	public abstract fun stopPresentationReceive ()V
 	public abstract fun unregisterMainRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
 	public abstract fun unregisterPresentationRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
+}
+
+public final class com/pexip/sdk/media/MediaConnection$DefaultImpls {
+	public static fun startPresentationReceive (Lcom/pexip/sdk/media/MediaConnection;)V
+	public static fun stopPresentationReceive (Lcom/pexip/sdk/media/MediaConnection;)V
 }
 
 public abstract interface class com/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener {

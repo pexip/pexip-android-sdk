@@ -134,8 +134,10 @@ public interface MediaConnection {
     @Deprecated(
         message = "Use setPresentationRemoteVideoTrackEnabled(true) instead.",
         replaceWith = ReplaceWith("setPresentationRemoteVideoTrackEnabled(true)"),
+        level = DeprecationLevel.ERROR,
     )
-    public fun startPresentationReceive()
+    public fun startPresentationReceive(): Unit =
+        error("Use setPresentationRemoteVideoTrackEnabled(true) instead.")
 
     /**
      * Disables the ability to receive ongoing remote presentation.
@@ -143,8 +145,10 @@ public interface MediaConnection {
     @Deprecated(
         message = "Use setPresentationRemoteVideoTrackEnabled(false) instead.",
         replaceWith = ReplaceWith("setPresentationRemoteVideoTrackEnabled(false)"),
+        level = DeprecationLevel.ERROR,
     )
-    public fun stopPresentationReceive()
+    public fun stopPresentationReceive(): Unit =
+        error("Use setPresentationRemoteVideoTrackEnabled(false) instead.")
 
     /**
      * Sends DTMF digits to this [MediaConnection].
