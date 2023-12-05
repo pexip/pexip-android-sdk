@@ -22,7 +22,8 @@ spotless {
         ratchetFrom = "origin/main"
         target("**/*.kt")
         targetExclude("**/build/**")
-        ktlint(ktlintVersion)
+        val customRuleSets = listOf(libs.ktlint.compose.map { "${it.module}:${it.version}" }.get())
+        ktlint(ktlintVersion).customRuleSets(customRuleSets)
         licenseHeaderFile("LICENSE_HEADER")
     }
     kotlinGradle {
