@@ -3,7 +3,7 @@ plugins {
     id("com.pexip.sdk.kotlin.android")
     id("com.pexip.sdk.licensee")
     alias(libs.plugins.dagger.hilt.android)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.wire)
 }
 
@@ -35,6 +35,13 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+    arguments {
+        arg("dagger.fastInit", "enabled")
+    }
+}
+
 wire {
     kotlin { }
 }
@@ -57,7 +64,7 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.coil.compose)
     implementation(libs.dagger.hilt.android.runtime)
-    ksp(libs.dagger.hilt.compiler)
+    kapt(libs.dagger.hilt.compiler)
     implementation(libs.minidns.android21)
     implementation(libs.okhttp.logginginterceptor)
     implementation(libs.workflow.core.jvm)
