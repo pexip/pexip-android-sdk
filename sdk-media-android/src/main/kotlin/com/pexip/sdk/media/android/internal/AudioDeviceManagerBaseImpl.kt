@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,6 @@ import android.media.AudioManager
 import android.os.Looper
 import androidx.core.content.getSystemService
 import androidx.core.os.HandlerCompat
-import androidx.media.AudioAttributesCompat
-import androidx.media.AudioFocusRequestCompat
-import androidx.media.AudioManagerCompat
 import com.pexip.sdk.media.AudioDevice
 import com.pexip.sdk.media.AudioDeviceManager
 import java.util.concurrent.CopyOnWriteArraySet
@@ -35,27 +32,10 @@ internal abstract class AudioDeviceManagerBaseImpl<T : AudioDevice>(context: Con
     protected val audioManager = context.getSystemService<AudioManager>()!!
 
     private val disposed = AtomicBoolean()
-    private val initialMode = audioManager.mode
-    private val audioAttributes = AudioAttributesCompat.Builder()
-        .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
-        .setUsage(AudioAttributesCompat.USAGE_VOICE_COMMUNICATION)
-        .build()
-    private val audioFocusRequest =
-        AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN_TRANSIENT)
-            .setAudioAttributes(audioAttributes)
-            .setOnAudioFocusChangeListener {
-                // noop
-            }
-            .build()
     private val onSelectedAudioDeviceChangedListeners =
         CopyOnWriteArraySet<AudioDeviceManager.OnSelectedAudioDeviceChangedListener>()
     private val onAvailableAudioDevicesChangedListeners =
         CopyOnWriteArraySet<AudioDeviceManager.OnAvailableAudioDevicesChangedListener>()
-
-    init {
-        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-        AudioManagerCompat.requestAudioFocus(audioManager, audioFocusRequest)
-    }
 
     final override fun selectAudioDevice(audioDevice: AudioDevice): Boolean {
         if (disposed.get()) {
@@ -90,13 +70,8 @@ internal abstract class AudioDeviceManagerBaseImpl<T : AudioDevice>(context: Con
 
     final override fun dispose() {
         if (disposed.compareAndSet(false, true)) {
-            try {
-                doDispose()
-                doClearAudioDevice()
-            } finally {
-                AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocusRequest)
-                audioManager.mode = initialMode
-            }
+            doDispose()
+            doClearAudioDevice()
         } else {
             throw IllegalStateException("${javaClass.name} has already been disposed!")
         }

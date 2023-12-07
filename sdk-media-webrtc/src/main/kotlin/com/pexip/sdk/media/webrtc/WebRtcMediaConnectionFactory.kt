@@ -18,7 +18,12 @@ package com.pexip.sdk.media.webrtc
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.projection.MediaProjection
+import androidx.core.content.getSystemService
+import androidx.media.AudioAttributesCompat
+import androidx.media.AudioFocusRequestCompat
+import androidx.media.AudioManagerCompat
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.CameraVideoTrackFactory
 import com.pexip.sdk.media.LocalAudioTrack
@@ -63,7 +68,10 @@ import org.webrtc.VideoDecoderFactory
 import org.webrtc.VideoEncoderFactory
 import org.webrtc.audio.AudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule
+import org.webrtc.audio.JavaAudioDeviceModule.AudioRecordStateCallback
+import org.webrtc.audio.JavaAudioDeviceModule.AudioTrackStateCallback
 import java.util.UUID
+import kotlin.properties.Delegates
 
 public class WebRtcMediaConnectionFactory private constructor(
     private val applicationContext: Context,
@@ -339,8 +347,44 @@ public class WebRtcMediaConnectionFactory private constructor(
                 .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                 .build()
+            val audioManager = context.getSystemService<AudioManager>()!!
+            val audioTrackStateCallback = object : AudioTrackStateCallback {
+
+                private val request =
+                    AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
+                        .setAudioAttributes(AudioAttributesCompat.wrap(audioAttributes)!!)
+                        .setOnAudioFocusChangeListener {
+                            // noop
+                        }
+                        .build()
+
+                override fun onWebRtcAudioTrackStart() {
+                    AudioManagerCompat.requestAudioFocus(audioManager, request)
+                }
+
+                override fun onWebRtcAudioTrackStop() {
+                    AudioManagerCompat.abandonAudioFocusRequest(audioManager, request)
+                }
+            }
+            val audioRecordStateCallback = object : AudioRecordStateCallback {
+
+                private var mode by Delegates.observable(audioManager.mode) { _, old, new ->
+                    if (old == new) return@observable
+                    audioManager.mode = new
+                }
+
+                override fun onWebRtcAudioRecordStart() {
+                    mode = AudioManager.MODE_IN_COMMUNICATION
+                }
+
+                override fun onWebRtcAudioRecordStop() {
+                    mode = AudioManager.MODE_NORMAL
+                }
+            }
             return JavaAudioDeviceModule.builder(context.applicationContext)
                 .setAudioAttributes(audioAttributes)
+                .setAudioTrackStateCallback(audioTrackStateCallback)
+                .setAudioRecordStateCallback(audioRecordStateCallback)
                 .createAudioDeviceModule()
         }
 
