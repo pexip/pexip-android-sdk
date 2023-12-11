@@ -15,8 +15,10 @@
  */
 package com.pexip.sdk.sample.bandwidth
 
+import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,7 +38,17 @@ class BandwidthWorkflow @Inject constructor() :
     ) = BandwidthRendering(
         visible = renderProps.visible,
         bandwidth = renderState.bandwidth,
-        onBandwidthClick = { context.actionSink.send(OnBandwidthClick(it)) },
-        onBackClick = { context.actionSink.send(OnBackClick) },
+        onBandwidthClick = context.send(::onBandwidthClick),
+        onBackClick = context.send(::onBackClick),
     )
+
+    private fun onBandwidthClick(bandwidth: Bandwidth) =
+        action({ "onBandwidthClick($bandwidth)" }) {
+            state = BandwidthState(bandwidth = bandwidth)
+            setOutput(BandwidthOutput.ChangeBandwidth(bandwidth = bandwidth))
+        }
+
+    private fun onBackClick() = action({ "onBackClick()" }) {
+        setOutput(BandwidthOutput.Back)
+    }
 }
