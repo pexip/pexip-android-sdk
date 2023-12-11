@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,10 @@
  */
 package com.pexip.sdk.sample.dtmf
 
-sealed class DtmfOutput {
+sealed interface DtmfOutput {
 
-    class Tone(val tone: String) : DtmfOutput()
+    @JvmInline
+    value class Tone(val tone: String) : DtmfOutput
 
-    object Back : DtmfOutput() {
-
-        override fun toString(): String = "Back"
-    }
+    data object Back : DtmfOutput
 }
