@@ -18,6 +18,7 @@ package com.pexip.sdk.sample.permissions
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
 import javax.inject.Inject
 
 class PermissionsWorkflow @Inject constructor() :
@@ -34,7 +35,24 @@ class PermissionsWorkflow @Inject constructor() :
         context: RenderContext,
     ): PermissionsRendering = PermissionsRendering(
         permissions = renderProps.permissions,
-        onPermissionsRequestResult = context.send(::OnPermissionsRequestResult),
-        onBackClick = context.send(::OnBackClick),
+        onPermissionsRequestResult = context.send(::onPermissionsRequestResult),
+        onBackClick = context.send(::onBackClick),
     )
+
+    private fun onPermissionsRequestResult(result: PermissionsRequestResult) =
+        action({ "onPermissionsRequestResult($result)" }) {
+            val output = when {
+                result.grants.all { it.value } -> PermissionsOutput.Next
+                result.rationales.none { it.value } && state.rationales?.none { it.value } == true -> {
+                    PermissionsOutput.ApplicationDetailsSettings
+                }
+                else -> null
+            }
+            output?.let(::setOutput)
+            state = PermissionsState(result.rationales)
+        }
+
+    private fun onBackClick() = action({ "onBackClick()" }) {
+        setOutput(PermissionsOutput.Back)
+    }
 }
