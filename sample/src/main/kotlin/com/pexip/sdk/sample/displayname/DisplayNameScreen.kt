@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.pexip.sdk.sample.asMutableState
 
 @Composable
 fun DisplayNameScreen(rendering: DisplayNameRendering, modifier: Modifier = Modifier) {
@@ -66,9 +67,10 @@ fun DisplayNameScreen(rendering: DisplayNameRendering, modifier: Modifier = Modi
                 LaunchedEffect(focusRequester) {
                     focusRequester.requestFocus()
                 }
+                val (displayName, onDisplayNameChange) = rendering.displayName.asMutableState()
                 TextField(
-                    value = rendering.displayName,
-                    onValueChange = rendering.onDisplayNameChange,
+                    value = displayName,
+                    onValueChange = onDisplayNameChange,
                     label = {
                         Text(text = "Display name")
                     },
@@ -84,7 +86,7 @@ fun DisplayNameScreen(rendering: DisplayNameRendering, modifier: Modifier = Modi
                 )
                 Button(
                     onClick = rendering.onNextClick,
-                    enabled = rendering.displayName.isNotBlank(),
+                    enabled = displayName.text.isNotBlank(),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(text = "Next")
