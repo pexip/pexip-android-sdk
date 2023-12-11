@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,5 +15,6 @@
  */
 package com.pexip.sdk.sample.media
 
-@JvmInline
-value class LocalMediaTrackState(val capturing: Boolean = false)
+import com.squareup.workflow1.Worker
+
+data class LocalMediaTrackState(val capturing: Boolean, val capturingWorker: Worker<Boolean>)

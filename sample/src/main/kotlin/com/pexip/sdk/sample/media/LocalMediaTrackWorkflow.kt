@@ -15,13 +15,15 @@
  */
 package com.pexip.sdk.sample.media
 
-import com.pexip.sdk.media.LocalMediaTrack
+import com.pexip.sdk.media.LocalVideoTrack
+import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
+import com.squareup.workflow1.action
+import com.squareup.workflow1.asWorker
+import com.squareup.workflow1.runningWorker
 import javax.inject.Inject
 
 class LocalMediaTrackWorkflow @Inject constructor() :
@@ -30,7 +32,12 @@ class LocalMediaTrackWorkflow @Inject constructor() :
     override fun initialState(
         props: LocalMediaTrackProps,
         snapshot: Snapshot?,
-    ): LocalMediaTrackState = LocalMediaTrackState(props.localMediaTrack.capturing)
+    ): LocalMediaTrackState = LocalMediaTrackState(
+        capturing = props.localMediaTrack.capturing,
+        capturingWorker = props.localMediaTrack
+            .getCapturing()
+            .asWorker(),
+    )
 
     override fun snapshotState(state: LocalMediaTrackState): Snapshot? = null
 
@@ -39,10 +46,10 @@ class LocalMediaTrackWorkflow @Inject constructor() :
         renderState: LocalMediaTrackState,
         context: RenderContext,
     ): LocalMediaTrackRendering {
-        context.capturingSideEffect(renderProps.localMediaTrack)
+        context.runningWorker(renderState.capturingWorker, handler = ::onCapturingStateChange)
         return LocalMediaTrackRendering(
             capturing = renderState.capturing,
-            onCapturingChange = context.send(::OnCapturingChange),
+            onCapturingChange = context.send(::onCapturingChange),
         )
     }
 
@@ -52,13 +59,23 @@ class LocalMediaTrackWorkflow @Inject constructor() :
         state: LocalMediaTrackState,
     ): LocalMediaTrackState = when (new) {
         old -> state
-        else -> LocalMediaTrackState(new.localMediaTrack.capturing)
+        else -> initialState(new, null)
     }
 
-    private fun RenderContext.capturingSideEffect(track: LocalMediaTrack) =
-        runningSideEffect("capturingSideEffect($track)") {
-            track.getCapturing()
-                .map(::OnCapturingStateChange)
-                .collectLatest(actionSink::send)
+    private fun onCapturingChange(capturing: Boolean) =
+        action({ "onCapturingChange($capturing)" }) {
+            val track = props.localMediaTrack
+            when (capturing) {
+                true -> when (track) {
+                    is LocalVideoTrack -> track.startCapture(QualityProfile.VeryHigh)
+                    else -> track.startCapture()
+                }
+                else -> track.stopCapture()
+            }
+        }
+
+    private fun onCapturingStateChange(capturing: Boolean) =
+        action({ "onCapturingStateChange($capturing)" }) {
+            state = state.copy(capturing = capturing)
         }
 }
