@@ -15,11 +15,16 @@
  */
 package com.pexip.sdk.sample.alias
 
+import com.pexip.sdk.api.infinity.NoSuchConferenceException
+import com.pexip.sdk.api.infinity.NoSuchNodeException
+import com.pexip.sdk.sample.pinrequirement.PinRequirementOutput
 import com.pexip.sdk.sample.pinrequirement.PinRequirementProps
 import com.pexip.sdk.sample.pinrequirement.PinRequirementWorkflow
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
+import com.squareup.workflow1.runningWorker
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,22 +41,69 @@ class AliasWorkflow @Inject constructor(private val pinRequirementWorkflow: PinR
         renderState: AliasState,
         context: RenderContext,
     ): AliasRendering {
+        context.runningWorker(renderState.blankAliasWorker, handler = ::onBlankAliasWorkerOutput)
         context.renderPinRequirementWorkflow(renderState.pinRequirementProps)
         return AliasRendering(
-            alias = renderState.conferenceAlias,
+            alias = renderState.alias,
             host = renderState.host,
             presentationInMain = renderState.presentationInMain,
-            resolveEnabled = renderState.conferenceAlias.isNotBlank() && renderState.pinRequirementProps == null,
-            onAliasChange = context.send(::OnAliasChange),
-            onHostChange = context.send(::OnHostChange),
-            onPresentationInMainChange = context.send(::OnPresentationInMainChange),
-            onResolveClick = context.send(::OnResolveClick),
-            onBackClick = context.send(::OnBackClick),
+            resolveEnabled = !renderState.blankAlias && renderState.pinRequirementProps == null,
+            onPresentationInMainChange = context.send(::onPresentationInMainChange),
+            onResolveClick = context.send(::onResolveClick),
+            onBackClick = context.send(::onBackClick),
         )
     }
 
     private fun RenderContext.renderPinRequirementWorkflow(props: PinRequirementProps?) {
         props ?: return
-        renderChild(pinRequirementWorkflow, props, handler = ::OnPinRequirementOutput)
+        renderChild(pinRequirementWorkflow, props, handler = ::onPinRequirementOutput)
+    }
+
+    private fun onPresentationInMainChange(presentationInMain: Boolean) =
+        action({ "onPresentationInMainChange($presentationInMain)" }) {
+            state = state.copy(presentationInMain = presentationInMain)
+        }
+
+    private fun onBlankAliasWorkerOutput(blankAlias: Boolean) =
+        action({ "onBlankAliasWorkerOutput($blankAlias)" }) {
+            state = state.copy(blankAlias = blankAlias)
+        }
+
+    private fun onPinRequirementOutput(output: PinRequirementOutput) =
+        action({ "onPinRequirementOutput($output)" }) {
+            state = state.copy(pinRequirementProps = null)
+            val o = when (output) {
+                is PinRequirementOutput.None -> AliasOutput.Conference(
+                    conference = output.conference,
+                    presentationInMain = state.presentationInMain,
+                )
+                is PinRequirementOutput.Some -> AliasOutput.PinChallenge(
+                    step = output.step,
+                    presentationInMain = state.presentationInMain,
+                    required = output.required,
+                )
+                is PinRequirementOutput.Error -> {
+                    val message = when (val t = output.t) {
+                        is NoSuchConferenceException -> "Conference doesn't exist."
+                        is NoSuchNodeException -> "The host doesn't have an Infinity deployment."
+                        else -> t.toString()
+                    }
+                    AliasOutput.Toast(message)
+                }
+            }
+            setOutput(o)
+        }
+
+    private fun onResolveClick() = action({ "onResolveClick()" }) {
+        val alias = state.alias.textValue
+        val props = PinRequirementProps(
+            conferenceAlias = alias,
+            host = state.host.textValue.trim().ifBlank { alias.split("@").last() },
+        )
+        state = state.copy(pinRequirementProps = props)
+    }
+
+    private fun onBackClick() = action({ "onBackClick()" }) {
+        setOutput(AliasOutput.Back)
     }
 }

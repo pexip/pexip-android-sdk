@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.pexip.sdk.sample.asMutableState
 
 @Composable
 fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
@@ -65,9 +66,10 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                 LaunchedEffect(focusRequester) {
                     focusRequester.requestFocus()
                 }
+                val (alias, onAliasChange) = rendering.alias.asMutableState()
                 TextField(
-                    value = rendering.alias,
-                    onValueChange = rendering.onAliasChange,
+                    value = alias,
+                    onValueChange = onAliasChange,
                     label = {
                         Text(text = "Alias")
                     },
@@ -91,9 +93,10 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                 val hostKeyboardActions = remember {
                     KeyboardActions(onGo = { currentOnResolveClick() })
                 }
+                val (host, onHostChange) = rendering.host.asMutableState()
                 TextField(
-                    value = rendering.host,
-                    onValueChange = rendering.onHostChange,
+                    value = host,
+                    onValueChange = onHostChange,
                     label = {
                         Text(text = "Host")
                     },
