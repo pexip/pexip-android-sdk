@@ -15,12 +15,14 @@
  */
 package com.pexip.sdk.sample.audio
 
+import com.pexip.sdk.media.AudioDevice
 import com.pexip.sdk.media.AudioDeviceManager
 import com.pexip.sdk.media.coroutines.getAvailableAudioDevices
 import com.pexip.sdk.media.coroutines.getSelectedAudioDevice
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -48,22 +50,22 @@ class AudioDeviceWorkflow @Inject constructor(private val audioDeviceManager: Pr
             visible = renderProps.visible,
             availableAudioDevices = renderState.availableAudioDevices,
             selectedAudioDevice = renderState.selectedAudioDevice,
-            onAudioDeviceClick = context.send(::OnAudioDeviceClick),
-            onBackClick = context.send(::OnBackClick),
+            onAudioDeviceClick = context.send(::onAudioDeviceClick),
+            onBackClick = context.send(::onBackClick),
         )
     }
 
     private fun RenderContext.availableAudioDevicesSideEffect(renderState: AudioDeviceState) =
         runningSideEffect("availableAudioDevices(${renderState.audioDeviceManager})") {
             renderState.audioDeviceManager.getAvailableAudioDevices()
-                .map(::OnAvailableAudioDevicesChange)
+                .map(::onAvailableAudioDevicesChange)
                 .collect(actionSink::send)
         }
 
     private fun RenderContext.selectedAudioDeviceSideEffect(renderState: AudioDeviceState) =
         runningSideEffect("selectedAudioDevice(${renderState.audioDeviceManager})") {
             renderState.audioDeviceManager.getSelectedAudioDevice()
-                .map(::OnSelectedAudioDeviceChange)
+                .map(::onSelectedAudioDeviceChange)
                 .collect(actionSink::send)
         }
 
@@ -75,4 +77,23 @@ class AudioDeviceWorkflow @Inject constructor(private val audioDeviceManager: Pr
                 renderState.audioDeviceManager.dispose()
             }
         }
+
+    private fun onAvailableAudioDevicesChange(availableAudioDevices: List<AudioDevice>) =
+        action({ "onAvailableAudioDevicesChange($availableAudioDevices)" }) {
+            state = state.copy(availableAudioDevices = availableAudioDevices)
+        }
+
+    private fun onSelectedAudioDeviceChange(selectedAudioDevice: AudioDevice?) =
+        action({ "onSelectedAudioDeviceChange($selectedAudioDevice)" }) {
+            state = state.copy(selectedAudioDevice = selectedAudioDevice)
+        }
+
+    private fun onAudioDeviceClick(audioDevice: AudioDevice) =
+        action({ "onAudioDeviceClick($audioDevice" }) {
+            state.audioDeviceManager.selectAudioDevice(audioDevice)
+        }
+
+    private fun onBackClick() = action({ "onBackClick()" }) {
+        setOutput(AudioDeviceOutput.Back)
+    }
 }
