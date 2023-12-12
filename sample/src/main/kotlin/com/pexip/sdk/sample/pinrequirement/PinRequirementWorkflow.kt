@@ -20,10 +20,13 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NodeResolver
 import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequiredPinException
+import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -59,31 +62,51 @@ class PinRequirementWorkflow @Inject constructor(
             val action = runCatching { resolver.resolve(props.host).await() }
                 .map { it.asSequence().map(service::newRequest) }
                 .mapCatching { it.first { builder -> builder.status().await() } }
-                .fold(::OnNode, ::OnError)
+                .fold(::onNode, ::onError)
             actionSink.send(action)
         }
 
     private fun RenderContext.getPinRequirementSideEffect(
         props: PinRequirementProps,
         state: PinRequirementState.ResolvingPinRequirement,
-    ) = runningSideEffect("${props.conferenceAlias}:${state.builder}") {
-        val step = state.builder.conference(props.conferenceAlias)
+    ) = runningSideEffect("${props.alias}:${state.builder}") {
+        val step = state.builder.conference(props.alias)
         val action = runCatching { store.getDisplayName().first() }
             .mapCatching { RequestTokenRequest(displayName = it, directMedia = true) }
             .mapCatching { step.requestToken(it).await() }
             .map { InfinityConference.create(step, it) }
             .fold(
-                onSuccess = ::OnConference,
+                onSuccess = ::onConference,
                 onFailure = {
                     when (it) {
-                        is RequiredPinException -> OnRequiredPin(
+                        is CancellationException -> throw it
+                        is RequiredPinException -> onRequiredPin(
                             step = step,
                             required = it.guestPin,
                         )
-                        else -> OnError(it)
+                        else -> onError(it)
                     }
                 },
             )
         actionSink.send(action)
+    }
+
+    private fun onNode(builder: InfinityService.RequestBuilder) = action({ "onNode($builder)" }) {
+        state = PinRequirementState.ResolvingPinRequirement(builder)
+    }
+
+    private fun onConference(conference: Conference) = action({ "onConference($conference" }) {
+        setOutput(PinRequirementOutput.None(conference))
+    }
+
+    private fun onRequiredPin(
+        step: InfinityService.ConferenceStep,
+        required: Boolean,
+    ) = action({ "onRequiredPin($step, $required)" }) {
+        setOutput(PinRequirementOutput.Some(step, required))
+    }
+
+    private fun onError(t: Throwable) = action({ "onError($t)" }) {
+        setOutput(PinRequirementOutput.Error(t))
     }
 }

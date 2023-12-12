@@ -97,7 +97,7 @@ class AliasWorkflow @Inject constructor(private val pinRequirementWorkflow: PinR
     private fun onResolveClick() = action({ "onResolveClick()" }) {
         val alias = state.alias.textValue
         val props = PinRequirementProps(
-            conferenceAlias = alias,
+            alias = alias,
             host = state.host.textValue.trim().ifBlank { alias.split("@").last() },
         )
         state = state.copy(pinRequirementProps = props)
