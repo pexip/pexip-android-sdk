@@ -115,38 +115,29 @@ public data class IncomingEvent(
 public data class IncomingCancelledEvent(val token: String) : Event
 
 @Suppress("ktlint:standard:function-naming")
-internal fun Event(json: Json, id: String?, type: String?, data: String): Event? {
-    val s = buildString {
-        append("type: ")
-        append(type)
-        append(", data: ")
-        append(data)
+internal fun Event(json: Json, id: String?, type: String?, data: String): Event? = when (type) {
+    "participant_sync_begin" -> ParticipantSyncBeginEvent
+    "participant_sync_end" -> ParticipantSyncEndEvent
+    "participant_create" -> json.decodeFromString<ParticipantCreateEvent>(data)
+    "participant_update" -> json.decodeFromString<ParticipantUpdateEvent>(data)
+    "participant_delete" -> json.decodeFromString<ParticipantDeleteEvent>(data)
+    "new_offer" -> json.decodeFromString<NewOfferEvent>(data)
+    "update_sdp" -> json.decodeFromString<UpdateSdpEvent>(data)
+    "new_candidate" -> json.decodeFromString<NewCandidateEvent>(data)
+    "peer_disconnect" -> PeerDisconnectEvent
+    "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
+    "presentation_stop" -> PresentationStopEvent
+    "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
+    "fecc" -> json.decodeFromString<FeccEvent>(data)
+    "refer" -> json.decodeFromString<ReferEvent>(data)
+    "splash_screen" -> try {
+        json.decodeFromString<SplashScreenEvent>(data)
+    } catch (e: SerializationException) {
+        SplashScreenEvent()
     }
-    println(s)
-    return when (type) {
-        "participant_sync_begin" -> ParticipantSyncBeginEvent
-        "participant_sync_end" -> ParticipantSyncEndEvent
-        "participant_create" -> json.decodeFromString<ParticipantCreateEvent>(data)
-        "participant_update" -> json.decodeFromString<ParticipantUpdateEvent>(data)
-        "participant_delete" -> json.decodeFromString<ParticipantDeleteEvent>(data)
-        "new_offer" -> json.decodeFromString<NewOfferEvent>(data)
-        "update_sdp" -> json.decodeFromString<UpdateSdpEvent>(data)
-        "new_candidate" -> json.decodeFromString<NewCandidateEvent>(data)
-        "peer_disconnect" -> PeerDisconnectEvent
-        "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
-        "presentation_stop" -> PresentationStopEvent
-        "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
-        "fecc" -> json.decodeFromString<FeccEvent>(data)
-        "refer" -> json.decodeFromString<ReferEvent>(data)
-        "splash_screen" -> try {
-            json.decodeFromString<SplashScreenEvent>(data)
-        } catch (e: SerializationException) {
-            SplashScreenEvent()
-        }
-        "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
-        "bye" -> ByeEvent
-        "incoming" -> json.decodeFromString<IncomingEvent>(data)
-        "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
-        else -> null
-    }
+    "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
+    "bye" -> ByeEvent
+    "incoming" -> json.decodeFromString<IncomingEvent>(data)
+    "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
+    else -> null
 }
