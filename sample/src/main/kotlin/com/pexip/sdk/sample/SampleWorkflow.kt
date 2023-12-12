@@ -23,14 +23,18 @@ import com.pexip.sdk.media.CameraVideoTrackFactory
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalAudioTrackFactory
 import com.pexip.sdk.media.QualityProfile
+import com.pexip.sdk.sample.conference.ConferenceOutput
 import com.pexip.sdk.sample.conference.ConferenceProps
 import com.pexip.sdk.sample.conference.ConferenceWorkflow
+import com.pexip.sdk.sample.permissions.PermissionsOutput
 import com.pexip.sdk.sample.permissions.PermissionsProps
 import com.pexip.sdk.sample.permissions.PermissionsWorkflow
+import com.pexip.sdk.sample.preflight.PreflightOutput
 import com.pexip.sdk.sample.preflight.PreflightProps
 import com.pexip.sdk.sample.preflight.PreflightWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
 import com.squareup.workflow1.ui.toParcelable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.awaitCancellation
@@ -47,8 +51,18 @@ class SampleWorkflow @Inject constructor(
     private val cameraVideoTrackFactory: CameraVideoTrackFactory,
 ) : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>() {
 
+    private val permissions = buildSet {
+        add(Manifest.permission.RECORD_AUDIO)
+        add(Manifest.permission.CAMERA)
+        if (Build.VERSION.SDK_INT >= 31) {
+            add(Manifest.permission.BLUETOOTH_CONNECT)
+        } else {
+            add(Manifest.permission.BLUETOOTH)
+        }
+    }
+
     override fun initialState(props: Unit, snapshot: Snapshot?): SampleState {
-        val allGranted = Permissions.all(context::isPermissionGranted)
+        val allGranted = permissions.all(context::isPermissionGranted)
         return SampleState(
             destination = when (allGranted) {
                 true -> snapshot?.toParcelable() ?: SampleDestination.Preflight
@@ -73,8 +87,8 @@ class SampleWorkflow @Inject constructor(
         return when (val destination = renderState.destination) {
             is SampleDestination.Permissions -> context.renderChild(
                 child = permissionsWorkflow,
-                props = PermissionsProps(Permissions),
-                handler = ::OnPermissionsOutput,
+                props = PermissionsProps(permissions),
+                handler = ::onPermissionsOutput,
             )
             is SampleDestination.Preflight -> context.renderChild(
                 child = preflightWorkflow,
@@ -82,7 +96,7 @@ class SampleWorkflow @Inject constructor(
                     cameraVideoTrack = renderState.cameraVideoTrack,
                     microphoneAudioTrack = renderState.microphoneAudioTrack,
                 ),
-                handler = ::OnPreflightOutput,
+                handler = ::onPreflightOutput,
             )
             is SampleDestination.Conference -> context.renderChild(
                 child = conferenceWorkflow,
@@ -92,7 +106,7 @@ class SampleWorkflow @Inject constructor(
                     cameraVideoTrack = renderState.cameraVideoTrack,
                     microphoneAudioTrack = renderState.microphoneAudioTrack,
                 ),
-                handler = ::OnConferenceOutput,
+                handler = ::onConferenceOutput,
             )
         }
     }
@@ -103,12 +117,12 @@ class SampleWorkflow @Inject constructor(
                 val callback = object : CameraVideoTrack.Callback {
 
                     override fun onCameraDisconnected() {
-                        val action = OnCameraVideoTrackChange(null)
+                        val action = onCameraVideoTrackChange(null)
                         actionSink.send(action)
                     }
                 }
                 val track = cameraVideoTrackFactory.createCameraVideoTrack(callback)
-                val action = OnCameraVideoTrackChange(track)
+                val action = onCameraVideoTrackChange(track)
                 actionSink.send(action)
             }
         }
@@ -118,7 +132,7 @@ class SampleWorkflow @Inject constructor(
         if (count > 0u) {
             runningSideEffect("createMicrophoneAudioTrackSideEffect($count)") {
                 val track = localAudioTrackFactory.createLocalAudioTrack()
-                val action = OnMicrophoneAudioTrackChange(track)
+                val action = onMicrophoneAudioTrackChange(track)
                 actionSink.send(action)
             }
         }
@@ -131,7 +145,7 @@ class SampleWorkflow @Inject constructor(
                     track.startCapture(QualityProfile.VeryHigh)
                     awaitCancellation()
                 } finally {
-                    actionSink.send(OnCameraVideoTrackChange(null))
+                    actionSink.send(onCameraVideoTrackChange(null))
                     track.stopCapture()
                     track.dispose()
                 }
@@ -146,7 +160,7 @@ class SampleWorkflow @Inject constructor(
                     track.startCapture()
                     awaitCancellation()
                 } finally {
-                    actionSink.send(OnMicrophoneAudioTrackChange(null))
+                    actionSink.send(onMicrophoneAudioTrackChange(null))
                     track.stopCapture()
                     track.dispose()
                 }
@@ -154,14 +168,55 @@ class SampleWorkflow @Inject constructor(
         }
     }
 
-    companion object {
+    private fun onCameraVideoTrackChange(track: CameraVideoTrack?) =
+        action({ "onCameraVideoTrackChange($track" }) {
+            state = state.copy(cameraVideoTrack = track)
+        }
 
-        private val Permissions = buildSet {
-            add(Manifest.permission.RECORD_AUDIO)
-            add(Manifest.permission.CAMERA)
-            if (Build.VERSION.SDK_INT >= 31) {
-                add(Manifest.permission.BLUETOOTH_CONNECT)
+    private fun onMicrophoneAudioTrackChange(track: LocalAudioTrack?) =
+        action({ "onMicrophoneAudioTrackChange($track" }) {
+            state = state.copy(microphoneAudioTrack = track)
+        }
+
+    private fun onPermissionsOutput(output: PermissionsOutput) =
+        action({ "onPermissionsOutput($output)" }) {
+            when (output) {
+                is PermissionsOutput.ApplicationDetailsSettings -> setOutput(SampleOutput.ApplicationDetailsSettings)
+                is PermissionsOutput.Next -> {
+                    state = state.copy(
+                        destination = SampleDestination.Preflight,
+                        createCameraVideoTrackCount = 1u,
+                        createMicrophoneAudioTrackCount = 1u,
+                    )
+                }
+                is PermissionsOutput.Back -> setOutput(SampleOutput.Finish)
             }
         }
-    }
+
+    private fun onPreflightOutput(output: PreflightOutput) =
+        action({ "onPreflightOutput($output)" }) {
+            when (output) {
+                is PreflightOutput.Conference -> state = state.copy(
+                    destination = SampleDestination.Conference(
+                        conference = output.conference,
+                        presentationInMain = output.presentationInMain,
+                    ),
+                )
+                is PreflightOutput.Toast -> setOutput(SampleOutput.Toast(output.message))
+                is PreflightOutput.CreateCameraVideoTrack -> state = state.copy(
+                    createCameraVideoTrackCount = state.createCameraVideoTrackCount + 1u,
+                )
+                is PreflightOutput.Back -> setOutput(SampleOutput.Finish)
+            }
+        }
+
+    private fun onConferenceOutput(output: ConferenceOutput) =
+        action({ "onConferenceOutput($output)" }) {
+            val destination = checkNotNull(state.destination as? SampleDestination.Conference)
+            val newDestination = when (output) {
+                is ConferenceOutput.Refer -> destination.copy(conference = output.conference)
+                is ConferenceOutput.Back -> SampleDestination.Preflight
+            }
+            state = state.copy(destination = newDestination)
+        }
 }
