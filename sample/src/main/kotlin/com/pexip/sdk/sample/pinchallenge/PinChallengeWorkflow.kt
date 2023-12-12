@@ -16,14 +16,22 @@
 package com.pexip.sdk.sample.pinchallenge
 
 import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.RequestTokenRequest
+import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.sample.send
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.Worker
+import com.squareup.workflow1.action
+import com.squareup.workflow1.runningWorker
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -41,40 +49,82 @@ class PinChallengeWorkflow @Inject constructor(private val store: SettingsStore)
         renderState: PinChallengeState,
         context: RenderContext,
     ): PinChallengeRendering {
-        context.verifyPinSideEffect(renderProps, renderState)
+        context.runningWorker(renderState.blankPinWorker, handler = ::onBlankPinWorkerOutput)
+        if (renderState.pinChallengeWorker != null) {
+            context.runningWorker(
+                worker = renderState.pinChallengeWorker,
+                handler = ::onPinChallengeWorkerOutput,
+            )
+        }
         return PinChallengeRendering(
             pin = renderState.pin,
             error = renderState.t != null,
             submitEnabled = when {
-                renderState.requesting -> false
-                renderProps.required -> renderState.pin.isNotBlank()
+                renderState.pinChallengeWorker != null -> false
+                renderProps.required -> !renderState.blankPin
                 else -> true
             },
-            onPinChange = context.send(::OnPinChange),
-            onSubmitClick = context.send(::OnSubmitClick),
-            onBackClick = context.send(::OnBackClick),
+            onSubmitClick = context.send(::onSubmitClick),
+            onBackClick = context.send(::onBackClick),
         )
     }
 
-    private fun RenderContext.verifyPinSideEffect(
-        props: PinChallengeProps,
-        state: PinChallengeState,
-    ) {
-        val pinToSubmit = state.pinToSubmit ?: return
-        runningSideEffect("$props:$pinToSubmit") {
-            actionSink.send(OnRequestToken())
-            val action = try {
+    private fun onBlankPinWorkerOutput(value: Boolean) =
+        action({ "onBlankPinWorkerOutput($value)" }) {
+            state = state.copy(blankPin = value)
+        }
+
+    private fun onPinChallengeWorkerOutput(result: Result<Conference>) =
+        action({ "onPinChallengeWorkerOutput($result)" }) {
+            result.onSuccess {
+                setOutput(PinChallengeOutput.Conference(it))
+            }
+            result.onFailure {
+                if (it is InvalidPinException) {
+                    state.pin.textValue = ""
+                }
+            }
+            state = state.copy(
+                t = result.fold(onSuccess = { null }, onFailure = { it }),
+                pinChallengeWorker = null,
+            )
+        }
+
+    private fun onSubmitClick() = action({ "onSubmitClick()" }) {
+        val worker = PinChallengeWorker(
+            step = props.step,
+            pin = state.pin.textValue.trim(),
+        )
+        state = state.copy(pinChallengeWorker = worker)
+    }
+
+    private fun onBackClick() = action({ "onBackClick()" }) {
+        setOutput(PinChallengeOutput.Back)
+    }
+
+    private inner class PinChallengeWorker(
+        private val step: InfinityService.ConferenceStep,
+        private val pin: String,
+    ) : Worker<Result<Conference>> {
+
+        override fun run(): Flow<Result<Conference>> = flow {
+            val result = try {
                 val displayName = store.getDisplayName().first()
                 val request = RequestTokenRequest(displayName = displayName, directMedia = true)
-                val response = props.step.requestToken(request, pinToSubmit).await()
-                val conference = InfinityConference.create(props.step, response)
-                OnConference(conference)
-            } catch (e: InvalidPinException) {
-                OnInvalidPin(e)
+                val response = step.requestToken(request, pin).await()
+                val conference = InfinityConference.create(step, response)
+                Result.success(conference)
+            } catch (e: CancellationException) {
+                throw e
             } catch (t: Throwable) {
-                OnError(t)
+                Result.failure(t)
             }
-            actionSink.send(action)
+            emit(result)
         }
+
+        override fun doesSameWorkAs(otherWorker: Worker<*>): Boolean =
+            otherWorker is PinChallengeWorker &&
+                step == otherWorker.step &&
+                pin == otherWorker.pin
     }
 }
