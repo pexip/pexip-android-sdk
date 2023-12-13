@@ -18,20 +18,24 @@ package com.pexip.sdk.api.infinity
 import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
+import assertk.assertions.containsOnly
 import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import assertk.tableOf
+import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
 import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
+import okio.FileSystem
 import org.junit.Rule
 import java.util.UUID
 import kotlin.random.Random
@@ -43,6 +47,7 @@ internal class ConferenceStepTest {
     @get:Rule
     val server = MockWebServer()
 
+    private lateinit var fileSystem: FileSystem
     private lateinit var node: HttpUrl
     private lateinit var conferenceAlias: String
     private lateinit var json: Json
@@ -50,6 +55,7 @@ internal class ConferenceStepTest {
 
     @BeforeTest
     fun setUp() {
+        fileSystem = FileSystem.RESOURCES
         node = server.url("/")
         conferenceAlias = Random.nextString(8)
         json = InfinityService.Json
@@ -416,6 +422,73 @@ internal class ConferenceStepTest {
     }
 
     @Test
+    fun `availableLayouts throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailure { step.availableLayouts(token).await() }
+            .isInstanceOf<IllegalStateException>()
+        server.verifyAvailableLayouts(token)
+    }
+
+    @Test
+    fun `availableLayouts throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailure { step.availableLayouts(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyAvailableLayouts(token)
+    }
+
+    @Test
+    fun `availableLayouts throws NoSuchConferenceException`() = runTest {
+        val body = fileSystem.readUtf8("conference_not_found.json")
+        server.enqueue {
+            setResponseCode(404)
+            setBody(body)
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.availableLayouts(token).await() }
+            .isInstanceOf<NoSuchConferenceException>()
+        server.verifyAvailableLayouts(token)
+    }
+
+    @Test
+    fun `availableLayouts throws InvalidTokenException`() = runTest {
+        val body = fileSystem.readUtf8("invalid_token.json")
+        server.enqueue {
+            setResponseCode(403)
+            setBody(body)
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.availableLayouts(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+        server.verifyAvailableLayouts(token)
+    }
+
+    @Test
+    fun `availableLayouts returns a set on 200`() = runTest {
+        val body = fileSystem.readUtf8("available_layouts.json")
+        server.enqueue {
+            setResponseCode(200)
+            setBody(body)
+        }
+        val token = Random.nextString(8)
+        assertThat(step.availableLayouts(token).await(), "response").containsOnly(
+            Layout("5:7"),
+            Layout("1:7"),
+            Layout("2:21"),
+            Layout("1:21"),
+            Layout("4:0"),
+            Layout("9:0"),
+            Layout("16:0"),
+            Layout("25:0"),
+            Layout("1:0"),
+            Layout("1:33"),
+            Layout("teams"),
+        )
+        server.verifyAvailableLayouts(token)
+    }
+
+    @Test
     fun `theme throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
@@ -546,6 +619,17 @@ internal class ConferenceStepTest {
             assertToken(token)
             assertPost(json, request)
         }
+
+    private fun MockWebServer.verifyAvailableLayouts(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("available_layouts")
+        }
+        assertToken(token)
+        assertGet()
+    }
 
     private fun MockWebServer.verifyTheme(token: String) = takeRequest {
         assertRequestUrl(node) {

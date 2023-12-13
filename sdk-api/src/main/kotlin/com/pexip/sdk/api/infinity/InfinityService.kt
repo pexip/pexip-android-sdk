@@ -168,6 +168,30 @@ public interface InfinityService {
         public fun message(request: MessageRequest, token: Token): Call<Boolean>
 
         /**
+         * This returns a list of all available layouts for the given conference.
+         *
+         * This includes the inbuilt layouts plus any custom layouts available on this conference.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#available_layouts).
+         *
+         * @param token a valid token
+         * @return a list of available layouts
+         */
+        public fun availableLayouts(token: String): Call<Set<Layout>>
+
+        /**
+         * This returns a list of all available layouts for the given conference.
+         *
+         * This includes the inbuilt layouts plus any custom layouts available on this conference.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#available_layouts).
+         *
+         * @param token a valid token
+         * @return a list of available layouts
+         */
+        public fun availableLayouts(token: Token): Call<Set<Layout>>
+
+        /**
          * Provides the theme resources of the conference (direct media only). Used in conjunction
          * with the **splash_screen** server event, the relevant theme resources can be used to
          * locally render a particular splash screen on the client.

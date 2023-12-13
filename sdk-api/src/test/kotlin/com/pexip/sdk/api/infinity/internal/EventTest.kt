@@ -47,10 +47,9 @@ import com.pexip.sdk.api.infinity.ServiceType
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.api.infinity.nextString
+import com.pexip.sdk.api.infinity.readUtf8
 import kotlinx.datetime.Instant
-import okio.BufferedSource
 import okio.FileSystem
-import okio.Path.Companion.toPath
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.Test
@@ -259,7 +258,7 @@ internal class EventTest {
                 ),
             )
             .forAll { type, filename, event ->
-                val data = FileSystem.RESOURCES.read(filename.toPath(), BufferedSource::readUtf8)
+                val data = FileSystem.RESOURCES.readUtf8(filename)
                 val actual = Event(
                     json = InfinityService.Json,
                     id = Random.nextString(8),

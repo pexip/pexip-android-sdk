@@ -21,7 +21,11 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import okio.BufferedSource
 import okio.ByteString.Companion.encodeUtf8
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
 import java.net.URL
 import java.util.UUID
 import kotlin.random.Random
@@ -31,6 +35,10 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+internal fun FileSystem.readUtf8(path: String): String = readUtf8(path.toPath())
+
+internal fun FileSystem.readUtf8(path: Path) = read(path, BufferedSource::readUtf8)
 
 internal fun Random.nextString(length: Int) =
     CharArray(length) { CHARACTERS.random(this) }.concatToString()
