@@ -164,16 +164,12 @@ public final class com/pexip/sdk/api/infinity/CallsResponse$Companion {
 
 public abstract interface class com/pexip/sdk/api/infinity/DataChannelMessage {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/DataChannelMessage$Companion;
-	public abstract fun encodeToString ()Ljava/lang/String;
+	public fun encodeToString ()Ljava/lang/String;
 }
 
 public final class com/pexip/sdk/api/infinity/DataChannelMessage$Companion {
 	public final fun decodeFromString (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/DataChannelMessage;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class com/pexip/sdk/api/infinity/DataChannelMessage$DefaultImpls {
-	public static fun encodeToString (Lcom/pexip/sdk/api/infinity/DataChannelMessage;)Ljava/lang/String;
 }
 
 public final class com/pexip/sdk/api/infinity/DataChannelMessage$Message : com/pexip/sdk/api/infinity/DataChannelMessage {
@@ -182,7 +178,6 @@ public final class com/pexip/sdk/api/infinity/DataChannelMessage$Message : com/p
 	public final fun component1 ()Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;
 	public final fun copy (Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;)Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message;
 	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message;Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message;
-	public fun encodeToString ()Ljava/lang/String;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBody ()Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;
 	public fun hashCode ()I
@@ -607,14 +602,11 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Regis
 	public abstract fun refreshToken (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun registrations (Lcom/pexip/sdk/api/infinity/Token;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun registrations (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public static synthetic fun registrations$default (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Lcom/pexip/sdk/api/infinity/Token;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/Call;
+	public static synthetic fun registrations$default (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/Call;
 	public abstract fun releaseToken (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun releaseToken (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun requestToken (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
-}
-
-public final class com/pexip/sdk/api/infinity/InfinityService$RegistrationStep$DefaultImpls {
-	public static synthetic fun registrations$default (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Lcom/pexip/sdk/api/infinity/Token;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/Call;
-	public static synthetic fun registrations$default (Lcom/pexip/sdk/api/infinity/InfinityService$RegistrationStep;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/Call;
 }
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$RequestBuilder {

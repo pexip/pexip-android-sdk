@@ -65,13 +65,10 @@ public abstract interface class com/pexip/sdk/registration/Registration {
 	public abstract fun dispose ()V
 	public abstract fun getDirectoryEnabled ()Z
 	public abstract fun getRegisteredDevices (Ljava/lang/String;Lcom/pexip/sdk/registration/RegisteredDevicesCallback;)V
+	public static synthetic fun getRegisteredDevices$default (Lcom/pexip/sdk/registration/Registration;Ljava/lang/String;Lcom/pexip/sdk/registration/RegisteredDevicesCallback;ILjava/lang/Object;)V
 	public abstract fun getRouteViaRegistrar ()Z
 	public abstract fun registerRegistrationEventListener (Lcom/pexip/sdk/registration/RegistrationEventListener;)V
 	public abstract fun unregisterRegistrationEventListener (Lcom/pexip/sdk/registration/RegistrationEventListener;)V
-}
-
-public final class com/pexip/sdk/registration/Registration$DefaultImpls {
-	public static synthetic fun getRegisteredDevices$default (Lcom/pexip/sdk/registration/Registration;Ljava/lang/String;Lcom/pexip/sdk/registration/RegisteredDevicesCallback;ILjava/lang/Object;)V
 }
 
 public abstract interface class com/pexip/sdk/registration/RegistrationEvent {

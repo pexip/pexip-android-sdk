@@ -24,6 +24,7 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class KotlinJvmPlugin : Plugin<Project> {
 
@@ -36,6 +37,11 @@ class KotlinJvmPlugin : Plugin<Project> {
         dependencies {
             "testImplementation"(kotlin("test-junit"))
             "testImplementation"(libs.findLibrary("assertk").get())
+        }
+        tasks.withType<KotlinCompile>().configureEach {
+            compilerOptions {
+                freeCompilerArgs.add("-Xjvm-default=all")
+            }
         }
         tasks.withType<Test>().configureEach {
             testLogging.exceptionFormat = TestExceptionFormat.FULL

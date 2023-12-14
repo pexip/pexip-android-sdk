@@ -22,6 +22,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class KotlinAndroidPlugin : Plugin<Project> {
 
@@ -32,6 +33,11 @@ class KotlinAndroidPlugin : Plugin<Project> {
             "testImplementation"(libs.findLibrary("assertk").get())
             "androidTestImplementation"(kotlin("test-junit"))
             "androidTestImplementation"(libs.findLibrary("assertk").get())
+        }
+        tasks.withType<KotlinCompile>().configureEach {
+            compilerOptions {
+                freeCompilerArgs.add("-Xjvm-default=all")
+            }
         }
         tasks.withType<Test>().configureEach {
             systemProperty("kotlinx.coroutines.stacktrace.recovery", false)
