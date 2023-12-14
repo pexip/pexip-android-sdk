@@ -18,6 +18,15 @@ updates:
     registries:
       - maven-gradle
       - maven-google
+    groups:
+      androidx:
+        patterns:
+          - "androidx.*"
+        exclude-patterns:
+          - "androidx.compose.compiler:compiler"
+        update-types:
+          - "patch"
+          - "minor"
 
 registries:
   maven-gradle:
