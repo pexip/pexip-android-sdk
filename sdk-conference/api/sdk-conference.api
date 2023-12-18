@@ -5,13 +5,9 @@ public abstract interface class com/pexip/sdk/conference/Conference {
 	public abstract fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public abstract fun getTheme ()Lcom/pexip/sdk/conference/Theme;
 	public abstract fun leave ()V
-	public abstract fun message (Ljava/lang/String;)V
+	public fun message (Ljava/lang/String;)V
 	public abstract fun registerConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
 	public abstract fun unregisterConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
-}
-
-public final class com/pexip/sdk/conference/Conference$DefaultImpls {
-	public static fun message (Lcom/pexip/sdk/conference/Conference;Ljava/lang/String;)V
 }
 
 public abstract interface class com/pexip/sdk/conference/ConferenceEvent {
@@ -121,11 +117,8 @@ public abstract interface class com/pexip/sdk/conference/Messenger {
 	public abstract fun send (Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
 	public abstract fun send (Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun send (Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
-	public abstract fun unregisterMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
-}
-
-public final class com/pexip/sdk/conference/Messenger$DefaultImpls {
 	public static synthetic fun send$default (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun unregisterMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
 }
 
 public final class com/pexip/sdk/conference/PresentationStartConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
@@ -221,7 +214,6 @@ public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pe
 	public fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public fun getTheme ()Lcom/pexip/sdk/conference/Theme;
 	public fun leave ()V
-	public fun message (Ljava/lang/String;)V
 	public fun registerConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
 	public fun unregisterConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
 }
