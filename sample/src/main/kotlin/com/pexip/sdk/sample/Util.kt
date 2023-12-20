@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,19 @@ package com.pexip.sdk.sample
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.core.content.ContextCompat
 import com.squareup.workflow1.BaseRenderContext
 import com.squareup.workflow1.WorkflowAction
+import com.squareup.workflow1.ui.TextController
+import kotlinx.coroutines.launch
 
 fun <Props, State, Output> BaseRenderContext<Props, State, Output>.send(action: () -> WorkflowAction<Props, State, Output>): () -> Unit =
     { actionSink.send(action()) }
@@ -34,3 +44,16 @@ inline fun log(tag: String, priority: Int = Log.INFO, block: () -> String) {
 
 fun Context.isPermissionGranted(permission: String) =
     ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+
+@Composable
+fun TextController.asMutableState(): MutableState<TextFieldValue> {
+    val state = remember(this) {
+        val value = TextFieldValue(textValue, TextRange(textValue.length))
+        mutableStateOf(value)
+    }
+    LaunchedEffect(this) {
+        launch { onTextChanged.collect { state.value = state.value.copy(text = it) } }
+        snapshotFlow { state.value }.collect { textValue = it.text }
+    }
+    return state
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,20 @@
 package com.pexip.sdk.sample.alias
 
 import com.pexip.sdk.sample.pinrequirement.PinRequirementProps
+import com.squareup.workflow1.Worker
+import com.squareup.workflow1.asWorker
+import com.squareup.workflow1.ui.TextController
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 data class AliasState(
-    val conferenceAlias: String = "",
-    val host: String = "",
+    val alias: TextController = TextController(),
+    val host: TextController = TextController(),
+    val blankAlias: Boolean = alias.textValue.isBlank(),
+    val blankAliasWorker: Worker<Boolean> = alias.onTextChanged
+        .map(String::isBlank)
+        .distinctUntilChanged()
+        .asWorker(),
     val presentationInMain: Boolean = false,
     val pinRequirementProps: PinRequirementProps? = null,
 )

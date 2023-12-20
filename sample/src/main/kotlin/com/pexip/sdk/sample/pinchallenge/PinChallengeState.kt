@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,20 @@
  */
 package com.pexip.sdk.sample.pinchallenge
 
+import com.pexip.sdk.conference.Conference
+import com.squareup.workflow1.Worker
+import com.squareup.workflow1.asWorker
+import com.squareup.workflow1.ui.TextController
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+
 data class PinChallengeState(
-    val pin: String = "",
+    val pin: TextController = TextController(),
+    val blankPin: Boolean = pin.textValue.isBlank(),
+    val blankPinWorker: Worker<Boolean> = pin.onTextChanged
+        .map(String::isBlank)
+        .distinctUntilChanged()
+        .asWorker(),
+    val pinChallengeWorker: Worker<Result<Conference>>? = null,
     val t: Throwable? = null,
-    val requesting: Boolean = false,
-    val pinToSubmit: String? = null,
 )

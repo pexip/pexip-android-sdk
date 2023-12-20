@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 package com.pexip.sdk.sample.alias
 
+import com.squareup.workflow1.ui.TextController
+
 data class AliasRendering(
-    val alias: String,
-    val host: String,
+    val alias: TextController,
+    val host: TextController,
     val presentationInMain: Boolean,
     val resolveEnabled: Boolean,
-    val onAliasChange: (String) -> Unit,
-    val onHostChange: (String) -> Unit,
     val onPresentationInMainChange: (Boolean) -> Unit,
     val onResolveClick: () -> Unit,
     val onBackClick: () -> Unit,

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.pexip.sdk.sample.asMutableState
 
 @Composable
 fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Modifier) {
@@ -60,9 +61,10 @@ fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Mo
                 LaunchedEffect(focusRequester) {
                     focusRequester.requestFocus()
                 }
+                val (pin, onPinChange) = rendering.pin.asMutableState()
                 TextField(
-                    value = rendering.pin,
-                    onValueChange = rendering.onPinChange,
+                    value = pin,
+                    onValueChange = onPinChange,
                     label = {
                         Text(text = "PIN")
                     },

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 package com.pexip.sdk.sample.pinchallenge
 
+import com.squareup.workflow1.ui.TextController
+
 data class PinChallengeRendering(
-    val pin: String,
+    val pin: TextController,
     val error: Boolean,
     val submitEnabled: Boolean,
-    val onPinChange: (String) -> Unit,
     val onSubmitClick: () -> Unit,
     val onBackClick: () -> Unit,
 )

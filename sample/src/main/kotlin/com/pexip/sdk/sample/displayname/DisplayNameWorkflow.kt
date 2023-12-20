@@ -19,6 +19,9 @@ import com.pexip.sdk.sample.send
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.Worker
+import com.squareup.workflow1.action
+import com.squareup.workflow1.runningWorker
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,6 +29,8 @@ import javax.inject.Singleton
 @Singleton
 class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) :
     StatefulWorkflow<Unit, DisplayNameState, DisplayNameOutput, DisplayNameRendering>() {
+
+    private val initialDisplayNameWorker = Worker.from(store.getDisplayName()::first)
 
     override fun initialState(props: Unit, snapshot: Snapshot?): DisplayNameState =
         DisplayNameState()
@@ -37,28 +42,43 @@ class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) 
         renderState: DisplayNameState,
         context: RenderContext,
     ): DisplayNameRendering {
-        context.getDisplayNameSideEffect()
-        context.setDisplayNameSideEffect(renderState.displayNameToSet)
+        context.runningWorker(
+            worker = initialDisplayNameWorker,
+            handler = ::onInitialDisplayNameWorkerOutput,
+        )
+        if (renderState.displayNameWorker != null) {
+            context.runningWorker(
+                worker = renderState.displayNameWorker,
+                handler = ::onSetDisplayNameWorkerOutput,
+            )
+        }
         return DisplayNameRendering(
             displayName = renderState.displayName,
-            onDisplayNameChange = context.send(::OnDisplayNameChange),
-            onNextClick = context.send(::OnNextClick),
-            onBackClick = context.send(::OnBackClick),
+            onNextClick = context.send(::onNextClick),
+            onBackClick = context.send(::onBackClick),
         )
     }
 
-    private fun RenderContext.getDisplayNameSideEffect() = runningSideEffect("getDisplayName") {
-        val displayName = store.getDisplayName().first()
-        val action = OnDisplayNameChange(displayName)
-        actionSink.send(action)
+    private fun onInitialDisplayNameWorkerOutput(displayName: String) =
+        action({ "onInitialDisplayNameWorkerOutput($displayName" }) {
+            state.displayName.textValue = displayName
+        }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun onSetDisplayNameWorkerOutput(unit: Unit) =
+        action({ "onSetDisplayNameWorkerOutput()" }) {
+            setOutput(DisplayNameOutput.Next)
+        }
+
+    private fun onNextClick() = action({ "onNextClick()" }) {
+        val displayName = state.displayName.textValue
+            .trim()
+            .takeIf(String::isNotBlank)
+            ?: return@action
+        state = state.copy(displayNameWorker = Worker.from { store.setDisplayName(displayName) })
     }
 
-    private fun RenderContext.setDisplayNameSideEffect(displayNameToSet: String?) {
-        val displayName = (displayNameToSet?.takeIf { it.isNotBlank() } ?: return).trim()
-        runningSideEffect("setDisplayName($displayName)") {
-            store.setDisplayName(displayName)
-            val action = OnDisplayNameSet()
-            actionSink.send(action)
-        }
+    private fun onBackClick() = action({ "OnBackClick()" }) {
+        setOutput(DisplayNameOutput.Back)
     }
 }

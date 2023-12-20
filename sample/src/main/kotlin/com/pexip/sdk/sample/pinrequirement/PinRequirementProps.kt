@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,4 +15,4 @@
  */
 package com.pexip.sdk.sample.pinrequirement
 
-data class PinRequirementProps(val conferenceAlias: String, val host: String)
+data class PinRequirementProps(val alias: String, val host: String)

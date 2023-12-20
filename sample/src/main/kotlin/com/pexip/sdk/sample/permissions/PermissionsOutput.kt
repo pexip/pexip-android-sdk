@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,11 @@
  */
 package com.pexip.sdk.sample.permissions
 
-sealed class PermissionsOutput {
+sealed interface PermissionsOutput {
 
-    object ApplicationDetailsSettings : PermissionsOutput() {
+    data object ApplicationDetailsSettings : PermissionsOutput
 
-        override fun toString(): String = "ApplicationDetailsSettings"
-    }
+    data object Next : PermissionsOutput
 
-    object Next : PermissionsOutput() {
-
-        override fun toString(): String = "Next"
-    }
-
-    object Back : PermissionsOutput() {
-
-        override fun toString(): String = "Back"
-    }
+    data object Back : PermissionsOutput
 }

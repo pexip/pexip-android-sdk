@@ -20,6 +20,7 @@ import android.media.ToneGenerator
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
 import kotlinx.coroutines.awaitCancellation
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -50,8 +51,32 @@ class DtmfWorkflow @Inject constructor() :
         }
         return DtmfRendering(
             visible = renderProps.visible,
-            onToneClick = context.send(::OnToneClick),
-            onBackClick = context.send(::OnBackClick),
+            onToneClick = context.send(::onToneClick),
+            onBackClick = context.send(::onBackClick),
         )
+    }
+
+    private fun onToneClick(tone: String) = action({ "onToneClick($tone)" }) {
+        val toneType = when (tone) {
+            "0" -> ToneGenerator.TONE_DTMF_0
+            "1" -> ToneGenerator.TONE_DTMF_1
+            "2" -> ToneGenerator.TONE_DTMF_2
+            "3" -> ToneGenerator.TONE_DTMF_3
+            "4" -> ToneGenerator.TONE_DTMF_4
+            "5" -> ToneGenerator.TONE_DTMF_5
+            "6" -> ToneGenerator.TONE_DTMF_6
+            "7" -> ToneGenerator.TONE_DTMF_7
+            "8" -> ToneGenerator.TONE_DTMF_8
+            "9" -> ToneGenerator.TONE_DTMF_9
+            "*" -> ToneGenerator.TONE_DTMF_S
+            "#" -> ToneGenerator.TONE_DTMF_P
+            else -> return@action
+        }
+        state.toneGenerator.startTone(toneType, 250)
+        setOutput(DtmfOutput.Tone(tone))
+    }
+
+    private fun onBackClick() = action({ "onBackClick()" }) {
+        setOutput(DtmfOutput.Back)
     }
 }

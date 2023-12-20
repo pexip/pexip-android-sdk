@@ -17,12 +17,12 @@ package com.pexip.sdk.sample.pinrequirement
 
 import com.pexip.sdk.api.infinity.InfinityService
 
-sealed class PinRequirementState {
+sealed interface PinRequirementState {
 
-    object ResolvingNode : PinRequirementState()
+    data object ResolvingNode : PinRequirementState
 
     data class ResolvingPinRequirement(val builder: InfinityService.RequestBuilder) :
-        PinRequirementState()
+        PinRequirementState
 
-    data class Failure(val t: Throwable) : PinRequirementState()
+    data class Failure(val t: Throwable) : PinRequirementState
 }

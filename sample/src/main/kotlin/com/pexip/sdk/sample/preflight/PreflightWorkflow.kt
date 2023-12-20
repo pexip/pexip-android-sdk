@@ -15,15 +15,19 @@
  */
 package com.pexip.sdk.sample.preflight
 
+import com.pexip.sdk.sample.alias.AliasOutput
 import com.pexip.sdk.sample.alias.AliasWorkflow
+import com.pexip.sdk.sample.displayname.DisplayNameOutput
 import com.pexip.sdk.sample.displayname.DisplayNameWorkflow
 import com.pexip.sdk.sample.media.LocalMediaTrackProps
 import com.pexip.sdk.sample.media.LocalMediaTrackWorkflow
+import com.pexip.sdk.sample.pinchallenge.PinChallengeOutput
 import com.pexip.sdk.sample.pinchallenge.PinChallengeProps
 import com.pexip.sdk.sample.pinchallenge.PinChallengeWorkflow
 import com.pexip.sdk.sample.send
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
+import com.squareup.workflow1.action
 import com.squareup.workflow1.renderChild
 import javax.inject.Inject
 
@@ -47,11 +51,11 @@ class PreflightWorkflow @Inject constructor(
         childRendering = when (val destination = renderState.destination) {
             is PreflightDestination.DisplayName -> context.renderChild(
                 child = displayNameWorkflow,
-                handler = ::OnDisplayNameOutput,
+                handler = ::onDisplayNameOutput,
             )
             is PreflightDestination.Alias -> context.renderChild(
                 child = aliasWorkflow,
-                handler = ::OnAliasOutput,
+                handler = ::onAliasOutput,
             )
             is PreflightDestination.PinChallenge -> context.renderChild(
                 child = pinChallengeWorkflow,
@@ -59,14 +63,14 @@ class PreflightWorkflow @Inject constructor(
                     step = destination.step,
                     required = destination.required,
                 ),
-                handler = ::OnPinChallengeOutput,
+                handler = ::onPinChallengeOutput,
             )
             null -> null
         },
         cameraVideoTrack = renderProps.cameraVideoTrack,
         callEnabled = with(renderProps) { cameraVideoTrack != null && microphoneAudioTrack != null },
-        onCallClick = context.send(::OnCallClick),
-        onCreateCameraVideoTrackClick = context.send(::OnCreateCameraVideoTrackClick),
+        onCallClick = context.send(::onCallClick),
+        onCreateCameraVideoTrackClick = context.send(::onCreateCameraVideoTrackClick),
         cameraVideoTrackRendering = when (renderProps.cameraVideoTrack) {
             null -> null
             else -> context.renderChild(
@@ -83,6 +87,63 @@ class PreflightWorkflow @Inject constructor(
                 props = LocalMediaTrackProps(renderProps.microphoneAudioTrack),
             )
         },
-        onBackClick = context.send(::OnBackClick),
+        onBackClick = context.send(::onBackClick),
     )
+
+    private fun onCallClick() = action({ "onCallClick()" }) {
+        state = PreflightState(PreflightDestination.DisplayName)
+    }
+
+    private fun onCreateCameraVideoTrackClick() = action({ "onCreateCameraVideoTrackClick()" }) {
+        setOutput(PreflightOutput.CreateCameraVideoTrack)
+    }
+
+    private fun onBackClick() = action({ "onBackClick()" }) {
+        setOutput(PreflightOutput.Back)
+    }
+
+    private fun onDisplayNameOutput(output: DisplayNameOutput) =
+        action({ "onDisplayNameOutput($output)" }) {
+            val destination = when (output) {
+                is DisplayNameOutput.Next -> PreflightDestination.Alias
+                is DisplayNameOutput.Back -> null
+            }
+            state = PreflightState(destination)
+        }
+
+    private fun onAliasOutput(output: AliasOutput) = action({ "onAliasOutput($output)" }) {
+        when (output) {
+            is AliasOutput.Conference -> {
+                val o = PreflightOutput.Conference(
+                    conference = output.conference,
+                    presentationInMain = output.presentationInMain,
+                )
+                setOutput(o)
+            }
+            is AliasOutput.PinChallenge -> state = PreflightState(
+                destination = PreflightDestination.PinChallenge(
+                    step = output.step,
+                    presentationInMain = output.presentationInMain,
+                    required = output.required,
+                ),
+            )
+            is AliasOutput.Toast -> setOutput(PreflightOutput.Toast(output.message))
+            is AliasOutput.Back -> state = PreflightState(null)
+        }
+    }
+
+    private fun onPinChallengeOutput(output: PinChallengeOutput) =
+        action({ "onPinChallengeOutput($output)" }) {
+            val s = checkNotNull(state.destination as? PreflightDestination.PinChallenge)
+            when (output) {
+                is PinChallengeOutput.Conference -> {
+                    val o = PreflightOutput.Conference(
+                        conference = output.conference,
+                        presentationInMain = s.presentationInMain,
+                    )
+                    setOutput(o)
+                }
+                is PinChallengeOutput.Back -> state = PreflightState(null)
+            }
+        }
 }
