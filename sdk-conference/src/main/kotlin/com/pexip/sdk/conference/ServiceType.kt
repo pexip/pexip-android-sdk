@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.api.infinity
+package com.pexip.sdk.conference
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
+/**
+ * A service type.
+ */
 public enum class ServiceType {
 
-    @SerialName("connecting")
+    /**
+     * If a dial-out participant that has not answered.
+     */
     CONNECTING,
 
-    @SerialName("waiting_room")
+    /**
+     * If waiting to be allowed to join a locked conference.
+     */
     WAITING_ROOM,
 
-    @SerialName("ivr")
+    /**
+     * If on the PIN entry screen.
+     */
     IVR,
 
-    @SerialName("conference")
+    /**
+     * If in a VMR.
+     */
     CONFERENCE,
 
-    @SerialName("lecture")
+    /**
+     * If in a Virtual Auditorium.
+     */
     LECTURE,
 
-    @SerialName("gateway")
+    /**
+     * If in a gateway call.
+     */
     GATEWAY,
 
-    @SerialName("test_call")
+    /**
+     * If in a test call.
+     */
     TEST_CALL,
 
+    /**
+     * An unknown service type.
+     *
+     * This is provided for forward-compatibility; if you encounter this value consider updating the
+     * version of the SDK.
+     */
     UNKNOWN,
 }

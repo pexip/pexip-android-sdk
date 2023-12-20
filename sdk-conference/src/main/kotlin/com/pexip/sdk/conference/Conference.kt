@@ -23,6 +23,7 @@ import com.pexip.sdk.media.MediaConnectionSignaling
  *
  * @property name a display name of this [Conference]
  * @property theme an instance of [Theme] attached to this [Conference]
+ * @property roster an instance of [Roster] attached to this [Conference]
  * @property referer an instance of [Referer] attached to this [Conference]
  * @property messenger an instance of [Messenger] attached to this [Conference]
  * @property signaling an instance of [MediaConnectionSignaling] to be used with [MediaConnection]
@@ -32,6 +33,8 @@ public interface Conference {
     public val name: String
 
     public val theme: Theme
+
+    public val roster: Roster
 
     public val referer: Referer
 

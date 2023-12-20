@@ -16,6 +16,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `MediaConnection.secureCheckCode` that can be used to verify whether a direct media connection is
   secure
 - `MediaConnectionConfig.continualGathering` to tweak ICE gathering policy
+- `Roster` to provide a list of participants
 
 ### Changed
 
