@@ -20,6 +20,7 @@ import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.InvalidTokenException
+import com.pexip.sdk.api.infinity.Layout
 import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
@@ -129,6 +130,24 @@ internal class ConferenceStepImpl(
     override fun message(request: MessageRequest, token: Token): Call<Boolean> =
         message(request, token.token)
 
+    override fun availableLayouts(token: String): Call<Set<Layout>> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .get()
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("available_layouts")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseAvailableLayouts,
+        )
+    }
+
+    override fun availableLayouts(token: Token): Call<Set<Layout>> = availableLayouts(token.token)
+
     override fun theme(token: String): Call<Map<String, SplashScreenResponse>> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -218,6 +237,13 @@ internal class ConferenceStepImpl(
 
     private fun parseMessage(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseAvailableLayouts(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(AvailableLayoutsSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
