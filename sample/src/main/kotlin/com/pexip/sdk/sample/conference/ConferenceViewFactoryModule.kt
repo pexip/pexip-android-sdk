@@ -31,16 +31,8 @@ object ConferenceViewFactoryModule {
     @Provides
     @Singleton
     @IntoSet
-    fun provideConferenceCallViewFactory(): ViewFactory<*> =
-        composeViewFactory<ConferenceCallRendering> { rendering, environment ->
-            ConferenceCallScreen(rendering, environment)
-        }
-
-    @Provides
-    @Singleton
-    @IntoSet
-    fun provideChatViewFactory(): ViewFactory<*> =
-        composeViewFactory<ChatRendering> { rendering, environment ->
-            ChatScreen(rendering, environment)
+    fun provideConferenceViewFactory(): ViewFactory<*> =
+        composeViewFactory<ConferenceRendering> { rendering, environment ->
+            ConferenceScreen(rendering, environment)
         }
 }

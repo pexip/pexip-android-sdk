@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.composer
+package com.pexip.sdk.sample.chat
 
-import com.squareup.workflow1.ui.TextController
+sealed interface ChatOutput {
 
-@JvmInline
-value class ComposerState(val message: TextController = TextController())
+    data object Back : ChatOutput
+}

@@ -16,12 +16,10 @@
 package com.pexip.sdk.sample.conference
 
 import android.content.Intent
-import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.VideoTrack
-import kotlinx.coroutines.flow.MutableSharedFlow
 
 data class ConferenceState(
     val connection: MediaConnection,
@@ -36,7 +34,5 @@ data class ConferenceState(
     val bandwidthVisible: Boolean = false,
     val dtmfVisible: Boolean = false,
     val showingChat: Boolean = false,
-    val messages: List<Message> = emptyList(),
-    val message: MutableSharedFlow<String> = MutableSharedFlow(extraBufferCapacity = 1),
     val aspectRatio: Float = Float.NaN,
 )
