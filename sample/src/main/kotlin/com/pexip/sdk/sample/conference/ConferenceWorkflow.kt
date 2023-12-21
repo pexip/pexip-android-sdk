@@ -25,7 +25,6 @@ import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
-import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
@@ -49,8 +48,9 @@ import com.pexip.sdk.sample.bandwidth.BandwidthOutput
 import com.pexip.sdk.sample.bandwidth.BandwidthProps
 import com.pexip.sdk.sample.bandwidth.BandwidthWorkflow
 import com.pexip.sdk.sample.bandwidth.bitrate
-import com.pexip.sdk.sample.composer.ComposerOutput
-import com.pexip.sdk.sample.composer.ComposerWorkflow
+import com.pexip.sdk.sample.chat.ChatOutput
+import com.pexip.sdk.sample.chat.ChatProps
+import com.pexip.sdk.sample.chat.ChatWorkflow
 import com.pexip.sdk.sample.dtmf.DtmfOutput
 import com.pexip.sdk.sample.dtmf.DtmfProps
 import com.pexip.sdk.sample.dtmf.DtmfWorkflow
@@ -62,7 +62,6 @@ import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
 import com.squareup.workflow1.renderChild
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -70,7 +69,6 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import javax.inject.Inject
@@ -83,10 +81,10 @@ class ConferenceWorkflow @Inject constructor(
     private val mediaProjectionVideoTrackFactory: MediaProjectionVideoTrackFactory,
     private val audioDeviceWorkflow: AudioDeviceWorkflow,
     private val bandwidthWorkflow: BandwidthWorkflow,
+    private val chatWorkflow: ChatWorkflow,
     private val dtmfWorkflow: DtmfWorkflow,
-    private val composerWorkflow: ComposerWorkflow,
     private val localMediaTrackWorkflow: LocalMediaTrackWorkflow,
-) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, ConferenceRendering>() {
+) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, Any>() {
 
     private val googleStunUrls = listOf(
         "stun:stun.l.google.com:19302",
@@ -120,11 +118,16 @@ class ConferenceWorkflow @Inject constructor(
         renderProps: ConferenceProps,
         renderState: ConferenceState,
         context: RenderContext,
-    ): ConferenceRendering {
+    ): Any {
         val audioDeviceRendering = context.renderChild(
             child = audioDeviceWorkflow,
             props = AudioDeviceProps(renderState.audioDevicesVisible),
             handler = ::onAudioDeviceOutput,
+        )
+        val chatRendering = context.renderChild(
+            child = chatWorkflow,
+            props = ChatProps(renderProps.conference.messenger),
+            handler = ::onChatOutput,
         )
         context.bindConferenceServiceSideEffect()
         context.leaveSideEffect(renderProps, renderState)
@@ -132,20 +135,12 @@ class ConferenceWorkflow @Inject constructor(
         context.screenCapturingSideEffect(renderState.screenCaptureVideoTrack)
         context.screenCaptureVideoTrackSideEffect(renderState.screenCaptureData)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
-        context.messageSideEffect(renderProps, renderState)
         context.conferenceEventsSideEffect(renderProps)
         context.presentationRemoteVideoTrackSideEffect(renderState.connection)
         context.aspectRatioSideEffect(renderState)
         return when (renderState.showingChat) {
-            true -> ChatRendering(
-                messages = renderState.messages,
-                composerRendering = context.renderChild(
-                    child = composerWorkflow,
-                    handler = ::onComposerOutput,
-                ),
-                onBackClick = context.send(::onBackClick),
-            )
-            else -> ConferenceCallRendering(
+            true -> chatRendering
+            else -> ConferenceRendering(
                 splashScreen = renderState.splashScreen,
                 cameraVideoTrack = renderProps.cameraVideoTrack,
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
@@ -279,29 +274,6 @@ class ConferenceWorkflow @Inject constructor(
                 .collectLatest(actionSink::send)
         }
 
-    private fun RenderContext.messageSideEffect(
-        renderProps: ConferenceProps,
-        renderState: ConferenceState,
-    ) {
-        val messenger = renderProps.conference.messenger
-        val message = renderState.message
-        runningSideEffect("messageSideEffect($messenger, $message)") {
-            val flow = merge(
-                messenger.message,
-                message.mapNotNull {
-                    try {
-                        messenger.send(type = "text/plain", payload = it)
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (t: Throwable) {
-                        null
-                    }
-                },
-            )
-            flow.map(::onMessage).collect(actionSink::send)
-        }
-    }
-
     private fun RenderContext.conferenceEventsSideEffect(renderProps: ConferenceProps) {
         val conference = renderProps.conference
         runningSideEffect("conferenceEventsSideEffect($conference)") {
@@ -414,10 +386,6 @@ class ConferenceWorkflow @Inject constructor(
             state = state.copy(screenCapturing = capturing)
         }
 
-    private fun onMessage(message: Message) = action({ "onMessage($message)" }) {
-        state = state.copy(messages = state.messages + message)
-    }
-
     private fun onPresentationStartConferenceEvent(event: PresentationStartConferenceEvent) =
         action({ "onPresentationStartConferenceEvent($event)" }) {
             state.connection.setPresentationVideoTrack(null)
@@ -463,9 +431,9 @@ class ConferenceWorkflow @Inject constructor(
             }
         }
 
-    private fun onComposerOutput(output: ComposerOutput) = action({ "onComposerOutput($output)" }) {
+    private fun onChatOutput(output: ChatOutput) = action({ "onChatOutput($output)" }) {
         when (output) {
-            is ComposerOutput.Submit -> state.message.tryEmit(output.message)
+            is ChatOutput.Back -> state = state.copy(showingChat = false)
         }
     }
 

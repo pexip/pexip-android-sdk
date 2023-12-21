@@ -83,8 +83,8 @@ import com.squareup.workflow1.ui.compose.WorkflowRendering
 import org.webrtc.RendererCommon
 
 @Composable
-fun ConferenceCallScreen(
-    rendering: ConferenceCallRendering,
+fun ConferenceScreen(
+    rendering: ConferenceRendering,
     environment: ViewEnvironment,
     modifier: Modifier = Modifier,
 ) {
@@ -213,10 +213,7 @@ fun ConferenceCallScreen(
 }
 
 @Composable
-private fun MainVideoTrackRenderer(
-    rendering: ConferenceCallRendering,
-    modifier: Modifier = Modifier,
-) {
+private fun MainVideoTrackRenderer(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
     if (rendering.mainRemoteVideoTrack != null) {
         BoxWithConstraints(contentAlignment = Alignment.Center, modifier = modifier) {
             val viewportAspectRatio = remember(maxWidth, maxHeight) { maxWidth / maxHeight }
@@ -235,7 +232,7 @@ private fun MainVideoTrackRenderer(
 
 @Composable
 private fun PresentationVideoTrackRenderer(
-    rendering: ConferenceCallRendering,
+    rendering: ConferenceRendering,
     modifier: Modifier = Modifier,
 ) {
     if (rendering.presentationRemoteVideoTrack != null) {
@@ -248,7 +245,7 @@ private fun PresentationVideoTrackRenderer(
 }
 
 @Composable
-private fun EndCallIconButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+private fun EndCallIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
     IconButton(
         onClick = rendering.onBackClick,
         colors = IconButtonDefaults.iconButtonColors(
@@ -262,10 +259,7 @@ private fun EndCallIconButton(rendering: ConferenceCallRendering, modifier: Modi
 }
 
 @Composable
-private fun AudioDevicesIconButton(
-    rendering: ConferenceCallRendering,
-    modifier: Modifier = Modifier,
-) {
+private fun AudioDevicesIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
     IconToggleButton(
         checked = rendering.audioDeviceRendering.visible,
         onCheckedChange = rendering.onAudioDevicesChange,
@@ -278,10 +272,7 @@ private fun AudioDevicesIconButton(
 }
 
 @Composable
-private fun BandwidthIconButton(
-    rendering: ConferenceCallRendering,
-    modifier: Modifier = Modifier,
-) {
+private fun BandwidthIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
     IconToggleButton(
         checked = rendering.bandwidthRendering.visible,
         onCheckedChange = rendering.onBandwidthChange,
@@ -290,16 +281,12 @@ private fun BandwidthIconButton(
         Icon(
             imageVector = Icons.Rounded.Speed,
             contentDescription = null,
-            modifier = modifier,
         )
     }
 }
 
 @Composable
-private fun ScreenShareIconButton(
-    rendering: ConferenceCallRendering,
-    modifier: Modifier = Modifier,
-) {
+private fun ScreenShareIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
     val manager = rememberMediaProjectionManager()
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -330,7 +317,7 @@ private fun ScreenShareIconButton(
 }
 
 @Composable
-private fun MoreIconButton(rendering: ConferenceCallRendering, modifier: Modifier = Modifier) {
+private fun MoreIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val onDismissRequest = { expanded = false }
     Box(modifier = modifier) {
@@ -346,7 +333,7 @@ private fun MoreIconButton(rendering: ConferenceCallRendering, modifier: Modifie
 
 @Composable
 private fun DtmfItem(
-    rendering: ConferenceCallRendering,
+    rendering: ConferenceRendering,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -367,7 +354,7 @@ private fun DtmfItem(
 
 @Composable
 private fun ConferenceEventsItem(
-    rendering: ConferenceCallRendering,
+    rendering: ConferenceRendering,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.pinchallenge
+package com.pexip.sdk.sample.chat
 
-import com.pexip.sdk.conference.Conference
+import com.pexip.sdk.conference.Message
 import com.pexip.sdk.sample.asWorker
 import com.squareup.workflow1.Worker
 import com.squareup.workflow1.transform
@@ -23,12 +23,13 @@ import com.squareup.workflow1.ui.TextController
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-data class PinChallengeState(
-    val pin: TextController = TextController(),
-    val blankPin: Boolean = pin.textValue.isBlank(),
-    val blankPinWorker: Worker<Boolean> = pin.asWorker().transform {
+data class ChatState(
+    val messageWorker: Worker<Message>,
+    val payload: TextController = TextController(),
+    val messages: List<Message> = emptyList(),
+    val sendMessageWorker: Worker<Message?>? = null,
+    val blankPayload: Boolean = payload.textValue.isBlank(),
+    val blankPayloadWorker: Worker<Boolean> = payload.asWorker().transform {
         it.map(String::isBlank).distinctUntilChanged()
     },
-    val pinChallengeWorker: Worker<Result<Conference>>? = null,
-    val t: Throwable? = null,
 )

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.composer
+package com.pexip.sdk.sample.chat
 
 import com.squareup.workflow1.ui.ViewFactory
 import com.squareup.workflow1.ui.compose.composeViewFactory
@@ -26,13 +26,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ComposerViewFactoryModule {
+object ChatViewFactoryModule {
 
     @Provides
     @Singleton
     @IntoSet
-    fun provideComposerViewFactory(): ViewFactory<*> =
-        composeViewFactory<ComposerRendering> { rendering, _ ->
-            Composer(rendering)
-        }
+    fun provideChatViewFactory(): ViewFactory<*> =
+        composeViewFactory<ChatRendering> { rendering, _ -> ChatScreen(rendering) }
 }

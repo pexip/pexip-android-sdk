@@ -16,20 +16,14 @@
 package com.pexip.sdk.sample.conference
 
 import android.content.Intent
-import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.sample.audio.AudioDeviceRendering
 import com.pexip.sdk.sample.bandwidth.BandwidthRendering
-import com.pexip.sdk.sample.composer.ComposerRendering
 import com.pexip.sdk.sample.dtmf.DtmfRendering
 import com.pexip.sdk.sample.media.LocalMediaTrackRendering
 
-sealed interface ConferenceRendering {
-    val onBackClick: () -> Unit
-}
-
-data class ConferenceCallRendering(
+data class ConferenceRendering(
     val splashScreen: SplashScreen?,
     val cameraVideoTrack: VideoTrack?,
     val mainRemoteVideoTrack: VideoTrack?,
@@ -47,11 +41,5 @@ data class ConferenceCallRendering(
     val onDtmfChange: (Boolean) -> Unit,
     val onStopScreenCapture: () -> Unit,
     val onChatClick: () -> Unit,
-    override val onBackClick: () -> Unit,
-) : ConferenceRendering
-
-data class ChatRendering(
-    val messages: List<Message>,
-    val composerRendering: ComposerRendering,
-    override val onBackClick: () -> Unit,
-) : ConferenceRendering
+    val onBackClick: () -> Unit,
+)

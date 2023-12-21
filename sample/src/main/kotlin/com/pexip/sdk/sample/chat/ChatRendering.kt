@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2023 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.composer
+package com.pexip.sdk.sample.chat
 
-sealed interface ComposerOutput {
+import com.pexip.sdk.conference.Message
+import com.squareup.workflow1.ui.TextController
 
-    @JvmInline
-    value class Submit(val message: String) : ComposerOutput
-}
+data class ChatRendering(
+    val payload: TextController,
+    val messages: List<Message>,
+    val submitEnabled: Boolean,
+    val onSubmitClick: () -> Unit,
+    val onBackClick: () -> Unit,
+)
