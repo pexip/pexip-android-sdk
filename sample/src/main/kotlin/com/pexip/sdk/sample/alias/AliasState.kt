@@ -15,9 +15,10 @@
  */
 package com.pexip.sdk.sample.alias
 
+import com.pexip.sdk.sample.asWorker
 import com.pexip.sdk.sample.pinrequirement.PinRequirementProps
 import com.squareup.workflow1.Worker
-import com.squareup.workflow1.asWorker
+import com.squareup.workflow1.transform
 import com.squareup.workflow1.ui.TextController
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -26,10 +27,9 @@ data class AliasState(
     val alias: TextController = TextController(),
     val host: TextController = TextController(),
     val blankAlias: Boolean = alias.textValue.isBlank(),
-    val blankAliasWorker: Worker<Boolean> = alias.onTextChanged
-        .map(String::isBlank)
-        .distinctUntilChanged()
-        .asWorker(),
+    val blankAliasWorker: Worker<Boolean> = alias.asWorker().transform {
+        it.map(String::isBlank).distinctUntilChanged()
+    },
     val presentationInMain: Boolean = false,
     val pinRequirementProps: PinRequirementProps? = null,
 )

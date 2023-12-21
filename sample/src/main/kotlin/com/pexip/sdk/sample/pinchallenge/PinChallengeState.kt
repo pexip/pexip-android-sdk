@@ -16,8 +16,9 @@
 package com.pexip.sdk.sample.pinchallenge
 
 import com.pexip.sdk.conference.Conference
+import com.pexip.sdk.sample.asWorker
 import com.squareup.workflow1.Worker
-import com.squareup.workflow1.asWorker
+import com.squareup.workflow1.transform
 import com.squareup.workflow1.ui.TextController
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -25,10 +26,9 @@ import kotlinx.coroutines.flow.map
 data class PinChallengeState(
     val pin: TextController = TextController(),
     val blankPin: Boolean = pin.textValue.isBlank(),
-    val blankPinWorker: Worker<Boolean> = pin.onTextChanged
-        .map(String::isBlank)
-        .distinctUntilChanged()
-        .asWorker(),
+    val blankPinWorker: Worker<Boolean> = pin.asWorker().transform {
+        it.map(String::isBlank).distinctUntilChanged()
+    },
     val pinChallengeWorker: Worker<Result<Conference>>? = null,
     val t: Throwable? = null,
 )

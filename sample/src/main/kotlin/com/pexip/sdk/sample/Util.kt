@@ -28,8 +28,10 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.core.content.ContextCompat
 import com.squareup.workflow1.BaseRenderContext
+import com.squareup.workflow1.Worker
 import com.squareup.workflow1.WorkflowAction
 import com.squareup.workflow1.ui.TextController
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 fun <Props, State, Output> BaseRenderContext<Props, State, Output>.send(action: () -> WorkflowAction<Props, State, Output>): () -> Unit =
@@ -56,4 +58,14 @@ fun TextController.asMutableState(): MutableState<TextFieldValue> {
         snapshotFlow { state.value }.collect { textValue = it.text }
     }
     return state
+}
+
+fun TextController.asWorker(): Worker<String> = TextControllerWorker(this)
+
+private class TextControllerWorker(private val textController: TextController) : Worker<String> {
+
+    override fun run(): Flow<String> = textController.onTextChanged
+
+    override fun doesSameWorkAs(otherWorker: Worker<*>): Boolean =
+        otherWorker is TextControllerWorker && textController == otherWorker.textController
 }

@@ -23,7 +23,6 @@ import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.Worker
 import com.squareup.workflow1.action
-import com.squareup.workflow1.asWorker
 import com.squareup.workflow1.runningWorker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -35,7 +34,7 @@ class ChatWorkflow @Inject constructor() :
     StatefulWorkflow<ChatProps, ChatState, ChatOutput, ChatRendering>() {
 
     override fun initialState(props: ChatProps, snapshot: Snapshot?): ChatState =
-        ChatState(messageWorker = props.messenger.message.asWorker())
+        ChatState(messageWorker = MessageWorker(props.messenger))
 
     override fun snapshotState(state: ChatState): Snapshot? = null
 
@@ -104,6 +103,14 @@ class ChatWorkflow @Inject constructor() :
 
     private fun onBackClick() = action({ "onBackClick()" }) {
         setOutput(ChatOutput.Back)
+    }
+
+    private class MessageWorker(private val messenger: Messenger) : Worker<Message> {
+
+        override fun run(): Flow<Message> = messenger.message
+
+        override fun doesSameWorkAs(otherWorker: Worker<*>): Boolean =
+            otherWorker is MessageWorker && messenger == otherWorker.messenger
     }
 
     private class SendMessageWorker(

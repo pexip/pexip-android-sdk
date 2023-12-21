@@ -16,8 +16,9 @@
 package com.pexip.sdk.sample.chat
 
 import com.pexip.sdk.conference.Message
+import com.pexip.sdk.sample.asWorker
 import com.squareup.workflow1.Worker
-import com.squareup.workflow1.asWorker
+import com.squareup.workflow1.transform
 import com.squareup.workflow1.ui.TextController
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -28,8 +29,7 @@ data class ChatState(
     val messages: List<Message> = emptyList(),
     val sendMessageWorker: Worker<Message?>? = null,
     val blankPayload: Boolean = payload.textValue.isBlank(),
-    val blankPayloadWorker: Worker<Boolean> = payload.onTextChanged
-        .map(String::isBlank)
-        .distinctUntilChanged()
-        .asWorker(),
+    val blankPayloadWorker: Worker<Boolean> = payload.asWorker().transform {
+        it.map(String::isBlank).distinctUntilChanged()
+    },
 )
