@@ -4,12 +4,10 @@ $dokka.linkExtension:html
 module:sdk-api
 com.pexip.sdk.api
 com.pexip.sdk.api.coroutines
-module:sdk-api-infinity
 com.pexip.sdk.api.infinity
 module:sdk-conference
 com.pexip.sdk.conference
 com.pexip.sdk.conference.coroutines
-module:sdk-conference-infinity
 com.pexip.sdk.conference.infinity
 module:sdk-media
 com.pexip.sdk.media
@@ -23,5 +21,4 @@ com.pexip.sdk.media.webrtc.compose
 module:sdk-registration
 com.pexip.sdk.registration
 com.pexip.sdk.registration.coroutines
-module:sdk-registration-infinity
 com.pexip.sdk.registration.infinity

@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>com.pexip.sdk.conference</title>
-<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
-<link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../styles/main.css" rel="Stylesheet">
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
@@ -29,26 +32,32 @@
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../index.html">
-<span>pexip-android-sdk</span>            </a>    </div>
-    <div>0.13.1
-    </div>
-    <div class="pull-right d-flex">
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            pexip-android-sdk
+                    </a>            </div>
+            <div class="library-version">0.14.0
+            </div>
+        </div>
         <div class="filter-section" id="filter-section">
                 <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-conference:dokkaHtmlPartial/main">jvm</button>
         </div>
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-    <div id="main">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
 <div class="main-content" data-page-type="package" id="content" pageids="sdk-conference::com.pexip.sdk.conference////PointingToDeclaration//380217753">
   <div class="breadcrumbs"><a href="../index.html">sdk-conference</a><span class="delimiter">/</span><span class="current">com.pexip.sdk.conference</span></div>
   <div class="cover ">
@@ -115,6 +124,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-disconnect-conference-event/index.html">DisconnectConferenceEvent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>at<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>reason<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="-conference-event/index.html">ConferenceEvent</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1944875171%2FClasslikes%2F380217753" anchor-label="Element" id="1944875171%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-element/index.html"><span><span>Element</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1944875171%2FClasslikes%2F380217753"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-element/index.html">Element</a></div><div class="brief "><p class="paragraph">A drawable element of a <a href="-splash-screen/index.html">SplashScreen</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -209,6 +233,21 @@
               </div>
             </div>
           </div>
+<a data-name="860607820%2FClasslikes%2F380217753" anchor-label="Participant" id="860607820%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-participant/index.html"><span><span>Participant</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="860607820%2FClasslikes%2F380217753"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-participant/index.html">Participant</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>id<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>role<span class="token operator">: </span><a href="-role/index.html">Role</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>serviceType<span class="token operator">: </span><a href="-service-type/index.html">ServiceType</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>startTime<span class="token operator">: </span><span data-unresolved-link="kotlinx.datetime/Instant///PointingToDeclaration/">Instant</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>buzzTime<span class="token operator">: </span><span data-unresolved-link="kotlinx.datetime/Instant///PointingToDeclaration/">Instant</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>spotlightTime<span class="token operator">: </span><span data-unresolved-link="kotlinx.datetime/Instant///PointingToDeclaration/">Instant</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>displayName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>overlayText<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>audioMuted<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>videoMuted<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>presenting<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>muteSupported<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>transferSupported<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>disconnectSupported<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A conference participant.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="375320685%2FClasslikes%2F380217753" anchor-label="PresentationStartConferenceEvent" id="375320685%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
           <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
@@ -254,6 +293,66 @@
               </div>
             </div>
           </div>
+<a data-name="-1254039662%2FClasslikes%2F380217753" anchor-label="Referer" id="-1254039662%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-referer/index.html"><span><span>Referer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1254039662%2FClasslikes%2F380217753"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-referer/index.html">Referer</a></div><div class="brief "><p class="paragraph">Handles call transfer.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-406722636%2FClasslikes%2F380217753" anchor-label="ReferException" id="-406722636%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-refer-exception/index.html"><span>Refer</span><wbr><span><span>Exception</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-406722636%2FClasslikes%2F380217753"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-refer-exception/index.html">ReferException</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cause<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html">Throwable</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html">RuntimeException</a></div><div class="brief "><p class="paragraph">Thrown to indicate that call transfer has failed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1497691981%2FClasslikes%2F380217753" anchor-label="Role" id="1497691981%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-role/index.html"><span><span>Role</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1497691981%2FClasslikes%2F380217753"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-role/index.html">Role</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-role/index.html">Role</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">A conference role that affects privileges that a <a href="-participant/index.html">Participant</a> has</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1705873832%2FClasslikes%2F380217753" anchor-label="Roster" id="-1705873832%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-roster/index.html"><span><span>Roster</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1705873832%2FClasslikes%2F380217753"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-roster/index.html">Roster</a></div><div class="brief "><p class="paragraph">Handles conference participants.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="1595227574%2FClasslikes%2F380217753" anchor-label="SendCallback" id="1595227574%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
           <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
@@ -269,16 +368,62 @@
               </div>
             </div>
           </div>
+<a data-name="-1976877968%2FClasslikes%2F380217753" anchor-label="ServiceType" id="-1976877968%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-service-type/index.html"><span>Service</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1976877968%2FClasslikes%2F380217753"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-service-type/index.html">ServiceType</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-service-type/index.html">ServiceType</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">A service type.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-366754128%2FClasslikes%2F380217753" anchor-label="SplashScreen" id="-366754128%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-splash-screen/index.html"><span>Splash</span><wbr><span><span>Screen</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-366754128%2FClasslikes%2F380217753"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-splash-screen/index.html">SplashScreen</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>elements<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-element/index.html">Element</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>backgroundUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A splash screen that should be rendered to the user whenever available.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-979563018%2FClasslikes%2F380217753" anchor-label="Theme" id="-979563018%2FClasslikes%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-theme/index.html"><span><span>Theme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-979563018%2FClasslikes%2F380217753"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-theme/index.html">Theme</a></div><div class="brief "><p class="paragraph">Handles theme-related functionality of the <a href="-conference/index.html">Conference</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2023 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2024 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>
 
