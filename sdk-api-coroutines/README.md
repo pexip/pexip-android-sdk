@@ -8,6 +8,6 @@ Coroutines support for sdk-api.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-api-coroutines:0.13.1")
+    implementation("com.pexip.sdk:sdk-api-coroutines:0.14.0")
 }
 ```
