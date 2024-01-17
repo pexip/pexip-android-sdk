@@ -8,6 +8,6 @@ Infinity-based implementation of sdk-registration.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-registration-infinity:0.13.1")
+    implementation("com.pexip.sdk:sdk-registration-infinity:0.14.0")
 }
 ```

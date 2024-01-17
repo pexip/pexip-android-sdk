@@ -7,8 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.14.0] - 2023-01-18
+
 ### Added
 
+- Direct media support
+- Preferred aspect ratio support
 - `InfinityService.RequestBuilder.infinityService`,`InfinityService.ConferenceStep.requestBuilder`,
   `InfinityService.RegistrationStep.requestBuilder`, `InfinityService.ParticipantStep.conferenceStep`,
   `InfinityService.CallStep.participantStep` that give access to previous steps
@@ -17,10 +21,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   secure
 - `MediaConnectionConfig.continualGathering` to tweak ICE gathering policy
 - `Roster` to provide a list of participants
+- `Referer` to improve call transfer experience
+- `VideoTrackRenderer` can notify you when the first frame renders, as well as when frame resolution
+  changes
 
 ### Changed
 
-- Kotlin to 1.9.10
+- Kotlin to 1.9.22
+- WebRTC to M119
 - Merged all `-infinity` modules with their respective bases
 - Various deprecated methods `DeprecationLevel` to `DeprecationLevel.ERROR`
 
@@ -292,7 +300,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.13.1...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.14.0...HEAD
+[0.14.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.14.0
 [0.13.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.13.1
 [0.13.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.13.0
 [0.12.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.12.0
