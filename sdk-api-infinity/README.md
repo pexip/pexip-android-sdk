@@ -8,6 +8,6 @@ A fluent wrapper for Pexip Infinity Client REST API.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-api-infinity:0.14.0")
+    implementation("com.pexip.sdk:sdk-api-infinity:0.14.1")
 }
 ```

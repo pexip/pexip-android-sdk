@@ -8,6 +8,6 @@ Pexip Infinity SDK
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-infinity:0.14.0")
+    implementation("com.pexip.sdk:sdk-infinity:0.14.1")
 }
 ```

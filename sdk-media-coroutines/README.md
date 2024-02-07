@@ -8,6 +8,6 @@ Coroutines support for sdk-media.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-media-coroutines:0.14.0")
+    implementation("com.pexip.sdk:sdk-media-coroutines:0.14.1")
 }
 ```
