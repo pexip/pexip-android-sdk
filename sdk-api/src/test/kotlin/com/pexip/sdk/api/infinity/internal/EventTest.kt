@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -215,6 +215,29 @@ internal class EventTest {
                         transferSupported = true,
                         disconnectSupported = true,
                         role = Role.GUEST,
+                        serviceType = ServiceType.CONFERENCE,
+                    ),
+                ),
+            )
+            .row(
+                val1 = "participant_create",
+                val2 = "participant_create_unknown.json",
+                val3 = ParticipantCreateEvent(
+                    response = ParticipantResponse(
+                        id = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                        startTime = Instant.fromEpochSeconds(
+                            epochSeconds = 1700484383,
+                            nanosecondAdjustment = 846972000,
+                        ),
+                        displayName = "George R",
+                        overlayText = "George",
+                        audioMuted = true,
+                        videoMuted = false,
+                        presenting = false,
+                        muteSupported = true,
+                        transferSupported = true,
+                        disconnectSupported = true,
+                        role = Role.UNKNOWN,
                         serviceType = ServiceType.CONFERENCE,
                     ),
                 ),
