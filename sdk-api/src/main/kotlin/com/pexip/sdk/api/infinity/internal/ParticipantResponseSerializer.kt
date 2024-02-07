@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.infinity.ParticipantResponse
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
@@ -45,8 +44,8 @@ internal object ParticipantResponseSerializer :
     override fun transformDeserialize(element: JsonElement): JsonElement = buildJsonObject {
         for ((key, value) in element.jsonObject) when (key) {
             in FloatTimestampKeys -> put(key, value.toInstantComponents())
-            in YesNoKeys, "encryption" -> put(key, value.toTrueFalse())
-            "role" -> put(key, value.toHostGuest())
+            in YesNoKeys, "encryption" -> put(key, value.toBoolean())
+            "role" -> put(key, value.toRole())
             else -> put(key, value)
         }
     }
@@ -67,15 +66,15 @@ internal object ParticipantResponseSerializer :
         }
     }
 
-    private fun JsonElement.toTrueFalse() = when (jsonPrimitive.content) {
+    private fun JsonElement.toBoolean() = when (jsonPrimitive.content) {
         "YES", "On" -> JsonPrimitive(true)
         "NO", "Off" -> JsonPrimitive(false)
-        else -> throw SerializationException()
+        else -> JsonNull
     }
 
-    private fun JsonElement.toHostGuest() = when (jsonPrimitive.content) {
+    private fun JsonElement.toRole() = when (jsonPrimitive.content) {
         "chair" -> JsonPrimitive("HOST")
         "guest" -> JsonPrimitive("GUEST")
-        else -> throw SerializationException()
+        else -> JsonNull
     }
 }
