@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ class KotlinDokkaPlugin : Plugin<Project> {
         }
         tasks.withType<DokkaTaskPartial>().configureEach {
             dokkaSourceSets.configureEach {
+                samples.from("src/test/kotlin/Samples.kt")
                 includes.from("README.md")
                 externalDocumentationLink("https://kotlin.github.io/kotlinx.coroutines/")
                 noAndroidSdkLink.set(hasAndroidLibraryPluginProvider.map { !it })
