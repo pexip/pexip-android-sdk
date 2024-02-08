@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.14.1] - 2023-02-07
+
+### Fixed
+
+- SSE restart caused by `SerializationException` in `ParticipantResponseSerializer` due to unknown
+  values
+
 ## [0.14.0] - 2023-01-18
 
 ### Added
@@ -300,7 +307,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.14.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.14.1...HEAD
+[0.14.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.14.1
 [0.14.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.14.0
 [0.13.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.13.1
 [0.13.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.13.0
