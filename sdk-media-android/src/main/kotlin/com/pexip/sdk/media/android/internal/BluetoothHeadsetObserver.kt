@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ internal class BluetoothHeadsetObserver(
 
     private val filter = IntentFilter(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED)
 
+    @Suppress("DEPRECATION")
     @SuppressLint("MissingPermission")
     private val receiver = context.registerReceiver(filter, handler) { context, intent ->
         if (context.checkBluetoothConnectPermission() == PackageManager.PERMISSION_GRANTED) {
@@ -58,6 +59,7 @@ internal class BluetoothHeadsetObserver(
         adapter?.getProfileProxy(context, this, BluetoothProfile.HEADSET)
     }
 
+    @SuppressLint("MissingPermission")
     override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
         requireBluetoothHeadsetProfile(profile)
         this.proxy = proxy as BluetoothHeadset

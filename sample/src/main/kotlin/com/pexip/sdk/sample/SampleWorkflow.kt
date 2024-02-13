@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.pexip.sdk.sample
 
 import android.Manifest
 import android.content.Context
-import android.os.Build
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.CameraVideoTrackFactory
 import com.pexip.sdk.media.LocalAudioTrack
@@ -54,11 +53,6 @@ class SampleWorkflow @Inject constructor(
     private val permissions = buildSet {
         add(Manifest.permission.RECORD_AUDIO)
         add(Manifest.permission.CAMERA)
-        if (Build.VERSION.SDK_INT >= 31) {
-            add(Manifest.permission.BLUETOOTH_CONNECT)
-        } else {
-            add(Manifest.permission.BLUETOOTH)
-        }
     }
 
     override fun initialState(props: Unit, snapshot: Snapshot?): SampleState {
