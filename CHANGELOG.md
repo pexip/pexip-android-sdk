@@ -12,6 +12,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `Theme.layout` that provides the currently active layout of the conference
 - `UnsupportedInfinityException` to indicate when the deployment is not supported by the SDK
 
+### Changed
+
+- ICE restart to happen on default network change. As a result of this change,
+  `MediaConnectionConfig.continualGathering` has been deprecated and is ignored
+
 ## [0.14.1] - 2023-02-07
 
 ### Fixed

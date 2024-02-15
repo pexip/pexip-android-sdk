@@ -208,7 +208,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnection$RemoteVideoT
 }
 
 public final class com/pexip/sdk/media/MediaConnectionConfig {
-	public synthetic fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/List;ZZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/List;ZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getContinualGathering ()Z
 	public final fun getDscp ()Z
 	public final fun getFarEndCameraControl ()Z

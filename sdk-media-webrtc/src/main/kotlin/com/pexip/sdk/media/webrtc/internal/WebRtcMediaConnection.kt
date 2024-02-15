@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStreamTrack.MediaType
+import org.webrtc.NetworkMonitor
 import org.webrtc.PeerConnection
 import org.webrtc.RtpParameters
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
@@ -123,6 +124,7 @@ internal class WebRtcMediaConnection(
                     wrapper.withRtpTransceiver(PresentationVideo, init) { }
                 }
             }
+            launchConnectionType()
             launchMaxBitrate()
             launchWrapperEvent()
             launchSignalingEvent()
@@ -258,6 +260,11 @@ internal class WebRtcMediaConnection(
     }
 
     private fun CoroutineScope.launchMaxBitrate() = maxBitrate.drop(1)
+        .onEach { wrapper.restartIce() }
+        .launchIn(this)
+
+    private fun CoroutineScope.launchConnectionType() = NetworkMonitor.getInstance()
+        .connectionType()
         .onEach { wrapper.restartIce() }
         .launchIn(this)
 

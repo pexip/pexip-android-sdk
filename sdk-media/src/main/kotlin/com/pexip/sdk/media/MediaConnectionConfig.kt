@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,12 @@ public class MediaConnectionConfig private constructor(
     public val signaling: MediaConnectionSignaling,
     public val iceServers: List<IceServer>,
     public val dscp: Boolean,
-    public val continualGathering: Boolean,
     public val presentationInMain: Boolean,
     public val farEndCameraControl: Boolean,
 ) {
+
+    @Deprecated("No longer used internally.")
+    public val continualGathering: Boolean = false
 
     /**
      * A builder for [MediaConnectionConfig].
@@ -43,7 +45,6 @@ public class MediaConnectionConfig private constructor(
 
         private val iceServers = ArrayList(signaling.iceServers)
         private var dscp = false
-        private var continualGathering = true
         private var presentationInMain = false
         private var farEndCameraControl = false
 
@@ -81,8 +82,9 @@ public class MediaConnectionConfig private constructor(
          * @param continualGathering true if ICE candidates will be gathered continually, false otherwise
          * @return this builder
          */
+        @Deprecated("ICE gathering now only happens once. ICE restart is triggered on network change.")
         public fun continualGathering(continualGathering: Boolean): Builder = apply {
-            this.continualGathering = continualGathering
+            // noop
         }
 
         /**
@@ -116,7 +118,6 @@ public class MediaConnectionConfig private constructor(
             signaling = signaling,
             iceServers = iceServers,
             dscp = dscp,
-            continualGathering = continualGathering,
             presentationInMain = presentationInMain && !signaling.directMedia,
             farEndCameraControl = farEndCameraControl,
         )

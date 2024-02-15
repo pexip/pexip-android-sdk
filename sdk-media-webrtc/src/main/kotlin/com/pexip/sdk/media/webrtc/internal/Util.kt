@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,17 @@ import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.SecureCheckCode
 import com.pexip.sdk.media.VideoTrack
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import okio.ByteString.Companion.encodeUtf8
 import org.webrtc.CameraEnumerationAndroid.CaptureFormat
 import org.webrtc.DataChannel
 import org.webrtc.DtmfSender
 import org.webrtc.MediaStreamTrack
+import org.webrtc.NetworkChangeDetector.ConnectionType
+import org.webrtc.NetworkMonitor
+import org.webrtc.NetworkMonitor.NetworkObserver
 import org.webrtc.PeerConnection
 import org.webrtc.RtpParameters
 import org.webrtc.RtpParameters.Encoding
@@ -36,6 +42,12 @@ import org.webrtc.RtpTransceiver
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import java.util.concurrent.Executor
 import java.util.concurrent.RejectedExecutionException
+
+internal fun NetworkMonitor.connectionType(): Flow<ConnectionType> = callbackFlow {
+    val observer = NetworkObserver(::trySend)
+    addObserver(observer)
+    awaitClose { removeObserver(observer) }
+}
 
 @Suppress("ktlint:standard:function-naming")
 internal fun SecureCheckCode(
