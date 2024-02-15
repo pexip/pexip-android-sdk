@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -473,17 +473,17 @@ internal class ConferenceStepTest {
         }
         val token = Random.nextString(8)
         assertThat(step.availableLayouts(token).await(), "response").containsOnly(
-            Layout("5:7"),
-            Layout("1:7"),
-            Layout("2:21"),
-            Layout("1:21"),
-            Layout("4:0"),
-            Layout("9:0"),
-            Layout("16:0"),
-            Layout("25:0"),
-            Layout("1:0"),
-            Layout("1:33"),
-            Layout("teams"),
+            LayoutId("5:7"),
+            LayoutId("1:7"),
+            LayoutId("2:21"),
+            LayoutId("1:21"),
+            LayoutId("4:0"),
+            LayoutId("9:0"),
+            LayoutId("16:0"),
+            LayoutId("25:0"),
+            LayoutId("1:0"),
+            LayoutId("1:33"),
+            LayoutId("teams"),
         )
         server.verifyAvailableLayouts(token)
     }

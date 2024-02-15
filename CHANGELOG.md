@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `Theme.layout` that provides the currently active layout of the conference
+
 ## [0.14.1] - 2023-02-07
 
 ### Fixed

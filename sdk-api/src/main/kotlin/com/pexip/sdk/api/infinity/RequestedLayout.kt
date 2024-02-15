@@ -15,9 +15,11 @@
  */
 package com.pexip.sdk.api.infinity
 
-@Deprecated(
-    message = "Renamed to LayoutId",
-    replaceWith = ReplaceWith("LayoutId", "com.pexip.sdk.api.infinity.LayoutId"),
-    level = DeprecationLevel.ERROR,
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+public data class RequestedLayout(
+    @SerialName("primary_screen")
+    val primaryScreen: Screen,
 )
-public typealias Layout = LayoutId

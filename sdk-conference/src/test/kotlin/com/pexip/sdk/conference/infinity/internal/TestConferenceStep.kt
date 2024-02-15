@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.pexip.sdk.conference.infinity.internal
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.Layout
+import com.pexip.sdk.api.infinity.LayoutId
 import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
 import com.pexip.sdk.api.infinity.RequestTokenRequest
@@ -52,9 +52,9 @@ internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
     final override fun message(request: MessageRequest, token: Token): Call<Boolean> =
         message(request, token.token)
 
-    override fun availableLayouts(token: String): Call<Set<Layout>> = TODO()
+    override fun availableLayouts(token: String): Call<Set<LayoutId>> = TODO()
 
-    override fun availableLayouts(token: Token): Call<Set<Layout>> = availableLayouts(token.token)
+    override fun availableLayouts(token: Token): Call<Set<LayoutId>> = availableLayouts(token.token)
 
     override fun theme(token: String): Call<Map<String, SplashScreenResponse>> = TODO()
 

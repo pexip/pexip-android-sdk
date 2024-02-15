@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,27 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import app.cash.turbine.test
+import assertk.Assert
+import assertk.all
 import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.prop
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.BackgroundResponse
 import com.pexip.sdk.api.infinity.ElementResponse
+import com.pexip.sdk.api.infinity.LayoutEvent
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Element
+import com.pexip.sdk.conference.Layout
+import com.pexip.sdk.conference.LayoutId
 import com.pexip.sdk.conference.SplashScreen
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
@@ -35,6 +44,9 @@ import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import com.pexip.sdk.api.infinity.LayoutId as ApiLayoutId
+import com.pexip.sdk.api.infinity.RequestedLayout as ApiRequestedLayout
+import com.pexip.sdk.api.infinity.Screen as ApiScreen
 
 class ThemeImplTest {
 
@@ -45,6 +57,63 @@ class ThemeImplTest {
     fun setUp() {
         event = MutableSharedFlow(extraBufferCapacity = 1)
         store = TokenStore.create(Random.nextToken())
+    }
+
+    @Test
+    fun `emits the current layout`() = runTest {
+        val response = generateSequence { Random.nextString(8) }
+            .map(::ApiLayoutId)
+            .take(10)
+            .toSet()
+        val step = object : TestConferenceStep() {
+
+            override fun availableLayouts(token: String): Call<Set<ApiLayoutId>> {
+                assertThat(token).isEqualTo(store.get().token)
+                return object : TestCall<Set<ApiLayoutId>> {
+
+                    override fun enqueue(callback: Callback<Set<ApiLayoutId>>) {
+                        callback.onSuccess(this, response)
+                    }
+                }
+            }
+        }
+        val theme = ThemeImpl(
+            scope = backgroundScope,
+            event = event,
+            step = step,
+            store = store,
+        )
+        theme.layout.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "layout").isNull()
+            repeat(10) {
+                val e = LayoutEvent(
+                    layout = response.random(),
+                    requestedLayout = ApiRequestedLayout(
+                        primaryScreen = ApiScreen(
+                            hostLayout = response.random(),
+                            guestLayout = response.random(),
+                        ),
+                    ),
+                    overlayTextEnabled = Random.nextBoolean(),
+                )
+                event.emit(e)
+                assertThat(awaitItem(), "layout")
+                    .isNotNull()
+                    .all {
+                        prop(Layout::layout).isEqualTo(e.layout)
+                        prop(Layout::layouts)
+                            .extracting(LayoutId::value)
+                            .containsExactly(*response.map(ApiLayoutId::value).toTypedArray())
+                        prop(Layout::requestedPrimaryScreenHostLayout)
+                            .isEqualTo(e.requestedLayout.primaryScreen.hostLayout)
+                        prop(Layout::requestedPrimaryScreenGuestLayout)
+                            .isEqualTo(e.requestedLayout.primaryScreen.guestLayout)
+                        prop(Layout::overlayTextEnabled).isEqualTo(e.overlayTextEnabled)
+                    }
+            }
+            expectNoEvents()
+        }
     }
 
     @Test
@@ -113,4 +182,7 @@ class ThemeImplTest {
             assertThat(awaitItem()).isNull()
         }
     }
+
+    private fun Assert<LayoutId>.isEqualTo(id: ApiLayoutId) =
+        prop(LayoutId::value).isEqualTo(id.value)
 }

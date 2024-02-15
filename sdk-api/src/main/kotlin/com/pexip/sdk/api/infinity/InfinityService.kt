@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,7 +177,7 @@ public interface InfinityService {
          * @param token a valid token
          * @return a list of available layouts
          */
-        public fun availableLayouts(token: String): Call<Set<Layout>>
+        public fun availableLayouts(token: String): Call<Set<LayoutId>>
 
         /**
          * This returns a list of all available layouts for the given conference.
@@ -189,7 +189,7 @@ public interface InfinityService {
          * @param token a valid token
          * @return a list of available layouts
          */
-        public fun availableLayouts(token: Token): Call<Set<Layout>>
+        public fun availableLayouts(token: Token): Call<Set<LayoutId>>
 
         /**
          * Provides the theme resources of the conference (direct media only). Used in conjunction
