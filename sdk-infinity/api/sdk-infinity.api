@@ -1,0 +1,5 @@
+public final class com/pexip/sdk/infinity/UnsupportedInfinityException : java/lang/IllegalArgumentException {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun getVersion ()Ljava/lang/String;
+}
+

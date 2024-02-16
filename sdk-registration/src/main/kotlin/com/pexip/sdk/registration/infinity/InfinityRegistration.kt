@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestRegistrationTokenResponse
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
+import com.pexip.sdk.infinity.UnsupportedInfinityException
 import com.pexip.sdk.registration.RegisteredDevicesCallback
 import com.pexip.sdk.registration.Registration
 import com.pexip.sdk.registration.RegistrationEvent
@@ -102,6 +103,16 @@ public class InfinityRegistration private constructor(
 
     public companion object {
 
+        /**
+         * Creates a new instance of [InfinityRegistration].
+         *
+         * @param service an instance of [InfinityService]
+         * @param node a URL of the node
+         * @param deviceAlias a device alias
+         * @param response a request registration token response
+         * @return an instance of [InfinityRegistration]
+         * @throws UnsupportedInfinityException if the version of Infinity is not supported
+         */
         @JvmStatic
         public fun create(
             service: InfinityService,
@@ -113,19 +124,21 @@ public class InfinityRegistration private constructor(
             response = response,
         )
 
+        /**
+         * Creates a new instance of [InfinityRegistration].
+         *
+         * @param step a registration step
+         * @param response a request registration token response
+         * @return an instance of [InfinityRegistration]
+         * @throws UnsupportedInfinityException if the version of Infinity is not supported
+         */
         @JvmStatic
         public fun create(
             step: InfinityService.RegistrationStep,
             response: RequestRegistrationTokenResponse,
         ): InfinityRegistration {
             if (response.version.versionId < "29") {
-                val s = buildString {
-                    append("Infinity ")
-                    append(response.version.versionId)
-                    append(" is not officially supported by the SDK.")
-                    append(" Please upgrade your Infinity deployment to 29 or newer.")
-                }
-                throw IllegalArgumentException(s)
+                throw UnsupportedInfinityException(response.version.versionId)
             }
             return InfinityRegistration(step, response)
         }

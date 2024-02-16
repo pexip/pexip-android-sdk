@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import com.pexip.sdk.conference.infinity.internal.RefererImpl
 import com.pexip.sdk.conference.infinity.internal.RosterImpl
 import com.pexip.sdk.conference.infinity.internal.ThemeImpl
 import com.pexip.sdk.conference.infinity.internal.events
+import com.pexip.sdk.infinity.UnsupportedInfinityException
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlinx.coroutines.CoroutineScope
@@ -150,6 +151,16 @@ public class InfinityConference private constructor(
 
     public companion object {
 
+        /**
+         * Creates a new instance of [InfinityService].
+         *
+         * @param service an instance of [InfinityConference]
+         * @param node a URL of the node
+         * @param conferenceAlias a conference alias
+         * @param response a request registration token response
+         * @return an instance of [InfinityConference]
+         * @throws UnsupportedInfinityException if the version of Infinity is not supported
+         */
         @JvmStatic
         public fun create(
             service: InfinityService,
@@ -161,19 +172,21 @@ public class InfinityConference private constructor(
             response = response,
         )
 
+        /**
+         * Creates a new instance of [InfinityConference].
+         *
+         * @param step a conference step
+         * @param response a request conference token response
+         * @return an instance of [InfinityConference]
+         * @throws UnsupportedInfinityException if the version of Infinity is not supported
+         */
         @JvmStatic
         public fun create(
             step: InfinityService.ConferenceStep,
             response: RequestTokenResponse,
         ): InfinityConference {
             if (response.version.versionId < "29") {
-                val s = buildString {
-                    append("Infinity ")
-                    append(response.version.versionId)
-                    append(" is not officially supported by the SDK.")
-                    append(" Please upgrade your Infinity deployment to 29 or newer.")
-                }
-                throw IllegalArgumentException(s)
+                throw UnsupportedInfinityException(response.version.versionId)
             }
             return InfinityConference(step, response)
         }
