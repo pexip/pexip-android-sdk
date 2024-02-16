@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 package com.pexip.sdk.api.infinity.internal
 
-import com.pexip.sdk.api.infinity.Layout
+import com.pexip.sdk.api.infinity.LayoutId
 import kotlinx.serialization.builtins.SetSerializer
 
 internal object AvailableLayoutsSerializer :
-    UnboxingSerializer<Set<Layout>>(SetSerializer(Layout.serializer()))
+    UnboxingSerializer<Set<LayoutId>>(SetSerializer(LayoutId.serializer()))

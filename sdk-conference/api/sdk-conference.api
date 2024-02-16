@@ -61,6 +61,39 @@ public final class com/pexip/sdk/conference/FailureConferenceEvent : com/pexip/s
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/pexip/sdk/conference/Layout {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1--VXmZqM ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/Set;
+	public final fun component3--VXmZqM ()Ljava/lang/String;
+	public final fun component4--VXmZqM ()Ljava/lang/String;
+	public final fun component5 ()Z
+	public final fun copy-CtZGx_g (Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;Z)Lcom/pexip/sdk/conference/Layout;
+	public static synthetic fun copy-CtZGx_g$default (Lcom/pexip/sdk/conference/Layout;Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/conference/Layout;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLayout--VXmZqM ()Ljava/lang/String;
+	public final fun getLayouts ()Ljava/util/Set;
+	public final fun getOverlayTextEnabled ()Z
+	public final fun getRequestedPrimaryScreenGuestLayout--VXmZqM ()Ljava/lang/String;
+	public final fun getRequestedPrimaryScreenHostLayout--VXmZqM ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/conference/LayoutId {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/conference/LayoutId;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
 public final class com/pexip/sdk/conference/Message {
 	public fun <init> (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
 	public final fun component1 ()J
@@ -258,6 +291,7 @@ public final class com/pexip/sdk/conference/SplashScreen {
 }
 
 public abstract interface class com/pexip/sdk/conference/Theme {
+	public abstract fun getLayout ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getSplashScreen ()Lkotlinx/coroutines/flow/StateFlow;
 }
 

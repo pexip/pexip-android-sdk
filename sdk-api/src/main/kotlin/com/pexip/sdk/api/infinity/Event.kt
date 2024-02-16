@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,16 @@ public data class MessageReceivedEvent(
 ) : Event
 
 @Serializable
+public data class LayoutEvent(
+    @SerialName("view")
+    val layout: LayoutId,
+    @SerialName("requested_layout")
+    val requestedLayout: RequestedLayout,
+    @SerialName("overlay_text_enabled")
+    val overlayTextEnabled: Boolean = false,
+) : Event
+
+@Serializable
 public data class FeccEvent(
     public val action: FeccAction = FeccAction.UNKNOWN,
     public val timeout: Long,
@@ -128,6 +138,7 @@ internal fun Event(json: Json, id: String?, type: String?, data: String): Event?
     "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
     "presentation_stop" -> PresentationStopEvent
     "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
+    "layout" -> json.decodeFromString<LayoutEvent>(data)
     "fecc" -> json.decodeFromString<FeccEvent>(data)
     "refer" -> json.decodeFromString<ReferEvent>(data)
     "splash_screen" -> try {

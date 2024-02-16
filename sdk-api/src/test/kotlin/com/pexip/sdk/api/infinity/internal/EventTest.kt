@@ -29,6 +29,8 @@ import com.pexip.sdk.api.infinity.FeccMovement
 import com.pexip.sdk.api.infinity.IncomingCancelledEvent
 import com.pexip.sdk.api.infinity.IncomingEvent
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.LayoutEvent
+import com.pexip.sdk.api.infinity.LayoutId
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewOfferEvent
@@ -42,7 +44,9 @@ import com.pexip.sdk.api.infinity.PeerDisconnectEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.ReferEvent
+import com.pexip.sdk.api.infinity.RequestedLayout
 import com.pexip.sdk.api.infinity.Role
+import com.pexip.sdk.api.infinity.Screen
 import com.pexip.sdk.api.infinity.ServiceType
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
@@ -278,6 +282,20 @@ internal class EventTest {
                 val2 = "participant_delete.json",
                 val3 = ParticipantDeleteEvent(
                     id = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                ),
+            )
+            .row(
+                val1 = "layout",
+                val2 = "layout.json",
+                val3 = LayoutEvent(
+                    layout = LayoutId("1:0"),
+                    requestedLayout = RequestedLayout(
+                        primaryScreen = Screen(
+                            hostLayout = LayoutId("ac"),
+                            guestLayout = LayoutId("ac"),
+                        ),
+                    ),
+                    overlayTextEnabled = true,
                 ),
             )
             .forAll { type, filename, event ->

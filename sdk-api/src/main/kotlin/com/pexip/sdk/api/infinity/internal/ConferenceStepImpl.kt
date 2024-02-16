@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.InvalidTokenException
-import com.pexip.sdk.api.infinity.Layout
+import com.pexip.sdk.api.infinity.LayoutId
 import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
@@ -130,7 +130,7 @@ internal class ConferenceStepImpl(
     override fun message(request: MessageRequest, token: Token): Call<Boolean> =
         message(request, token.token)
 
-    override fun availableLayouts(token: String): Call<Set<Layout>> {
+    override fun availableLayouts(token: String): Call<Set<LayoutId>> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
             client = client,
@@ -146,7 +146,7 @@ internal class ConferenceStepImpl(
         )
     }
 
-    override fun availableLayouts(token: Token): Call<Set<Layout>> = availableLayouts(token.token)
+    override fun availableLayouts(token: Token): Call<Set<LayoutId>> = availableLayouts(token.token)
 
     override fun theme(token: String): Call<Map<String, SplashScreenResponse>> {
         require(token.isNotBlank()) { "token is blank." }

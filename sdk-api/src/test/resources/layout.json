@@ -1,0 +1,12 @@
+{
+  "view": "1:0",
+  "pres_slot_coords": null,
+  "participants": [],
+  "requested_layout": {
+    "primary_screen": {
+      "chair_layout": "ac",
+      "guest_layout": "ac"
+    }
+  },
+  "overlay_text_enabled": true
+}

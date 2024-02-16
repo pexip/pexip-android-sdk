@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
  */
 package com.pexip.sdk.api.infinity
 
-@Deprecated(
-    message = "Renamed to LayoutId",
-    replaceWith = ReplaceWith("LayoutId", "com.pexip.sdk.api.infinity.LayoutId"),
-    level = DeprecationLevel.ERROR,
-)
-public typealias Layout = LayoutId
+import kotlinx.serialization.Serializable
+
+@Serializable
+@JvmInline
+public value class LayoutId(public val value: String)

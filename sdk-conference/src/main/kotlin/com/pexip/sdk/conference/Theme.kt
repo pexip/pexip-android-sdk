@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,16 @@ import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Handles theme-related functionality of the [Conference].
- *
- * @property splashScreen a [StateFlow] of [SplashScreen]s that should be displayed
  */
 public interface Theme {
 
+    /**
+     * A [StateFlow] of current [Layout] state.
+     */
+    public val layout: StateFlow<Layout?>
+
+    /**
+     * A [StateFlow] of [SplashScreen]s that should be displayed.
+     */
     public val splashScreen: StateFlow<SplashScreen?>
 }

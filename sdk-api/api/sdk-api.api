@@ -630,9 +630,41 @@ public final class com/pexip/sdk/api/infinity/InvalidTokenException : java/lang/
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
-public final class com/pexip/sdk/api/infinity/Layout {
-	public static final field Companion Lcom/pexip/sdk/api/infinity/Layout$Companion;
-	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/Layout;
+public final class com/pexip/sdk/api/infinity/LayoutEvent : com/pexip/sdk/api/Event {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/LayoutEvent$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-09AyAb0 ()Ljava/lang/String;
+	public final fun component2 ()Lcom/pexip/sdk/api/infinity/RequestedLayout;
+	public final fun component3 ()Z
+	public final fun copy-oaHaZIw (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;Z)Lcom/pexip/sdk/api/infinity/LayoutEvent;
+	public static synthetic fun copy-oaHaZIw$default (Lcom/pexip/sdk/api/infinity/LayoutEvent;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/LayoutEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLayout-09AyAb0 ()Ljava/lang/String;
+	public final fun getOverlayTextEnabled ()Z
+	public final fun getRequestedLayout ()Lcom/pexip/sdk/api/infinity/RequestedLayout;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/api/infinity/LayoutEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/LayoutEvent$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/LayoutEvent;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/LayoutEvent;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/LayoutEvent$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/LayoutId {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/LayoutId$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/LayoutId;
 	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
 	public fun equals (Ljava/lang/Object;)Z
 	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
@@ -645,18 +677,18 @@ public final class com/pexip/sdk/api/infinity/Layout {
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
-public final class com/pexip/sdk/api/infinity/Layout$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/Layout$$serializer;
+public final class com/pexip/sdk/api/infinity/LayoutId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/LayoutId$$serializer;
 	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize-NgV1oZ4 (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public fun deserialize-Usdm_rY (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
 	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize-WgIrWnY (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun serialize-tzsas1o (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/Layout$Companion {
+public final class com/pexip/sdk/api/infinity/LayoutId$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -1338,6 +1370,33 @@ public final class com/pexip/sdk/api/infinity/RequestTokenResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/pexip/sdk/api/infinity/RequestedLayout {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/RequestedLayout$Companion;
+	public fun <init> (Lcom/pexip/sdk/api/infinity/Screen;)V
+	public final fun component1 ()Lcom/pexip/sdk/api/infinity/Screen;
+	public final fun copy (Lcom/pexip/sdk/api/infinity/Screen;)Lcom/pexip/sdk/api/infinity/RequestedLayout;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/RequestedLayout;Lcom/pexip/sdk/api/infinity/Screen;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestedLayout;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPrimaryScreen ()Lcom/pexip/sdk/api/infinity/Screen;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/api/infinity/RequestedLayout$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RequestedLayout$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RequestedLayout;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/RequestedLayout;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/RequestedLayout$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/pexip/sdk/api/infinity/RequiredPinException : java/lang/RuntimeException {
 	public fun <init> (Z)V
 	public final fun getGuestPin ()Z
@@ -1359,6 +1418,35 @@ public final class com/pexip/sdk/api/infinity/Role : java/lang/Enum {
 }
 
 public final class com/pexip/sdk/api/infinity/Role$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/Screen {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/Screen$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-09AyAb0 ()Ljava/lang/String;
+	public final fun component2-09AyAb0 ()Ljava/lang/String;
+	public final fun copy-PBtoF5M (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/Screen;
+	public static synthetic fun copy-PBtoF5M$default (Lcom/pexip/sdk/api/infinity/Screen;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/Screen;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getGuestLayout-09AyAb0 ()Ljava/lang/String;
+	public final fun getHostLayout-09AyAb0 ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/api/infinity/Screen$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/Screen$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/Screen;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/Screen;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/Screen$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

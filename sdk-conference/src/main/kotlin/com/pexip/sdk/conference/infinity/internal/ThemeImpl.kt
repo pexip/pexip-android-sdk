@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,14 @@ import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.ElementResponse
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.LayoutEvent
+import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Element
+import com.pexip.sdk.conference.Layout
+import com.pexip.sdk.conference.LayoutId
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.conference.Theme
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
@@ -37,6 +42,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
+import com.pexip.sdk.api.infinity.LayoutId as ApiLayoutId
 
 internal class ThemeImpl(
     scope: CoroutineScope,
@@ -45,10 +51,23 @@ internal class ThemeImpl(
     private val store: TokenStore,
 ) : Theme {
 
+    override val layout: StateFlow<Layout?> = event
+        .filterIsInstance<LayoutEvent>()
+        .combine(step.availableLayouts(store), ::toLayout)
+        .stateIn(scope, SharingStarted.Eagerly, null)
+
     override val splashScreen: StateFlow<SplashScreen?> = event
         .filterIsInstance<SplashScreenEvent>()
         .combine(step.theme(store), ::toSplashScreen)
         .stateIn(scope, SharingStarted.Eagerly, null)
+
+    private fun toLayout(event: LayoutEvent, layoutIds: Set<ApiLayoutId>) = Layout(
+        layout = LayoutId(event.layout),
+        layouts = layoutIds.asSequence().map(::LayoutId).toSet(),
+        requestedPrimaryScreenHostLayout = LayoutId(event.requestedLayout.primaryScreen.hostLayout),
+        requestedPrimaryScreenGuestLayout = LayoutId(event.requestedLayout.primaryScreen.guestLayout),
+        overlayTextEnabled = event.overlayTextEnabled,
+    )
 
     private fun toSplashScreen(
         event: SplashScreenEvent,
@@ -68,10 +87,27 @@ internal class ThemeImpl(
         is ElementResponse.Unknown -> null
     }
 
-    private fun InfinityService.ConferenceStep.theme(store: TokenStore) = flow { emit(store.get()) }
+    private fun InfinityService.ConferenceStep.availableLayouts(store: TokenStore) = store.asFlow()
+        .map { availableLayouts(it).await() }
+        .retryOrDefault(::emptySet)
+
+    private fun InfinityService.ConferenceStep.theme(store: TokenStore) = store.asFlow()
         .map { theme(it).await() }
-        .retryWhen { _, attempt ->
-            delay(attempt.seconds.coerceAtMost(5.seconds))
-            true
+        .retryOrDefault(::emptyMap)
+
+    private fun TokenStore.asFlow() = flow { emit(get()) }
+
+    private fun LayoutId(id: ApiLayoutId): LayoutId = LayoutId(id.value)
+
+    private fun <T> Flow<T>.retryOrDefault(value: () -> T) = retryWhen { cause, attempt ->
+        when (cause) {
+            // In a rare case when the method doesn't exist Infinity will return 404 which maps
+            // to this exception
+            is NoSuchConferenceException -> false
+            else -> {
+                delay(attempt.seconds.coerceAtMost(5.seconds))
+                true
+            }
         }
+    }.catch { emit(value()) }
 }
