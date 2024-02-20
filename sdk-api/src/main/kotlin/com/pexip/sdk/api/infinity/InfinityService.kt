@@ -214,6 +214,32 @@ public interface InfinityService {
         public fun availableLayouts(token: Token): Call<Set<LayoutId>>
 
         /**
+         * This request changes the conference layout, controls streaming content,
+         * and enables/disables indicators and overlay text.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#transform_layout).
+         *
+         * @param request a request containing changes to apply to the conference layout
+         * @param token a valid token
+         * @throws IllegalLayoutTransformException if the requested transformation is not supported
+         * @return true if operation was successful, false otherwise
+         */
+        public fun transformLayout(request: TransformLayoutRequest, token: String): Call<Boolean>
+
+        /**
+         * This request changes the conference layout, controls streaming content,
+         * and enables/disables indicators and overlay text.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#transform_layout).
+         *
+         * @param request a request containing changes to apply to the conference layout
+         * @param token a valid token
+         * @throws IllegalLayoutTransformException if the requested transformation is not supported
+         * @return true if operation was successful, false otherwise
+         */
+        public fun transformLayout(request: TransformLayoutRequest, token: Token): Call<Boolean>
+
+        /**
          * Provides the theme resources of the conference (direct media only). Used in conjunction
          * with the **splash_screen** server event, the relevant theme resources can be used to
          * locally render a particular splash screen on the client.

@@ -29,6 +29,8 @@ import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
 import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
+import com.pexip.sdk.api.infinity.internal.TransformLayoutRequestSerializer
+import com.pexip.sdk.infinity.IllegalLayoutTransformException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -552,6 +554,107 @@ internal class ConferenceStepTest {
     }
 
     @Test
+    fun `transformLayout throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        val request = TransformLayoutRequest(
+            hostLayout = LayoutId(Random.nextString(8)),
+            guestLayout = LayoutId(Random.nextString(8)),
+            enableOverlayText = Random.nextBoolean(),
+        )
+        val token = Random.nextString(8)
+        assertFailure { step.transformLayout(request, token).await() }
+            .isInstanceOf<IllegalStateException>()
+        server.verifyTransformLayout(request, token)
+    }
+
+    @Test
+    fun `transformLayout throws IllegalLayoutTransformException`() = runTest {
+        val body = fileSystem.readUtf8("illegal_layout_transform.json")
+        server.enqueue {
+            setResponseCode(400)
+            setBody(body)
+        }
+        val request = TransformLayoutRequest(
+            hostLayout = LayoutId(Random.nextString(8)),
+            guestLayout = LayoutId(Random.nextString(8)),
+            enableOverlayText = Random.nextBoolean(),
+        )
+        val token = Random.nextString(8)
+        assertFailure { step.transformLayout(request, token).await() }
+            .isInstanceOf<IllegalLayoutTransformException>()
+        server.verifyTransformLayout(request, token)
+    }
+
+    @Test
+    fun `transformLayout throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        val request = TransformLayoutRequest(
+            hostLayout = LayoutId(Random.nextString(8)),
+            guestLayout = LayoutId(Random.nextString(8)),
+            enableOverlayText = Random.nextBoolean(),
+        )
+        val token = Random.nextString(8)
+        assertFailure { step.transformLayout(request, token).await() }
+            .isInstanceOf<NoSuchNodeException>()
+        server.verifyTransformLayout(request, token)
+    }
+
+    @Test
+    fun `transformLayout throws NoSuchConferenceException`() = runTest {
+        val body = fileSystem.readUtf8("conference_not_found.json")
+        server.enqueue {
+            setResponseCode(404)
+            setBody(body)
+        }
+        val request = TransformLayoutRequest(
+            hostLayout = LayoutId(Random.nextString(8)),
+            guestLayout = LayoutId(Random.nextString(8)),
+            enableOverlayText = Random.nextBoolean(),
+        )
+        val token = Random.nextString(8)
+        assertFailure { step.transformLayout(request, token).await() }
+            .isInstanceOf<NoSuchConferenceException>()
+        server.verifyTransformLayout(request, token)
+    }
+
+    @Test
+    fun `transformLayout throws InvalidTokenException`() = runTest {
+        val body = fileSystem.readUtf8("invalid_token.json")
+        server.enqueue {
+            setResponseCode(403)
+            setBody(body)
+        }
+        val request = TransformLayoutRequest(
+            hostLayout = LayoutId(Random.nextString(8)),
+            guestLayout = LayoutId(Random.nextString(8)),
+            enableOverlayText = Random.nextBoolean(),
+        )
+        val token = Random.nextString(8)
+        assertFailure { step.transformLayout(request, token).await() }
+            .isInstanceOf<InvalidTokenException>()
+        server.verifyTransformLayout(request, token)
+    }
+
+    @Test
+    fun `transformLayout returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            val request = TransformLayoutRequest(
+                hostLayout = LayoutId(Random.nextString(8)),
+                guestLayout = LayoutId(Random.nextString(8)),
+                enableOverlayText = Random.nextBoolean(),
+            )
+            val token = Random.nextString(8)
+            assertThat(step.transformLayout(request, token).await(), "response").isEqualTo(result)
+            server.verifyTransformLayout(request, token)
+        }
+    }
+
+    @Test
     fun `theme throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
@@ -703,6 +806,20 @@ internal class ConferenceStepTest {
         }
         assertToken(token)
         assertGet()
+    }
+
+    private fun MockWebServer.verifyTransformLayout(
+        request: TransformLayoutRequest,
+        token: String,
+    ) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("transform_layout")
+        }
+        assertToken(token)
+        assertPost(json, TransformLayoutRequestSerializer, request)
     }
 
     private fun MockWebServer.verifyTheme(token: String) = takeRequest {
