@@ -24,6 +24,7 @@ import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.key
 import assertk.assertions.prop
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
@@ -61,10 +62,11 @@ class ThemeImplTest {
 
     @Test
     fun `emits the current layout`() = runTest {
-        val response = generateSequence { Random.nextString(8) }
+        val layouts = generateSequence { Random.nextString(8) }
             .map(::ApiLayoutId)
             .take(10)
             .toSet()
+        val layoutSvgs = layouts.associateWith { Random.nextString(8) }
         val step = object : TestConferenceStep() {
 
             override fun availableLayouts(token: String): Call<Set<ApiLayoutId>> {
@@ -72,7 +74,17 @@ class ThemeImplTest {
                 return object : TestCall<Set<ApiLayoutId>> {
 
                     override fun enqueue(callback: Callback<Set<ApiLayoutId>>) {
-                        callback.onSuccess(this, response)
+                        callback.onSuccess(this, layouts)
+                    }
+                }
+            }
+
+            override fun layoutSvgs(token: String): Call<Map<ApiLayoutId, String>> {
+                assertThat(token).isEqualTo(store.get().token)
+                return object : TestCall<Map<ApiLayoutId, String>> {
+
+                    override fun enqueue(callback: Callback<Map<ApiLayoutId, String>>) {
+                        callback.onSuccess(this, layoutSvgs)
                     }
                 }
             }
@@ -88,11 +100,11 @@ class ThemeImplTest {
             assertThat(awaitItem(), "layout").isNull()
             repeat(10) {
                 val e = LayoutEvent(
-                    layout = response.random(),
+                    layout = layouts.random(),
                     requestedLayout = ApiRequestedLayout(
                         primaryScreen = ApiScreen(
-                            hostLayout = response.random(),
-                            guestLayout = response.random(),
+                            hostLayout = layouts.random(),
+                            guestLayout = layouts.random(),
                         ),
                     ),
                     overlayTextEnabled = Random.nextBoolean(),
@@ -104,12 +116,15 @@ class ThemeImplTest {
                         prop(Layout::layout).isEqualTo(e.layout)
                         prop(Layout::layouts)
                             .extracting(LayoutId::value)
-                            .containsExactly(*response.map(ApiLayoutId::value).toTypedArray())
+                            .containsExactly(*layouts.map(ApiLayoutId::value).toTypedArray())
                         prop(Layout::requestedPrimaryScreenHostLayout)
                             .isEqualTo(e.requestedLayout.primaryScreen.hostLayout)
                         prop(Layout::requestedPrimaryScreenGuestLayout)
                             .isEqualTo(e.requestedLayout.primaryScreen.guestLayout)
                         prop(Layout::overlayTextEnabled).isEqualTo(e.overlayTextEnabled)
+                        prop(Layout::layoutSvgs).all {
+                            layoutSvgs.forEach { key(LayoutId(it.key.value)).isEqualTo(it.value) }
+                        }
                     }
             }
             expectNoEvents()

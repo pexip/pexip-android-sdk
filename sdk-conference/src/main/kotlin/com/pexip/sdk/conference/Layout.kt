@@ -30,4 +30,5 @@ public data class Layout(
     val requestedPrimaryScreenHostLayout: LayoutId,
     val requestedPrimaryScreenGuestLayout: LayoutId,
     val overlayTextEnabled: Boolean,
+    val layoutSvgs: Map<LayoutId, String>,
 )
