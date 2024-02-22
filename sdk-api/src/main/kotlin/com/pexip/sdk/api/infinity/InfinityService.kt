@@ -180,6 +180,28 @@ public interface InfinityService {
         public fun availableLayouts(token: String): Call<Set<LayoutId>>
 
         /**
+         * This provides all SVG representations of the layouts that are active
+         * on the given conference.
+         *
+         * See [documentation](https://docs.pexip.com/beta/api_client/api_rest.htm#layout_svgs).
+         *
+         * @param token a valid token
+         * @return a collection of SVG representations
+         */
+        public fun layoutSvgs(token: Token): Call<Map<LayoutId, String>>
+
+        /**
+         * This provides all SVG representations of the layouts that are active
+         * on the given conference.
+         *
+         * See [documentation](https://docs.pexip.com/beta/api_client/api_rest.htm#layout_svgs).
+         *
+         * @param token a valid token
+         * @return a colleciton of SVG representations
+         */
+        public fun layoutSvgs(token: String): Call<Map<LayoutId, String>>
+
+        /**
          * This returns a list of all available layouts for the given conference.
          *
          * This includes the inbuilt layouts plus any custom layouts available on this conference.

@@ -51,22 +51,29 @@ internal class ThemeImpl(
     private val store: TokenStore,
 ) : Theme {
 
-    override val layout: StateFlow<Layout?> = event
-        .filterIsInstance<LayoutEvent>()
-        .combine(step.availableLayouts(store), ::toLayout)
-        .stateIn(scope, SharingStarted.Eagerly, null)
+    override val layout: StateFlow<Layout?> = combine(
+        flow = event.filterIsInstance<LayoutEvent>(),
+        flow2 = step.availableLayouts(store),
+        flow3 = step.layoutSvgs(store),
+        transform = ::toLayout,
+    ).stateIn(scope, SharingStarted.Eagerly, null)
 
     override val splashScreen: StateFlow<SplashScreen?> = event
         .filterIsInstance<SplashScreenEvent>()
         .combine(step.theme(store), ::toSplashScreen)
         .stateIn(scope, SharingStarted.Eagerly, null)
 
-    private fun toLayout(event: LayoutEvent, layoutIds: Set<ApiLayoutId>) = Layout(
+    private fun toLayout(
+        event: LayoutEvent,
+        layoutIds: Set<ApiLayoutId>,
+        layoutSvgs: Map<ApiLayoutId, String>,
+    ) = Layout(
         layout = LayoutId(event.layout),
         layouts = layoutIds.asSequence().map(::LayoutId).toSet(),
         requestedPrimaryScreenHostLayout = LayoutId(event.requestedLayout.primaryScreen.hostLayout),
         requestedPrimaryScreenGuestLayout = LayoutId(event.requestedLayout.primaryScreen.guestLayout),
         overlayTextEnabled = event.overlayTextEnabled,
+        layoutSvgs = layoutSvgs.mapKeys { LayoutId(it.key) },
     )
 
     private fun toSplashScreen(
@@ -90,6 +97,10 @@ internal class ThemeImpl(
     private fun InfinityService.ConferenceStep.availableLayouts(store: TokenStore) = store.asFlow()
         .map { availableLayouts(it).await() }
         .retryOrDefault(::emptySet)
+
+    private fun InfinityService.ConferenceStep.layoutSvgs(store: TokenStore) = store.asFlow()
+        .map { layoutSvgs(it).await() }
+        .retryOrDefault(::emptyMap)
 
     private fun InfinityService.ConferenceStep.theme(store: TokenStore) = store.asFlow()
         .map { theme(it).await() }

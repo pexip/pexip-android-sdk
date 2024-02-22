@@ -489,6 +489,69 @@ internal class ConferenceStepTest {
     }
 
     @Test
+    fun `layoutSvgs throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailure { step.layoutSvgs(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifyLayoutSvgs(token)
+    }
+
+    @Test
+    fun `layoutSvgs throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailure { step.layoutSvgs(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyLayoutSvgs(token)
+    }
+
+    @Test
+    fun `layoutSvgs throws NoSuchConferenceException`() = runTest {
+        val body = fileSystem.readUtf8("conference_not_found.json")
+        server.enqueue {
+            setResponseCode(404)
+            setBody(body)
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.layoutSvgs(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyLayoutSvgs(token)
+    }
+
+    @Test
+    fun `layoutSvgs throws InvalidTokenException`() = runTest {
+        val body = fileSystem.readUtf8("invalid_token.json")
+        server.enqueue {
+            setResponseCode(403)
+            setBody(body)
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.layoutSvgs(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifyLayoutSvgs(token)
+    }
+
+    @Test
+    fun `layoutSvgs returns a map on 200`() = runTest {
+        val body = fileSystem.readUtf8("layout_svgs.json")
+        server.enqueue {
+            setResponseCode(200)
+            setBody(body)
+        }
+        val token = Random.nextString(8)
+        assertThat(step.layoutSvgs(token).await(), "response").containsOnly(
+            LayoutId("1:7") to """<svg width='140' height='88' viewBox='0 0 140 88' fill='none' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0.5' y='0.5' width='139' height='87' rx='3.5' fill='currentColor' stroke='#BBBFC3'></rect>
+<rect x='33' y='12.1044' width='74' height='45.3913' rx='2' fill='#BBBFC3'></rect>
+<rect x='4' y='66' width='18' height='14' rx='2' fill='#BBBFC3'></rect>
+<rect x='23' y='66' width='18' height='14' rx='2' fill='#BBBFC3'></rect>
+<rect x='42' y='66' width='18' height='14' rx='2' fill='#BBBFC3'></rect>
+<rect x='61' y='66' width='18' height='14' rx='2' fill='#BBBFC3'></rect>
+<rect x='80' y='66' width='18' height='14' rx='2' fill='#BBBFC3'></rect>
+<rect x='99' y='66' width='18' height='14' rx='2' fill='#BBBFC3'></rect>
+<rect x='118' y='66' width='18' height='14' rx='2' fill='#BBBFC3'></rect></svg>""",
+        )
+        server.verifyLayoutSvgs(token)
+    }
+
+    @Test
     fun `theme throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
@@ -626,6 +689,17 @@ internal class ConferenceStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("available_layouts")
+        }
+        assertToken(token)
+        assertGet()
+    }
+
+    private fun MockWebServer.verifyLayoutSvgs(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("layout_svgs")
         }
         assertToken(token)
         assertGet()

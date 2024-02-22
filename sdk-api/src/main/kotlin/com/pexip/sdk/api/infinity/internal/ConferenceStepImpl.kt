@@ -148,6 +148,24 @@ internal class ConferenceStepImpl(
 
     override fun availableLayouts(token: Token): Call<Set<LayoutId>> = availableLayouts(token.token)
 
+    override fun layoutSvgs(token: String): Call<Map<LayoutId, String>> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .get()
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("layout_svgs")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseLayoutSvgs,
+        )
+    }
+
+    override fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> = layoutSvgs(token.token)
+
     override fun theme(token: String): Call<Map<String, SplashScreenResponse>> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -244,6 +262,13 @@ internal class ConferenceStepImpl(
 
     private fun parseAvailableLayouts(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(AvailableLayoutsSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseLayoutSvgs(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(LayoutSvgsSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
