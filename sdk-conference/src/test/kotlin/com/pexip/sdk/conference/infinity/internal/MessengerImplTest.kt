@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.MessageNotSentException
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import java.util.UUID
 import kotlin.random.Random
@@ -269,6 +270,7 @@ class MessengerImplTest {
             atProvider = { at },
         )
         messenger.message.test {
+            event.subscriptionCount.first { it > 0 }
             val messages = List(10) { Random.nextMessage(at = at, direct = it % 2 == 0) }
             messages.forEach {
                 val e = MessageReceivedEvent(

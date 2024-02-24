@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,22 @@ import com.pexip.sdk.media.Data
 import com.pexip.sdk.media.DataChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
 import java.util.UUID
 import kotlin.random.Random
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class DataChannelMessengerImplTest {
+
+    private lateinit var flow: MutableSharedFlow<Data>
+
+    @BeforeTest
+    fun setUp() {
+        flow = MutableSharedFlow(extraBufferCapacity = 1)
+    }
 
     @Test
     fun `send() throws`() = runTest {
@@ -98,13 +107,12 @@ class DataChannelMessengerImplTest {
 
     @Test
     fun `onData ignores binary messages`() = runTest {
-        val flow = MutableSharedFlow<Data>()
         val dataChannel = object : DataChannel {
 
             override val id: Int
                 get() = Random.nextInt()
 
-            override val data: Flow<Data> = flow
+            override val data: SharedFlow<Data> = flow
 
             override suspend fun send(data: Data): Unit = fail("")
         }
@@ -116,6 +124,7 @@ class DataChannelMessengerImplTest {
             atProvider = { fail("unexpected atProvider()") },
         )
         messenger.message.test {
+            flow.awaitSubscriptionCountAtLeast(1)
             val messages = List(10) { Data(Random.nextBytes(8), true) }
             messages.forEach { flow.emit(it) }
             expectNoEvents()
@@ -124,7 +133,6 @@ class DataChannelMessengerImplTest {
 
     @Test
     fun `onData ignores malformed messages`() = runTest {
-        val flow = MutableSharedFlow<Data>()
         val dataChannel = object : DataChannel {
 
             override val id: Int
@@ -142,6 +150,7 @@ class DataChannelMessengerImplTest {
             atProvider = { fail("unexpected atProvider()") },
         )
         messenger.message.test {
+            flow.awaitSubscriptionCountAtLeast(1)
             val messages = List(10) { Data(Random.nextBytes(8), false) }
             messages.forEach { flow.emit(it) }
             expectNoEvents()
@@ -151,7 +160,6 @@ class DataChannelMessengerImplTest {
     @Test
     fun `onData maps Data to Message`() = runTest {
         val at = System.currentTimeMillis()
-        val flow = MutableSharedFlow<Data>()
         val dataChannel = object : DataChannel {
 
             override val id: Int
@@ -169,6 +177,7 @@ class DataChannelMessengerImplTest {
             atProvider = { at },
         )
         messenger.message.test {
+            flow.awaitSubscriptionCountAtLeast(1)
             val strings = List(10) { "{\"type\": \"${Random.nextString(8)}\"}" }
             strings.forEach {
                 val data = Data(it.encodeToByteArray(), false)

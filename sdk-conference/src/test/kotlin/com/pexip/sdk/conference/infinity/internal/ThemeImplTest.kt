@@ -40,7 +40,6 @@ import com.pexip.sdk.conference.Layout
 import com.pexip.sdk.conference.LayoutId
 import com.pexip.sdk.conference.SplashScreen
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
 import kotlin.test.BeforeTest
@@ -96,7 +95,7 @@ class ThemeImplTest {
             store = store,
         )
         theme.layout.test {
-            event.subscriptionCount.first { it > 0 }
+            event.awaitSubscriptionCountAtLeast(2)
             assertThat(awaitItem(), "layout").isNull()
             repeat(10) {
                 val e = LayoutEvent(
@@ -172,7 +171,7 @@ class ThemeImplTest {
             store = store,
         )
         theme.splashScreen.test {
-            event.subscriptionCount.first { it > 0 }
+            event.awaitSubscriptionCountAtLeast(2)
             assertThat(awaitItem()).isNull()
             event.emit(SplashScreenEvent(Random.nextString(8)))
             expectNoEvents()
