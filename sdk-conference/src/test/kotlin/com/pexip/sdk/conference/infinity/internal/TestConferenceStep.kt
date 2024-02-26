@@ -25,6 +25,7 @@ import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.Token
+import com.pexip.sdk.api.infinity.TransformLayoutRequest
 import java.util.UUID
 
 internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
@@ -59,6 +60,12 @@ internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
     override fun layoutSvgs(token: String): Call<Map<LayoutId, String>> = TODO()
 
     override fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> = layoutSvgs(token.token)
+
+    override fun transformLayout(request: TransformLayoutRequest, token: String): Call<Boolean> =
+        TODO()
+
+    override fun transformLayout(request: TransformLayoutRequest, token: Token): Call<Boolean> =
+        transformLayout(request, token.token)
 
     override fun theme(token: String): Call<Map<String, SplashScreenResponse>> = TODO()
 

@@ -32,6 +32,8 @@ import com.pexip.sdk.api.infinity.RequiredSsoException
 import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.SsoRedirectException
 import com.pexip.sdk.api.infinity.Token
+import com.pexip.sdk.api.infinity.TransformLayoutRequest
+import com.pexip.sdk.infinity.IllegalLayoutTransformException
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response
@@ -166,6 +168,25 @@ internal class ConferenceStepImpl(
 
     override fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> = layoutSvgs(token.token)
 
+    override fun transformLayout(request: TransformLayoutRequest, token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(json.encodeToRequestBody(TransformLayoutRequestSerializer, request))
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("transform_layout")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseTransformLayout,
+        )
+    }
+
+    override fun transformLayout(request: TransformLayoutRequest, token: Token): Call<Boolean> =
+        transformLayout(request, token.token)
+
     override fun theme(token: String): Call<Map<String, SplashScreenResponse>> {
         require(token.isNotBlank()) { "token is blank." }
         return RealCall(
@@ -269,6 +290,17 @@ internal class ConferenceStepImpl(
 
     private fun parseLayoutSvgs(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(LayoutSvgsSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseTransformLayout(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        400 -> {
+            val message = json.decodeFromResponseBody(StringSerializer, response.body!!)
+            throw IllegalLayoutTransformException(message)
+        }
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

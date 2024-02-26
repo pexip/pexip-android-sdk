@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.api.infinity
 
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -76,6 +77,16 @@ internal inline fun <reified T> RecordedRequest.assertPost(json: Json, request: 
     assertEquals("POST", method)
     assertContentType("application/json; charset=utf-8")
     assertEquals(request, json.decodeFromString(body.readUtf8()))
+}
+
+internal fun <T> RecordedRequest.assertPost(
+    json: Json,
+    serializer: DeserializationStrategy<T>,
+    request: T,
+) {
+    assertEquals("POST", method)
+    assertContentType("application/json; charset=utf-8")
+    assertEquals(request, json.decodeFromString(serializer, body.readUtf8()))
 }
 
 internal fun RecordedRequest.assertRequestUrl(url: URL, block: HttpUrl.Builder.() -> Unit) =

@@ -571,6 +571,8 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Confe
 	public abstract fun theme (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun theme (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/Token;)Ljava/lang/String;
 	public abstract fun theme (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public abstract fun transformLayout (Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public abstract fun transformLayout (Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 }
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$ParticipantStep {
@@ -1577,6 +1579,38 @@ public abstract interface class com/pexip/sdk/api/infinity/TokenStore {
 public final class com/pexip/sdk/api/infinity/TokenStore$Companion {
 	public final fun create (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/infinity/TokenStore;
 	public final fun refreshTokenIn (Lcom/pexip/sdk/api/infinity/TokenStore;Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;)Lkotlinx/coroutines/Job;
+}
+
+public final class com/pexip/sdk/api/infinity/TransformLayoutRequest {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/TransformLayoutRequest$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-8Fcadpo ()Ljava/lang/String;
+	public final fun component2-8Fcadpo ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Boolean;
+	public final fun copy-aEplfBc (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;)Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;
+	public static synthetic fun copy-aEplfBc$default (Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnableOverlayText ()Ljava/lang/Boolean;
+	public final fun getGuestLayout-8Fcadpo ()Ljava/lang/String;
+	public final fun getHostLayout-8Fcadpo ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/api/infinity/TransformLayoutRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/TransformLayoutRequest$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/TransformLayoutRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/TurnResponse {

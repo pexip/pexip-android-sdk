@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.pexip.sdk.api.infinity.internal
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.okio.decodeFromBufferedSource
@@ -31,6 +32,9 @@ import java.util.UUID
 
 internal inline fun <reified T> Json.encodeToRequestBody(value: T) =
     encodeToString(value).toRequestBody(ApplicationJson)
+
+internal fun <T> Json.encodeToRequestBody(serializer: SerializationStrategy<T>, value: T) =
+    encodeToString(serializer, value).toRequestBody(ApplicationJson)
 
 @OptIn(ExperimentalSerializationApi::class)
 internal inline fun <reified T> Json.decodeFromResponseBody(
