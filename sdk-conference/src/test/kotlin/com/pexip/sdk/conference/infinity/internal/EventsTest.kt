@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import com.pexip.sdk.api.infinity.TokenStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.TestScope
@@ -51,7 +50,7 @@ class EventsTest {
     fun `maps Event to ConferenceEvent`() = runTest {
         val step = testConferenceStep()
         step.events(store).test {
-            event.awaitSubscribers()
+            event.awaitSubscriptionCountAtLeast(1)
             val events = List(10) { TestEvent() }
             events.forEach {
                 event.emit(Result.success(it))
@@ -66,22 +65,18 @@ class EventsTest {
     fun `failure restarts the flow`() = runTest {
         val step = testConferenceStep()
         step.events(store).test {
-            event.awaitSubscribers()
+            event.awaitSubscriptionCountAtLeast(1)
             val event1 = TestEvent()
             event.emit(Result.success(event1))
             assertThat(awaitItem(), "event").isEqualTo(event1)
             event.emit(Result.failure(Throwable()))
-            event.awaitSubscribers()
+            event.awaitSubscriptionCountAtLeast(1)
             val event2 = TestEvent()
             event.emit(Result.success(event2))
             assertThat(awaitItem(), "event").isEqualTo(event2)
             expectNoEvents()
             cancelAndIgnoreRemainingEvents()
         }
-    }
-
-    private suspend fun <T> MutableSharedFlow<T>.awaitSubscribers() {
-        subscriptionCount.first { it > 0 }
     }
 
     private fun TestScope.testConferenceStep() = object : TestConferenceStep() {

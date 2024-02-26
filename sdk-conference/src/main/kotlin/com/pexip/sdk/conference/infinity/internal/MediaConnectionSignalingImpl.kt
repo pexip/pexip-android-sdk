@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,16 @@ import com.pexip.sdk.media.RestartSignalingEvent
 import com.pexip.sdk.media.SignalingEvent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.shareIn
 
 internal class MediaConnectionSignalingImpl(
-    private val store: TokenStore,
+    scope: CoroutineScope,
     event: Flow<Event>,
+    private val store: TokenStore,
     private val participantStep: InfinityService.ParticipantStep,
     override val directMedia: Boolean,
     override val iceServers: List<IceServer>,
@@ -58,7 +62,9 @@ internal class MediaConnectionSignalingImpl(
         else -> CompletableDeferred(callStep)
     }
 
-    override val event: Flow<SignalingEvent> = event.mapNotNull(::toSignalingEvent)
+    override val event: Flow<SignalingEvent> = event
+        .mapNotNull(::toSignalingEvent)
+        .shareIn(scope, SharingStarted.Eagerly)
 
     override suspend fun onOffer(
         callType: String,

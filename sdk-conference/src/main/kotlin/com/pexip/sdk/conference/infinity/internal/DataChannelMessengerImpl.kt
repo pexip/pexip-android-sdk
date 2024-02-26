@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,12 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import java.util.UUID
 
 internal class DataChannelMessengerImpl(
@@ -38,7 +40,9 @@ internal class DataChannelMessengerImpl(
     private val atProvider: () -> Long = System::currentTimeMillis,
 ) : AbstractMessenger(scope) {
 
-    override val message: Flow<Message> = dataChannel.data.mapNotNull(::toMessage)
+    override val message: Flow<Message> = dataChannel.data
+        .mapNotNull(::toMessage)
+        .shareIn(scope, SharingStarted.Eagerly)
 
     init {
         message

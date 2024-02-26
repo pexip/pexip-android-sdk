@@ -35,6 +35,7 @@ import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RefererImpl
 import com.pexip.sdk.conference.infinity.internal.RosterImpl
 import com.pexip.sdk.conference.infinity.internal.ThemeImpl
+import com.pexip.sdk.conference.infinity.internal.WhileSubscribedAtLeast
 import com.pexip.sdk.conference.infinity.internal.events
 import com.pexip.sdk.infinity.UnsupportedInfinityException
 import com.pexip.sdk.media.IceServer
@@ -64,7 +65,12 @@ public class InfinityConference private constructor(
     private val executor = Executors.newSingleThreadScheduledExecutor()
     private val scope = CoroutineScope(SupervisorJob() + executor.asCoroutineDispatcher())
     private val store = TokenStore.create(response)
-    private val event = step.events(store).shareIn(scope, SharingStarted.Lazily)
+
+    // To ensure that all subscribers see SSE we wait until all known subscribers are active.
+    // This has to be updated every time we add another subscriber to the event.
+    private val threshold = if (response.dataChannelId == -1) 5 else 6
+    private val event =
+        step.events(store).shareIn(scope, SharingStarted.WhileSubscribedAtLeast(threshold))
     private val listeners = CopyOnWriteArraySet<ConferenceEventListener>()
     private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
 
@@ -85,8 +91,9 @@ public class InfinityConference private constructor(
     override val referer: Referer = RefererImpl(step.requestBuilder, response.directMediaRequested)
 
     override val signaling: MediaConnectionSignaling = MediaConnectionSignalingImpl(
-        store = store,
+        scope = scope,
         event = event,
+        store = store,
         participantStep = step.participant(response.participantId),
         directMedia = response.directMedia,
         iceServers = buildList(response.stun.size + response.turn.size) {
