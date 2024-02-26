@@ -23,6 +23,7 @@ import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
+import com.pexip.sdk.core.retry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -83,7 +84,7 @@ internal class MessengerImpl(
             direct = participantId != null,
         )
         val result = try {
-            call.await()
+            retry { call.await() }
         } catch (e: CancellationException) {
             throw e
         } catch (t: Throwable) {
