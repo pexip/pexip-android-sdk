@@ -24,11 +24,11 @@ And add modules that you need:
 ```kotlin
 dependencies {
     // A fluent wrapper for Infinity Client REST API
-    implementation("com.pexip.sdk:sdk-api-infinity:0.14.1")
+    implementation("com.pexip.sdk:sdk-api:0.14.1")
     // A set of tools for interacting with an Infinity conference
-    implementation("com.pexip.sdk:sdk-conference-infinity:0.14.1")
+    implementation("com.pexip.sdk:sdk-conference:0.14.1")
     // A set of tools for interacting with an Infinity registration
-    implementation("com.pexip.sdk:sdk-registration-infinity:0.14.1")
+    implementation("com.pexip.sdk:sdk-registration:0.14.1")
     // A `MediaConnection` implementation build on top of WebRTC
     implementation("com.pexip.sdk:sdk-media-webrtc:0.14.1")
     // A composable that wraps SurfaceViewRenderer
