@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -223,10 +223,6 @@ public class WebRtcMediaConnectionFactory private constructor(
                 else -> PeerConnection.IceTransportsType.ALL
             }
             enableImplicitRollback = true
-            continualGatheringPolicy = when (config.continualGathering) {
-                true -> PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
-                else -> PeerConnection.ContinualGatheringPolicy.GATHER_ONCE
-            }
         }
         val init = when (val dataChannel = config.signaling.dataChannel) {
             null -> null
