@@ -96,6 +96,18 @@ public final class com/pexip/sdk/conference/LayoutId {
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
+public final class com/pexip/sdk/conference/LowerAllHandsException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/pexip/sdk/conference/LowerHandException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/pexip/sdk/conference/Message {
 	public fun <init> (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
 	public final fun component1 ()J
@@ -220,6 +232,12 @@ public final class com/pexip/sdk/conference/PresentationStopConferenceEvent : co
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/pexip/sdk/conference/RaiseHandException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/pexip/sdk/conference/ReferConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
 	public fun <init> (JLjava/lang/String;Ljava/lang/String;)V
 	public final fun component1 ()J
@@ -256,6 +274,11 @@ public final class com/pexip/sdk/conference/Role : java/lang/Enum {
 
 public abstract interface class com/pexip/sdk/conference/Roster {
 	public abstract fun getParticipants ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun lowerAllHands (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun lowerHand (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun lowerHand$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun raiseHand (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun raiseHand$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public abstract interface class com/pexip/sdk/conference/SendCallback {

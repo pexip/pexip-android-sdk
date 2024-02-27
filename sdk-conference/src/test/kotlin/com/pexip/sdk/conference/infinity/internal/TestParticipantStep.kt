@@ -25,7 +25,7 @@ import com.pexip.sdk.api.infinity.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.Token
 import java.util.UUID
 
-internal abstract class TestParticipantStep : InfinityService.ParticipantStep {
+internal open class TestParticipantStep : InfinityService.ParticipantStep {
 
     override val conferenceStep: InfinityService.ConferenceStep get() = TODO()
 
