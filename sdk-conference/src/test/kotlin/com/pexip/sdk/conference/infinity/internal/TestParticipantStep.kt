@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,14 @@ internal abstract class TestParticipantStep : InfinityService.ParticipantStep {
         request: PreferredAspectRatioRequest,
         token: Token,
     ): Call<Boolean> = preferredAspectRatio(request, token.token)
+
+    override fun buzz(token: String): Call<Boolean> = TODO()
+
+    override fun buzz(token: Token): Call<Boolean> = buzz(token.token)
+
+    override fun clearBuzz(token: String): Call<Boolean> = TODO()
+
+    override fun clearBuzz(token: Token): Call<Boolean> = clearBuzz(token.token)
 
     override fun call(callId: UUID): InfinityService.CallStep = TODO()
 }

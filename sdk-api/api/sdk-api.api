@@ -559,6 +559,8 @@ public final class com/pexip/sdk/api/infinity/InfinityService$Companion {
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$ConferenceStep {
 	public abstract fun availableLayouts (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun availableLayouts (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public abstract fun clearAllBuzz (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public abstract fun clearAllBuzz (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun events (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/EventSourceFactory;
 	public abstract fun events (Ljava/lang/String;)Lcom/pexip/sdk/api/EventSourceFactory;
 	public abstract fun getRequestBuilder ()Lcom/pexip/sdk/api/infinity/InfinityService$RequestBuilder;
@@ -582,9 +584,13 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Confe
 }
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$ParticipantStep {
+	public abstract fun buzz (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public abstract fun buzz (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun call (Ljava/util/UUID;)Lcom/pexip/sdk/api/infinity/InfinityService$CallStep;
 	public abstract fun calls (Lcom/pexip/sdk/api/infinity/CallsRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun calls (Lcom/pexip/sdk/api/infinity/CallsRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public abstract fun clearBuzz (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public abstract fun clearBuzz (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public abstract fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public abstract fun getConferenceStep ()Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;

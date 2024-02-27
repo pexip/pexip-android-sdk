@@ -284,6 +284,26 @@ public interface InfinityService {
         public fun theme(path: String, token: Token): String
 
         /**
+         * Lowers all raised hands.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#clearallbuzz).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun clearAllBuzz(token: String): Call<Boolean>
+
+        /**
+         * Lowers all raised hands.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#clearallbuzz).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun clearAllBuzz(token: Token): Call<Boolean>
+
+        /**
          * Subscribes to server-side events.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#server_sent).
@@ -628,6 +648,46 @@ public interface InfinityService {
             request: PreferredAspectRatioRequest,
             token: Token,
         ): Call<Boolean>
+
+        /**
+         * Raises a participant's hand.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#buzz).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun buzz(token: String): Call<Boolean>
+
+        /**
+         * Raises a participant's hand.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#buzz).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun buzz(token: Token): Call<Boolean>
+
+        /**
+         * Lowers a participant's hand.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#clearbuzz).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun clearBuzz(token: String): Call<Boolean>
+
+        /**
+         * Lowers a participant's hand.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#clearbuzz).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun clearBuzz(token: Token): Call<Boolean>
 
         /**
          * Sets the call ID.

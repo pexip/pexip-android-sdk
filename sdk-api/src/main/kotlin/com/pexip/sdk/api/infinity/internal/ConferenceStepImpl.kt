@@ -218,6 +218,24 @@ internal class ConferenceStepImpl(
 
     override fun theme(path: String, token: Token): String = theme(path, token.token)
 
+    override fun clearAllBuzz(token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node) {
+                    conference(conferenceAlias)
+                    addPathSegment("clearallbuzz")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseClearAllBuzz,
+        )
+    }
+
+    override fun clearAllBuzz(token: Token): Call<Boolean> = clearAllBuzz(token.token)
+
     override fun events(token: String): EventSourceFactory {
         require(token.isNotBlank()) { "token is blank." }
         return RealEventSourceFactory(
@@ -309,6 +327,13 @@ internal class ConferenceStepImpl(
     private fun parseTheme(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(ThemeSerializer, response.body!!)
         204 -> mapOf()
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseClearAllBuzz(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

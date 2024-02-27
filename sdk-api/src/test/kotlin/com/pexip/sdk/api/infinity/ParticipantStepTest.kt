@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,13 @@
  */
 package com.pexip.sdk.api.infinity
 
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.internal.addPathSegment
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -458,51 +464,47 @@ internal class ParticipantStepTest {
     }
 
     @Test
-    fun `message throws IllegalStateException`() {
+    fun `buzz throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         val token = Random.nextString(8)
-        val request = Random.nextMessageRequest()
-        assertFailsWith<IllegalStateException> { step.message(request, token).execute() }
-        server.verifyMessage(request, token)
+        assertFailure { step.buzz(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifyBuzz(token)
     }
 
     @Test
-    fun `message throws NoSuchNodeException`() {
+    fun `buzz throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
         val token = Random.nextString(8)
-        val request = Random.nextMessageRequest()
-        assertFailsWith<NoSuchNodeException> { step.message(request, token).execute() }
-        server.verifyMessage(request, token)
+        assertFailure { step.buzz(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyBuzz(token)
     }
 
     @Test
-    fun `message throws NoSuchConferenceException`() {
+    fun `buzz throws NoSuchConferenceException`() = runTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
-        val request = Random.nextMessageRequest()
-        assertFailsWith<NoSuchConferenceException> { step.message(request, token).execute() }
-        server.verifyMessage(request, token)
+        assertFailure { step.buzz(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyBuzz(token)
     }
 
     @Test
-    fun `message throws InvalidTokenException`() {
+    fun `buzz throws InvalidTokenException`() = runTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
         val token = Random.nextString(8)
-        val request = Random.nextMessageRequest()
-        assertFailsWith<InvalidTokenException> { step.message(request, token).execute() }
-        server.verifyMessage(request, token)
+        assertFailure { step.buzz(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifyBuzz(token)
     }
 
     @Test
-    fun `message returns result on 200`() {
+    fun `buzz returns result on 200`() = runTest {
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -510,9 +512,62 @@ internal class ParticipantStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             val token = Random.nextString(8)
-            val request = Random.nextMessageRequest()
-            assertEquals(result, step.message(request, token).execute())
-            server.verifyMessage(request, token)
+            assertThat(step.buzz(token).await(), "result").isEqualTo(result)
+            server.verifyBuzz(token)
+        }
+    }
+
+    @Test
+    fun `clearBuzz throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailure { step.clearBuzz(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifyClearBuzz(token)
+    }
+
+    @Test
+    fun `clearBuzz throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailure { step.clearBuzz(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyClearBuzz(token)
+    }
+
+    @Test
+    fun `clearBuzz throws NoSuchConferenceException`() = runTest {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.clearBuzz(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyClearBuzz(token)
+    }
+
+    @Test
+    fun `clearBuzz throws InvalidTokenException`() = runTest {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.clearBuzz(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifyClearBuzz(token)
+    }
+
+    @Test
+    fun `clearBuzz returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            val token = Random.nextString(8)
+            assertThat(step.clearBuzz(token).await(), "result").isEqualTo(result)
+            server.verifyClearBuzz(token)
         }
     }
 
@@ -578,6 +633,65 @@ internal class ParticipantStepTest {
             val request = Random.nextPreferredAspectRatioRequest()
             assertEquals(result, step.preferredAspectRatio(request, token).execute())
             server.verifyPreferredAspectRatio(request, token)
+        }
+    }
+
+    @Test
+    fun `message throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        val request = Random.nextMessageRequest()
+        assertFailsWith<IllegalStateException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        val request = Random.nextMessageRequest()
+        assertFailsWith<NoSuchNodeException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        val request = Random.nextMessageRequest()
+        assertFailsWith<NoSuchConferenceException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        val request = Random.nextMessageRequest()
+        assertFailsWith<InvalidTokenException> { step.message(request, token).execute() }
+        server.verifyMessage(request, token)
+    }
+
+    @Test
+    fun `message returns result on 200`() {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            val token = Random.nextString(8)
+            val request = Random.nextMessageRequest()
+            assertEquals(result, step.message(request, token).execute())
+            server.verifyMessage(request, token)
         }
     }
 
@@ -723,4 +837,30 @@ internal class ParticipantStepTest {
     )
 
     private fun Random.nextPreferredAspectRatioRequest() = PreferredAspectRatioRequest(nextFloat())
+
+    private fun MockWebServer.verifyBuzz(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId)
+            addPathSegment("buzz")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyClearBuzz(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId)
+            addPathSegment("clearbuzz")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
 }
