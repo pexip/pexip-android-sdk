@@ -24,11 +24,15 @@ import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.TokenStore
+import com.pexip.sdk.api.infinity.TransformLayoutRequest
 import com.pexip.sdk.conference.Element
 import com.pexip.sdk.conference.Layout
 import com.pexip.sdk.conference.LayoutId
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.conference.Theme
+import com.pexip.sdk.conference.TransformLayoutException
+import com.pexip.sdk.core.retry
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -62,6 +66,25 @@ internal class ThemeImpl(
         .filterIsInstance<SplashScreenEvent>()
         .combine(step.theme(store), ::toSplashScreen)
         .stateIn(scope, SharingStarted.Eagerly, null)
+
+    override suspend fun transformLayout(
+        layout: LayoutId?,
+        guestLayout: LayoutId?,
+        enableOverlayText: Boolean?,
+    ) {
+        try {
+            val request = TransformLayoutRequest(
+                layout = layout?.let(::ApiLayoutId),
+                guestLayout = guestLayout?.let(::ApiLayoutId),
+                enableOverlayText = enableOverlayText,
+            )
+            retry { step.transformLayout(request, store.get()).await() }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (t: Throwable) {
+            throw TransformLayoutException(t)
+        }
+    }
 
     private fun toLayout(
         event: LayoutEvent,
@@ -109,6 +132,8 @@ internal class ThemeImpl(
     private fun TokenStore.asFlow() = flow { emit(get()) }
 
     private fun LayoutId(id: ApiLayoutId): LayoutId = LayoutId(id.value)
+
+    private fun ApiLayoutId(id: LayoutId): ApiLayoutId = ApiLayoutId(id.value)
 
     private fun <T> Flow<T>.retryOrDefault(value: () -> T) = retryWhen { cause, attempt ->
         when (cause) {

@@ -31,4 +31,23 @@ public interface Theme {
      * A [StateFlow] of [SplashScreen]s that should be displayed.
      */
     public val splashScreen: StateFlow<SplashScreen?>
+
+    /**
+     * Transforms the current conference layout given sufficient privileges.
+     *
+     * Calling this method with the default parameters resets any prior transformations applied
+     * to the conference layout.
+     *
+     * Changes are applied cumulatively.
+     *
+     * @param layout a layout visible to hosts and guests
+     * @param guestLayout a layout visible to guests in Virtual Auditoriums
+     * @param enableOverlayText true if per-participant overlay text is enabled, false otherwise
+     * @throws TransformLayoutException if layout transformation was not applied
+     */
+    public suspend fun transformLayout(
+        layout: LayoutId? = null,
+        guestLayout: LayoutId? = null,
+        enableOverlayText: Boolean? = null,
+    )
 }

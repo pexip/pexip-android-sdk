@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.infinity
+package com.pexip.sdk.api.infinity
 
 /**
  * Thrown to indicate that the requested layout transformation is unsupported.

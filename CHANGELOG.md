@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - `Theme.layout` that provides the currently active layout of the conference
+- `Theme.transformLayout` to modify the layout of the conference
 - `UnsupportedInfinityException` to indicate when the deployment is not supported by the SDK
 
 ### Changed

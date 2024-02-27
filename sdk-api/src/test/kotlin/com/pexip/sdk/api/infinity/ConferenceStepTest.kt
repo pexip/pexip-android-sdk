@@ -30,7 +30,6 @@ import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
 import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
 import com.pexip.sdk.api.infinity.internal.TransformLayoutRequestSerializer
-import com.pexip.sdk.infinity.IllegalLayoutTransformException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -557,7 +556,7 @@ internal class ConferenceStepTest {
     fun `transformLayout throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         val request = TransformLayoutRequest(
-            hostLayout = LayoutId(Random.nextString(8)),
+            layout = LayoutId(Random.nextString(8)),
             guestLayout = LayoutId(Random.nextString(8)),
             enableOverlayText = Random.nextBoolean(),
         )
@@ -575,7 +574,7 @@ internal class ConferenceStepTest {
             setBody(body)
         }
         val request = TransformLayoutRequest(
-            hostLayout = LayoutId(Random.nextString(8)),
+            layout = LayoutId(Random.nextString(8)),
             guestLayout = LayoutId(Random.nextString(8)),
             enableOverlayText = Random.nextBoolean(),
         )
@@ -589,7 +588,7 @@ internal class ConferenceStepTest {
     fun `transformLayout throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
         val request = TransformLayoutRequest(
-            hostLayout = LayoutId(Random.nextString(8)),
+            layout = LayoutId(Random.nextString(8)),
             guestLayout = LayoutId(Random.nextString(8)),
             enableOverlayText = Random.nextBoolean(),
         )
@@ -607,7 +606,7 @@ internal class ConferenceStepTest {
             setBody(body)
         }
         val request = TransformLayoutRequest(
-            hostLayout = LayoutId(Random.nextString(8)),
+            layout = LayoutId(Random.nextString(8)),
             guestLayout = LayoutId(Random.nextString(8)),
             enableOverlayText = Random.nextBoolean(),
         )
@@ -625,7 +624,7 @@ internal class ConferenceStepTest {
             setBody(body)
         }
         val request = TransformLayoutRequest(
-            hostLayout = LayoutId(Random.nextString(8)),
+            layout = LayoutId(Random.nextString(8)),
             guestLayout = LayoutId(Random.nextString(8)),
             enableOverlayText = Random.nextBoolean(),
         )
@@ -644,7 +643,7 @@ internal class ConferenceStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             val request = TransformLayoutRequest(
-                hostLayout = LayoutId(Random.nextString(8)),
+                layout = LayoutId(Random.nextString(8)),
                 guestLayout = LayoutId(Random.nextString(8)),
                 enableOverlayText = Random.nextBoolean(),
             )
