@@ -26,10 +26,8 @@ dependencyResolutionManagement {
 rootProject.name = "pexip-android-sdk"
 include(":sample")
 include(":sdk-api")
-include(":sdk-api-infinity")
 include(":sdk-catalog")
 include(":sdk-conference")
-include(":sdk-conference-infinity")
 include(":sdk-core")
 include(":sdk-infinity")
 include(":sdk-media")
@@ -37,7 +35,6 @@ include(":sdk-media-android")
 include(":sdk-media-webrtc")
 include(":sdk-media-webrtc-compose")
 include(":sdk-registration")
-include(":sdk-registration-infinity")
 
 val localSettings = file("local.settings.gradle.kts")
 if (localSettings.exists()) apply(from = localSettings)
