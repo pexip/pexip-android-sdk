@@ -20,6 +20,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestRegistrationTokenResponse
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
+import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.UnsupportedInfinityException
 import com.pexip.sdk.registration.RegisteredDevicesCallback
 import com.pexip.sdk.registration.Registration
@@ -67,8 +68,8 @@ public class InfinityRegistration private constructor(
     init {
         store.refreshTokenIn(
             scope = scope,
-            refreshToken = { step.refreshToken(it).await() },
-            releaseToken = { step.releaseToken(it).await() },
+            refreshToken = { retry { step.refreshToken(it).await() } },
+            releaseToken = { retry { step.releaseToken(it).await() } },
             onFailure = { mutableRegistrationEvent.emit(RegistrationEvent(it)) },
         )
         merge(registrationEvent, mutableRegistrationEvent)

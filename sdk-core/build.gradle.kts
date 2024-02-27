@@ -5,14 +5,12 @@ plugins {
 }
 
 dependencies {
-    api(project(":sdk-api"))
-    api(project(":sdk-media"))
+    api(libs.kotlinx.coroutines.core)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.turbine)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description = "A set of tools to interact with conferences."
+    pom.description = "Pexip SDK core"
 }
 
 tasks.withType<KotlinCompile>().configureEach {

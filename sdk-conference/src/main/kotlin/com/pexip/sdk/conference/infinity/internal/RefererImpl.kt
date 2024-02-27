@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.pexip.sdk.conference.ReferConferenceEvent
 import com.pexip.sdk.conference.ReferException
 import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.infinity.InfinityConference
+import com.pexip.sdk.core.retry
 import kotlinx.coroutines.CancellationException
 
 internal class RefererImpl(
@@ -41,7 +42,7 @@ internal class RefererImpl(
     override suspend fun refer(event: ReferConferenceEvent): Conference = try {
         val step = builder.conference(event.conferenceAlias)
         val request = RequestTokenRequest(incomingToken = event.token, directMedia = directMedia)
-        val response = step.requestToken(request).await()
+        val response = retry { step.requestToken(request).await() }
         createConference(step, response)
     } catch (e: CancellationException) {
         throw e

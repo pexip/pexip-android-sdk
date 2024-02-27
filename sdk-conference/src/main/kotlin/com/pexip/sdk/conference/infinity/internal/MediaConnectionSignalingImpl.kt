@@ -29,6 +29,7 @@ import com.pexip.sdk.api.infinity.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
+import com.pexip.sdk.core.retry
 import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.Data
 import com.pexip.sdk.media.DataSender
@@ -72,7 +73,6 @@ internal class MediaConnectionSignalingImpl(
         presentationInMain: Boolean,
         fecc: Boolean,
     ): String? {
-        val token = store.get()
         val step = when (callStep.isCompleted) {
             true -> callStep.await()
             else -> null
@@ -85,7 +85,7 @@ internal class MediaConnectionSignalingImpl(
                     present = if (presentationInMain) "main" else null,
                     fecc = fecc,
                 )
-                val response = participantStep.calls(request, token).await()
+                val response = retry { participantStep.calls(request, store.get()).await() }
                 callStep.complete(participantStep.call(response.callId))
                 response
             }
@@ -94,7 +94,7 @@ internal class MediaConnectionSignalingImpl(
                     sdp = description,
                     fecc = fecc,
                 )
-                step.update(request, token).await()
+                retry { step.update(request, store.get()).await() }
             }
         }
         return if (response.offerIgnored || response.sdp.isBlank()) null else response.sdp
@@ -102,72 +102,66 @@ internal class MediaConnectionSignalingImpl(
 
     override suspend fun onOfferIgnored() {
         val callStep = callStep.await()
-        val token = store.get()
         val request = AckRequest(offerIgnored = true)
-        callStep.ack(request, token).await()
+        retry { callStep.ack(request, store.get()).await() }
     }
 
     override suspend fun onAnswer(description: String) {
         val callStep = callStep.await()
-        val token = store.get()
         val request = AckRequest(sdp = description)
-        callStep.ack(request, token).await()
+        retry { callStep.ack(request, store.get()).await() }
     }
 
     override suspend fun onAck() {
         val callStep = callStep.await()
-        val token = store.get()
-        callStep.ack(token).await()
+        retry { callStep.ack(store.get()).await() }
     }
 
     override suspend fun onCandidate(candidate: String, mid: String, ufrag: String, pwd: String) {
         val callStep = callStep.await()
-        val token = store.get()
         val request = NewCandidateRequest(
             candidate = candidate,
             mid = mid,
             ufrag = ufrag,
             pwd = pwd,
         )
-        callStep.newCandidate(request, token).await()
+        retry { callStep.newCandidate(request, store.get()).await() }
     }
 
     override suspend fun onDtmf(digits: String) {
         val callStep = callStep.await()
         val request = DtmfRequest(digits)
-        val token = store.get()
-        callStep.dtmf(request, token).await()
+        retry { callStep.dtmf(request, store.get()).await() }
     }
 
-    override suspend fun onAudioMuted() {
+    override suspend fun onAudioMuted() = retry {
         participantStep.mute(store.get()).await()
     }
 
-    override suspend fun onAudioUnmuted() {
+    override suspend fun onAudioUnmuted() = retry {
         participantStep.unmute(store.get()).await()
     }
 
-    override suspend fun onVideoMuted() {
+    override suspend fun onVideoMuted() = retry {
         participantStep.videoMuted(store.get()).await()
     }
 
-    override suspend fun onVideoUnmuted() {
+    override suspend fun onVideoUnmuted() = retry {
         participantStep.videoUnmuted(store.get()).await()
     }
 
-    override suspend fun onTakeFloor() {
+    override suspend fun onTakeFloor() = retry {
         participantStep.takeFloor(store.get()).await()
     }
 
-    override suspend fun onReleaseFloor() {
+    override suspend fun onReleaseFloor() = retry {
         participantStep.releaseFloor(store.get()).await()
     }
 
     override suspend fun onPreferredAspectRatio(aspectRatio: Float) {
         try {
             val request = PreferredAspectRatioRequest(aspectRatio.coerceIn(0f, 2f))
-            val token = store.get()
-            participantStep.preferredAspectRatio(request, token).await()
+            retry { participantStep.preferredAspectRatio(request, store.get()).await() }
         } catch (e: CancellationException) {
             throw e
         } catch (t: Throwable) {

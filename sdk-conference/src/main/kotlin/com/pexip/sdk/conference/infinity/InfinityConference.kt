@@ -37,6 +37,7 @@ import com.pexip.sdk.conference.infinity.internal.RosterImpl
 import com.pexip.sdk.conference.infinity.internal.ThemeImpl
 import com.pexip.sdk.conference.infinity.internal.WhileSubscribedAtLeast
 import com.pexip.sdk.conference.infinity.internal.events
+import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.UnsupportedInfinityException
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
@@ -132,8 +133,8 @@ public class InfinityConference private constructor(
     init {
         store.refreshTokenIn(
             scope = scope,
-            refreshToken = { step.refreshToken(it).await() },
-            releaseToken = { step.releaseToken(it).await() },
+            refreshToken = { retry { step.refreshToken(it).await() } },
+            releaseToken = { retry { step.releaseToken(it).await() } },
             onFailure = { mutableConferenceEvent.emit(ConferenceEvent(it)) },
         )
         merge(event.mapNotNull(::ConferenceEvent), mutableConferenceEvent)
