@@ -47,10 +47,7 @@ wire {
 }
 
 dependencies {
-    implementation(project(":sdk-api-coroutines"))
-    implementation(project(":sdk-conference-infinity"))
-    implementation(project(":sdk-conference-coroutines"))
-    implementation(project(":sdk-media-coroutines"))
+    implementation(project(":sdk-conference"))
     implementation(project(":sdk-media-webrtc-compose"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)

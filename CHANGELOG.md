@@ -17,6 +17,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - ICE restart to happen on default network change. As a result of this change,
   `MediaConnectionConfig.continualGathering` has been deprecated and is ignored
 
+### Removed
+
+- `-coroutines` modules
+
 ## [0.14.1] - 2023-02-07
 
 ### Fixed
