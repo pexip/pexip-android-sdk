@@ -87,6 +87,9 @@ public class InfinityConference private constructor(
     override val roster: Roster = RosterImpl(
         scope = scope,
         event = event,
+        participantId = response.participantId,
+        store = store,
+        step = step,
     )
 
     override val referer: Referer = RefererImpl(step.requestBuilder, response.directMediaRequested)

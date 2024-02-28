@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,32 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import app.cash.turbine.test
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsOnly
 import assertk.assertions.doesNotContain
+import assertk.assertions.hasCause
+import assertk.assertions.index
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isIn
+import assertk.assertions.isInstanceOf
+import com.pexip.sdk.api.Call
+import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.ParticipantCreateEvent
 import com.pexip.sdk.api.infinity.ParticipantDeleteEvent
 import com.pexip.sdk.api.infinity.ParticipantResponse
 import com.pexip.sdk.api.infinity.ParticipantSyncBeginEvent
 import com.pexip.sdk.api.infinity.ParticipantSyncEndEvent
 import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
+import com.pexip.sdk.api.infinity.Token
+import com.pexip.sdk.api.infinity.TokenStore
+import com.pexip.sdk.conference.LowerAllHandsException
+import com.pexip.sdk.conference.LowerHandException
 import com.pexip.sdk.conference.Participant
+import com.pexip.sdk.conference.RaiseHandException
 import com.pexip.sdk.conference.Role
 import com.pexip.sdk.conference.ServiceType
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,15 +59,25 @@ import com.pexip.sdk.api.infinity.ServiceType as ApiServiceType
 class RosterImplTest {
 
     private lateinit var event: MutableSharedFlow<Event>
+    private lateinit var participantId: UUID
+    private lateinit var store: TokenStore
 
     @BeforeTest
     fun setUp() {
         event = MutableSharedFlow(extraBufferCapacity = 1)
+        participantId = UUID.randomUUID()
+        store = TokenStore.create(Random.nextToken())
     }
 
     @Test
     fun `does not update the list until syncing is finished`() = runTest {
-        val roster = RosterImpl(backgroundScope, event)
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = TestConferenceStep(),
+        )
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "participants").isEmpty()
@@ -73,7 +96,13 @@ class RosterImplTest {
 
     @Test
     fun `create, update, delete correctly modify the list`() = runTest {
-        val roster = RosterImpl(backgroundScope, event)
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = TestConferenceStep(),
+        )
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "participants").isEmpty()
@@ -97,7 +126,13 @@ class RosterImplTest {
 
     @Test
     fun `update without a matching create does not modify the list`() = runTest {
-        val roster = RosterImpl(backgroundScope, event)
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = TestConferenceStep(),
+        )
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "participants").isEmpty()
@@ -108,6 +143,259 @@ class RosterImplTest {
             expectNoEvents()
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `raiseHand() returns if participantId does not exist`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = TestConferenceStep(),
+        )
+        roster.raiseHand(UUID.randomUUID())
+    }
+
+    @Test
+    fun `raiseHand() throws RaiseHandException`() = runTest {
+        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
+        val me = participants.random()
+        val causes = participants.associate { it.id to Throwable() }
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = me.id,
+            store = store,
+            step = object : TestConferenceStep() {
+
+                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : TestParticipantStep() {
+
+                        override fun buzz(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.raiseHand(it.id) }
+                .isInstanceOf<RaiseHandException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    @Test
+    fun `raiseHand() returns`() = runTest {
+        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
+        val me = participants.random()
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = me.id,
+            store = store,
+            step = object : TestConferenceStep() {
+
+                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : TestParticipantStep() {
+
+                        override fun buzz(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onSuccess(this, true)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.raiseHand(it.id) }
+    }
+
+    @Test
+    fun `lowerHand() returns if participantId does not exist`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = TestConferenceStep(),
+        )
+        roster.lowerHand(UUID.randomUUID())
+    }
+
+    @Test
+    fun `lowerHand() throws LowerHandException`() = runTest {
+        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
+        val me = participants.random()
+        val causes = participants.associate { it.id to Throwable() }
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = me.id,
+            store = store,
+            step = object : TestConferenceStep() {
+
+                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : TestParticipantStep() {
+
+                        override fun clearBuzz(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.lowerHand(it.id) }
+                .isInstanceOf<LowerHandException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    @Test
+    fun `lowerHand() returns`() = runTest {
+        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
+        val me = participants.random()
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = me.id,
+            store = store,
+            step = object : TestConferenceStep() {
+
+                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : TestParticipantStep() {
+
+                        override fun clearBuzz(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onSuccess(this, true)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.lowerHand(it.id) }
+    }
+
+    @Test
+    fun `lowerAllHands() throws LowerAllHandsException`() = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : TestConferenceStep() {
+
+                override fun clearAllBuzz(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.lowerAllHands() }
+            .isInstanceOf<LowerAllHandsException>()
+            .hasCause(cause)
+    }
+
+    @Test
+    fun `lowerAllHands() returns`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : TestConferenceStep() {
+
+                override fun clearAllBuzz(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.lowerAllHands()
     }
 
     private fun Random.nextParticipant(index: Long = 0, id: UUID = UUID.randomUUID()): Participant {

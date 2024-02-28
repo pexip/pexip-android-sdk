@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,57 +16,78 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Event
+import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.ParticipantCreateEvent
 import com.pexip.sdk.api.infinity.ParticipantDeleteEvent
 import com.pexip.sdk.api.infinity.ParticipantResponse
 import com.pexip.sdk.api.infinity.ParticipantSyncBeginEvent
 import com.pexip.sdk.api.infinity.ParticipantSyncEndEvent
 import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
+import com.pexip.sdk.api.infinity.TokenStore
+import com.pexip.sdk.conference.LowerAllHandsException
+import com.pexip.sdk.conference.LowerHandException
 import com.pexip.sdk.conference.Participant
+import com.pexip.sdk.conference.RaiseHandException
 import com.pexip.sdk.conference.Role
 import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.ServiceType
+import com.pexip.sdk.core.retry
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.UUID
 import com.pexip.sdk.api.infinity.Role as ApiRole
 import com.pexip.sdk.api.infinity.ServiceType as ApiServiceType
 
-internal class RosterImpl(scope: CoroutineScope, event: Flow<Event>) : Roster {
+internal class RosterImpl(
+    scope: CoroutineScope,
+    event: Flow<Event>,
+    private val participantId: UUID,
+    private val store: TokenStore,
+    private val step: InfinityService.ConferenceStep,
+) : Roster {
+
+    private val mutex = Mutex()
+    private val participantMap = mutableMapOf<UUID, Participant>()
+    private val participantStepMap = mutableMapOf<UUID, InfinityService.ParticipantStep>()
 
     private val _participants = channelFlow {
         var syncing = false
-        val participants = mutableMapOf<UUID, Participant>()
 
         suspend fun maybeSendParticipants() {
             if (syncing) return
-            send(participants.values.toList())
+            send(participantMap.values.toList())
         }
 
         event.collect {
             when (it) {
-                is ParticipantSyncBeginEvent -> {
+                is ParticipantSyncBeginEvent -> mutex.withLock {
                     syncing = true
-                    participants.clear()
+                    participantMap.clear()
+                    participantStepMap.clear()
                 }
-                is ParticipantSyncEndEvent -> {
+                is ParticipantSyncEndEvent -> mutex.withLock {
                     syncing = false
                     maybeSendParticipants()
                 }
-                is ParticipantCreateEvent -> {
-                    participants.put(it.response)
+                is ParticipantCreateEvent -> mutex.withLock {
+                    participantMap.put(it.response)
                     maybeSendParticipants()
                 }
-                is ParticipantUpdateEvent -> {
-                    participants.put(it.response)
+                is ParticipantUpdateEvent -> mutex.withLock {
+                    participantMap.put(it.response)
                     maybeSendParticipants()
                 }
-                is ParticipantDeleteEvent -> {
-                    participants -= it.id
+                is ParticipantDeleteEvent -> mutex.withLock {
+                    participantMap -= it.id
+                    participantStepMap -= it.id
                     maybeSendParticipants()
                 }
                 else -> Unit
@@ -79,6 +100,45 @@ internal class RosterImpl(scope: CoroutineScope, event: Flow<Event>) : Roster {
         started = SharingStarted.Eagerly,
         initialValue = emptyList(),
     )
+
+    override suspend fun raiseHand(participantId: UUID?) {
+        try {
+            val step = participantStep(participantId) ?: return
+            retry { step.buzz(store.get()).await() }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (t: Throwable) {
+            throw RaiseHandException(t)
+        }
+    }
+
+    override suspend fun lowerHand(participantId: UUID?) {
+        try {
+            val step = participantStep(participantId) ?: return
+            retry { step.clearBuzz(store.get()).await() }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (t: Throwable) {
+            throw LowerHandException(t)
+        }
+    }
+
+    override suspend fun lowerAllHands() {
+        try {
+            retry { step.clearAllBuzz(store.get()).await() }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (t: Throwable) {
+            throw LowerAllHandsException(t)
+        }
+    }
+
+    private suspend fun participantStep(participantId: UUID?) = mutex.withLock {
+        when (val id = participantId ?: this.participantId) {
+            in participantMap -> participantStepMap.getOrPut(id) { step.participant(id) }
+            else -> null
+        }
+    }
 
     private fun MutableMap<UUID, Participant>.put(response: ParticipantResponse) = put(
         key = response.id,

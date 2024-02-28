@@ -28,7 +28,7 @@ import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TransformLayoutRequest
 import java.util.UUID
 
-internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
+internal open class TestConferenceStep : InfinityService.ConferenceStep {
 
     override val requestBuilder: InfinityService.RequestBuilder get() = TODO()
 
@@ -78,7 +78,7 @@ internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
 
     override fun clearAllBuzz(token: String): Call<Boolean> = TODO()
 
-    final override fun clearAllBuzz(token: Token): Call<Boolean> = clearAllBuzz(token.token)
+    override fun clearAllBuzz(token: Token): Call<Boolean> = clearAllBuzz(token.token)
 
     override fun events(token: String): EventSourceFactory = TODO()
 

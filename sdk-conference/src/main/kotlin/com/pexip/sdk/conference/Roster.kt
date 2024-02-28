@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.pexip.sdk.conference
 
 import kotlinx.coroutines.flow.StateFlow
+import java.util.UUID
 
 /**
  * Handles conference participants.
@@ -26,4 +27,27 @@ public interface Roster {
      * A [StateFlow] that represents participants of this conference.
      */
     public val participants: StateFlow<List<Participant>>
+
+    /**
+     * Raises hand of the specified participant or self.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws RaiseHandException if the operation failed
+     */
+    public suspend fun raiseHand(participantId: UUID? = null)
+
+    /**
+     * Lowers hand of the specified participant or self.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws LowerHandException if the operation failed
+     */
+    public suspend fun lowerHand(participantId: UUID? = null)
+
+    /**
+     * Lowers all hands.
+     *
+     * @throws LowerAllHandsException if the operation failed
+     */
+    public suspend fun lowerAllHands()
 }
