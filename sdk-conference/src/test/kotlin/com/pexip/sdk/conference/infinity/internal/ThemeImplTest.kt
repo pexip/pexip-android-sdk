@@ -58,6 +58,24 @@ class ThemeImplTest {
     private lateinit var event: MutableSharedFlow<Event>
     private lateinit var store: TokenStore
 
+    // Can't use tableOf since forAll is not inline, meaning no calls to suspend functions
+    private val transformLayoutPermutations by lazy {
+        listOf(
+            Triple(Random.nextLayoutId(), Random.nextLayoutId(), true),
+            Triple(Random.nextLayoutId(), Random.nextLayoutId(), false),
+            Triple(Random.nextLayoutId(), Random.nextLayoutId(), null),
+            Triple(Random.nextLayoutId(), null, true),
+            Triple(Random.nextLayoutId(), null, false),
+            Triple(Random.nextLayoutId(), null, null),
+            Triple(null, Random.nextLayoutId(), true),
+            Triple(null, Random.nextLayoutId(), false),
+            Triple(null, Random.nextLayoutId(), null),
+            Triple(null, null, true),
+            Triple(null, null, false),
+            Triple(null, null, null),
+        )
+    }
+
     @BeforeTest
     fun setUp() {
         event = MutableSharedFlow(extraBufferCapacity = 1)
@@ -204,71 +222,74 @@ class ThemeImplTest {
 
     @Test
     fun `transformLayout() throws`() = runTest {
-        val t = Throwable()
-        val layout = Random.maybe { nextLayoutId() }
-        val guestLayout = Random.maybe { nextLayoutId() }
-        val enableOverlayText = Random.maybe { nextBoolean() }
-        val step = object : TestConferenceStep() {
+        val t = List(transformLayoutPermutations.size) { Throwable() }
+        transformLayoutPermutations
+            .forEachIndexed { i, (layout, guestLayout, enableOverlayText) ->
+                val step = object : TestConferenceStep() {
 
-            override fun transformLayout(
-                request: TransformLayoutRequest,
-                token: String,
-            ): Call<Boolean> {
-                assertThat(request::layout).isEqualTo(layout?.let { ApiLayoutId(it.value) })
-                assertThat(request::guestLayout).isEqualTo(guestLayout?.let { ApiLayoutId(it.value) })
-                assertThat(request::enableOverlayText).isEqualTo(enableOverlayText)
-                return object : TestCall<Boolean> {
+                    override fun transformLayout(
+                        request: TransformLayoutRequest,
+                        token: String,
+                    ): Call<Boolean> {
+                        assertThat(request::layout)
+                            .isEqualTo(layout?.let { ApiLayoutId(it.value) })
+                        assertThat(request::guestLayout)
+                            .isEqualTo(guestLayout?.let { ApiLayoutId(it.value) })
+                        assertThat(request::enableOverlayText)
+                            .isEqualTo(enableOverlayText)
+                        return object : TestCall<Boolean> {
 
-                    override fun enqueue(callback: Callback<Boolean>) = callback.onFailure(this, t)
+                            override fun enqueue(callback: Callback<Boolean>) =
+                                callback.onFailure(this, t[i])
+                        }
+                    }
                 }
+                val theme = ThemeImpl(
+                    scope = backgroundScope,
+                    event = event,
+                    step = step,
+                    store = store,
+                )
+                assertFailure { theme.transformLayout(layout, guestLayout, enableOverlayText) }
+                    .isInstanceOf<TransformLayoutException>()
+                    .hasCause(t[i])
             }
-        }
-        val theme = ThemeImpl(
-            scope = backgroundScope,
-            event = event,
-            step = step,
-            store = store,
-        )
-        assertFailure { theme.transformLayout(layout, guestLayout, enableOverlayText) }
-            .isInstanceOf<TransformLayoutException>()
-            .hasCause(t)
     }
 
     @Test
     fun `transformLayout() succeeds`() = runTest {
-        val layout = Random.maybe { nextLayoutId() }
-        val guestLayout = Random.maybe { nextLayoutId() }
-        val enableOverlayText = Random.maybe { nextBoolean() }
-        val step = object : TestConferenceStep() {
+        transformLayoutPermutations.forEach { (layout, guestLayout, enableOverlayText) ->
+            val step = object : TestConferenceStep() {
 
-            override fun transformLayout(
-                request: TransformLayoutRequest,
-                token: String,
-            ): Call<Boolean> {
-                assertThat(request::layout).isEqualTo(layout?.let { ApiLayoutId(it.value) })
-                assertThat(request::guestLayout).isEqualTo(guestLayout?.let { ApiLayoutId(it.value) })
-                assertThat(request::enableOverlayText).isEqualTo(enableOverlayText)
-                return object : TestCall<Boolean> {
+                override fun transformLayout(
+                    request: TransformLayoutRequest,
+                    token: String,
+                ): Call<Boolean> {
+                    assertThat(request::layout)
+                        .isEqualTo(layout?.let { ApiLayoutId(it.value) })
+                    assertThat(request::guestLayout)
+                        .isEqualTo(guestLayout?.let { ApiLayoutId(it.value) })
+                    assertThat(request::enableOverlayText)
+                        .isEqualTo(enableOverlayText)
+                    return object : TestCall<Boolean> {
 
-                    override fun enqueue(callback: Callback<Boolean>) =
-                        callback.onSuccess(this, true)
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
                 }
             }
+            val theme = ThemeImpl(
+                scope = backgroundScope,
+                event = event,
+                step = step,
+                store = store,
+            )
+            theme.transformLayout(layout, guestLayout, enableOverlayText)
         }
-        val theme = ThemeImpl(
-            scope = backgroundScope,
-            event = event,
-            step = step,
-            store = store,
-        )
-        theme.transformLayout(layout, guestLayout, enableOverlayText)
     }
 
     private fun Assert<LayoutId>.isEqualTo(id: ApiLayoutId) =
         prop(LayoutId::value).isEqualTo(id.value)
 
     private fun Random.nextLayoutId() = LayoutId(nextString(8))
-
-    private inline fun <T : Any> Random.maybe(block: Random.() -> T): T? =
-        if (nextBoolean()) block() else null
 }
