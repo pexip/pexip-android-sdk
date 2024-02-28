@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -239,6 +239,44 @@ internal class ParticipantStepImpl(
     ): Call<Boolean> =
         preferredAspectRatio(request, token.token)
 
+    override fun buzz(token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("buzz")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseBuzz,
+        )
+    }
+
+    override fun buzz(token: Token): Call<Boolean> = buzz(token.token)
+
+    override fun clearBuzz(token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("clearbuzz")
+                }
+                .header("token", token)
+                .build(),
+            mapper = ::parseClearBuzz,
+        )
+    }
+
+    override fun clearBuzz(token: Token): Call<Boolean> = clearBuzz(token.token)
+
     override fun call(callId: UUID): InfinityService.CallStep = CallStepImpl(this, callId)
 
     private fun parseCalls(response: Response) = when (response.code) {
@@ -279,6 +317,20 @@ internal class ParticipantStepImpl(
     }
 
     private fun parsePreferredAspectRatio(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseBuzz(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseClearBuzz(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()

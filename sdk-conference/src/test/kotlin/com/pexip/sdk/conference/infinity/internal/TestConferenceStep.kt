@@ -76,6 +76,10 @@ internal abstract class TestConferenceStep : InfinityService.ConferenceStep {
 
     final override fun theme(path: String, token: Token): String = theme(path, token.token)
 
+    override fun clearAllBuzz(token: String): Call<Boolean> = TODO()
+
+    final override fun clearAllBuzz(token: Token): Call<Boolean> = clearAllBuzz(token.token)
+
     override fun events(token: String): EventSourceFactory = TODO()
 
     override fun events(token: Token): EventSourceFactory = events(token.token)

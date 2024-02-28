@@ -737,6 +737,60 @@ internal class ConferenceStepTest {
         assertThat(actual).isEqualTo(expected.toString())
     }
 
+    @Test
+    fun `clearAllBuzz throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        val token = Random.nextString(8)
+        assertFailure { step.clearAllBuzz(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifyClearAllBuzz(token)
+    }
+
+    @Test
+    fun `clearAllBuzz throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        val token = Random.nextString(8)
+        assertFailure { step.clearAllBuzz(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyClearAllBuzz(token)
+    }
+
+    @Test
+    fun `clearAllBuzz throws NoSuchConferenceException`() = runTest {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.clearAllBuzz(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyClearAllBuzz(token)
+    }
+
+    @Test
+    fun `clearAllBuzz throws InvalidTokenException`() = runTest {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val token = Random.nextString(8)
+        assertFailure { step.clearAllBuzz(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifyClearAllBuzz(token)
+    }
+
+    @Test
+    fun `clearAllBuzz returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            val token = Random.nextString(8)
+            assertThat(step.clearAllBuzz(token).await(), "result").isEqualTo(result)
+            server.verifyClearAllBuzz(token)
+        }
+    }
+
     private fun MockWebServer.verifyRequestToken(
         request: RequestTokenRequest,
         pin: String? = null,
@@ -831,5 +885,16 @@ internal class ConferenceStepTest {
         }
         assertToken(token)
         assertGet()
+    }
+
+    private fun MockWebServer.verifyClearAllBuzz(token: String) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("clearallbuzz")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
     }
 }
