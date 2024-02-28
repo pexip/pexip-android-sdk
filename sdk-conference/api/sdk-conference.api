@@ -295,6 +295,14 @@ public final class com/pexip/sdk/conference/SplashScreen {
 public abstract interface class com/pexip/sdk/conference/Theme {
 	public abstract fun getLayout ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getSplashScreen ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun transformLayout-ea01N14 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun transformLayout-ea01N14$default (Lcom/pexip/sdk/conference/Theme;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class com/pexip/sdk/conference/TransformLayoutException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
 public final class com/pexip/sdk/conference/coroutines/UtilKt {

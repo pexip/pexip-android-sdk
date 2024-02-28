@@ -465,6 +465,12 @@ public final class com/pexip/sdk/api/infinity/IdentityProviderId$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/pexip/sdk/api/infinity/IllegalLayoutTransformException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/pexip/sdk/api/infinity/IncomingCancelledEvent : com/pexip/sdk/api/Event {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/IncomingCancelledEvent$Companion;
 	public fun <init> (Ljava/lang/String;)V
@@ -1593,7 +1599,7 @@ public final class com/pexip/sdk/api/infinity/TransformLayoutRequest {
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEnableOverlayText ()Ljava/lang/Boolean;
 	public final fun getGuestLayout-8Fcadpo ()Ljava/lang/String;
-	public final fun getHostLayout-8Fcadpo ()Ljava/lang/String;
+	public final fun getLayout-8Fcadpo ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

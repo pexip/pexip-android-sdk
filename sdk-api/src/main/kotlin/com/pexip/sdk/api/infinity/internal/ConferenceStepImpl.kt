@@ -17,6 +17,7 @@ package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
+import com.pexip.sdk.api.infinity.IllegalLayoutTransformException
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.InvalidTokenException
@@ -33,7 +34,6 @@ import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.SsoRedirectException
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TransformLayoutRequest
-import com.pexip.sdk.infinity.IllegalLayoutTransformException
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response

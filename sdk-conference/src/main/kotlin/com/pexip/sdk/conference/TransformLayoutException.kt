@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.api.infinity
+package com.pexip.sdk.conference
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
-public data class TransformLayoutRequest(
-    @SerialName("layout")
-    val layout: LayoutId? = null,
-    @SerialName("guest_layout")
-    val guestLayout: LayoutId? = null,
-    @SerialName("enable_overlay_text")
-    val enableOverlayText: Boolean? = null,
-)
+/**
+ * Thrown to indicate that layout transformation has failed.
+ *
+ * @property cause a cause of this exception
+ */
+public class TransformLayoutException @JvmOverloads constructor(cause: Throwable? = null) :
+    RuntimeException("Failed to transform the layout.", cause)
