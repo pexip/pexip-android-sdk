@@ -30,7 +30,7 @@ public data class ParticipantResponse(
     @SerialName("uuid")
     val id: UUID,
     @SerialName("start_time")
-    val startTime: Instant,
+    val startTime: Instant? = null,
     @SerialName("display_name")
     val displayName: String,
     @SerialName("overlay_text")

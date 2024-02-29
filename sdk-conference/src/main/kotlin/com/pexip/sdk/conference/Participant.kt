@@ -25,7 +25,7 @@ import java.util.UUID
  * @property role a role of this participant
  * @property serviceType a service type of this participant
  * @property startTime a UNIX timestamp representing the moment in time when this participant
- * joined the conference
+ * joined the conference, or null
  * @property buzzTime a UNIX timestamp representing the moment in time when this participant
  * raised their hand, or null if their hand is not currently raised
  * @property spotlightTime a UNIX timestamp representing the moment in time when this participant
@@ -43,7 +43,7 @@ public data class Participant(
     val id: UUID,
     val role: Role,
     val serviceType: ServiceType,
-    val startTime: Instant,
+    val startTime: Instant?,
     val buzzTime: Instant?,
     val spotlightTime: Instant?,
     val displayName: String,
