@@ -19,6 +19,7 @@ import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.ElementResponse
 import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.InvalidTokenException
 import com.pexip.sdk.api.infinity.LayoutEvent
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.SplashScreenEvent
@@ -137,6 +138,8 @@ internal class ThemeImpl(
 
     private fun <T> Flow<T>.retryOrDefault(value: () -> T) = retryWhen { cause, attempt ->
         when (cause) {
+            // On some versions of Infinity guests are not allowed to see the layouts
+            is InvalidTokenException -> false
             // In a rare case when the method doesn't exist Infinity will return 404 which maps
             // to this exception
             is NoSuchConferenceException -> false
