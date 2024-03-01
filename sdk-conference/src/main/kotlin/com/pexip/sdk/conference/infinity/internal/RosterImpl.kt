@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -58,12 +59,12 @@ internal class RosterImpl(
     private val participantMap = mutableMapOf<UUID, Participant>()
     private val participantStepMap = mutableMapOf<UUID, InfinityService.ParticipantStep>()
 
-    private val _participants = channelFlow {
+    private val participantMapFlow = channelFlow {
         var syncing = false
 
         suspend fun maybeSendParticipants() {
             if (syncing) return
-            send(participantMap.values.toList())
+            send(participantMap.toMap())
         }
 
         event.collect {
@@ -93,13 +94,15 @@ internal class RosterImpl(
                 else -> Unit
             }
         }
-    }
+    }.stateIn(scope, SharingStarted.Eagerly, emptyMap())
 
-    override val participants: StateFlow<List<Participant>> = _participants.stateIn(
-        scope = scope,
-        started = SharingStarted.Eagerly,
-        initialValue = emptyList(),
-    )
+    override val participants: StateFlow<List<Participant>> = participantMapFlow
+        .map { it.values.toList() }
+        .stateIn(scope, SharingStarted.Eagerly, emptyList())
+
+    override val me: StateFlow<Participant?> = participantMapFlow
+        .map { it[participantId] }
+        .stateIn(scope, SharingStarted.Eagerly, null)
 
     override suspend fun raiseHand(participantId: UUID?) {
         try {

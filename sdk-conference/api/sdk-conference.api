@@ -273,6 +273,7 @@ public final class com/pexip/sdk/conference/Role : java/lang/Enum {
 }
 
 public abstract interface class com/pexip/sdk/conference/Roster {
+	public abstract fun getMe ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getParticipants ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun lowerAllHands (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun lowerHand (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
