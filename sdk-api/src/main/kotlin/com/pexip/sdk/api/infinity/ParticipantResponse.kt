@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public data class ParticipantResponse(
     @SerialName("uuid")
     val id: UUID,
     @SerialName("start_time")
-    val startTime: Instant,
+    val startTime: Instant? = null,
     @SerialName("display_name")
     val displayName: String,
     @SerialName("overlay_text")

@@ -52,7 +52,7 @@ internal object ParticipantResponseSerializer :
 
     private fun JsonElement.toInstantComponents(): JsonElement {
         val content = jsonPrimitive.content
-        if (content == "0") return JsonNull
+        if (content == "0" || content == "null") return JsonNull
         val parts = content.split(".", limit = 2)
         return buildJsonObject {
             val epochSeconds = parts[0]
