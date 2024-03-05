@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,6 +139,7 @@ internal open class WebRtcLocalVideoTrack(
                     capturingListeners.clear()
                     videoCapturer.stopCapture()
                     videoTrack.dispose()
+                    videoSource.setVideoProcessor(null)
                     videoSource.dispose()
                     videoCapturer.dispose()
                     textureHelper.dispose()
