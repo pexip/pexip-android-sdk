@@ -15,15 +15,21 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingCommand
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration
 
+@OptIn(FlowPreview::class)
 @Suppress("ktlint:standard:function-naming")
-internal fun SharingStarted.Companion.WhileSubscribedAtLeast(threshold: Int) =
+internal fun SharingStarted.Companion.WhileSubscribedWithDebounce(timeout: Duration) =
     SharingStarted { subscriptionCount ->
         subscriptionCount
-            .map { if (it >= threshold) SharingCommand.START else SharingCommand.STOP_AND_RESET_REPLAY_CACHE }
+            .map { it > 0 }
             .distinctUntilChanged()
+            .debounce(timeout)
+            .map { if (it) SharingCommand.START else SharingCommand.STOP_AND_RESET_REPLAY_CACHE }
     }

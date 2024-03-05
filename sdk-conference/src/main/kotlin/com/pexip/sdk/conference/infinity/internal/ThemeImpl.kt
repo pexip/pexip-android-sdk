@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
@@ -57,7 +58,7 @@ internal class ThemeImpl(
 ) : Theme {
 
     override val layout: StateFlow<Layout?> = combine(
-        flow = event.filterIsInstance<LayoutEvent>(),
+        flow = event.filterIsInstance<LayoutEvent>().onEach(::println),
         flow2 = step.availableLayouts(store),
         flow3 = step.layoutSvgs(store),
         transform = ::toLayout,
