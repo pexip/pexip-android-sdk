@@ -24,6 +24,8 @@ import com.pexip.sdk.api.infinity.ParticipantResponse
 import com.pexip.sdk.api.infinity.ParticipantSyncBeginEvent
 import com.pexip.sdk.api.infinity.ParticipantSyncEndEvent
 import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
+import com.pexip.sdk.api.infinity.PresentationStartEvent
+import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
@@ -39,6 +41,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
@@ -103,6 +107,17 @@ internal class RosterImpl(
     override val me: StateFlow<Participant?> = participantMapFlow
         .map { it[participantId] }
         .stateIn(scope, SharingStarted.Eagerly, null)
+
+    override val presenter: StateFlow<Participant?> = combine(
+        flow = event.filter { it is PresentationStartEvent || it is PresentationStopEvent },
+        flow2 = participantMapFlow,
+        transform = { event, map ->
+            when (event) {
+                is PresentationStartEvent -> map[event.presenterId]
+                else -> null
+            }
+        },
+    ).stateIn(scope, SharingStarted.Eagerly, null)
 
     override suspend fun raiseHand(participantId: UUID?) {
         try {

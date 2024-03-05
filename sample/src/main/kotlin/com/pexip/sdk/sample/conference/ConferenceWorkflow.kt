@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,6 @@ import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
-import com.pexip.sdk.conference.PresentationStartConferenceEvent
-import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
@@ -65,6 +63,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -136,6 +135,7 @@ class ConferenceWorkflow @Inject constructor(
         context.screenCaptureVideoTrackSideEffect(renderState.screenCaptureData)
         context.mainRemoteVideoTrackSideEffect(renderState.connection)
         context.conferenceEventsSideEffect(renderProps)
+        context.presentationSideEffect(renderProps)
         context.presentationRemoteVideoTrackSideEffect(renderState.connection)
         context.aspectRatioSideEffect(renderState)
         return when (renderState.showingChat) {
@@ -292,6 +292,23 @@ class ConferenceWorkflow @Inject constructor(
         }
     }
 
+    private fun RenderContext.presentationSideEffect(renderProps: ConferenceProps) {
+        val roster = renderProps.conference.roster
+        runningSideEffect("presentationSideEffect($roster)") {
+            roster.presenter
+                // We only care whether there's somebody sharing their screen, not exactly who
+                .map { it != null }
+                .distinctUntilChanged()
+                .map {
+                    when (it) {
+                        true -> onPresentationStart()
+                        else -> onPresentationStop()
+                    }
+                }
+                .collect(actionSink::send)
+        }
+    }
+
     private fun RenderContext.aspectRatioSideEffect(renderState: ConferenceState) {
         val connection = renderState.connection
         val aspectRatio = renderState.aspectRatio.takeUnless(Float::isNaN) ?: return
@@ -301,8 +318,6 @@ class ConferenceWorkflow @Inject constructor(
     }
 
     private fun toConferenceAction(event: ConferenceEvent) = when (event) {
-        is PresentationStartConferenceEvent -> onPresentationStartConferenceEvent(event)
-        is PresentationStopConferenceEvent -> onPresentationStopConferenceEvent(event)
         is DisconnectConferenceEvent -> onDisconnectConferenceEvent(event)
         is FailureConferenceEvent -> onFailureConferenceEvent(event)
         else -> null
@@ -386,23 +401,21 @@ class ConferenceWorkflow @Inject constructor(
             state = state.copy(screenCapturing = capturing)
         }
 
-    private fun onPresentationStartConferenceEvent(event: PresentationStartConferenceEvent) =
-        action({ "onPresentationStartConferenceEvent($event)" }) {
-            state.connection.setPresentationVideoTrack(null)
-            state.screenCaptureVideoTrack?.dispose()
-            state.connection.setPresentationRemoteVideoTrackEnabled(true)
-            state = state.copy(
-                presentation = true,
-                screenCapturing = false,
-                screenCaptureVideoTrack = null,
-            )
-        }
+    private fun onPresentationStart() = action({ "onPresentationStart()" }) {
+        state.connection.setPresentationVideoTrack(null)
+        state.screenCaptureVideoTrack?.dispose()
+        state.connection.setPresentationRemoteVideoTrackEnabled(true)
+        state = state.copy(
+            presentation = true,
+            screenCapturing = false,
+            screenCaptureVideoTrack = null,
+        )
+    }
 
-    private fun onPresentationStopConferenceEvent(event: PresentationStopConferenceEvent) =
-        action({ "onPresentationStopConferenceEvent($event)" }) {
-            state.connection.setPresentationRemoteVideoTrackEnabled(false)
-            state = state.copy(presentation = false)
-        }
+    private fun onPresentationStop() = action({ "onPresentationStop()" }) {
+        state.connection.setPresentationRemoteVideoTrackEnabled(false)
+        state = state.copy(presentation = false)
+    }
 
     private fun onReferConferenceEvent(conference: Conference) =
         action({ "onReferConferenceEvent($conference)" }) {

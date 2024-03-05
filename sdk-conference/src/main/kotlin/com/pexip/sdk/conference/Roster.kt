@@ -34,6 +34,13 @@ public interface Roster {
     public val me: StateFlow<Participant?>
 
     /**
+     * A [StateFlow] that represents the participant that is currently sharing a presentation.
+     *
+     * Note that the value will always be `null` when you're sharing the presentation.
+     */
+    public val presenter: StateFlow<Participant?>
+
+    /**
      * Raises hand of the specified participant or self.
      *
      * @param participantId an ID of the participant, null for self

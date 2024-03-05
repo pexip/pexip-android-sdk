@@ -69,7 +69,7 @@ public class InfinityConference private constructor(
 
     // To ensure that all subscribers see SSE we wait until all known subscribers are active.
     // This has to be updated every time we add another subscriber to the event.
-    private val threshold = if (response.dataChannelId == -1) 5 else 6
+    private val threshold = if (response.dataChannelId == -1) 6 else 7
     private val event =
         step.events(store).shareIn(scope, SharingStarted.WhileSubscribedAtLeast(threshold))
     private val listeners = CopyOnWriteArraySet<ConferenceEventListener>()
