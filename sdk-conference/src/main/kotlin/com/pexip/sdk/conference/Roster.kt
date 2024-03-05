@@ -29,6 +29,11 @@ public interface Roster {
     public val participants: StateFlow<List<Participant>>
 
     /**
+     * A [StateFlow] that represents *you* as the participant of this conference.
+     */
+    public val me: StateFlow<Participant?>
+
+    /**
      * Raises hand of the specified participant or self.
      *
      * @param participantId an ID of the participant, null for self

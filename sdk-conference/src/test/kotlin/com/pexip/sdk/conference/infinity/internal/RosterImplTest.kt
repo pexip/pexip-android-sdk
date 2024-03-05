@@ -26,6 +26,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isIn
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
@@ -140,6 +141,33 @@ class RosterImplTest {
             val response = participant.toParticipantResponse()
             val e = ParticipantUpdateEvent(response)
             event.emit(e)
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `me produces the corrent participant`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = TestConferenceStep(),
+        )
+        roster.me.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "me").isNull()
+            var me = Random.nextParticipant(id = participantId)
+            event.emit(ParticipantCreateEvent(me.toParticipantResponse()))
+            assertThat(awaitItem(), "me").isEqualTo(me)
+            me = me.copy(audioMuted = !me.audioMuted)
+            event.emit(ParticipantUpdateEvent(me.toParticipantResponse()))
+            assertThat(awaitItem(), "me").isEqualTo(me)
+            // No update with the same Participant
+            event.emit(ParticipantUpdateEvent(me.toParticipantResponse()))
+            // No update with another Participant
+            event.emit(ParticipantCreateEvent(Random.nextParticipant().toParticipantResponse()))
             expectNoEvents()
             cancelAndIgnoreRemainingEvents()
         }
