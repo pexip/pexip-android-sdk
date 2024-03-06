@@ -66,6 +66,7 @@ import org.webrtc.ScreenCapturerAndroid
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoDecoderFactory
 import org.webrtc.VideoEncoderFactory
+import org.webrtc.VideoProcessor
 import org.webrtc.audio.AudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule.AudioRecordStateCallback
@@ -172,12 +173,17 @@ public class WebRtcMediaConnectionFactory private constructor(
      * [VideoCapturer] will be managed by [LocalVideoTrack].
      *
      * @param videoCapturer a [VideoCapturer]
+     * @param videoProcessor an optional [VideoProcessor] instance
      * @return a [VideoCapturer]-backed [LocalVideoTrack]
      * @throws IllegalStateException if [MediaConnectionFactory] has been disposed
      */
-    public fun createLocalVideoTrack(videoCapturer: VideoCapturer): LocalVideoTrack {
+    public fun createLocalVideoTrack(
+        videoCapturer: VideoCapturer,
+        videoProcessor: VideoProcessor? = null,
+    ): LocalVideoTrack {
         checkNotDisposed()
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
+        videoProcessor?.let(videoSource::setVideoProcessor)
         return WebRtcLocalVideoTrack(
             applicationContext = applicationContext,
             eglBase = eglBase,
