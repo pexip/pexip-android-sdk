@@ -32,6 +32,12 @@ public final class com/pexip/sdk/conference/DisconnectConferenceEvent : com/pexi
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/pexip/sdk/conference/DisconnectException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public abstract interface class com/pexip/sdk/conference/Element {
 }
 
@@ -273,6 +279,8 @@ public final class com/pexip/sdk/conference/Role : java/lang/Enum {
 }
 
 public abstract interface class com/pexip/sdk/conference/Roster {
+	public abstract fun disconnect (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun disconnect$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun getMe ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getParticipants ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getPresenter ()Lkotlinx/coroutines/flow/StateFlow;

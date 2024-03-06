@@ -39,6 +39,7 @@ import com.pexip.sdk.api.infinity.ParticipantSyncEndEvent
 import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
+import com.pexip.sdk.conference.DisconnectException
 import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
 import com.pexip.sdk.conference.Participant
@@ -274,6 +275,109 @@ class RosterImplTest {
             }
         }
         participants.forEach { roster.raiseHand(it.id) }
+    }
+
+    @Test
+    fun `disconnect() returns if participantId does not exist`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = TestConferenceStep(),
+        )
+        roster.disconnect(UUID.randomUUID())
+    }
+
+    @Test
+    fun `disconnect() throws DisconnectException`() = runTest {
+        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
+        val me = participants.random()
+        val causes = participants.associate { it.id to Throwable() }
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = me.id,
+            store = store,
+            step = object : TestConferenceStep() {
+
+                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : TestParticipantStep() {
+
+                        override fun disconnect(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.disconnect(it.id) }
+                .isInstanceOf<DisconnectException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    @Test
+    fun `disconnect() returns`() = runTest {
+        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
+        val me = participants.random()
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = me.id,
+            store = store,
+            step = object : TestConferenceStep() {
+
+                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : TestParticipantStep() {
+
+                        override fun disconnect(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onSuccess(this, true)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.disconnect(it.id) }
     }
 
     @Test

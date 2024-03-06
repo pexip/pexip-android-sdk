@@ -41,6 +41,14 @@ public interface Roster {
     public val presenter: StateFlow<Participant?>
 
     /**
+     * Disconnects the specified participant or self.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws DisconnectException if the operation failed
+     */
+    public suspend fun disconnect(participantId: UUID? = null)
+
+    /**
      * Raises hand of the specified participant or self.
      *
      * @param participantId an ID of the participant, null for self
