@@ -58,7 +58,7 @@ internal class ThemeImpl(
 ) : Theme {
 
     override val layout: StateFlow<Layout?> = combine(
-        flow = event.filterIsInstance<LayoutEvent>().onEach(::println),
+        flow = event.filterIsInstance<LayoutEvent>(),
         flow2 = step.availableLayouts(store),
         flow3 = step.layoutSvgs(store),
         transform = ::toLayout,
