@@ -35,6 +35,17 @@ android {
     }
 }
 
+androidComponents {
+    onVariants { variant ->
+        afterEvaluate {
+            val buildVariant = variant.name.replaceFirstChar(Char::titlecaseChar)
+            tasks.named<com.google.devtools.ksp.gradle.KspTaskJvm>("ksp${buildVariant}Kotlin") {
+                setSource(tasks.named("generate${buildVariant}Protos"))
+            }
+        }
+    }
+}
+
 wire {
     kotlin { }
 }
