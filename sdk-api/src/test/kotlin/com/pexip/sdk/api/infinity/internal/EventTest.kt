@@ -298,6 +298,11 @@ internal class EventTest {
                     overlayTextEnabled = true,
                 ),
             )
+            .row(
+                val1 = "layout",
+                val2 = "layout_direct_media.json",
+                val3 = LayoutEvent(layout = LayoutId("1:0")),
+            )
             .forAll { type, filename, event ->
                 val data = FileSystem.RESOURCES.readUtf8(filename)
                 val actual = Event(
