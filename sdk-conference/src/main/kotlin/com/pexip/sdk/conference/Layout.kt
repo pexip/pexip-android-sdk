@@ -20,15 +20,15 @@ package com.pexip.sdk.conference
  *
  * @property layout a currently visible layout (may be absent from [layouts] in some cases)
  * @property layouts a set of all available layouts
- * @property requestedPrimaryScreenHostLayout a requested layout visible on primary screen for hosts
- * @property requestedPrimaryScreenGuestLayout a requested layout visible on primary screen for guests
+ * @property requestedPrimaryScreenHostLayout a requested layout visible on primary screen for hosts, may be null in direct media call
+ * @property requestedPrimaryScreenGuestLayout a requested layout visible on primary screen for guests, may be null in direct media call
  * @property overlayTextEnabled true if overlay text is enabled, false otherwise
  */
 public data class Layout(
     val layout: LayoutId,
     val layouts: Set<LayoutId>,
-    val requestedPrimaryScreenHostLayout: LayoutId,
-    val requestedPrimaryScreenGuestLayout: LayoutId,
+    val requestedPrimaryScreenHostLayout: LayoutId?,
+    val requestedPrimaryScreenGuestLayout: LayoutId?,
     val overlayTextEnabled: Boolean,
     val layoutSvgs: Map<LayoutId, String>,
 )

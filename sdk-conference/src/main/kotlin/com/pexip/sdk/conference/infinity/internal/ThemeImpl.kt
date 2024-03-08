@@ -94,8 +94,14 @@ internal class ThemeImpl(
     ) = Layout(
         layout = LayoutId(event.layout),
         layouts = layoutIds.asSequence().map(::LayoutId).toSet(),
-        requestedPrimaryScreenHostLayout = LayoutId(event.requestedLayout.primaryScreen.hostLayout),
-        requestedPrimaryScreenGuestLayout = LayoutId(event.requestedLayout.primaryScreen.guestLayout),
+        requestedPrimaryScreenHostLayout = event.requestedLayout
+            ?.primaryScreen
+            ?.hostLayout
+            ?.let(::LayoutId),
+        requestedPrimaryScreenGuestLayout = event.requestedLayout
+            ?.primaryScreen
+            ?.guestLayout
+            ?.let(::LayoutId),
         overlayTextEnabled = event.overlayTextEnabled,
         layoutSvgs = layoutSvgs.mapKeys { LayoutId(it.key) },
     )

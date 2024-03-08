@@ -140,9 +140,11 @@ class ThemeImplTest {
                             .extracting(LayoutId::value)
                             .containsExactly(*layouts.map(ApiLayoutId::value).toTypedArray())
                         prop(Layout::requestedPrimaryScreenHostLayout)
-                            .isEqualTo(e.requestedLayout.primaryScreen.hostLayout)
+                            .isNotNull()
+                            .isEqualTo(e.requestedLayout?.primaryScreen?.hostLayout)
                         prop(Layout::requestedPrimaryScreenGuestLayout)
-                            .isEqualTo(e.requestedLayout.primaryScreen.guestLayout)
+                            .isNotNull()
+                            .isEqualTo(e.requestedLayout?.primaryScreen?.guestLayout)
                         prop(Layout::overlayTextEnabled).isEqualTo(e.overlayTextEnabled)
                         prop(Layout::layoutSvgs).all {
                             layoutSvgs.forEach { key(LayoutId(it.key.value)).isEqualTo(it.value) }
@@ -288,8 +290,8 @@ class ThemeImplTest {
         }
     }
 
-    private fun Assert<LayoutId>.isEqualTo(id: ApiLayoutId) =
-        prop(LayoutId::value).isEqualTo(id.value)
+    private fun Assert<LayoutId>.isEqualTo(id: ApiLayoutId?) =
+        prop(LayoutId::value).isEqualTo(id?.value)
 
     private fun Random.nextLayoutId() = LayoutId(nextString(8))
 }

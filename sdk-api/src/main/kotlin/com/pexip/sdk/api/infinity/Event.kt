@@ -85,7 +85,7 @@ public data class LayoutEvent(
     @SerialName("view")
     val layout: LayoutId,
     @SerialName("requested_layout")
-    val requestedLayout: RequestedLayout,
+    val requestedLayout: RequestedLayout? = null,
     @SerialName("overlay_text_enabled")
     val overlayTextEnabled: Boolean = false,
 ) : Event
