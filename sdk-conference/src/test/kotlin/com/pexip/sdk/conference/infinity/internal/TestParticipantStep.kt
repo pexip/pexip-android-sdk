@@ -86,5 +86,9 @@ internal open class TestParticipantStep : InfinityService.ParticipantStep {
 
     override fun clearBuzz(token: Token): Call<Boolean> = clearBuzz(token.token)
 
+    override fun disconnect(token: String): Call<Boolean> = TODO()
+
+    override fun disconnect(token: Token): Call<Boolean> = disconnect(token.token)
+
     override fun call(callId: UUID): InfinityService.CallStep = TODO()
 }

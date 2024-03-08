@@ -26,6 +26,7 @@ import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.Token
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response
@@ -52,7 +53,7 @@ internal class ParticipantStepImpl(
                 }
                 .header("token", token)
                 .build(),
-            mapper = ::parseCalls,
+            mapper = { parse(it, CallsResponseSerializer) },
         )
     }
 
@@ -72,7 +73,7 @@ internal class ParticipantStepImpl(
                 }
                 .header("token", token)
                 .build(),
-            mapper = ::parseDtmf,
+            mapper = { parse(it, BooleanSerializer) },
         )
     }
 
@@ -206,7 +207,7 @@ internal class ParticipantStepImpl(
                 }
                 .header("token", token)
                 .build(),
-            mapper = ::parseMessage,
+            mapper = { parse(it, BooleanSerializer) },
         )
     }
 
@@ -229,15 +230,14 @@ internal class ParticipantStepImpl(
                 }
                 .header("token", token)
                 .build(),
-            mapper = ::parsePreferredAspectRatio,
+            mapper = { parse(it, BooleanSerializer) },
         )
     }
 
     override fun preferredAspectRatio(
         request: PreferredAspectRatioRequest,
         token: Token,
-    ): Call<Boolean> =
-        preferredAspectRatio(request, token.token)
+    ): Call<Boolean> = preferredAspectRatio(request, token.token)
 
     override fun buzz(token: String): Call<Boolean> {
         require(token.isNotBlank()) { "token is blank." }
@@ -252,7 +252,7 @@ internal class ParticipantStepImpl(
                 }
                 .header("token", token)
                 .build(),
-            mapper = ::parseBuzz,
+            mapper = { parse(it, BooleanSerializer) },
         )
     }
 
@@ -271,27 +271,32 @@ internal class ParticipantStepImpl(
                 }
                 .header("token", token)
                 .build(),
-            mapper = ::parseClearBuzz,
+            mapper = { parse(it, BooleanSerializer) },
         )
     }
 
     override fun clearBuzz(token: Token): Call<Boolean> = clearBuzz(token.token)
 
+    override fun disconnect(token: String): Call<Boolean> {
+        require(token.isNotBlank()) { "token is blank." }
+        return RealCall(
+            client = client,
+            request = Request.Builder()
+                .post(EMPTY_REQUEST)
+                .url(node) {
+                    conference(conferenceAlias)
+                    participant(participantId)
+                    addPathSegment("disconnect")
+                }
+                .header("token", token)
+                .build(),
+            mapper = { parse(it, BooleanSerializer) },
+        )
+    }
+
+    override fun disconnect(token: Token): Call<Boolean> = disconnect(token.token)
+
     override fun call(callId: UUID): InfinityService.CallStep = CallStepImpl(this, callId)
-
-    private fun parseCalls(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(CallsResponseSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
-
-    private fun parseDtmf(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
 
     private fun parseMuteUnmute(response: Response) = when (response.code) {
         200 -> Unit
@@ -309,29 +314,11 @@ internal class ParticipantStepImpl(
         else -> throw IllegalStateException()
     }
 
-    private fun parseMessage(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
-
-    private fun parsePreferredAspectRatio(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
-
-    private fun parseBuzz(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
-
-    private fun parseClearBuzz(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+    private inline fun <reified T> parse(
+        response: Response,
+        deserializer: DeserializationStrategy<T>,
+    ) = when (response.code) {
+        200 -> json.decodeFromResponseBody(deserializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

@@ -690,6 +690,26 @@ public interface InfinityService {
         public fun clearBuzz(token: Token): Call<Boolean>
 
         /**
+         * Disconnects a participant.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#disconnect).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun disconnect(token: String): Call<Boolean>
+
+        /**
+         * Disconnects a participant.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#disconnect).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun disconnect(token: Token): Call<Boolean>
+
+        /**
          * Sets the call ID.
          *
          * @param callId an ID of the call
