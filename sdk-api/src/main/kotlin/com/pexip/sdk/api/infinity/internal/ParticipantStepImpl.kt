@@ -40,261 +40,190 @@ internal class ParticipantStepImpl(
     ParticipantStepImplScope,
     ConferenceStepImplScope by conferenceStep {
 
-    override fun calls(request: CallsRequest, token: String): Call<CallsResponse> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("calls")
-                }
-                .header("token", token)
-                .build(),
-            mapper = { parse(it, CallsResponseSerializer) },
-        )
-    }
+    override fun calls(request: CallsRequest, token: Token): Call<CallsResponse> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("calls")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, CallsResponseSerializer) },
+    )
 
-    override fun calls(request: CallsRequest, token: Token): Call<CallsResponse> =
-        calls(request, token.token)
+    override fun dtmf(request: DtmfRequest, token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("dtmf")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
 
-    override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("dtmf")
-                }
-                .header("token", token)
-                .build(),
-            mapper = { parse(it, BooleanSerializer) },
-        )
-    }
+    override fun mute(token: Token): Call<Unit> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("mute")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseMuteUnmute,
+    )
 
-    override fun dtmf(request: DtmfRequest, token: Token): Call<Boolean> =
-        dtmf(request, token.token)
+    override fun unmute(token: Token): Call<Unit> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("unmute")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseMuteUnmute,
+    )
 
-    override fun mute(token: String): Call<Unit> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("mute")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseMuteUnmute,
-        )
-    }
+    override fun videoMuted(token: Token): Call<Unit> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("video_muted")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseVideoMutedVideoUnmuted,
+    )
 
-    override fun mute(token: Token): Call<Unit> = mute(token.token)
+    override fun videoUnmuted(token: Token): Call<Unit> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("video_unmuted")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseVideoMutedVideoUnmuted,
+    )
 
-    override fun unmute(token: String): Call<Unit> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("unmute")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseMuteUnmute,
-        )
-    }
+    override fun takeFloor(token: Token): Call<Unit> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("take_floor")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseTakeReleaseFloor,
+    )
 
-    override fun unmute(token: Token): Call<Unit> = unmute(token.token)
+    override fun releaseFloor(token: Token): Call<Unit> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("release_floor")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseTakeReleaseFloor,
+    )
 
-    override fun videoMuted(token: String): Call<Unit> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("video_muted")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseVideoMutedVideoUnmuted,
-        )
-    }
-
-    override fun videoMuted(token: Token): Call<Unit> = videoMuted(token.token)
-
-    override fun videoUnmuted(token: String): Call<Unit> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("video_unmuted")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseVideoMutedVideoUnmuted,
-        )
-    }
-
-    override fun videoUnmuted(token: Token): Call<Unit> = videoUnmuted(token.token)
-
-    override fun takeFloor(token: String): Call<Unit> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("take_floor")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseTakeReleaseFloor,
-        )
-    }
-
-    override fun takeFloor(token: Token): Call<Unit> = takeFloor(token.token)
-
-    override fun releaseFloor(token: String): Call<Unit> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("release_floor")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseTakeReleaseFloor,
-        )
-    }
-
-    override fun releaseFloor(token: Token): Call<Unit> = releaseFloor(token.token)
-
-    override fun message(request: MessageRequest, token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("message")
-                }
-                .header("token", token)
-                .build(),
-            mapper = { parse(it, BooleanSerializer) },
-        )
-    }
-
-    override fun message(request: MessageRequest, token: Token): Call<Boolean> =
-        message(request, token.token)
-
-    override fun preferredAspectRatio(
-        request: PreferredAspectRatioRequest,
-        token: String,
-    ): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("preferred_aspect_ratio")
-                }
-                .header("token", token)
-                .build(),
-            mapper = { parse(it, BooleanSerializer) },
-        )
-    }
+    override fun message(request: MessageRequest, token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("message")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
 
     override fun preferredAspectRatio(
         request: PreferredAspectRatioRequest,
         token: Token,
-    ): Call<Boolean> = preferredAspectRatio(request, token.token)
+    ): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("preferred_aspect_ratio")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
 
-    override fun buzz(token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("buzz")
-                }
-                .header("token", token)
-                .build(),
-            mapper = { parse(it, BooleanSerializer) },
-        )
-    }
+    override fun buzz(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("buzz")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
 
-    override fun buzz(token: Token): Call<Boolean> = buzz(token.token)
+    override fun clearBuzz(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("clearbuzz")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
 
-    override fun clearBuzz(token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("clearbuzz")
-                }
-                .header("token", token)
-                .build(),
-            mapper = { parse(it, BooleanSerializer) },
-        )
-    }
-
-    override fun clearBuzz(token: Token): Call<Boolean> = clearBuzz(token.token)
-
-    override fun disconnect(token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    addPathSegment("disconnect")
-                }
-                .header("token", token)
-                .build(),
-            mapper = { parse(it, BooleanSerializer) },
-        )
-    }
-
-    override fun disconnect(token: Token): Call<Boolean> = disconnect(token.token)
+    override fun disconnect(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("disconnect")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
 
     override fun call(callId: UUID): InfinityService.CallStep = CallStepImpl(this, callId)
 

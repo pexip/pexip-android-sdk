@@ -34,9 +34,11 @@ import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.BackgroundResponse
 import com.pexip.sdk.api.infinity.ElementResponse
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.LayoutEvent
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.SplashScreenResponse
+import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.TransformLayoutRequest
 import com.pexip.sdk.conference.Element
@@ -89,10 +91,10 @@ class ThemeImplTest {
             .take(10)
             .toSet()
         val layoutSvgs = layouts.associateWith { Random.nextString(8) }
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
-            override fun availableLayouts(token: String): Call<Set<ApiLayoutId>> {
-                assertThat(token).isEqualTo(store.get().token)
+            override fun availableLayouts(token: Token): Call<Set<ApiLayoutId>> {
+                assertThat(token).isEqualTo(store.get())
                 return object : TestCall<Set<ApiLayoutId>> {
 
                     override fun enqueue(callback: Callback<Set<ApiLayoutId>>) {
@@ -101,8 +103,8 @@ class ThemeImplTest {
                 }
             }
 
-            override fun layoutSvgs(token: String): Call<Map<ApiLayoutId, String>> {
-                assertThat(token).isEqualTo(store.get().token)
+            override fun layoutSvgs(token: Token): Call<Map<ApiLayoutId, String>> {
+                assertThat(token).isEqualTo(store.get())
                 return object : TestCall<Map<ApiLayoutId, String>> {
 
                     override fun enqueue(callback: Callback<Map<ApiLayoutId, String>>) {
@@ -172,10 +174,10 @@ class ThemeImplTest {
                     },
                 )
             }
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
-            override fun theme(token: String): Call<Map<String, SplashScreenResponse>> {
-                assertThat(token).isEqualTo(store.get().token)
+            override fun theme(token: Token): Call<Map<String, SplashScreenResponse>> {
+                assertThat(token).isEqualTo(store.get())
                 return object : TestCall<Map<String, SplashScreenResponse>> {
 
                     override fun enqueue(callback: Callback<Map<String, SplashScreenResponse>>) {
@@ -184,8 +186,8 @@ class ThemeImplTest {
                 }
             }
 
-            override fun theme(path: String, token: String): String {
-                assertThat(token).isEqualTo(store.get().token)
+            override fun theme(path: String, token: Token): String {
+                assertThat(token).isEqualTo(store.get())
                 return pathToUrl(path)
             }
         }
@@ -227,11 +229,11 @@ class ThemeImplTest {
         val t = List(transformLayoutPermutations.size) { Throwable() }
         transformLayoutPermutations
             .forEachIndexed { i, (layout, guestLayout, enableOverlayText) ->
-                val step = object : TestConferenceStep() {
+                val step = object : InfinityService.ConferenceStep {
 
                     override fun transformLayout(
                         request: TransformLayoutRequest,
-                        token: String,
+                        token: Token,
                     ): Call<Boolean> {
                         assertThat(request::layout)
                             .isEqualTo(layout?.let { ApiLayoutId(it.value) })
@@ -261,11 +263,11 @@ class ThemeImplTest {
     @Test
     fun `transformLayout() succeeds`() = runTest {
         transformLayoutPermutations.forEach { (layout, guestLayout, enableOverlayText) ->
-            val step = object : TestConferenceStep() {
+            val step = object : InfinityService.ConferenceStep {
 
                 override fun transformLayout(
                     request: TransformLayoutRequest,
-                    token: String,
+                    token: Token,
                 ): Call<Boolean> {
                     assertThat(request::layout)
                         .isEqualTo(layout?.let { ApiLayoutId(it.value) })

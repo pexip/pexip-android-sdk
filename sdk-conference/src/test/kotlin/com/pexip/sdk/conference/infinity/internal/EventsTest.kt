@@ -22,6 +22,7 @@ import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.EventSource
 import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.EventSourceListener
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import kotlinx.coroutines.CoroutineScope
@@ -79,7 +80,7 @@ class EventsTest {
         }
     }
 
-    private fun TestScope.testConferenceStep() = object : TestConferenceStep() {
+    private fun TestScope.testConferenceStep() = object : InfinityService.ConferenceStep {
 
         override fun events(token: Token): EventSourceFactory {
             assertThat(token, "token").isEqualTo(store.get())

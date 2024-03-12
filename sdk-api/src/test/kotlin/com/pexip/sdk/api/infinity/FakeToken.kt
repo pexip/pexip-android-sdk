@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.conference.infinity.internal
+package com.pexip.sdk.api.infinity
 
-import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.infinity.InfinityService
+import kotlin.random.Random
 
-internal abstract class TestRequestBuilder : InfinityService.RequestBuilder {
+data class FakeToken(
+    override val token: String,
+    override val expires: Long,
+) : Token
 
-    override val infinityService: InfinityService get() = TODO()
-
-    override fun status(): Call<Boolean> = TODO()
-
-    override fun conference(conferenceAlias: String): InfinityService.ConferenceStep = TODO()
-
-    override fun registration(deviceAlias: String): InfinityService.RegistrationStep = TODO()
-}
+fun Random.nextFakeToken() = FakeToken(
+    token = nextString(8),
+    expires = nextLong(Long.MAX_VALUE),
+)

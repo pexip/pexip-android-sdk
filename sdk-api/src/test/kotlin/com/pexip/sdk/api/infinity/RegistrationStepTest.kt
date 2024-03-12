@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ internal class RegistrationStepTest {
     private lateinit var username: String
     private lateinit var password: String
     private lateinit var json: Json
+    private lateinit var token: Token
     private lateinit var step: InfinityService.RegistrationStep
 
     @BeforeTest
@@ -48,6 +49,7 @@ internal class RegistrationStepTest {
         password = Random.nextString(8)
         json = Json { ignoreUnknownKeys = true }
         val service = InfinityService.create(OkHttpClient(), json)
+        token = Random.nextFakeToken()
         step = service.newRequest(node).registration(deviceAlias)
     }
 
@@ -103,7 +105,6 @@ internal class RegistrationStepTest {
     @Test
     fun `refreshToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.refreshToken(token).execute() }
         server.verifyRefreshToken(token)
     }
@@ -111,7 +112,6 @@ internal class RegistrationStepTest {
     @Test
     fun `refreshToken throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.refreshToken(token).execute() }
         server.verifyRefreshToken(token)
     }
@@ -123,7 +123,6 @@ internal class RegistrationStepTest {
             setResponseCode(401)
             setBody(message)
         }
-        val token = Random.nextString(8)
         val e = assertFailsWith<NoSuchRegistrationException> { step.refreshToken(token).execute() }
         assertEquals(message, e.message)
         server.verifyRefreshToken(token)
@@ -136,7 +135,6 @@ internal class RegistrationStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         val e = assertFailsWith<InvalidTokenException> { step.refreshToken(token).execute() }
         assertEquals(message, e.message)
         server.verifyRefreshToken(token)
@@ -149,7 +147,6 @@ internal class RegistrationStepTest {
             expires = 120,
         )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
-        val token = Random.nextString(8)
         assertEquals(response, step.refreshToken(token).execute())
         server.verifyRefreshToken(token)
     }
@@ -157,7 +154,6 @@ internal class RegistrationStepTest {
     @Test
     fun `releaseToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.releaseToken(token).execute() }
         server.verifyReleaseToken(token)
     }
@@ -165,7 +161,6 @@ internal class RegistrationStepTest {
     @Test
     fun `releaseToken throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.releaseToken(token).execute() }
         server.verifyReleaseToken(token)
     }
@@ -177,7 +172,6 @@ internal class RegistrationStepTest {
             setResponseCode(401)
             setBody(message)
         }
-        val token = Random.nextString(8)
         val e = assertFailsWith<NoSuchRegistrationException> { step.releaseToken(token).execute() }
         assertEquals(message, e.message)
         server.verifyReleaseToken(token)
@@ -190,7 +184,6 @@ internal class RegistrationStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.releaseToken(token).execute() }
         server.verifyReleaseToken(token)
     }
@@ -202,7 +195,6 @@ internal class RegistrationStepTest {
             setResponseCode(200)
             setBody(json.encodeToString(Box(result)))
         }
-        val token = Random.nextString(8)
         assertEquals(result, step.releaseToken(token).execute())
         server.verifyReleaseToken(token)
     }
@@ -210,7 +202,6 @@ internal class RegistrationStepTest {
     @Test
     fun `registrations throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.registrations(token).execute() }
         server.verifyRegistrations(token)
     }
@@ -218,7 +209,6 @@ internal class RegistrationStepTest {
     @Test
     fun `registrations throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.registrations(token).execute() }
         server.verifyRegistrations(token)
     }
@@ -230,7 +220,6 @@ internal class RegistrationStepTest {
             setResponseCode(401)
             setBody(message)
         }
-        val token = Random.nextString(8)
         val e = assertFailsWith<NoSuchRegistrationException> { step.registrations(token).execute() }
         assertEquals(message, e.message)
         server.verifyRegistrations(token)
@@ -243,7 +232,6 @@ internal class RegistrationStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.registrations(token).execute() }
         server.verifyRegistrations(token)
     }
@@ -264,7 +252,6 @@ internal class RegistrationStepTest {
                 setResponseCode(200)
                 setBody(json.encodeToString(Box(result)))
             }
-            val token = Random.nextString(8)
             assertEquals(result, step.registrations(token, query).execute())
             server.verifyRegistrations(token, query)
         }
@@ -281,7 +268,7 @@ internal class RegistrationStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyRefreshToken(token: String) = takeRequest {
+    private fun MockWebServer.verifyRefreshToken(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("registrations")
@@ -292,7 +279,7 @@ internal class RegistrationStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyReleaseToken(token: String) = takeRequest {
+    private fun MockWebServer.verifyReleaseToken(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("registrations")
@@ -303,7 +290,7 @@ internal class RegistrationStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyRegistrations(token: String, query: String = "") = takeRequest {
+    private fun MockWebServer.verifyRegistrations(token: Token, query: String = "") = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("registrations")

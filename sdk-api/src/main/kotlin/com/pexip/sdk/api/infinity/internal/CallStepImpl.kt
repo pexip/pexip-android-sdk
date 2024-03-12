@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,112 +38,84 @@ internal class CallStepImpl(
     private val callId: UUID,
 ) : InfinityService.CallStep, ParticipantStepImplScope by participantStep {
 
-    override fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    call(callId)
-                    addPathSegment("new_candidate")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseNewCandidate,
-        )
-    }
+    override fun newCandidate(request: NewCandidateRequest, token: Token): Call<Unit> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                call(callId)
+                addPathSegment("new_candidate")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseNewCandidate,
+    )
 
-    override fun newCandidate(request: NewCandidateRequest, token: Token): Call<Unit> =
-        newCandidate(request, token.token)
+    override fun ack(token: Token): Call<Unit> = RealCall(
+        client = client.newBuilder()
+            .readTimeout(0, TimeUnit.SECONDS)
+            .build(),
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                call(callId)
+                addPathSegment("ack")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseAck,
+    )
 
-    override fun ack(token: String): Call<Unit> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client.newBuilder()
-                .readTimeout(0, TimeUnit.SECONDS)
-                .build(),
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    call(callId)
-                    addPathSegment("ack")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseAck,
-        )
-    }
+    override fun ack(request: AckRequest, token: Token): Call<Unit> = RealCall(
+        client = client.newBuilder()
+            .readTimeout(0, TimeUnit.SECONDS)
+            .build(),
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                call(callId)
+                addPathSegment("ack")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseAck,
+    )
 
-    override fun ack(token: Token): Call<Unit> = ack(token.token)
+    override fun update(request: UpdateRequest, token: Token): Call<UpdateResponse> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                call(callId)
+                addPathSegment("update")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseUpdate,
+    )
 
-    override fun ack(request: AckRequest, token: String): Call<Unit> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client.newBuilder()
-                .readTimeout(0, TimeUnit.SECONDS)
-                .build(),
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    call(callId)
-                    addPathSegment("ack")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseAck,
-        )
-    }
-
-    override fun ack(request: AckRequest, token: Token): Call<Unit> = ack(request, token.token)
-
-    override fun update(request: UpdateRequest, token: String): Call<UpdateResponse> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    call(callId)
-                    addPathSegment("update")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseUpdate,
-        )
-    }
-
-    override fun update(request: UpdateRequest, token: Token): Call<UpdateResponse> =
-        update(request, token.token)
-
-    override fun dtmf(request: DtmfRequest, token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(node) {
-                    conference(conferenceAlias)
-                    participant(participantId)
-                    call(callId)
-                    addPathSegment("dtmf")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseDtmf,
-        )
-    }
-
-    override fun dtmf(request: DtmfRequest, token: Token): Call<Boolean> =
-        dtmf(request, token.token)
+    override fun dtmf(request: DtmfRequest, token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                call(callId)
+                addPathSegment("dtmf")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseDtmf,
+    )
 
     private fun parseNewCandidate(response: Response) = when (response.code) {
         200 -> Unit

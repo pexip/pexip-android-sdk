@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import com.pexip.sdk.api.EventSourceListener
 import com.pexip.sdk.api.infinity.ByeEvent
 import com.pexip.sdk.api.infinity.IncomingCancelledEvent
 import com.pexip.sdk.api.infinity.IncomingEvent
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.registration.FailureRegistrationEvent
@@ -171,7 +172,7 @@ internal class RegistrationEventTest {
         subscriptionCount.first { it > 0 }
     }
 
-    private fun TestScope.testRegistrationStep() = object : TestRegistrationStep() {
+    private fun TestScope.testRegistrationStep() = object : InfinityService.RegistrationStep {
 
         override fun events(token: Token): EventSourceFactory {
             assertThat(token, "token").isEqualTo(store.get())

@@ -29,6 +29,7 @@ import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.MessageRequest
+import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.MessageNotSentException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -53,9 +54,9 @@ class MessengerImplTest {
     @Test
     fun `send() to all is successful`() = runTest {
         val expected = Random.nextMessage()
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
-            override fun message(request: MessageRequest, token: String): Call<Boolean> {
+            override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                 assertThat(request::type).isEqualTo(expected.type)
                 assertThat(request::payload).isEqualTo(expected.payload)
                 return object : TestCall<Boolean> {
@@ -81,9 +82,9 @@ class MessengerImplTest {
     @Test
     fun `send() to all failed to send`() = runTest {
         val expected = Random.nextMessage()
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
-            override fun message(request: MessageRequest, token: String): Call<Boolean> {
+            override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                 assertThat(request::type).isEqualTo(expected.type)
                 assertThat(request::payload).isEqualTo(expected.payload)
                 return object : TestCall<Boolean> {
@@ -114,9 +115,9 @@ class MessengerImplTest {
     fun `send() to all throws`() = runTest {
         val expected = Random.nextMessage()
         val expectedThrowable = Throwable()
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
-            override fun message(request: MessageRequest, token: String): Call<Boolean> {
+            override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                 assertThat(request::type).isEqualTo(expected.type)
                 assertThat(request::payload).isEqualTo(expected.payload)
                 return object : TestCall<Boolean> {
@@ -147,13 +148,13 @@ class MessengerImplTest {
     fun `send() to a participant is successful`() = runTest {
         val expected = Random.nextMessage(direct = true)
         val id = UUID.randomUUID()
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
             override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                 assertThat(participantId, "participantId").isEqualTo(id)
-                return object : TestParticipantStep() {
+                return object : InfinityService.ParticipantStep {
 
-                    override fun message(request: MessageRequest, token: String): Call<Boolean> {
+                    override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                         assertThat(request::type).isEqualTo(expected.type)
                         assertThat(request::payload).isEqualTo(expected.payload)
                         return object : TestCall<Boolean> {
@@ -182,13 +183,13 @@ class MessengerImplTest {
     fun `send() to a participant failed to send`() = runTest {
         val expected = Random.nextMessage(direct = true)
         val id = UUID.randomUUID()
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
             override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                 assertThat(participantId, "participantId").isEqualTo(id)
-                return object : TestParticipantStep() {
+                return object : InfinityService.ParticipantStep {
 
-                    override fun message(request: MessageRequest, token: String): Call<Boolean> {
+                    override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                         assertThat(request::type).isEqualTo(expected.type)
                         assertThat(request::payload).isEqualTo(expected.payload)
                         return object : TestCall<Boolean> {
@@ -222,13 +223,13 @@ class MessengerImplTest {
         val expected = Random.nextMessage(direct = true)
         val expectedThrowable = Throwable()
         val id = UUID.randomUUID()
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
             override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                 assertThat(participantId, "participantId").isEqualTo(id)
-                return object : TestParticipantStep() {
+                return object : InfinityService.ParticipantStep {
 
-                    override fun message(request: MessageRequest, token: String): Call<Boolean> {
+                    override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                         assertThat(request::type).isEqualTo(expected.type)
                         assertThat(request::payload).isEqualTo(expected.payload)
                         return object : TestCall<Boolean> {
@@ -266,7 +267,7 @@ class MessengerImplTest {
             senderId = UUID.randomUUID(),
             senderName = Random.nextString(8),
             store = store,
-            step = object : TestConferenceStep() {},
+            step = object : InfinityService.ConferenceStep {},
             atProvider = { at },
         )
         messenger.message.test {
