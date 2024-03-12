@@ -27,11 +27,13 @@ public interface Roster {
      * A [StateFlow] that represents participants of this conference.
      */
     public val participants: StateFlow<List<Participant>>
+        get() = throw NotImplementedError()
 
     /**
      * A [StateFlow] that represents *you* as the participant of this conference.
      */
     public val me: StateFlow<Participant?>
+        get() = throw NotImplementedError()
 
     /**
      * A [StateFlow] that represents the participant that is currently sharing a presentation.
@@ -39,6 +41,7 @@ public interface Roster {
      * Note that the value will always be `null` when you're sharing the presentation.
      */
     public val presenter: StateFlow<Participant?>
+        get() = throw NotImplementedError()
 
     /**
      * Disconnects the specified participant or self.
@@ -46,7 +49,23 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws DisconnectException if the operation failed
      */
-    public suspend fun disconnect(participantId: UUID? = null)
+    public suspend fun disconnect(participantId: UUID? = null): Unit = throw NotImplementedError()
+
+    /**
+     * Mutes the specified participant or self.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws MuteException if the operation failed
+     */
+    public suspend fun mute(participantId: UUID? = null): Unit = throw NotImplementedError()
+
+    /**
+     * Unmutes the specified participant or self.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws UnmuteException if the operation failed
+     */
+    public suspend fun unmute(participantId: UUID? = null): Unit = throw NotImplementedError()
 
     /**
      * Raises hand of the specified participant or self.
@@ -54,7 +73,7 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws RaiseHandException if the operation failed
      */
-    public suspend fun raiseHand(participantId: UUID? = null)
+    public suspend fun raiseHand(participantId: UUID? = null): Unit = throw NotImplementedError()
 
     /**
      * Lowers hand of the specified participant or self.
@@ -62,12 +81,12 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws LowerHandException if the operation failed
      */
-    public suspend fun lowerHand(participantId: UUID? = null)
+    public suspend fun lowerHand(participantId: UUID? = null): Unit = throw NotImplementedError()
 
     /**
      * Lowers all hands.
      *
      * @throws LowerAllHandsException if the operation failed
      */
-    public suspend fun lowerAllHands()
+    public suspend fun lowerAllHands(): Unit = throw NotImplementedError()
 }
