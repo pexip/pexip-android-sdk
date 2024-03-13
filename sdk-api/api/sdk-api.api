@@ -604,6 +604,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Parti
 	public fun preferredAspectRatio (Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public fun releaseFloor (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun releaseFloor (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public fun role (Lcom/pexip/sdk/api/infinity/RoleRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun takeFloor (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun takeFloor (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public fun unmute (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
@@ -1436,6 +1437,33 @@ public final class com/pexip/sdk/api/infinity/Role : java/lang/Enum {
 }
 
 public final class com/pexip/sdk/api/infinity/Role$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/RoleRequest {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/RoleRequest$Companion;
+	public fun <init> (Lcom/pexip/sdk/api/infinity/Role;)V
+	public final fun component1 ()Lcom/pexip/sdk/api/infinity/Role;
+	public final fun copy (Lcom/pexip/sdk/api/infinity/Role;)Lcom/pexip/sdk/api/infinity/RoleRequest;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/RoleRequest;Lcom/pexip/sdk/api/infinity/Role;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RoleRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRole ()Lcom/pexip/sdk/api/infinity/Role;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/api/infinity/RoleRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RoleRequest$$serializer;
+	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RoleRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/RoleRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/RoleRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

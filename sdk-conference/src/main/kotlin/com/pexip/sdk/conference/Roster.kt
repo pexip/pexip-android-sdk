@@ -52,6 +52,22 @@ public interface Roster {
     public suspend fun disconnect(participantId: UUID? = null): Unit = throw NotImplementedError()
 
     /**
+     * Changes the role of the participant to host.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws MakeHostException if the operation failed
+     */
+    public suspend fun makeHost(participantId: UUID? = null): Unit = throw NotImplementedError()
+
+    /**
+     * Changes the role of the participant to guest.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws MakeGuestException if the operation failed
+     */
+    public suspend fun makeGuest(participantId: UUID? = null): Unit = throw NotImplementedError()
+
+    /**
      * Mutes the specified participant or self.
      *
      * @param participantId an ID of the participant, null for self
