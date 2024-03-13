@@ -30,11 +30,13 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.DisconnectException
 import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
+import com.pexip.sdk.conference.MuteException
 import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
 import com.pexip.sdk.conference.Role
 import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.ServiceType
+import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.core.retry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -45,7 +47,6 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -111,9 +112,7 @@ internal class RosterImpl(
         .stateIn(scope, SharingStarted.Eagerly, null)
 
     override val presenter: StateFlow<Participant?> = combine(
-        flow = event
-            .onEach(::println)
-            .filter { it is PresentationStartEvent || it is PresentationStopEvent },
+        flow = event.filter { it is PresentationStartEvent || it is PresentationStopEvent },
         flow2 = participantMapFlow,
         transform = { event, map ->
             when (event) {
@@ -124,46 +123,50 @@ internal class RosterImpl(
     ).stateIn(scope, SharingStarted.Eagerly, null)
 
     override suspend fun disconnect(participantId: UUID?) {
-        try {
+        perform(::DisconnectException) {
             val step = participantStep(participantId) ?: return
-            retry { step.disconnect(store.get()).await() }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (t: Throwable) {
-            throw DisconnectException(t)
+            step.disconnect(store.get()).await()
+        }
+    }
+
+    override suspend fun mute(participantId: UUID?) {
+        perform(::MuteException) {
+            val step = participantStep(participantId) ?: return
+            step.mute(store.get()).await()
+        }
+    }
+
+    override suspend fun unmute(participantId: UUID?) {
+        perform(::UnmuteException) {
+            val step = participantStep(participantId) ?: return
+            step.unmute(store.get()).await()
         }
     }
 
     override suspend fun raiseHand(participantId: UUID?) {
-        try {
+        perform(::RaiseHandException) {
             val step = participantStep(participantId) ?: return
-            retry { step.buzz(store.get()).await() }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (t: Throwable) {
-            throw RaiseHandException(t)
+            step.buzz(store.get()).await()
         }
     }
 
     override suspend fun lowerHand(participantId: UUID?) {
-        try {
+        perform(::LowerHandException) {
             val step = participantStep(participantId) ?: return
-            retry { step.clearBuzz(store.get()).await() }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (t: Throwable) {
-            throw LowerHandException(t)
+            step.clearBuzz(store.get()).await()
         }
     }
 
     override suspend fun lowerAllHands() {
-        try {
-            retry { step.clearAllBuzz(store.get()).await() }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (t: Throwable) {
-            throw LowerAllHandsException(t)
-        }
+        perform(::LowerAllHandsException) { step.clearAllBuzz(store.get()).await() }
+    }
+
+    private suspend inline fun perform(error: (Throwable) -> Throwable, block: () -> Unit) = try {
+        retry(block = block)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (t: Throwable) {
+        throw error(t)
     }
 
     private suspend fun participantStep(participantId: UUID?) = mutex.withLock {

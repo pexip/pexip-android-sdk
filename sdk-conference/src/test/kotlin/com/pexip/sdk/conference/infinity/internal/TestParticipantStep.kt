@@ -41,11 +41,11 @@ internal open class TestParticipantStep : InfinityService.ParticipantStep {
 
     override fun mute(token: String): Call<Unit> = TODO()
 
-    final override fun mute(token: Token): Call<Unit> = mute(token.token)
+    override fun mute(token: Token): Call<Unit> = mute(token.token)
 
     override fun unmute(token: String): Call<Unit> = TODO()
 
-    final override fun unmute(token: Token): Call<Unit> = unmute(token.token)
+    override fun unmute(token: Token): Call<Unit> = unmute(token.token)
 
     override fun videoMuted(token: String): Call<Unit> = TODO()
 
