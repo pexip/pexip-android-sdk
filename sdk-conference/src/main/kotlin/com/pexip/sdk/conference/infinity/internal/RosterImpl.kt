@@ -42,7 +42,9 @@ import com.pexip.sdk.conference.RaiseHandException
 import com.pexip.sdk.conference.Role
 import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.ServiceType
+import com.pexip.sdk.conference.SpotlightException
 import com.pexip.sdk.conference.UnmuteException
+import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.core.retry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -167,6 +169,20 @@ internal class RosterImpl(
         perform(::UnmuteException) {
             val step = participantStep(participantId) ?: return
             step.unmute(it)
+        }
+    }
+
+    override suspend fun spotlight(participantId: UUID?) {
+        perform(::SpotlightException) {
+            val step = participantStep(participantId) ?: return
+            step.spotlightOn(it)
+        }
+    }
+
+    override suspend fun unspotlight(participantId: UUID?) {
+        perform(::UnspotlightException) {
+            val step = participantStep(participantId) ?: return
+            step.spotlightOff(it)
         }
     }
 

@@ -212,6 +212,34 @@ internal class ParticipantStepImpl(
         mapper = { parse(it, BooleanSerializer) },
     )
 
+    override fun spotlightOn(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("spotlighton")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
+    override fun spotlightOff(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("spotlightoff")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
     override fun unlock(token: Token): Call<Boolean> = RealCall(
         client = client,
         request = Request.Builder()

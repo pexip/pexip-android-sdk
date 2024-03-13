@@ -687,6 +687,104 @@ internal class ParticipantStepTest {
     }
 
     @Test
+    fun `spotlightOn throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        assertFailure { step.spotlightOn(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifySpotlightOn(token)
+    }
+
+    @Test
+    fun `spotlightOn throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        assertFailure { step.spotlightOn(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifySpotlightOn(token)
+    }
+
+    @Test
+    fun `spotlightOn throws NoSuchConferenceException`() = runTest {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.spotlightOn(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifySpotlightOn(token)
+    }
+
+    @Test
+    fun `spotlightOn throws InvalidTokenException`() = runTest {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.spotlightOn(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifySpotlightOn(token)
+    }
+
+    @Test
+    fun `spotlightOn returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            assertThat(step.spotlightOn(token).await(), "result").isEqualTo(result)
+            server.verifySpotlightOn(token)
+        }
+    }
+
+    @Test
+    fun `spotlightOff throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        assertFailure { step.spotlightOff(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifySpotlightOff(token)
+    }
+
+    @Test
+    fun `spotlightOff throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        assertFailure { step.spotlightOff(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifySpotlightOff(token)
+    }
+
+    @Test
+    fun `spotlightOff throws NoSuchConferenceException`() = runTest {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.spotlightOff(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifySpotlightOff(token)
+    }
+
+    @Test
+    fun `spotlightOff throws InvalidTokenException`() = runTest {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.spotlightOff(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifySpotlightOff(token)
+    }
+
+    @Test
+    fun `spotlightOff returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            assertThat(step.spotlightOff(token).await(), "result").isEqualTo(result)
+            server.verifySpotlightOff(token)
+        }
+    }
+
+    @Test
     fun `disconnect throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         assertFailure { step.disconnect(token).await() }.isInstanceOf<IllegalStateException>()
@@ -912,6 +1010,32 @@ internal class ParticipantStepTest {
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("unlock")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifySpotlightOn(token: Token) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId)
+            addPathSegment("spotlighton")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifySpotlightOff(token: Token) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("participants")
+            addPathSegment(participantId)
+            addPathSegment("spotlightoff")
         }
         assertToken(token)
         assertPostEmptyBody()
