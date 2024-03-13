@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ internal class CallStepTest {
     private lateinit var participantId: UUID
     private lateinit var callId: UUID
     private lateinit var json: Json
+    private lateinit var token: Token
     private lateinit var step: InfinityService.CallStep
 
     @BeforeTest
@@ -54,6 +55,7 @@ internal class CallStepTest {
         callId = UUID.randomUUID()
         json = Json { ignoreUnknownKeys = true }
         val service = InfinityService.create(OkHttpClient(), json)
+        token = Random.nextFakeToken()
         step = service.newRequest(node)
             .conference(conferenceAlias)
             .participant(participantId)
@@ -64,7 +66,6 @@ internal class CallStepTest {
     fun `newCandidate throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         val request = Random.nextNewCandidateRequest()
-        val token = Random.nextString(8)
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<IllegalStateException>()
         server.verifyNewCandidate(request, token)
@@ -74,7 +75,6 @@ internal class CallStepTest {
     fun `newCandidate throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
         val request = Random.nextNewCandidateRequest()
-        val token = Random.nextString(8)
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<NoSuchNodeException>()
         server.verifyNewCandidate(request, token)
@@ -88,7 +88,6 @@ internal class CallStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = Random.nextNewCandidateRequest()
-        val token = Random.nextString(8)
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
         server.verifyNewCandidate(request, token)
@@ -102,7 +101,6 @@ internal class CallStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = Random.nextNewCandidateRequest()
-        val token = Random.nextString(8)
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
         server.verifyNewCandidate(request, token)
@@ -112,7 +110,6 @@ internal class CallStepTest {
     fun `newCandidate returns on 200`() = runTest {
         server.enqueue { setResponseCode(200) }
         val request = Random.nextNewCandidateRequest()
-        val token = Random.nextString(8)
         step.newCandidate(request, token).await()
         server.verifyNewCandidate(request, token)
     }
@@ -120,7 +117,6 @@ internal class CallStepTest {
     @Test
     fun `ack throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         val request = Random.maybe { nextAckRequest() }
         val call = when (request) {
             null -> step.ack(token)
@@ -133,7 +129,6 @@ internal class CallStepTest {
     @Test
     fun `ack throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         val request = Random.maybe { nextAckRequest() }
         val call = when (request) {
             null -> step.ack(token)
@@ -150,7 +145,6 @@ internal class CallStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         val request = Random.maybe { nextAckRequest() }
         val call = when (request) {
             null -> step.ack(token)
@@ -167,7 +161,6 @@ internal class CallStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         val request = Random.maybe { nextAckRequest() }
         val call = when (request) {
             null -> step.ack(token)
@@ -180,7 +173,6 @@ internal class CallStepTest {
     @Test
     fun `ack returns on 200`() = runTest {
         server.enqueue { setResponseCode(200) }
-        val token = Random.nextString(8)
         val request = Random.maybe { nextAckRequest() }
         val call = when (request) {
             null -> step.ack(token)
@@ -193,7 +185,6 @@ internal class CallStepTest {
     @Test
     fun `update throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         val request = Random.nextUpdateRequest()
         assertFailure { step.update(request, token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyUpdate(request, token)
@@ -202,7 +193,6 @@ internal class CallStepTest {
     @Test
     fun `update throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         val request = Random.nextUpdateRequest()
         assertFailure { step.update(request, token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyUpdate(request, token)
@@ -215,7 +205,6 @@ internal class CallStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         val request = Random.nextUpdateRequest()
         assertFailure { step.update(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
@@ -230,7 +219,6 @@ internal class CallStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         val request = Random.nextUpdateRequest()
         assertFailure { step.update(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
@@ -245,7 +233,6 @@ internal class CallStepTest {
             setResponseCode(200)
             setBody(json.encodeToString(Box(response)))
         }
-        val token = Random.nextString(8)
         val request = Random.nextUpdateRequest()
         assertThat(step.update(request, token).await()).isEqualTo(response)
         server.verifyUpdate(request, token)
@@ -255,7 +242,6 @@ internal class CallStepTest {
     fun `dtmf throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertFailure { step.dtmf(request, token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyDtmf(request, token)
     }
@@ -264,7 +250,6 @@ internal class CallStepTest {
     fun `dtmf throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertFailure { step.dtmf(request, token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyDtmf(request, token)
     }
@@ -277,7 +262,6 @@ internal class CallStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertFailure { step.dtmf(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
         server.verifyDtmf(request, token)
@@ -291,7 +275,6 @@ internal class CallStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertFailure { step.dtmf(request, token).await() }.isInstanceOf<InvalidTokenException>()
         server.verifyDtmf(request, token)
     }
@@ -304,14 +287,13 @@ internal class CallStepTest {
             setBody(json.encodeToString(Box(response)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertThat(step.dtmf(request, token).await()).isEqualTo(response)
         server.verifyDtmf(request, token)
     }
 
     private fun MockWebServer.verifyNewCandidate(
         request: NewCandidateRequest,
-        token: String,
+        token: Token,
     ) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
@@ -327,7 +309,7 @@ internal class CallStepTest {
         assertPost(json, request)
     }
 
-    private fun MockWebServer.verifyAck(request: AckRequest?, token: String) = takeRequest {
+    private fun MockWebServer.verifyAck(request: AckRequest?, token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -345,7 +327,7 @@ internal class CallStepTest {
         }
     }
 
-    private fun MockWebServer.verifyUpdate(request: UpdateRequest, token: String) = takeRequest {
+    private fun MockWebServer.verifyUpdate(request: UpdateRequest, token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -360,7 +342,7 @@ internal class CallStepTest {
         assertPost(json, request)
     }
 
-    private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: String) = takeRequest {
+    private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@ package com.pexip.sdk.registration.infinity.internal
 
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
+import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RegistrationResponse
+import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.registration.RegisteredDevice
 import kotlinx.coroutines.test.runTest
@@ -40,15 +42,15 @@ internal class RegisteredDevicesFetcherTest {
     fun `fetch triggers onFailure`() = runTest {
         val throwable = Throwable()
         val q = Random.nextString(8)
-        val step = object : TestRegistrationStep() {
+        val step = object : InfinityService.RegistrationStep {
 
             override fun registrations(
-                token: String,
+                token: Token,
                 query: String,
             ): Call<List<RegistrationResponse>> = object : TestCall<List<RegistrationResponse>> {
 
                 override fun enqueue(callback: Callback<List<RegistrationResponse>>) {
-                    assertEquals(store.get().token, token)
+                    assertEquals(store.get(), token)
                     assertEquals(q, query)
                     callback.onFailure(this, throwable)
                 }
@@ -69,15 +71,15 @@ internal class RegisteredDevicesFetcherTest {
             )
         }
         val q = Random.nextString(8)
-        val step = object : TestRegistrationStep() {
+        val step = object : InfinityService.RegistrationStep {
 
             override fun registrations(
-                token: String,
+                token: Token,
                 query: String,
             ): Call<List<RegistrationResponse>> = object : TestCall<List<RegistrationResponse>> {
 
                 override fun enqueue(callback: Callback<List<RegistrationResponse>>) {
-                    assertEquals(store.get().token, token)
+                    assertEquals(store.get(), token)
                     assertEquals(q, query)
                     callback.onSuccess(this, responses)
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class RefererTest {
     fun `transfer rethrows`() = runTest {
         val t = Throwable()
         val directMedia = Random.nextBoolean()
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
             override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
                 assertThat(request::incomingToken).isEqualTo(event.token)
@@ -70,7 +70,7 @@ class RefererTest {
                 }
             }
         }
-        val builder = object : TestRequestBuilder() {
+        val builder = object : InfinityService.RequestBuilder {
 
             override fun conference(conferenceAlias: String): InfinityService.ConferenceStep {
                 assertThat(conferenceAlias, "conferenceAlias").isEqualTo(event.conferenceAlias)
@@ -94,7 +94,7 @@ class RefererTest {
             directMediaRequested = Random.nextBoolean(),
             version = VersionResponse(Random.nextString(8), Random.nextString(8)),
         )
-        val step = object : TestConferenceStep() {
+        val step = object : InfinityService.ConferenceStep {
 
             override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
                 assertThat(request::incomingToken).isEqualTo(event.token)
@@ -106,7 +106,7 @@ class RefererTest {
                 }
             }
         }
-        val builder = object : TestRequestBuilder() {
+        val builder = object : InfinityService.RequestBuilder {
 
             override fun conference(conferenceAlias: String): InfinityService.ConferenceStep {
                 assertThat(conferenceAlias, "conferenceAlias").isEqualTo(event.conferenceAlias)

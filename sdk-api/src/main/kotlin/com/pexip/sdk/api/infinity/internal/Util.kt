@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.api.infinity.internal
 
+import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
@@ -69,10 +70,15 @@ internal fun HttpUrl.Builder.registration(deviceAlias: String? = null): HttpUrl.
     if (deviceAlias != null) addPathSegment(deviceAlias)
 }
 
+internal fun HttpUrl.Builder.token(token: Token): HttpUrl.Builder =
+    addQueryParameter("token", token.token)
+
 internal inline fun Request.Builder.url(
     url: HttpUrl,
     block: HttpUrl.Builder.() -> Unit,
 ): Request.Builder = url(url.newApiClientV2Builder().apply(block).build())
+
+internal fun Request.Builder.token(token: Token): Request.Builder = header("token", token.token)
 
 internal inline fun <reified T : Any> Request.Builder.withTag(tag: T?) = tag(T::class.java, tag)
 

@@ -44,6 +44,7 @@ internal class ParticipantStepTest {
     private lateinit var conferenceAlias: String
     private lateinit var participantId: UUID
     private lateinit var json: Json
+    private lateinit var token: Token
     private lateinit var step: InfinityService.ParticipantStep
 
     @BeforeTest
@@ -53,6 +54,7 @@ internal class ParticipantStepTest {
         participantId = UUID.randomUUID()
         json = Json { ignoreUnknownKeys = true }
         val service = InfinityService.create(OkHttpClient(), json)
+        token = Random.nextFakeToken()
         step = service.newRequest(node)
             .conference(conferenceAlias)
             .participant(participantId)
@@ -62,7 +64,6 @@ internal class ParticipantStepTest {
     fun `calls throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val request = Random.nextCallsRequest()
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.calls(request, token).execute() }
         server.verifyCalls(request, token)
     }
@@ -71,7 +72,6 @@ internal class ParticipantStepTest {
     fun `calls throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
         val request = Random.nextCallsRequest()
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.calls(request, token).execute() }
         server.verifyCalls(request, token)
     }
@@ -84,7 +84,6 @@ internal class ParticipantStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = Random.nextCallsRequest()
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.calls(request, token).execute() }
         server.verifyCalls(request, token)
     }
@@ -97,7 +96,6 @@ internal class ParticipantStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = Random.nextCallsRequest()
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.calls(request, token).execute() }
         server.verifyCalls(request, token)
     }
@@ -113,7 +111,6 @@ internal class ParticipantStepTest {
             setBody(json.encodeToString(Box(response)))
         }
         val request = Random.nextCallsRequest()
-        val token = Random.nextString(8)
         assertEquals(response, step.calls(request, token).execute())
         server.verifyCalls(request, token)
     }
@@ -122,7 +119,6 @@ internal class ParticipantStepTest {
     fun `dtmf throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.dtmf(request, token).execute() }
         server.verifyDtmf(request, token)
     }
@@ -131,7 +127,6 @@ internal class ParticipantStepTest {
     fun `dtmf throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.dtmf(request, token).execute() }
         server.verifyDtmf(request, token)
     }
@@ -144,7 +139,6 @@ internal class ParticipantStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.dtmf(request, token).execute() }
         server.verifyDtmf(request, token)
     }
@@ -157,7 +151,6 @@ internal class ParticipantStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.dtmf(request, token).execute() }
         server.verifyDtmf(request, token)
     }
@@ -170,7 +163,6 @@ internal class ParticipantStepTest {
             setBody(json.encodeToString(Box(response)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
-        val token = Random.nextString(8)
         assertEquals(response, step.dtmf(request, token).execute())
         server.verifyDtmf(request, token)
     }
@@ -178,7 +170,6 @@ internal class ParticipantStepTest {
     @Test
     fun `mute throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.mute(token).execute() }
         server.verifyMute(token)
     }
@@ -186,7 +177,6 @@ internal class ParticipantStepTest {
     @Test
     fun `mute throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.mute(token).execute() }
         server.verifyMute(token)
     }
@@ -198,7 +188,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.mute(token).execute() }
         server.verifyMute(token)
     }
@@ -210,7 +199,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.mute(token).execute() }
         server.verifyMute(token)
     }
@@ -218,7 +206,6 @@ internal class ParticipantStepTest {
     @Test
     fun `mute returns`() {
         server.enqueue { setResponseCode(200) }
-        val token = Random.nextString(8)
         step.mute(token).execute()
         server.verifyMute(token)
     }
@@ -226,7 +213,6 @@ internal class ParticipantStepTest {
     @Test
     fun `unmute throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.unmute(token).execute() }
         server.verifyUnmute(token)
     }
@@ -234,7 +220,6 @@ internal class ParticipantStepTest {
     @Test
     fun `unmute throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.unmute(token).execute() }
         server.verifyUnmute(token)
     }
@@ -246,7 +231,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.unmute(token).execute() }
         server.verifyUnmute(token)
     }
@@ -258,7 +242,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.unmute(token).execute() }
         server.verifyUnmute(token)
     }
@@ -266,7 +249,6 @@ internal class ParticipantStepTest {
     @Test
     fun `unmute returns`() {
         server.enqueue { setResponseCode(200) }
-        val token = Random.nextString(8)
         step.unmute(token).execute()
         server.verifyUnmute(token)
     }
@@ -274,7 +256,6 @@ internal class ParticipantStepTest {
     @Test
     fun `videoMuted throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.videoMuted(token).execute() }
         server.verifyVideoMuted(token)
     }
@@ -282,7 +263,6 @@ internal class ParticipantStepTest {
     @Test
     fun `videoMuted throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.videoMuted(token).execute() }
         server.verifyVideoMuted(token)
     }
@@ -294,7 +274,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.videoMuted(token).execute() }
         server.verifyVideoMuted(token)
     }
@@ -306,7 +285,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.videoMuted(token).execute() }
         server.verifyVideoMuted(token)
     }
@@ -314,7 +292,6 @@ internal class ParticipantStepTest {
     @Test
     fun `videoMuted returns`() {
         server.enqueue { setResponseCode(200) }
-        val token = Random.nextString(8)
         step.videoMuted(token).execute()
         server.verifyVideoMuted(token)
     }
@@ -322,7 +299,6 @@ internal class ParticipantStepTest {
     @Test
     fun `videoUnmuted throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.videoUnmuted(token).execute() }
         server.verifyVideoUnMuted(token)
     }
@@ -330,7 +306,6 @@ internal class ParticipantStepTest {
     @Test
     fun `videoUnmuted throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.videoUnmuted(token).execute() }
         server.verifyVideoUnMuted(token)
     }
@@ -342,7 +317,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.videoUnmuted(token).execute() }
         server.verifyVideoUnMuted(token)
     }
@@ -354,7 +328,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.videoUnmuted(token).execute() }
         server.verifyVideoUnMuted(token)
     }
@@ -362,7 +335,6 @@ internal class ParticipantStepTest {
     @Test
     fun `videoUnmuted returns`() {
         server.enqueue { setResponseCode(200) }
-        val token = Random.nextString(8)
         step.videoUnmuted(token).execute()
         server.verifyVideoUnMuted(token)
     }
@@ -370,7 +342,6 @@ internal class ParticipantStepTest {
     @Test
     fun `takeFloor throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.takeFloor(token).execute() }
         server.verifyTakeFloor(token)
     }
@@ -378,7 +349,6 @@ internal class ParticipantStepTest {
     @Test
     fun `takeFloor throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.takeFloor(token).execute() }
         server.verifyTakeFloor(token)
     }
@@ -390,7 +360,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.takeFloor(token).execute() }
         server.verifyTakeFloor(token)
     }
@@ -402,7 +371,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.takeFloor(token).execute() }
         server.verifyTakeFloor(token)
     }
@@ -410,7 +378,6 @@ internal class ParticipantStepTest {
     @Test
     fun `takeFloor returns`() {
         server.enqueue { setResponseCode(200) }
-        val token = Random.nextString(8)
         step.takeFloor(token).execute()
         server.verifyTakeFloor(token)
     }
@@ -418,7 +385,6 @@ internal class ParticipantStepTest {
     @Test
     fun `releaseFloor throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailsWith<IllegalStateException> { step.releaseFloor(token).execute() }
         server.verifyReleaseFloor(token)
     }
@@ -426,7 +392,6 @@ internal class ParticipantStepTest {
     @Test
     fun `releaseFloor throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchNodeException> { step.releaseFloor(token).execute() }
         server.verifyReleaseFloor(token)
     }
@@ -438,7 +403,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<NoSuchConferenceException> { step.releaseFloor(token).execute() }
         server.verifyReleaseFloor(token)
     }
@@ -450,7 +414,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailsWith<InvalidTokenException> { step.releaseFloor(token).execute() }
         server.verifyReleaseFloor(token)
     }
@@ -458,7 +421,6 @@ internal class ParticipantStepTest {
     @Test
     fun `releaseFloor returns`() {
         server.enqueue { setResponseCode(200) }
-        val token = Random.nextString(8)
         step.releaseFloor(token).execute()
         server.verifyReleaseFloor(token)
     }
@@ -466,7 +428,6 @@ internal class ParticipantStepTest {
     @Test
     fun `buzz throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailure { step.buzz(token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyBuzz(token)
     }
@@ -474,7 +435,6 @@ internal class ParticipantStepTest {
     @Test
     fun `buzz throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailure { step.buzz(token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyBuzz(token)
     }
@@ -486,7 +446,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailure { step.buzz(token).await() }.isInstanceOf<NoSuchConferenceException>()
         server.verifyBuzz(token)
     }
@@ -498,7 +457,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailure { step.buzz(token).await() }.isInstanceOf<InvalidTokenException>()
         server.verifyBuzz(token)
     }
@@ -511,7 +469,6 @@ internal class ParticipantStepTest {
                 setResponseCode(200)
                 setBody(json.encodeToString(Box(result)))
             }
-            val token = Random.nextString(8)
             assertThat(step.buzz(token).await(), "result").isEqualTo(result)
             server.verifyBuzz(token)
         }
@@ -520,7 +477,6 @@ internal class ParticipantStepTest {
     @Test
     fun `clearBuzz throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailure { step.clearBuzz(token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyClearBuzz(token)
     }
@@ -528,7 +484,6 @@ internal class ParticipantStepTest {
     @Test
     fun `clearBuzz throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailure { step.clearBuzz(token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyClearBuzz(token)
     }
@@ -540,7 +495,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailure { step.clearBuzz(token).await() }.isInstanceOf<NoSuchConferenceException>()
         server.verifyClearBuzz(token)
     }
@@ -552,7 +506,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailure { step.clearBuzz(token).await() }.isInstanceOf<InvalidTokenException>()
         server.verifyClearBuzz(token)
     }
@@ -565,7 +518,6 @@ internal class ParticipantStepTest {
                 setResponseCode(200)
                 setBody(json.encodeToString(Box(result)))
             }
-            val token = Random.nextString(8)
             assertThat(step.clearBuzz(token).await(), "result").isEqualTo(result)
             server.verifyClearBuzz(token)
         }
@@ -574,7 +526,6 @@ internal class ParticipantStepTest {
     @Test
     fun `preferredAspectRatio throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         val request = Random.nextPreferredAspectRatioRequest()
         assertFailsWith<IllegalStateException> {
             step.preferredAspectRatio(request, token).execute()
@@ -585,7 +536,6 @@ internal class ParticipantStepTest {
     @Test
     fun `preferredAspectRatio throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         val request = Random.nextPreferredAspectRatioRequest()
         assertFailsWith<NoSuchNodeException> { step.preferredAspectRatio(request, token).execute() }
         server.verifyPreferredAspectRatio(request, token)
@@ -598,7 +548,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         val request = Random.nextPreferredAspectRatioRequest()
         assertFailsWith<NoSuchConferenceException> {
             step.preferredAspectRatio(request, token).execute()
@@ -613,7 +562,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         val request = Random.nextPreferredAspectRatioRequest()
         assertFailsWith<InvalidTokenException> {
             step.preferredAspectRatio(request, token).execute()
@@ -629,7 +577,6 @@ internal class ParticipantStepTest {
                 setResponseCode(200)
                 setBody(json.encodeToString(Box(result)))
             }
-            val token = Random.nextString(8)
             val request = Random.nextPreferredAspectRatioRequest()
             assertEquals(result, step.preferredAspectRatio(request, token).execute())
             server.verifyPreferredAspectRatio(request, token)
@@ -639,7 +586,6 @@ internal class ParticipantStepTest {
     @Test
     fun `message throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
         assertFailsWith<IllegalStateException> { step.message(request, token).execute() }
         server.verifyMessage(request, token)
@@ -648,7 +594,6 @@ internal class ParticipantStepTest {
     @Test
     fun `message throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
         assertFailsWith<NoSuchNodeException> { step.message(request, token).execute() }
         server.verifyMessage(request, token)
@@ -661,7 +606,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
         assertFailsWith<NoSuchConferenceException> { step.message(request, token).execute() }
         server.verifyMessage(request, token)
@@ -674,7 +618,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         val request = Random.nextMessageRequest()
         assertFailsWith<InvalidTokenException> { step.message(request, token).execute() }
         server.verifyMessage(request, token)
@@ -688,7 +631,6 @@ internal class ParticipantStepTest {
                 setResponseCode(200)
                 setBody(json.encodeToString(Box(result)))
             }
-            val token = Random.nextString(8)
             val request = Random.nextMessageRequest()
             assertEquals(result, step.message(request, token).execute())
             server.verifyMessage(request, token)
@@ -698,7 +640,6 @@ internal class ParticipantStepTest {
     @Test
     fun `disconnect throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        val token = Random.nextString(8)
         assertFailure { step.disconnect(token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyDisconnect(token)
     }
@@ -706,7 +647,6 @@ internal class ParticipantStepTest {
     @Test
     fun `disconnect throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        val token = Random.nextString(8)
         assertFailure { step.disconnect(token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyDisconnect(token)
     }
@@ -718,7 +658,6 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailure { step.disconnect(token).await() }.isInstanceOf<NoSuchConferenceException>()
         server.verifyDisconnect(token)
     }
@@ -730,7 +669,6 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val token = Random.nextString(8)
         assertFailure { step.disconnect(token).await() }.isInstanceOf<InvalidTokenException>()
         server.verifyDisconnect(token)
     }
@@ -743,13 +681,12 @@ internal class ParticipantStepTest {
                 setResponseCode(200)
                 setBody(json.encodeToString(Box(result)))
             }
-            val token = Random.nextString(8)
             assertThat(step.disconnect(token).await(), "result").isEqualTo(result)
             server.verifyDisconnect(token)
         }
     }
 
-    private fun MockWebServer.verifyCalls(request: CallsRequest, token: String) = takeRequest {
+    private fun MockWebServer.verifyCalls(request: CallsRequest, token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -762,7 +699,7 @@ internal class ParticipantStepTest {
         assertPost(json, request)
     }
 
-    private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: String) = takeRequest {
+    private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -775,7 +712,7 @@ internal class ParticipantStepTest {
         assertPost(json, request)
     }
 
-    private fun MockWebServer.verifyMute(token: String) = takeRequest {
+    private fun MockWebServer.verifyMute(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -788,7 +725,7 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyUnmute(token: String) = takeRequest {
+    private fun MockWebServer.verifyUnmute(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -801,7 +738,7 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyVideoMuted(token: String) = takeRequest {
+    private fun MockWebServer.verifyVideoMuted(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -814,7 +751,7 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyVideoUnMuted(token: String) = takeRequest {
+    private fun MockWebServer.verifyVideoUnMuted(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -827,7 +764,7 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyTakeFloor(token: String) = takeRequest {
+    private fun MockWebServer.verifyTakeFloor(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -840,7 +777,7 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyReleaseFloor(token: String) = takeRequest {
+    private fun MockWebServer.verifyReleaseFloor(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -853,7 +790,7 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyMessage(request: MessageRequest, token: String) =
+    private fun MockWebServer.verifyMessage(request: MessageRequest, token: Token) =
         takeRequest {
             assertRequestUrl(node) {
                 addPathSegments("api/client/v2")
@@ -869,7 +806,7 @@ internal class ParticipantStepTest {
 
     private fun MockWebServer.verifyPreferredAspectRatio(
         request: PreferredAspectRatioRequest,
-        token: String,
+        token: Token,
     ) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
@@ -892,7 +829,7 @@ internal class ParticipantStepTest {
 
     private fun Random.nextPreferredAspectRatioRequest() = PreferredAspectRatioRequest(nextFloat())
 
-    private fun MockWebServer.verifyBuzz(token: String) = takeRequest {
+    private fun MockWebServer.verifyBuzz(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -905,7 +842,7 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyClearBuzz(token: String) = takeRequest {
+    private fun MockWebServer.verifyClearBuzz(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
@@ -918,7 +855,7 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyDisconnect(token: String) = takeRequest {
+    private fun MockWebServer.verifyDisconnect(token: Token) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")

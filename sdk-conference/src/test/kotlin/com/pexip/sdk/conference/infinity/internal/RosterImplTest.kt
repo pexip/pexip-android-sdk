@@ -80,7 +80,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = TestConferenceStep(),
+            step = object : InfinityService.ConferenceStep {},
         )
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
@@ -105,7 +105,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = TestConferenceStep(),
+            step = object : InfinityService.ConferenceStep {},
         )
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
@@ -135,7 +135,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = TestConferenceStep(),
+            step = object : InfinityService.ConferenceStep {},
         )
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
@@ -156,7 +156,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = TestConferenceStep(),
+            step = object : InfinityService.ConferenceStep {},
         )
         roster.me.test {
             event.subscriptionCount.first { it > 0 }
@@ -183,7 +183,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = TestConferenceStep(),
+            step = object : InfinityService.ConferenceStep {},
         )
         roster.raiseHand(UUID.randomUUID())
     }
@@ -198,12 +198,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun buzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -245,12 +245,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun buzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -286,7 +286,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = TestConferenceStep(),
+            step = object : InfinityService.ConferenceStep {},
         )
         roster.disconnect(UUID.randomUUID())
     }
@@ -301,12 +301,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun disconnect(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -348,12 +348,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun disconnect(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -389,7 +389,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = TestConferenceStep(),
+            step = object : InfinityService.ConferenceStep {},
         )
         roster.mute(UUID.randomUUID())
     }
@@ -404,12 +404,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun mute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -451,12 +451,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun mute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -492,7 +492,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = TestConferenceStep(),
+            step = object : InfinityService.ConferenceStep {},
         )
         roster.unmute(UUID.randomUUID())
     }
@@ -507,12 +507,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun unmute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -554,12 +554,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun unmute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -595,7 +595,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = TestConferenceStep(),
+            step = object : InfinityService.ConferenceStep {},
         )
         roster.lowerHand(UUID.randomUUID())
     }
@@ -610,12 +610,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun clearBuzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -657,12 +657,12 @@ class RosterImplTest {
             event = event,
             participantId = me.id,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: UUID): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : TestParticipantStep() {
+                    return object : InfinityService.ParticipantStep {
 
                         override fun clearBuzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.get())
@@ -699,7 +699,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun clearAllBuzz(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.get())
@@ -723,7 +723,7 @@ class RosterImplTest {
             event = event,
             participantId = participantId,
             store = store,
-            step = object : TestConferenceStep() {
+            step = object : InfinityService.ConferenceStep {
 
                 override fun clearAllBuzz(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.get())

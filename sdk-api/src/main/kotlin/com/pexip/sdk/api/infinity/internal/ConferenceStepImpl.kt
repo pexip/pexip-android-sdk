@@ -40,6 +40,7 @@ import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import java.util.UUID
 
+@Suppress("OVERRIDE_DEPRECATION")
 internal class ConferenceStepImpl(
     override val requestBuilder: RequestBuilderImpl,
     override val conferenceAlias: String,
@@ -77,100 +78,73 @@ internal class ConferenceStepImpl(
         mapper = ::parseRequestToken,
     )
 
-    override fun refreshToken(token: String): Call<RefreshTokenResponse> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    addPathSegment("refresh_token")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseRefreshToken,
-        )
-    }
+    override fun refreshToken(token: Token): Call<RefreshTokenResponse> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("refresh_token")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseRefreshToken,
+    )
 
-    override fun refreshToken(token: Token): Call<RefreshTokenResponse> = refreshToken(token.token)
+    override fun releaseToken(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("release_token")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseReleaseToken,
+    )
 
-    override fun releaseToken(token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    addPathSegment("release_token")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseReleaseToken,
-        )
-    }
+    override fun message(request: MessageRequest, token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("message")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseMessage,
+    )
 
-    override fun releaseToken(token: Token): Call<Boolean> = releaseToken(token.token)
+    override fun availableLayouts(token: Token): Call<Set<LayoutId>> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .get()
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("available_layouts")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseAvailableLayouts,
+    )
 
-    override fun message(request: MessageRequest, token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(json.encodeToRequestBody(request))
-                .url(node) {
-                    conference(conferenceAlias)
-                    addPathSegment("message")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseMessage,
-        )
-    }
+    override fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .get()
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("layout_svgs")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseLayoutSvgs,
+    )
 
-    override fun message(request: MessageRequest, token: Token): Call<Boolean> =
-        message(request, token.token)
-
-    override fun availableLayouts(token: String): Call<Set<LayoutId>> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .get()
-                .url(node) {
-                    conference(conferenceAlias)
-                    addPathSegment("available_layouts")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseAvailableLayouts,
-        )
-    }
-
-    override fun availableLayouts(token: Token): Call<Set<LayoutId>> = availableLayouts(token.token)
-
-    override fun layoutSvgs(token: String): Call<Map<LayoutId, String>> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .get()
-                .url(node) {
-                    conference(conferenceAlias)
-                    addPathSegment("layout_svgs")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseLayoutSvgs,
-        )
-    }
-
-    override fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> = layoutSvgs(token.token)
-
-    override fun transformLayout(request: TransformLayoutRequest, token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
+    override fun transformLayout(request: TransformLayoutRequest, token: Token): Call<Boolean> =
+        RealCall(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(TransformLayoutRequestSerializer, request))
@@ -178,81 +152,60 @@ internal class ConferenceStepImpl(
                     conference(conferenceAlias)
                     addPathSegment("transform_layout")
                 }
-                .header("token", token)
+                .token(token)
                 .build(),
             mapper = ::parseTransformLayout,
         )
-    }
 
-    override fun transformLayout(request: TransformLayoutRequest, token: Token): Call<Boolean> =
-        transformLayout(request, token.token)
+    override fun theme(token: Token): Call<Map<String, SplashScreenResponse>> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .get()
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("theme")
+                addPathSegment("")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseTheme,
+    )
 
-    override fun theme(token: String): Call<Map<String, SplashScreenResponse>> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .get()
-                .url(node) {
-                    conference(conferenceAlias)
-                    addPathSegment("theme")
-                    addPathSegment("")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseTheme,
-        )
-    }
-
-    override fun theme(token: Token): Call<Map<String, SplashScreenResponse>> = theme(token.token)
-
-    override fun theme(path: String, token: String): String {
+    override fun theme(path: String, token: Token): String {
         require(path.isNotBlank()) { "path is blank." }
         return node.newApiClientV2Builder()
             .conference(conferenceAlias)
             .addPathSegment("theme")
             .addPathSegment(path)
-            .addQueryParameter("token", token)
+            .token(token)
             .toString()
     }
 
-    override fun theme(path: String, token: Token): String = theme(path, token.token)
+    override fun clearAllBuzz(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("clearallbuzz")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseClearAllBuzz,
+    )
 
-    override fun clearAllBuzz(token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    conference(conferenceAlias)
-                    addPathSegment("clearallbuzz")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseClearAllBuzz,
-        )
-    }
-
-    override fun clearAllBuzz(token: Token): Call<Boolean> = clearAllBuzz(token.token)
-
-    override fun events(token: String): EventSourceFactory {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealEventSourceFactory(
-            client = client,
-            request = Request.Builder()
-                .get()
-                .url(node) {
-                    conference(conferenceAlias)
-                    addPathSegment("events")
-                }
-                .header("token", token)
-                .build(),
-            json = json,
-        )
-    }
-
-    override fun events(token: Token): EventSourceFactory = events(token.token)
+    override fun events(token: Token): EventSourceFactory = RealEventSourceFactory(
+        client = client,
+        request = Request.Builder()
+            .get()
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("events")
+            }
+            .token(token)
+            .build(),
+        json = json,
+    )
 
     override fun participant(participantId: UUID): InfinityService.ParticipantStep =
         ParticipantStepImpl(this, participantId)

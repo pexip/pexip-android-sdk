@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,64 +58,47 @@ internal class RegistrationStepImpl(
         )
     }
 
-    override fun refreshToken(token: String): Call<RefreshRegistrationTokenResponse> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    registration(deviceAlias)
-                    addPathSegment("refresh_token")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseRefreshToken,
-        )
-    }
+    override fun refreshToken(token: Token): Call<RefreshRegistrationTokenResponse> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                registration(deviceAlias)
+                addPathSegment("refresh_token")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseRefreshToken,
+    )
 
-    override fun refreshToken(token: Token): Call<RefreshRegistrationTokenResponse> =
-        refreshToken(token.token)
+    override fun releaseToken(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                registration(deviceAlias)
+                addPathSegment("release_token")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseReleaseToken,
+    )
 
-    override fun releaseToken(token: String): Call<Boolean> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
-            client = client,
-            request = Request.Builder()
-                .post(EMPTY_REQUEST)
-                .url(node) {
-                    registration(deviceAlias)
-                    addPathSegment("release_token")
-                }
-                .header("token", token)
-                .build(),
-            mapper = ::parseReleaseToken,
-        )
-    }
+    override fun events(token: Token): EventSourceFactory = RealEventSourceFactory(
+        client = client,
+        request = Request.Builder()
+            .get()
+            .url(node) {
+                registration(deviceAlias)
+                addPathSegment("events")
+            }
+            .token(token)
+            .build(),
+        json = json,
+    )
 
-    override fun releaseToken(token: Token): Call<Boolean> = releaseToken(token.token)
-
-    override fun events(token: String): EventSourceFactory {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealEventSourceFactory(
-            client = client,
-            request = Request.Builder()
-                .get()
-                .url(node) {
-                    registration(deviceAlias)
-                    addPathSegment("events")
-                }
-                .header("token", token)
-                .build(),
-            json = json,
-        )
-    }
-
-    override fun events(token: Token): EventSourceFactory = events(token.token)
-
-    override fun registrations(token: String, query: String): Call<List<RegistrationResponse>> {
-        require(token.isNotBlank()) { "token is blank." }
-        return RealCall(
+    override fun registrations(token: Token, query: String): Call<List<RegistrationResponse>> =
+        RealCall(
             client = client,
             request = Request.Builder()
                 .get()
@@ -125,14 +108,10 @@ internal class RegistrationStepImpl(
                         addQueryParameter("q", query.trim())
                     }
                 }
-                .header("token", token)
+                .token(token)
                 .build(),
             mapper = ::parseRegistrations,
         )
-    }
-
-    override fun registrations(token: Token, query: String): Call<List<RegistrationResponse>> =
-        registrations(token.token, query)
 
     private fun parseRequestToken(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(
