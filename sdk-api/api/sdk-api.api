@@ -607,6 +607,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Parti
 	public fun role (Lcom/pexip/sdk/api/infinity/RoleRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun takeFloor (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun takeFloor (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public fun unlock (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun unmute (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun unmute (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public fun videoMuted (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;

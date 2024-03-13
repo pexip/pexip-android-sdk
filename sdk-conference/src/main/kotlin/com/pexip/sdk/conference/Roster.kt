@@ -44,6 +44,14 @@ public interface Roster {
         get() = throw NotImplementedError()
 
     /**
+     * Lets a specified participant into the conference from the waiting room of a locked conference.
+     *
+     * @param participantId an ID of the participant
+     * @throws AdmitException if the operation failed
+     */
+    public suspend fun admit(participantId: UUID): Unit = throw NotImplementedError()
+
+    /**
      * Disconnects the specified participant or self.
      *
      * @param participantId an ID of the participant, null for self

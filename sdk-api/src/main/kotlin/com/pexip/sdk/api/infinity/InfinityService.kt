@@ -823,6 +823,17 @@ public interface InfinityService {
         public fun clearBuzz(token: Token): Call<Boolean> = throw NotImplementedError()
 
         /**
+         * Lets a specified participant into the conference from the waiting room
+         * of a locked conference.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#unlock_participant).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun unlock(token: Token): Call<Boolean> = throw NotImplementedError()
+
+        /**
          * Disconnects a participant.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#disconnect).
