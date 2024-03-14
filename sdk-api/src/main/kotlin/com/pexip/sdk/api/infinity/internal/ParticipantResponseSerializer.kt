@@ -45,7 +45,6 @@ internal object ParticipantResponseSerializer :
         for ((key, value) in element.jsonObject) when (key) {
             in FloatTimestampKeys -> put(key, value.toInstantComponents())
             in YesNoKeys, "encryption" -> put(key, value.toBoolean())
-            "role" -> put(key, value.toRole())
             else -> put(key, value)
         }
     }
@@ -69,12 +68,6 @@ internal object ParticipantResponseSerializer :
     private fun JsonElement.toBoolean() = when (jsonPrimitive.content) {
         "YES", "On" -> JsonPrimitive(true)
         "NO", "Off" -> JsonPrimitive(false)
-        else -> JsonNull
-    }
-
-    private fun JsonElement.toRole() = when (jsonPrimitive.content) {
-        "chair" -> JsonPrimitive("HOST")
-        "guest" -> JsonPrimitive("GUEST")
         else -> JsonNull
     }
 }

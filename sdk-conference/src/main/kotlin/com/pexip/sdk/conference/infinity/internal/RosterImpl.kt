@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
+import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InfinityService
@@ -26,10 +27,14 @@ import com.pexip.sdk.api.infinity.ParticipantSyncEndEvent
 import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
+import com.pexip.sdk.api.infinity.RoleRequest
+import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.DisconnectException
 import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
+import com.pexip.sdk.conference.MakeGuestException
+import com.pexip.sdk.conference.MakeHostException
 import com.pexip.sdk.conference.MuteException
 import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
@@ -125,44 +130,61 @@ internal class RosterImpl(
     override suspend fun disconnect(participantId: UUID?) {
         perform(::DisconnectException) {
             val step = participantStep(participantId) ?: return
-            step.disconnect(store.get()).await()
+            step.disconnect(it)
+        }
+    }
+
+    override suspend fun makeHost(participantId: UUID?) {
+        perform(::MakeHostException) {
+            val step = participantStep(participantId) ?: return
+            step.role(RoleRequest(ApiRole.HOST), it)
+        }
+    }
+
+    override suspend fun makeGuest(participantId: UUID?) {
+        perform(::MakeGuestException) {
+            val step = participantStep(participantId) ?: return
+            step.role(RoleRequest(ApiRole.GUEST), it)
         }
     }
 
     override suspend fun mute(participantId: UUID?) {
         perform(::MuteException) {
             val step = participantStep(participantId) ?: return
-            step.mute(store.get()).await()
+            step.mute(it)
         }
     }
 
     override suspend fun unmute(participantId: UUID?) {
         perform(::UnmuteException) {
             val step = participantStep(participantId) ?: return
-            step.unmute(store.get()).await()
+            step.unmute(it)
         }
     }
 
     override suspend fun raiseHand(participantId: UUID?) {
         perform(::RaiseHandException) {
             val step = participantStep(participantId) ?: return
-            step.buzz(store.get()).await()
+            step.buzz(it)
         }
     }
 
     override suspend fun lowerHand(participantId: UUID?) {
         perform(::LowerHandException) {
             val step = participantStep(participantId) ?: return
-            step.clearBuzz(store.get()).await()
+            step.clearBuzz(it)
         }
     }
 
     override suspend fun lowerAllHands() {
-        perform(::LowerAllHandsException) { step.clearAllBuzz(store.get()).await() }
+        perform(::LowerAllHandsException, step::clearAllBuzz)
     }
 
-    private suspend inline fun perform(error: (Throwable) -> Throwable, block: () -> Unit) = try {
-        retry(block = block)
+    private suspend inline fun <T> perform(
+        error: (Throwable) -> Throwable,
+        call: (Token) -> Call<T>,
+    ): T = try {
+        retry { call(store.get()).await() }
     } catch (e: CancellationException) {
         throw e
     } catch (t: Throwable) {

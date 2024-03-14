@@ -847,6 +847,18 @@ public interface InfinityService {
         public fun disconnect(token: Token): Call<Boolean> = throw NotImplementedError()
 
         /**
+         * Changes the role of the participant.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#role).
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun role(request: RoleRequest, token: Token): Call<Boolean> =
+            throw NotImplementedError()
+
+        /**
          * Sets the call ID.
          *
          * @param callId an ID of the call

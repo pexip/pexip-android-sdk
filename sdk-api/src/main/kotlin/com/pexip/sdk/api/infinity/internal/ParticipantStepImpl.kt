@@ -25,6 +25,7 @@ import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.PreferredAspectRatioRequest
+import com.pexip.sdk.api.infinity.RoleRequest
 import com.pexip.sdk.api.infinity.Token
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
@@ -219,6 +220,20 @@ internal class ParticipantStepImpl(
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("disconnect")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
+    override fun role(request: RoleRequest, token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("role")
             }
             .token(token)
             .build(),
