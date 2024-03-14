@@ -1,3 +1,9 @@
+public final class com/pexip/sdk/conference/AdmitException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public abstract interface class com/pexip/sdk/conference/Conference {
 	public abstract fun getMessenger ()Lcom/pexip/sdk/conference/Messenger;
 	public abstract fun getName ()Ljava/lang/String;
@@ -297,6 +303,8 @@ public final class com/pexip/sdk/conference/Role : java/lang/Enum {
 }
 
 public abstract interface class com/pexip/sdk/conference/Roster {
+	public fun admit (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun admit$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun disconnect (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun disconnect$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun disconnect$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

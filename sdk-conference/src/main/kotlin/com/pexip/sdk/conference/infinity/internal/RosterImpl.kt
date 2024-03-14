@@ -30,6 +30,7 @@ import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.RoleRequest
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
+import com.pexip.sdk.conference.AdmitException
 import com.pexip.sdk.conference.DisconnectException
 import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
@@ -126,6 +127,13 @@ internal class RosterImpl(
             }
         },
     ).stateIn(scope, SharingStarted.Eagerly, null)
+
+    override suspend fun admit(participantId: UUID) {
+        perform(::AdmitException) {
+            val step = participantStep(participantId) ?: return
+            step.unlock(it)
+        }
+    }
 
     override suspend fun disconnect(participantId: UUID?) {
         perform(::DisconnectException) {

@@ -212,6 +212,20 @@ internal class ParticipantStepImpl(
         mapper = { parse(it, BooleanSerializer) },
     )
 
+    override fun unlock(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("unlock")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
     override fun disconnect(token: Token): Call<Boolean> = RealCall(
         client = client,
         request = Request.Builder()
