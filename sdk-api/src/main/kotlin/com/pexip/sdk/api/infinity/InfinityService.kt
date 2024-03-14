@@ -823,6 +823,26 @@ public interface InfinityService {
         public fun clearBuzz(token: Token): Call<Boolean> = throw NotImplementedError()
 
         /**
+         * Enables the "spotlight" on a participant.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#spotlighton).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun spotlightOn(token: Token): Call<Boolean> = throw NotImplementedError()
+
+        /**
+         * Disables the "spotlight" on a participant.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#spotlighton).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun spotlightOff(token: Token): Call<Boolean> = throw NotImplementedError()
+
+        /**
          * Lets a specified participant into the conference from the waiting room
          * of a locked conference.
          *

@@ -92,6 +92,22 @@ public interface Roster {
     public suspend fun unmute(participantId: UUID? = null): Unit = throw NotImplementedError()
 
     /**
+     * Enables the "spotlight" on a participant or self.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws SpotlightException if the operation failed
+     */
+    public suspend fun spotlight(participantId: UUID? = null): Unit = throw NotImplementedError()
+
+    /**
+     * Disables the "spotlight" on a participant or self.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws UnspotlightException if the operation failed
+     */
+    public suspend fun unspotlight(participantId: UUID? = null): Unit = throw NotImplementedError()
+
+    /**
      * Raises hand of the specified participant or self.
      *
      * @param participantId an ID of the participant, null for self

@@ -605,6 +605,8 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Parti
 	public fun releaseFloor (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun releaseFloor (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public fun role (Lcom/pexip/sdk/api/infinity/RoleRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public fun spotlightOff (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public fun spotlightOn (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun takeFloor (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun takeFloor (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public fun unlock (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;

@@ -328,9 +328,15 @@ public abstract interface class com/pexip/sdk/conference/Roster {
 	public fun raiseHand (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun raiseHand$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun raiseHand$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun spotlight (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun spotlight$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun spotlight$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unmute (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun unmute$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun unmute$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun unspotlight (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unspotlight$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun unspotlight$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class com/pexip/sdk/conference/SendCallback {
@@ -367,6 +373,12 @@ public final class com/pexip/sdk/conference/SplashScreen {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/pexip/sdk/conference/SpotlightException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public abstract interface class com/pexip/sdk/conference/Theme {
 	public abstract fun getLayout ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getSplashScreen ()Lkotlinx/coroutines/flow/StateFlow;
@@ -381,6 +393,12 @@ public final class com/pexip/sdk/conference/TransformLayoutException : java/lang
 }
 
 public final class com/pexip/sdk/conference/UnmuteException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/pexip/sdk/conference/UnspotlightException : java/lang/RuntimeException {
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/Throwable;)V
 	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
