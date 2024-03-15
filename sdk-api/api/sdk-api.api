@@ -561,6 +561,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Confe
 	public fun availableLayouts (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public fun clearAllBuzz (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun clearAllBuzz (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public fun disconnect (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun events (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/EventSourceFactory;
 	public fun events (Ljava/lang/String;)Lcom/pexip/sdk/api/EventSourceFactory;
 	public fun getRequestBuilder ()Lcom/pexip/sdk/api/infinity/InfinityService$RequestBuilder;

@@ -41,6 +41,7 @@ import com.pexip.sdk.api.infinity.RoleRequest
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
+import com.pexip.sdk.conference.DisconnectAllException
 import com.pexip.sdk.conference.DisconnectException
 import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
@@ -1237,6 +1238,53 @@ class RosterImplTest {
             },
         )
         roster.lowerAllHands()
+    }
+
+    @Test
+    fun `disconnectAll() throws DisconnectAllException`() = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun disconnect(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.disconnectAll() }
+            .isInstanceOf<DisconnectAllException>()
+            .hasCause(cause)
+    }
+
+    @Test
+    fun `disconnectAll() returns`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun disconnect(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.disconnectAll()
     }
 
     private fun Random.nextParticipant(index: Long = 0, id: UUID = UUID.randomUUID()): Participant {
