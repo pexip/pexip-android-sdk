@@ -849,6 +849,104 @@ internal class ConferenceStepTest {
     }
 
     @Test
+    fun `muteGuests throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        assertFailure { step.muteGuests(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifyMuteGuests(token)
+    }
+
+    @Test
+    fun `muteGuests throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        assertFailure { step.muteGuests(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyMuteGuests(token)
+    }
+
+    @Test
+    fun `muteGuests throws NoSuchConferenceException`() = runTest {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.muteGuests(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyMuteGuests(token)
+    }
+
+    @Test
+    fun `muteGuests throws InvalidTokenException`() = runTest {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.muteGuests(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifyMuteGuests(token)
+    }
+
+    @Test
+    fun `muteGuests returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            assertThat(step.muteGuests(token).await(), "result").isEqualTo(result)
+            server.verifyMuteGuests(token)
+        }
+    }
+
+    @Test
+    fun `unmuteGuests throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        assertFailure { step.unmuteGuests(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifyUnmuteGuests(token)
+    }
+
+    @Test
+    fun `unmuteGuests throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        assertFailure { step.unmuteGuests(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyUnmuteGuests(token)
+    }
+
+    @Test
+    fun `unmuteGuests throws NoSuchConferenceException`() = runTest {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.unmuteGuests(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyUnmuteGuests(token)
+    }
+
+    @Test
+    fun `unmuteGuests throws InvalidTokenException`() = runTest {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.unmuteGuests(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifyUnmuteGuests(token)
+    }
+
+    @Test
+    fun `unmuteGuests returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            assertThat(step.unmuteGuests(token).await(), "result").isEqualTo(result)
+            server.verifyUnmuteGuests(token)
+        }
+    }
+
+    @Test
     fun `disconnect throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         assertFailure { step.disconnect(token).await() }.isInstanceOf<IllegalStateException>()
@@ -1021,6 +1119,28 @@ internal class ConferenceStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("unlock")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyMuteGuests(token: Token) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("muteguests")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyUnmuteGuests(token: Token) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("unmuteguests")
         }
         assertToken(token)
         assertPostEmptyBody()

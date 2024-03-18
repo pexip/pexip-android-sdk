@@ -39,6 +39,7 @@ import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
 import com.pexip.sdk.conference.MakeGuestException
 import com.pexip.sdk.conference.MakeHostException
+import com.pexip.sdk.conference.MuteAllGuestsException
 import com.pexip.sdk.conference.MuteException
 import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
@@ -47,6 +48,7 @@ import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.ServiceType
 import com.pexip.sdk.conference.SpotlightException
 import com.pexip.sdk.conference.UnlockException
+import com.pexip.sdk.conference.UnmuteAllGuestsException
 import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.core.retry
@@ -139,6 +141,11 @@ internal class RosterImpl(
         .map { it.locked }
         .stateIn(scope, SharingStarted.Eagerly, false)
 
+    override val allGuestsMuted: StateFlow<Boolean> =
+        event.filterIsInstance<ConferenceUpdateEvent>()
+            .map { it.guestsMuted }
+            .stateIn(scope, SharingStarted.Eagerly, false)
+
     override suspend fun admit(participantId: UUID) {
         perform(::AdmitException) {
             val step = participantStep(participantId) ?: return
@@ -219,6 +226,14 @@ internal class RosterImpl(
 
     override suspend fun unlock() {
         perform(::UnlockException, step::unlock)
+    }
+
+    override suspend fun muteAllGuests() {
+        perform(::MuteAllGuestsException, step::muteGuests)
+    }
+
+    override suspend fun unmuteAllGuests() {
+        perform(::UnmuteAllGuestsException, step::unmuteGuests)
     }
 
     override suspend fun disconnectAll() {
