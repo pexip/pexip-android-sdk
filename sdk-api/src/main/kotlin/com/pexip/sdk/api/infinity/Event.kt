@@ -27,6 +27,16 @@ import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.Json
 import java.util.UUID
 
+@Serializable
+public data class ConferenceUpdateEvent(
+    val locked: Boolean = false,
+    val started: Boolean = false,
+    @SerialName("guests_muted")
+    val guestsMuted: Boolean = false,
+    @SerialName("presentation_allowed")
+    val presentationAllowed: Boolean = false,
+) : Event
+
 public data object ParticipantSyncBeginEvent : Event
 
 public data object ParticipantSyncEndEvent : Event
@@ -126,6 +136,7 @@ public data class IncomingCancelledEvent(val token: String) : Event
 
 @Suppress("ktlint:standard:function-naming")
 internal fun Event(json: Json, id: String?, type: String?, data: String): Event? = when (type) {
+    "conference_update" -> json.decodeFromString<ConferenceUpdateEvent>(data).also(::println)
     "participant_sync_begin" -> ParticipantSyncBeginEvent
     "participant_sync_end" -> ParticipantSyncEndEvent
     "participant_create" -> json.decodeFromString<ParticipantCreateEvent>(data)

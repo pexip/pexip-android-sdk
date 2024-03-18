@@ -751,6 +751,104 @@ internal class ConferenceStepTest {
     }
 
     @Test
+    fun `lock throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        assertFailure { step.lock(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifyLock(token)
+    }
+
+    @Test
+    fun `lock throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        assertFailure { step.lock(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyLock(token)
+    }
+
+    @Test
+    fun `lock throws NoSuchConferenceException`() = runTest {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.lock(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyLock(token)
+    }
+
+    @Test
+    fun `lock throws InvalidTokenException`() = runTest {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.lock(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifyLock(token)
+    }
+
+    @Test
+    fun `lock returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            assertThat(step.lock(token).await(), "result").isEqualTo(result)
+            server.verifyLock(token)
+        }
+    }
+
+    @Test
+    fun `unlock throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        assertFailure { step.unlock(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifyUnlock(token)
+    }
+
+    @Test
+    fun `unlock throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        assertFailure { step.unlock(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyUnlock(token)
+    }
+
+    @Test
+    fun `unlock throws NoSuchConferenceException`() = runTest {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.unlock(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyUnlock(token)
+    }
+
+    @Test
+    fun `unlock throws InvalidTokenException`() = runTest {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.unlock(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifyUnlock(token)
+    }
+
+    @Test
+    fun `unlock returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            assertThat(step.unlock(token).await(), "result").isEqualTo(result)
+            server.verifyUnlock(token)
+        }
+    }
+
+    @Test
     fun `disconnect throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         assertFailure { step.disconnect(token).await() }.isInstanceOf<IllegalStateException>()
@@ -901,6 +999,28 @@ internal class ConferenceStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("clearallbuzz")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyLock(token: Token) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("lock")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyUnlock(token: Token) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("unlock")
         }
         assertToken(token)
         assertPostEmptyBody()

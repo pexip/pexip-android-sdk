@@ -21,6 +21,7 @@ import assertk.assertions.isNull
 import assertk.tableOf
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.ByeEvent
+import com.pexip.sdk.api.infinity.ConferenceUpdateEvent
 import com.pexip.sdk.api.infinity.DisconnectEvent
 import com.pexip.sdk.api.infinity.Event
 import com.pexip.sdk.api.infinity.FeccAction
@@ -302,6 +303,16 @@ internal class EventTest {
                 val1 = "layout",
                 val2 = "layout_direct_media.json",
                 val3 = LayoutEvent(layout = LayoutId("1:0")),
+            )
+            .row(
+                val1 = "conference_update",
+                val2 = "conference_update.json",
+                val3 = ConferenceUpdateEvent(
+                    locked = false,
+                    started = true,
+                    guestsMuted = false,
+                    presentationAllowed = true,
+                ),
             )
             .forAll { type, filename, event ->
                 val data = FileSystem.RESOURCES.readUtf8(filename)

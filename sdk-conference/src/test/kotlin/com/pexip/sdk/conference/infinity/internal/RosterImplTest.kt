@@ -24,12 +24,15 @@ import assertk.assertions.hasCause
 import assertk.assertions.index
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isIn
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
+import com.pexip.sdk.api.infinity.ConferenceUpdateEvent
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.ParticipantCreateEvent
 import com.pexip.sdk.api.infinity.ParticipantDeleteEvent
@@ -43,6 +46,7 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
 import com.pexip.sdk.conference.DisconnectAllException
 import com.pexip.sdk.conference.DisconnectException
+import com.pexip.sdk.conference.LockException
 import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
 import com.pexip.sdk.conference.MakeGuestException
@@ -53,6 +57,7 @@ import com.pexip.sdk.conference.RaiseHandException
 import com.pexip.sdk.conference.Role
 import com.pexip.sdk.conference.ServiceType
 import com.pexip.sdk.conference.SpotlightException
+import com.pexip.sdk.conference.UnlockException
 import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnspotlightException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -157,7 +162,7 @@ class RosterImplTest {
     }
 
     @Test
-    fun `me produces the corrent participant`() = runTest {
+    fun `me produces the correct participant`() = runTest {
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
@@ -179,6 +184,28 @@ class RosterImplTest {
             // No update with another Participant
             event.emit(ParticipantCreateEvent(Random.nextParticipant().toParticipantResponse()))
             expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `locked produces the correct lock state`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {},
+        )
+        roster.locked.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "locked").isFalse()
+            event.emit(ConferenceUpdateEvent(locked = true))
+            assertThat(awaitItem(), "locked").isTrue()
+            event.emit(ConferenceUpdateEvent(locked = true))
+            expectNoEvents()
+            event.emit(ConferenceUpdateEvent(locked = false))
+            assertThat(awaitItem(), "locked").isFalse()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -1238,6 +1265,100 @@ class RosterImplTest {
             },
         )
         roster.lowerAllHands()
+    }
+
+    @Test
+    fun `lock() throws LockException`() = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun lock(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.lock() }
+            .isInstanceOf<LockException>()
+            .hasCause(cause)
+    }
+
+    @Test
+    fun `lock() returns`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun lock(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.lock()
+    }
+
+    @Test
+    fun `unlock() throws UnlockException`() = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun unlock(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.unlock() }
+            .isInstanceOf<UnlockException>()
+            .hasCause(cause)
+    }
+
+    @Test
+    fun `unlock() returns`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun unlock(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.unlock()
     }
 
     @Test

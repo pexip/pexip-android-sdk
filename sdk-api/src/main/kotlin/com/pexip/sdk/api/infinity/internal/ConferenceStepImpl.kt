@@ -194,6 +194,32 @@ internal class ConferenceStepImpl(
         mapper = { parse(it, BooleanSerializer) },
     )
 
+    override fun lock(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("lock")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
+    override fun unlock(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("unlock")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
     override fun disconnect(token: Token): Call<Boolean> = RealCall(
         client = client,
         request = Request.Builder()
