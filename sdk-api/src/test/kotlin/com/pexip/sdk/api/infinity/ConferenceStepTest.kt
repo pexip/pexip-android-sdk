@@ -750,6 +750,55 @@ internal class ConferenceStepTest {
         }
     }
 
+    @Test
+    fun `disconnect throws IllegalStateException`() = runTest {
+        server.enqueue { setResponseCode(500) }
+        assertFailure { step.disconnect(token).await() }.isInstanceOf<IllegalStateException>()
+        server.verifyDisconnect(token)
+    }
+
+    @Test
+    fun `disconnect throws NoSuchNodeException`() = runTest {
+        server.enqueue { setResponseCode(404) }
+        assertFailure { step.disconnect(token).await() }.isInstanceOf<NoSuchNodeException>()
+        server.verifyDisconnect(token)
+    }
+
+    @Test
+    fun `disconnect throws NoSuchConferenceException`() = runTest {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.disconnect(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        server.verifyDisconnect(token)
+    }
+
+    @Test
+    fun `disconnect throws InvalidTokenException`() = runTest {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        assertFailure { step.disconnect(token).await() }.isInstanceOf<InvalidTokenException>()
+        server.verifyDisconnect(token)
+    }
+
+    @Test
+    fun `disconnect returns result on 200`() = runTest {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            assertThat(step.disconnect(token).await(), "result").isEqualTo(result)
+            server.verifyDisconnect(token)
+        }
+    }
+
     private fun MockWebServer.verifyRequestToken(
         request: RequestTokenRequest,
         pin: String? = null,
@@ -852,6 +901,17 @@ internal class ConferenceStepTest {
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
             addPathSegment("clearallbuzz")
+        }
+        assertToken(token)
+        assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifyDisconnect(token: Token) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("disconnect")
         }
         assertToken(token)
         assertPostEmptyBody()

@@ -34,13 +34,13 @@ import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.SsoRedirectException
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TransformLayoutRequest
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
 import java.util.UUID
 
-@Suppress("OVERRIDE_DEPRECATION")
 internal class ConferenceStepImpl(
     override val requestBuilder: RequestBuilderImpl,
     override val conferenceAlias: String,
@@ -88,7 +88,7 @@ internal class ConferenceStepImpl(
             }
             .token(token)
             .build(),
-        mapper = ::parseRefreshToken,
+        mapper = { parse(it, RefreshTokenResponseSerializer) },
     )
 
     override fun releaseToken(token: Token): Call<Boolean> = RealCall(
@@ -101,7 +101,7 @@ internal class ConferenceStepImpl(
             }
             .token(token)
             .build(),
-        mapper = ::parseReleaseToken,
+        mapper = { parse(it, BooleanSerializer) },
     )
 
     override fun message(request: MessageRequest, token: Token): Call<Boolean> = RealCall(
@@ -114,7 +114,7 @@ internal class ConferenceStepImpl(
             }
             .token(token)
             .build(),
-        mapper = ::parseMessage,
+        mapper = { parse(it, BooleanSerializer) },
     )
 
     override fun availableLayouts(token: Token): Call<Set<LayoutId>> = RealCall(
@@ -127,7 +127,7 @@ internal class ConferenceStepImpl(
             }
             .token(token)
             .build(),
-        mapper = ::parseAvailableLayouts,
+        mapper = { parse(it, AvailableLayoutsSerializer) },
     )
 
     override fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> = RealCall(
@@ -140,7 +140,7 @@ internal class ConferenceStepImpl(
             }
             .token(token)
             .build(),
-        mapper = ::parseLayoutSvgs,
+        mapper = { parse(it, LayoutSvgsSerializer) },
     )
 
     override fun transformLayout(request: TransformLayoutRequest, token: Token): Call<Boolean> =
@@ -191,7 +191,20 @@ internal class ConferenceStepImpl(
             }
             .token(token)
             .build(),
-        mapper = ::parseClearAllBuzz,
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
+    override fun disconnect(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("disconnect")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
     )
 
     override fun events(token: Token): EventSourceFactory = RealEventSourceFactory(
@@ -231,62 +244,24 @@ internal class ConferenceStepImpl(
         }
     }
 
-    private fun parseRefreshToken(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(RefreshTokenResponseSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
-
-    private fun parseReleaseToken(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
-
-    private fun parseMessage(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
-
-    private fun parseAvailableLayouts(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(AvailableLayoutsSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
-
-    private fun parseLayoutSvgs(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(LayoutSvgsSerializer, response.body!!)
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
-    }
-
     private fun parseTransformLayout(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         400 -> {
             val message = json.decodeFromResponseBody(StringSerializer, response.body!!)
             throw IllegalLayoutTransformException(message)
         }
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
+        else -> parse(response, BooleanSerializer)
     }
 
     private fun parseTheme(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(ThemeSerializer, response.body!!)
         204 -> mapOf()
-        403 -> response.parse403()
-        404 -> response.parse404()
-        else -> throw IllegalStateException()
+        else -> parse(response, ThemeSerializer)
     }
 
-    private fun parseClearAllBuzz(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+    private inline fun <reified T> parse(
+        response: Response,
+        deserializer: DeserializationStrategy<T>,
+    ) = when (response.code) {
+        200 -> json.decodeFromResponseBody(deserializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()

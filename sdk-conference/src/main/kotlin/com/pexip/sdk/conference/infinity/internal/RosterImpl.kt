@@ -31,6 +31,7 @@ import com.pexip.sdk.api.infinity.RoleRequest
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
+import com.pexip.sdk.conference.DisconnectAllException
 import com.pexip.sdk.conference.DisconnectException
 import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
@@ -202,6 +203,10 @@ internal class RosterImpl(
 
     override suspend fun lowerAllHands() {
         perform(::LowerAllHandsException, step::clearAllBuzz)
+    }
+
+    override suspend fun disconnectAll() {
+        perform(::DisconnectAllException, step::disconnect)
     }
 
     private suspend inline fun <T> perform(

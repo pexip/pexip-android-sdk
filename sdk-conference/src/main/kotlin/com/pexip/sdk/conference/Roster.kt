@@ -129,4 +129,11 @@ public interface Roster {
      * @throws LowerAllHandsException if the operation failed
      */
     public suspend fun lowerAllHands(): Unit = throw NotImplementedError()
+
+    /**
+     * Disconnects all conference participants.
+     *
+     * @throws DisconnectAllException if the operation failed
+     */
+    public suspend fun disconnectAll(): Unit = throw NotImplementedError()
 }

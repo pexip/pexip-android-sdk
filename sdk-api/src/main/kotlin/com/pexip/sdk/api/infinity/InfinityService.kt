@@ -356,6 +356,16 @@ public interface InfinityService {
         public fun clearAllBuzz(token: Token): Call<Boolean> = throw NotImplementedError()
 
         /**
+         * Disconnects all conference participants, including the participant calling the function.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#disconnect_all).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun disconnect(token: Token): Call<Boolean> = throw NotImplementedError()
+
+        /**
          * Subscribes to server-side events.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#server_sent).
