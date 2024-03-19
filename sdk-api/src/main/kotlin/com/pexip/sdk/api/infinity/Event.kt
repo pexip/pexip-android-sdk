@@ -136,7 +136,7 @@ public data class IncomingCancelledEvent(val token: String) : Event
 
 @Suppress("ktlint:standard:function-naming")
 internal fun Event(json: Json, id: String?, type: String?, data: String): Event? = when (type) {
-    "conference_update" -> json.decodeFromString<ConferenceUpdateEvent>(data).also(::println)
+    "conference_update" -> json.decodeFromString<ConferenceUpdateEvent>(data)
     "participant_sync_begin" -> ParticipantSyncBeginEvent
     "participant_sync_end" -> ParticipantSyncEndEvent
     "participant_create" -> json.decodeFromString<ParticipantCreateEvent>(data)
