@@ -268,40 +268,37 @@ internal class RosterImpl(
         }
     }
 
-    private fun MutableMap<UUID, Participant>.put(response: ParticipantResponse): Participant? {
-        val participant = this[response.id]
-        return put(
-            key = response.id,
-            value = Participant(
-                id = response.id,
-                startTime = response.startTime,
-                buzzTime = response.buzzTime,
-                spotlightTime = response.spotlightTime,
-                displayName = response.displayName,
-                overlayText = response.overlayText,
-                speaking = participant?.speaking ?: false,
-                audioMuted = response.audioMuted,
-                videoMuted = response.videoMuted,
-                presenting = response.presenting,
-                muteSupported = response.muteSupported,
-                transferSupported = response.transferSupported,
-                disconnectSupported = response.disconnectSupported,
-                role = when (response.role) {
-                    ApiRole.HOST -> Role.HOST
-                    ApiRole.GUEST -> Role.GUEST
-                    ApiRole.UNKNOWN -> Role.UNKNOWN
-                },
-                serviceType = when (response.serviceType) {
-                    ApiServiceType.CONNECTING -> ServiceType.CONNECTING
-                    ApiServiceType.WAITING_ROOM -> ServiceType.WAITING_ROOM
-                    ApiServiceType.IVR -> ServiceType.IVR
-                    ApiServiceType.CONFERENCE -> ServiceType.CONFERENCE
-                    ApiServiceType.LECTURE -> ServiceType.LECTURE
-                    ApiServiceType.GATEWAY -> ServiceType.GATEWAY
-                    ApiServiceType.TEST_CALL -> ServiceType.TEST_CALL
-                    ApiServiceType.UNKNOWN -> ServiceType.UNKNOWN
-                },
-            ),
-        )
-    }
+    private fun MutableMap<UUID, Participant>.put(response: ParticipantResponse) = put(
+        key = response.id,
+        value = Participant(
+            id = response.id,
+            startTime = response.startTime,
+            buzzTime = response.buzzTime,
+            spotlightTime = response.spotlightTime,
+            displayName = response.displayName,
+            overlayText = response.overlayText,
+            speaking = get(response.id)?.speaking ?: false,
+            audioMuted = response.audioMuted,
+            videoMuted = response.videoMuted,
+            presenting = response.presenting,
+            muteSupported = response.muteSupported,
+            transferSupported = response.transferSupported,
+            disconnectSupported = response.disconnectSupported,
+            role = when (response.role) {
+                ApiRole.HOST -> Role.HOST
+                ApiRole.GUEST -> Role.GUEST
+                ApiRole.UNKNOWN -> Role.UNKNOWN
+            },
+            serviceType = when (response.serviceType) {
+                ApiServiceType.CONNECTING -> ServiceType.CONNECTING
+                ApiServiceType.WAITING_ROOM -> ServiceType.WAITING_ROOM
+                ApiServiceType.IVR -> ServiceType.IVR
+                ApiServiceType.CONFERENCE -> ServiceType.CONFERENCE
+                ApiServiceType.LECTURE -> ServiceType.LECTURE
+                ApiServiceType.GATEWAY -> ServiceType.GATEWAY
+                ApiServiceType.TEST_CALL -> ServiceType.TEST_CALL
+                ApiServiceType.UNKNOWN -> ServiceType.UNKNOWN
+            },
+        ),
+    )
 }
