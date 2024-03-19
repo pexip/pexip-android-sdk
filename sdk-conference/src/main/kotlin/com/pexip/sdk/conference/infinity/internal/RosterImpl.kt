@@ -29,6 +29,7 @@ import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.RoleRequest
+import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
@@ -111,6 +112,15 @@ internal class RosterImpl(
                 is ParticipantDeleteEvent -> mutex.withLock {
                     participantMap -= it.id
                     participantStepMap -= it.id
+                    maybeSendParticipants()
+                }
+                is StageEvent -> mutex.withLock {
+                    for (speaker in it.speakers) {
+                        val participant = participantMap[speaker.participantId] ?: continue
+                        if (speaker.speaking == participant.speaking) continue
+                        participantMap[participant.id] =
+                            participant.copy(speaking = speaker.speaking)
+                    }
                     maybeSendParticipants()
                 }
                 else -> Unit
@@ -258,36 +268,40 @@ internal class RosterImpl(
         }
     }
 
-    private fun MutableMap<UUID, Participant>.put(response: ParticipantResponse) = put(
-        key = response.id,
-        value = Participant(
-            id = response.id,
-            startTime = response.startTime,
-            buzzTime = response.buzzTime,
-            spotlightTime = response.spotlightTime,
-            displayName = response.displayName,
-            overlayText = response.overlayText,
-            audioMuted = response.audioMuted,
-            videoMuted = response.videoMuted,
-            presenting = response.presenting,
-            muteSupported = response.muteSupported,
-            transferSupported = response.transferSupported,
-            disconnectSupported = response.disconnectSupported,
-            role = when (response.role) {
-                ApiRole.HOST -> Role.HOST
-                ApiRole.GUEST -> Role.GUEST
-                ApiRole.UNKNOWN -> Role.UNKNOWN
-            },
-            serviceType = when (response.serviceType) {
-                ApiServiceType.CONNECTING -> ServiceType.CONNECTING
-                ApiServiceType.WAITING_ROOM -> ServiceType.WAITING_ROOM
-                ApiServiceType.IVR -> ServiceType.IVR
-                ApiServiceType.CONFERENCE -> ServiceType.CONFERENCE
-                ApiServiceType.LECTURE -> ServiceType.LECTURE
-                ApiServiceType.GATEWAY -> ServiceType.GATEWAY
-                ApiServiceType.TEST_CALL -> ServiceType.TEST_CALL
-                ApiServiceType.UNKNOWN -> ServiceType.UNKNOWN
-            },
-        ),
-    )
+    private fun MutableMap<UUID, Participant>.put(response: ParticipantResponse): Participant? {
+        val participant = this[response.id]
+        return put(
+            key = response.id,
+            value = Participant(
+                id = response.id,
+                startTime = response.startTime,
+                buzzTime = response.buzzTime,
+                spotlightTime = response.spotlightTime,
+                displayName = response.displayName,
+                overlayText = response.overlayText,
+                speaking = participant?.speaking ?: false,
+                audioMuted = response.audioMuted,
+                videoMuted = response.videoMuted,
+                presenting = response.presenting,
+                muteSupported = response.muteSupported,
+                transferSupported = response.transferSupported,
+                disconnectSupported = response.disconnectSupported,
+                role = when (response.role) {
+                    ApiRole.HOST -> Role.HOST
+                    ApiRole.GUEST -> Role.GUEST
+                    ApiRole.UNKNOWN -> Role.UNKNOWN
+                },
+                serviceType = when (response.serviceType) {
+                    ApiServiceType.CONNECTING -> ServiceType.CONNECTING
+                    ApiServiceType.WAITING_ROOM -> ServiceType.WAITING_ROOM
+                    ApiServiceType.IVR -> ServiceType.IVR
+                    ApiServiceType.CONFERENCE -> ServiceType.CONFERENCE
+                    ApiServiceType.LECTURE -> ServiceType.LECTURE
+                    ApiServiceType.GATEWAY -> ServiceType.GATEWAY
+                    ApiServiceType.TEST_CALL -> ServiceType.TEST_CALL
+                    ApiServiceType.UNKNOWN -> ServiceType.UNKNOWN
+                },
+            ),
+        )
+    }
 }

@@ -1,0 +1,12 @@
+[
+  {
+    "participant_uuid": "119895e3-c614-4e92-b906-90fd2afd6dff",
+    "stage_index": 0,
+    "vad": 100
+  },
+  {
+    "participant_uuid": "25206ea5-5fa6-4bfb-93ff-3c6aa74e03c2",
+    "stage_index": 1,
+    "vad": 0
+  }
+]
