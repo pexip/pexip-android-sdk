@@ -18,6 +18,7 @@ package com.pexip.sdk.conference.infinity.internal
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.api.infinity.ConferenceUpdateEvent
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.ParticipantCreateEvent
 import com.pexip.sdk.api.infinity.ParticipantDeleteEvent
@@ -33,6 +34,7 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
 import com.pexip.sdk.conference.DisconnectAllException
 import com.pexip.sdk.conference.DisconnectException
+import com.pexip.sdk.conference.LockException
 import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
 import com.pexip.sdk.conference.MakeGuestException
@@ -44,6 +46,7 @@ import com.pexip.sdk.conference.Role
 import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.ServiceType
 import com.pexip.sdk.conference.SpotlightException
+import com.pexip.sdk.conference.UnlockException
 import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.core.retry
@@ -55,6 +58,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
@@ -131,6 +135,10 @@ internal class RosterImpl(
         },
     ).stateIn(scope, SharingStarted.Eagerly, null)
 
+    override val locked: StateFlow<Boolean> = event.filterIsInstance<ConferenceUpdateEvent>()
+        .map { it.locked }
+        .stateIn(scope, SharingStarted.Eagerly, false)
+
     override suspend fun admit(participantId: UUID) {
         perform(::AdmitException) {
             val step = participantStep(participantId) ?: return
@@ -203,6 +211,14 @@ internal class RosterImpl(
 
     override suspend fun lowerAllHands() {
         perform(::LowerAllHandsException, step::clearAllBuzz)
+    }
+
+    override suspend fun lock() {
+        perform(::LockException, step::lock)
+    }
+
+    override suspend fun unlock() {
+        perform(::UnlockException, step::unlock)
     }
 
     override suspend fun disconnectAll() {

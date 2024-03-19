@@ -1,0 +1,14 @@
+{
+  "locked": false,
+  "direct_media": false,
+  "guests_muted": false,
+  "all_muted": false,
+  "presentation_allowed": true,
+  "started": true,
+  "classification": {
+    "levels": {},
+    "current": null
+  },
+  "breakout_rooms": false,
+  "live_captions_available": true
+}

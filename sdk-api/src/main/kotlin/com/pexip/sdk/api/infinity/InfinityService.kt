@@ -346,6 +346,29 @@ public interface InfinityService {
         public fun clearAllBuzz(token: String): Call<Boolean> = throw NotImplementedError()
 
         /**
+         * Locks the conference.
+         *
+         * When a conference is locked, participants waiting to join are held at
+         * a "Waiting for Host" screen. These settings are only available to conference hosts.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#lock).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun lock(token: Token): Call<Boolean> = throw NotImplementedError()
+
+        /**
+         * Unlocks the conference.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#lock).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun unlock(token: Token): Call<Boolean> = throw NotImplementedError()
+
+        /**
          * Lowers all raised hands.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#clearallbuzz).

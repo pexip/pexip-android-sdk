@@ -44,6 +44,15 @@ public interface Roster {
         get() = throw NotImplementedError()
 
     /**
+     * A [StateFlow] that represents whether the conference is locked.
+     *
+     * When a conference is locked, participants waiting to join are held at
+     * a "Waiting for Host" screen. These settings are only available to conference hosts.
+     */
+    public val locked: StateFlow<Boolean>
+        get() = throw NotImplementedError()
+
+    /**
      * Lets a specified participant into the conference from the waiting room of a locked conference.
      *
      * @param participantId an ID of the participant
@@ -129,6 +138,20 @@ public interface Roster {
      * @throws LowerAllHandsException if the operation failed
      */
     public suspend fun lowerAllHands(): Unit = throw NotImplementedError()
+
+    /**
+     * Locks the conference.
+     *
+     * @throws LockException if the operation failed
+     */
+    public suspend fun lock(): Unit = throw NotImplementedError()
+
+    /**
+     * Unlocks the conference.
+     *
+     * @throws UnlockException if the operation failed
+     */
+    public suspend fun unlock(): Unit = throw NotImplementedError()
 
     /**
      * Disconnects all conference participants.
