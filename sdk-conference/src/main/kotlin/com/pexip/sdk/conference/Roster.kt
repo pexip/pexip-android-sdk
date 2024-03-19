@@ -53,6 +53,15 @@ public interface Roster {
         get() = throw NotImplementedError()
 
     /**
+     * A [StateFlow] that represents whether guests in the conference all muted.
+     *
+     * When muted, no guest participants can speak unless they are explicitly unmuted.
+     * This setting is only available to conference hosts.
+     */
+    public val allGuestsMuted: StateFlow<Boolean>
+        get() = throw NotImplementedError()
+
+    /**
      * Lets a specified participant into the conference from the waiting room of a locked conference.
      *
      * @param participantId an ID of the participant
@@ -152,6 +161,20 @@ public interface Roster {
      * @throws UnlockException if the operation failed
      */
     public suspend fun unlock(): Unit = throw NotImplementedError()
+
+    /**
+     * Mutes all guests in a conference.
+     *
+     * @throws MuteAllGuestsException if the operation failed
+     */
+    public suspend fun muteAllGuests(): Unit = throw NotImplementedError()
+
+    /**
+     * Unmutes all guests in a conference.
+     *
+     * @throws UnmuteAllGuestsException if the operation failed
+     */
+    public suspend fun unmuteAllGuests(): Unit = throw NotImplementedError()
 
     /**
      * Disconnects all conference participants.

@@ -369,6 +369,32 @@ public interface InfinityService {
         public fun unlock(token: Token): Call<Boolean> = throw NotImplementedError()
 
         /**
+         * Mutes all guests in a conference.
+         *
+         * When muted, no guest participants can speak unless they are explicitly unmuted.
+         * This setting is only available to conference hosts.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#muteguests).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun muteGuests(token: Token): Call<Boolean> = throw NotImplementedError()
+
+        /**
+         * Unmutes all guests in a conference.
+         *
+         * When unmuted, all guests on a conference can speak. This setting is only available
+         * to conference hosts.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#muteguests).
+         *
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun unmuteGuests(token: Token): Call<Boolean> = throw NotImplementedError()
+
+        /**
          * Lowers all raised hands.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#clearallbuzz).

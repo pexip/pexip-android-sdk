@@ -51,6 +51,7 @@ import com.pexip.sdk.conference.LowerAllHandsException
 import com.pexip.sdk.conference.LowerHandException
 import com.pexip.sdk.conference.MakeGuestException
 import com.pexip.sdk.conference.MakeHostException
+import com.pexip.sdk.conference.MuteAllGuestsException
 import com.pexip.sdk.conference.MuteException
 import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
@@ -58,6 +59,7 @@ import com.pexip.sdk.conference.Role
 import com.pexip.sdk.conference.ServiceType
 import com.pexip.sdk.conference.SpotlightException
 import com.pexip.sdk.conference.UnlockException
+import com.pexip.sdk.conference.UnmuteAllGuestsException
 import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnspotlightException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -206,6 +208,28 @@ class RosterImplTest {
             expectNoEvents()
             event.emit(ConferenceUpdateEvent(locked = false))
             assertThat(awaitItem(), "locked").isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `allGuestsMuted produces the correct all guests muted state`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {},
+        )
+        roster.allGuestsMuted.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "guestsMuted").isFalse()
+            event.emit(ConferenceUpdateEvent(guestsMuted = true))
+            assertThat(awaitItem(), "guestsMuted").isTrue()
+            event.emit(ConferenceUpdateEvent(guestsMuted = true))
+            expectNoEvents()
+            event.emit(ConferenceUpdateEvent(guestsMuted = false))
+            assertThat(awaitItem(), "guestsMuted").isFalse()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -1359,6 +1383,100 @@ class RosterImplTest {
             },
         )
         roster.unlock()
+    }
+
+    @Test
+    fun `muteAllGuests() throws MuteAllGuestsException`() = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun muteGuests(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.muteAllGuests() }
+            .isInstanceOf<MuteAllGuestsException>()
+            .hasCause(cause)
+    }
+
+    @Test
+    fun `muteAllGuests() returns`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun muteGuests(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.muteAllGuests()
+    }
+
+    @Test
+    fun `unmuteAllGuests() throws UnmuteAllGuestsException`() = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun unmuteGuests(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.unmuteAllGuests() }
+            .isInstanceOf<UnmuteAllGuestsException>()
+            .hasCause(cause)
+    }
+
+    @Test
+    fun `unmuteAllGuests() returns`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun unmuteGuests(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.get())
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.unmuteAllGuests()
     }
 
     @Test

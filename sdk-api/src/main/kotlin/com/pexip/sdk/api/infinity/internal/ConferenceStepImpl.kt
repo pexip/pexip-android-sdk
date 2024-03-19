@@ -220,6 +220,32 @@ internal class ConferenceStepImpl(
         mapper = { parse(it, BooleanSerializer) },
     )
 
+    override fun muteGuests(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("muteguests")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
+    override fun unmuteGuests(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(node) {
+                conference(conferenceAlias)
+                addPathSegment("unmuteguests")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
     override fun disconnect(token: Token): Call<Boolean> = RealCall(
         client = client,
         request = Request.Builder()
