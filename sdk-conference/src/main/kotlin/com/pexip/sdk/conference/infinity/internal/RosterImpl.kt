@@ -29,6 +29,7 @@ import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.RoleRequest
+import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
@@ -111,6 +112,15 @@ internal class RosterImpl(
                 is ParticipantDeleteEvent -> mutex.withLock {
                     participantMap -= it.id
                     participantStepMap -= it.id
+                    maybeSendParticipants()
+                }
+                is StageEvent -> mutex.withLock {
+                    for (speaker in it.speakers) {
+                        val participant = participantMap[speaker.participantId] ?: continue
+                        if (speaker.speaking == participant.speaking) continue
+                        participantMap[participant.id] =
+                            participant.copy(speaking = speaker.speaking)
+                    }
                     maybeSendParticipants()
                 }
                 else -> Unit
@@ -267,6 +277,7 @@ internal class RosterImpl(
             spotlightTime = response.spotlightTime,
             displayName = response.displayName,
             overlayText = response.overlayText,
+            speaking = get(response.id)?.speaking ?: false,
             audioMuted = response.audioMuted,
             videoMuted = response.videoMuted,
             presenting = response.presenting,

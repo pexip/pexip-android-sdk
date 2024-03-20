@@ -37,6 +37,13 @@ public data class ConferenceUpdateEvent(
     val presentationAllowed: Boolean = false,
 ) : Event
 
+@Serializable
+@JvmInline
+public value class StageEvent(public val speakers: List<SpeakerResponse>) : Event {
+
+    public constructor(vararg speakers: SpeakerResponse) : this(speakers.asList())
+}
+
 public data object ParticipantSyncBeginEvent : Event
 
 public data object ParticipantSyncEndEvent : Event
@@ -137,6 +144,7 @@ public data class IncomingCancelledEvent(val token: String) : Event
 @Suppress("ktlint:standard:function-naming")
 internal fun Event(json: Json, id: String?, type: String?, data: String): Event? = when (type) {
     "conference_update" -> json.decodeFromString<ConferenceUpdateEvent>(data)
+    "stage" -> json.decodeFromString<StageEvent>(data)
     "participant_sync_begin" -> ParticipantSyncBeginEvent
     "participant_sync_end" -> ParticipantSyncEndEvent
     "participant_create" -> json.decodeFromString<ParticipantCreateEvent>(data)

@@ -41,6 +41,8 @@ import com.pexip.sdk.api.infinity.ParticipantSyncBeginEvent
 import com.pexip.sdk.api.infinity.ParticipantSyncEndEvent
 import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
 import com.pexip.sdk.api.infinity.RoleRequest
+import com.pexip.sdk.api.infinity.SpeakerResponse
+import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
@@ -113,7 +115,7 @@ class RosterImplTest {
     }
 
     @Test
-    fun `create, update, delete correctly modify the list`() = runTest {
+    fun `create, update, delete, stage correctly modify the list`() = runTest {
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
@@ -134,6 +136,17 @@ class RosterImplTest {
             e = ParticipantUpdateEvent(response)
             event.emit(e)
             assertThat(awaitItem(), "participants").containsOnly(participant)
+            repeat(10) {
+                participant = participant.copy(speaking = !participant.speaking)
+                e = StageEvent(
+                    SpeakerResponse(
+                        participantId = participant.id,
+                        vad = if (participant.speaking) 100 else 0,
+                    ),
+                )
+                event.emit(e)
+                assertThat(awaitItem(), "participants").containsOnly(participant)
+            }
             e = ParticipantDeleteEvent(participant.id)
             event.emit(e)
             assertThat(awaitItem(), "participants").doesNotContain(participant)

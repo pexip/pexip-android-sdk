@@ -49,7 +49,9 @@ import com.pexip.sdk.api.infinity.RequestedLayout
 import com.pexip.sdk.api.infinity.Role
 import com.pexip.sdk.api.infinity.Screen
 import com.pexip.sdk.api.infinity.ServiceType
+import com.pexip.sdk.api.infinity.SpeakerResponse
 import com.pexip.sdk.api.infinity.SplashScreenEvent
+import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.api.infinity.nextString
 import com.pexip.sdk.api.infinity.readUtf8
@@ -312,6 +314,20 @@ internal class EventTest {
                     started = true,
                     guestsMuted = false,
                     presentationAllowed = true,
+                ),
+            )
+            .row(
+                val1 = "stage",
+                val2 = "stage.json",
+                val3 = StageEvent(
+                    SpeakerResponse(
+                        participantId = UUID.fromString("119895e3-c614-4e92-b906-90fd2afd6dff"),
+                        vad = 100,
+                    ),
+                    SpeakerResponse(
+                        participantId = UUID.fromString("25206ea5-5fa6-4bfb-93ff-3c6aa74e03c2"),
+                        vad = 0,
+                    ),
                 ),
             )
             .forAll { type, filename, event ->
