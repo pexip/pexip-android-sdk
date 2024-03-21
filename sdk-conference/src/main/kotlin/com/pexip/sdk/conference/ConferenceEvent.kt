@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,25 +22,21 @@ public sealed interface ConferenceEvent {
     public val at: Long
 }
 
+@Deprecated(
+    message = "Use Roster.present instead to observe presentation state.",
+    level = DeprecationLevel.WARNING,
+)
 public data class PresentationStartConferenceEvent(
     override val at: Long,
     val presenterId: UUID,
     val presenterName: String,
 ) : ConferenceEvent
 
-public data class PresentationStopConferenceEvent(override val at: Long) : ConferenceEvent
-
 @Deprecated(
-    message = "Use Messenger to receive messages instead.",
-    level = DeprecationLevel.ERROR,
+    message = "Use Roster.present instead to observe presentation state.",
+    level = DeprecationLevel.WARNING,
 )
-public data class MessageReceivedConferenceEvent(
-    override val at: Long,
-    val participantId: UUID,
-    val participantName: String,
-    val type: String,
-    val payload: String,
-) : ConferenceEvent
+public data class PresentationStopConferenceEvent(override val at: Long) : ConferenceEvent
 
 public data class ReferConferenceEvent(
     override val at: Long,

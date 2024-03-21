@@ -197,8 +197,6 @@ public abstract interface class com/pexip/sdk/media/MediaConnection {
 	public abstract fun setPresentationRemoteVideoTrackEnabled (Z)V
 	public abstract fun setPresentationVideoTrack (Lcom/pexip/sdk/media/LocalVideoTrack;)V
 	public abstract fun start ()V
-	public fun startPresentationReceive ()V
-	public fun stopPresentationReceive ()V
 	public abstract fun unregisterMainRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
 	public abstract fun unregisterPresentationRemoteVideoTrackListener (Lcom/pexip/sdk/media/MediaConnection$RemoteVideoTrackListener;)V
 }
