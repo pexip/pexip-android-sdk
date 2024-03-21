@@ -32,6 +32,7 @@ import java.util.UUID
  * was spotlit, or null if they're currently not spotlit
  * @property displayName a display name of this participant
  * @property overlayText an overlay text that is shown on top of this participant's remote video
+ * @property me whether this participant is *you*
  * @property audioMuted whether this participant has their audio muted
  * @property videoMuted whether this participant has their video muted
  * @property presenting whether this participant is currently presenting
@@ -48,6 +49,7 @@ public data class Participant(
     val spotlightTime: Instant?,
     val displayName: String,
     val overlayText: String,
+    val me: Boolean = false,
     val speaking: Boolean = false,
     val audioMuted: Boolean = false,
     val videoMuted: Boolean = false,

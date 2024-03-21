@@ -277,6 +277,7 @@ internal class RosterImpl(
             spotlightTime = response.spotlightTime,
             displayName = response.displayName,
             overlayText = response.overlayText,
+            me = response.id == participantId,
             speaking = get(response.id)?.speaking ?: false,
             audioMuted = response.audioMuted,
             videoMuted = response.videoMuted,
