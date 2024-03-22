@@ -102,7 +102,7 @@ class RosterImplTest {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "participants").isEmpty()
             event.emit(ParticipantSyncBeginEvent)
-            val participants = List(100) { Random.nextParticipant(it.toLong()) }
+            val participants = List(100) { Random.nextParticipant(it) }
             participants.forEach {
                 val response = it.toParticipantResponse()
                 event.emit(ParticipantCreateEvent(response))
@@ -261,13 +261,12 @@ class RosterImplTest {
 
     @Test
     fun `raiseHand() throws RaiseHandException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -309,12 +308,11 @@ class RosterImplTest {
 
     @Test
     fun `raiseHand() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -364,13 +362,12 @@ class RosterImplTest {
 
     @Test
     fun `admit() throws AdmitException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -412,12 +409,11 @@ class RosterImplTest {
 
     @Test
     fun `admit() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -467,13 +463,12 @@ class RosterImplTest {
 
     @Test
     fun `disconnect() throws DisconnectException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -515,12 +510,11 @@ class RosterImplTest {
 
     @Test
     fun `disconnect() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -558,13 +552,12 @@ class RosterImplTest {
 
     @Test
     fun `makeHost() throws MakeHostException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -607,12 +600,11 @@ class RosterImplTest {
 
     @Test
     fun `makeHost() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -651,13 +643,12 @@ class RosterImplTest {
 
     @Test
     fun `makeGuest() throws MakeGuestException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -700,12 +691,11 @@ class RosterImplTest {
 
     @Test
     fun `makeGuest() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -756,13 +746,12 @@ class RosterImplTest {
 
     @Test
     fun `mute() throws MuteException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -804,12 +793,11 @@ class RosterImplTest {
 
     @Test
     fun `mute() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -859,13 +847,12 @@ class RosterImplTest {
 
     @Test
     fun `unmute() throws MuteException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -907,12 +894,11 @@ class RosterImplTest {
 
     @Test
     fun `unmute() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -962,13 +948,12 @@ class RosterImplTest {
 
     @Test
     fun `spotlight() throws SpotlightException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -1010,12 +995,11 @@ class RosterImplTest {
 
     @Test
     fun `spotlight() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -1065,13 +1049,12 @@ class RosterImplTest {
 
     @Test
     fun `unspotlight() throws UnspotlightException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -1113,12 +1096,11 @@ class RosterImplTest {
 
     @Test
     fun `unspotlight() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -1168,13 +1150,12 @@ class RosterImplTest {
 
     @Test
     fun `lowerHand() throws LowerHandException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -1216,12 +1197,11 @@ class RosterImplTest {
 
     @Test
     fun `lowerHand() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(index = it.toLong()) }
-        val me = participants.random()
+        val participants = List(10) { Random.nextParticipant(it) }
         val roster = RosterImpl(
             scope = backgroundScope,
             event = event,
-            participantId = me.id,
+            participantId = participantId,
             store = store,
             step = object : InfinityService.ConferenceStep {
 
@@ -1539,8 +1519,11 @@ class RosterImplTest {
         roster.disconnectAll()
     }
 
-    private fun Random.nextParticipant(index: Long = 0, id: UUID = UUID.randomUUID()): Participant {
-        val startTime = Instant.fromEpochSeconds(index)
+    private fun Random.nextParticipant(
+        index: Int = 0,
+        id: UUID = if (index == 0) participantId else UUID.randomUUID(),
+    ): Participant {
+        val startTime = Instant.fromEpochSeconds(index.toLong())
         return Participant(
             id = id,
             startTime = startTime,
@@ -1550,6 +1533,7 @@ class RosterImplTest {
             spotlightTime = startTime + nextInt(0, 100).seconds,
             displayName = nextString(8),
             overlayText = nextString(8),
+            me = id == participantId,
             audioMuted = nextBoolean(),
             videoMuted = nextBoolean(),
             presenting = nextBoolean(),
