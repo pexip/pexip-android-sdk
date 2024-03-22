@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.Message
-import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.Messenger
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import java.util.UUID
 
 /**
  * Converts this [Conference] to a [Flow] that emits [ConferenceEvent]s.
@@ -38,22 +36,6 @@ public fun Conference.getConferenceEvents(): Flow<ConferenceEvent> = callbackFlo
 }
 
 /**
- * Suspends until the message is sent or until an error is encountered.
- *
- * @param type a MIME type (e.g. "text/plain")
- * @param payload actual content of the message
- * @param participantId an optional unique identifier of the participant to send the message to
- * @return a message
- * @throws MessageNotSentException when there was an issue when sending the message
- */
-@Deprecated(message = "Use the member method instead.", level = DeprecationLevel.ERROR)
-public suspend fun Messenger.send(
-    type: String,
-    payload: String,
-    participantId: UUID? = null,
-): Message = send(type, payload, participantId)
-
-/**
  * Converts this [Messenger] to a [Flow] that emits [Message]s.
  *
  * @return a flow of messages
@@ -61,5 +43,6 @@ public suspend fun Messenger.send(
 @Deprecated(
     message = "Use the member method instead.",
     replaceWith = ReplaceWith("this.message"),
+    level = DeprecationLevel.ERROR,
 )
 public fun Messenger.getMessages(): Flow<Message> = message

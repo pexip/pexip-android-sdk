@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,28 +127,6 @@ public interface MediaConnection {
      * @param aspectRatio a preferred aspect ratio
      */
     public fun setMainRemoteVideoTrackPreferredAspectRatio(aspectRatio: Float)
-
-    /**
-     * Allows this [MediaConnection] to receive ongoing remote presentation.
-     */
-    @Deprecated(
-        message = "Use setPresentationRemoteVideoTrackEnabled(true) instead.",
-        replaceWith = ReplaceWith("setPresentationRemoteVideoTrackEnabled(true)"),
-        level = DeprecationLevel.ERROR,
-    )
-    public fun startPresentationReceive(): Unit =
-        error("Use setPresentationRemoteVideoTrackEnabled(true) instead.")
-
-    /**
-     * Disables the ability to receive ongoing remote presentation.
-     */
-    @Deprecated(
-        message = "Use setPresentationRemoteVideoTrackEnabled(false) instead.",
-        replaceWith = ReplaceWith("setPresentationRemoteVideoTrackEnabled(false)"),
-        level = DeprecationLevel.ERROR,
-    )
-    public fun stopPresentationReceive(): Unit =
-        error("Use setPresentationRemoteVideoTrackEnabled(false) instead.")
 
     /**
      * Sends DTMF digits to this [MediaConnection].

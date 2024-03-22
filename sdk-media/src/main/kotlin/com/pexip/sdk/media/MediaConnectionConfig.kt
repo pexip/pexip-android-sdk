@@ -21,7 +21,6 @@ package com.pexip.sdk.media
  * @property signaling an instance of [MediaConnectionSignaling] to be used by [MediaConnection]
  * @property iceServers a list of [IceServer]s that [MediaConnection] will use
  * @property dscp true if DSCP is enabled, false otherwise
- * @property continualGathering true if ICE candidates will be gathered continually, false otherwise
  * @property presentationInMain true if presentation will be mixed with main video feed, false otherwise; ignored for direct media calls
  * @property farEndCameraControl true if far end camera control is supported, false otherwise
  */
@@ -33,7 +32,7 @@ public class MediaConnectionConfig private constructor(
     public val farEndCameraControl: Boolean,
 ) {
 
-    @Deprecated("No longer used internally.")
+    @Deprecated(message = "No longer used internally.", level = DeprecationLevel.ERROR)
     public val continualGathering: Boolean = false
 
     /**
@@ -82,7 +81,10 @@ public class MediaConnectionConfig private constructor(
          * @param continualGathering true if ICE candidates will be gathered continually, false otherwise
          * @return this builder
          */
-        @Deprecated("ICE gathering now only happens once. ICE restart is triggered on network change.")
+        @Deprecated(
+            message = "ICE gathering now only happens once. ICE restart is triggered on network change.",
+            level = DeprecationLevel.ERROR,
+        )
         public fun continualGathering(continualGathering: Boolean): Builder = apply {
             // noop
         }

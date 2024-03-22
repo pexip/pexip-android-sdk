@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,20 +29,26 @@ internal abstract class AbstractMessenger(private val scope: CoroutineScope) : M
 
     private val listeners = CopyOnWriteArraySet<MessageListener>()
 
-    @Deprecated("Use the coroutines version of this method.")
+    @Deprecated(
+        message = "Use the coroutines version of this method.",
+        level = DeprecationLevel.ERROR,
+    )
     override fun send(type: String, payload: String, callback: SendCallback) =
         sendInternal(type, payload, callback)
 
-    @Deprecated("Use the coroutines version of this method.")
+    @Deprecated(
+        message = "Use the coroutines version of this method.",
+        level = DeprecationLevel.ERROR,
+    )
     override fun send(participantId: UUID, type: String, payload: String, callback: SendCallback) =
         sendInternal(type, payload, callback, participantId)
 
-    @Deprecated("Use getMessages() that returns a Flow")
+    @Deprecated(message = "Use message property", level = DeprecationLevel.ERROR)
     override fun registerMessageListener(listener: MessageListener) {
         listeners += listener
     }
 
-    @Deprecated("Use getMessages() that returns a Flow")
+    @Deprecated(message = "Use message property", level = DeprecationLevel.ERROR)
     override fun unregisterMessageListener(listener: MessageListener) {
         listeners -= listener
     }

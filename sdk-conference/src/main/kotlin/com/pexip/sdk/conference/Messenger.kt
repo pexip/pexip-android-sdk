@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,10 @@ public interface Messenger {
      * @param payload actual content of the message
      * @param callback a callback to be invoked upon completion
      */
-    @Deprecated(message = "Use the coroutines version of this method.")
+    @Deprecated(
+        message = "Use the coroutines version of this method.",
+        level = DeprecationLevel.ERROR,
+    )
     public fun send(type: String, payload: String, callback: SendCallback)
 
     /**
@@ -56,7 +59,10 @@ public interface Messenger {
      * @param payload actual content of the message
      * @param callback a callback to be invoked upon completion
      */
-    @Deprecated(message = "Use the coroutines version of this method.")
+    @Deprecated(
+        message = "Use the coroutines version of this method.",
+        level = DeprecationLevel.ERROR,
+    )
     public fun send(participantId: UUID, type: String, payload: String, callback: SendCallback)
 
     /**
@@ -64,7 +70,10 @@ public interface Messenger {
      *
      * @param listener a message listener
      */
-    @Deprecated(message = "Use getMessages() that returns a Flow")
+    @Deprecated(
+        message = "Use message property",
+        level = DeprecationLevel.ERROR,
+    )
     public fun registerMessageListener(listener: MessageListener)
 
     /**
@@ -72,6 +81,9 @@ public interface Messenger {
      *
      * @param listener a message listener
      */
-    @Deprecated(message = "Use getMessages() that returns a Flow")
+    @Deprecated(
+        message = "Use message property",
+        level = DeprecationLevel.ERROR,
+    )
     public fun unregisterMessageListener(listener: MessageListener)
 }

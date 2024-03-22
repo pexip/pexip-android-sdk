@@ -12,7 +12,6 @@ public abstract interface class com/pexip/sdk/conference/Conference {
 	public abstract fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public abstract fun getTheme ()Lcom/pexip/sdk/conference/Theme;
 	public abstract fun leave ()V
-	public fun message (Ljava/lang/String;)V
 	public abstract fun registerConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
 	public abstract fun unregisterConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
 }
@@ -174,25 +173,6 @@ public final class com/pexip/sdk/conference/MessageNotSentException : java/lang/
 	public fun <init> (Lcom/pexip/sdk/conference/Message;Ljava/lang/Throwable;)V
 	public synthetic fun <init> (Lcom/pexip/sdk/conference/Message;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getMsg ()Lcom/pexip/sdk/conference/Message;
-}
-
-public final class com/pexip/sdk/conference/MessageReceivedConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
-	public fun <init> (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public final fun component1 ()J
-	public final fun component2 ()Ljava/util/UUID;
-	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()Ljava/lang/String;
-	public final fun component5 ()Ljava/lang/String;
-	public final fun copy (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/conference/MessageReceivedConferenceEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/MessageReceivedConferenceEvent;JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/MessageReceivedConferenceEvent;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun getAt ()J
-	public final fun getParticipantId ()Ljava/util/UUID;
-	public final fun getParticipantName ()Ljava/lang/String;
-	public final fun getPayload ()Ljava/lang/String;
-	public final fun getType ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class com/pexip/sdk/conference/Messenger {
@@ -454,8 +434,6 @@ public final class com/pexip/sdk/conference/UnspotlightException : java/lang/Run
 public final class com/pexip/sdk/conference/coroutines/UtilKt {
 	public static final fun getConferenceEvents (Lcom/pexip/sdk/conference/Conference;)Lkotlinx/coroutines/flow/Flow;
 	public static final fun getMessages (Lcom/pexip/sdk/conference/Messenger;)Lkotlinx/coroutines/flow/Flow;
-	public static final fun send (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun send$default (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pexip/sdk/conference/Conference {

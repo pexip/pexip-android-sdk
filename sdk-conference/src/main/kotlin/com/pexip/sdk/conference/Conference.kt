@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,17 +55,6 @@ public interface Conference {
      * @param listener a conference event listener
      */
     public fun unregisterConferenceEventListener(listener: ConferenceEventListener)
-
-    /**
-     * Sends a plain text message to this [Conference].
-     *
-     * @param payload a plain text message
-     */
-    @Deprecated(
-        message = "Use Conference.messenger.send() instead.",
-        level = DeprecationLevel.ERROR,
-    )
-    public fun message(payload: String): Unit = error("Use Conference.messenger.send() instead.")
 
     /**
      * Leaves the conference. Once left, the [Conference] object is no longer valid.
