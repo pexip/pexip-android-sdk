@@ -35,16 +35,17 @@ import com.pexip.sdk.conference.infinity.internal.MessengerImpl
 import com.pexip.sdk.conference.infinity.internal.RefererImpl
 import com.pexip.sdk.conference.infinity.internal.RosterImpl
 import com.pexip.sdk.conference.infinity.internal.ThemeImpl
-import com.pexip.sdk.conference.infinity.internal.WhileSubscribedWithDebounce
 import com.pexip.sdk.conference.infinity.internal.events
+import com.pexip.sdk.core.WhileSubscribedWithDebounce
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.UnsupportedInfinityException
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -53,24 +54,24 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.Executors
-import kotlin.time.Duration.Companion.milliseconds
 
 public class InfinityConference private constructor(
     private val step: InfinityService.ConferenceStep,
     response: RequestTokenResponse,
 ) : Conference {
 
-    private val executor = Executors.newSingleThreadScheduledExecutor()
-    private val scope = CoroutineScope(SupervisorJob() + executor.asCoroutineDispatcher())
+    @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
+    private val context = newSingleThreadContext("InfinityConference")
+    private val scope = CoroutineScope(SupervisorJob() + context)
     private val store = TokenStore.create(response)
 
     private val event = step.events(store).shareIn(
         scope = scope,
-        started = SharingStarted.WhileSubscribedWithDebounce(100.milliseconds),
+        started = SharingStarted.WhileSubscribedWithDebounce(),
     )
     private val listeners = CopyOnWriteArraySet<ConferenceEventListener>()
     private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
@@ -161,7 +162,7 @@ public class InfinityConference private constructor(
 
     override fun leave() {
         scope.cancel()
-        executor.shutdown()
+        context.close()
         listeners.clear()
     }
 

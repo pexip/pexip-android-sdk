@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,33 +20,18 @@ import com.pexip.sdk.api.infinity.DisconnectEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.ReferEvent
-import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
-import kotlinx.coroutines.flow.MutableSharedFlow
 import java.util.UUID
-import kotlin.properties.Delegates
 import kotlin.random.Random
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
 class ConferenceEventTest {
-
-    private var at by Delegates.notNull<Long>()
-    private lateinit var event: MutableSharedFlow<Result<Event>>
-    private lateinit var store: TokenStore
-
-    @BeforeTest
-    fun setUp() {
-        at = Random.nextLong(Long.MAX_VALUE)
-        event = MutableSharedFlow()
-        store = TokenStore.create(Random.nextToken())
-    }
 
     @Test
     fun `returns ConferenceEvent if type is registered`() {

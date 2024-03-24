@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.conference.infinity.internal
+package com.pexip.sdk.registration.infinity.internal
 
 import app.cash.turbine.test
 import assertk.assertThat
@@ -50,7 +50,7 @@ class EventsTest {
 
     @Test
     fun `maps Event to ConferenceEvent`() = runTest {
-        val step = testConferenceStep()
+        val step = testRegistrationStep()
         step.events(store).test {
             event.awaitSubscriptionCountAtLeast(1)
             val events = List(10) { TestEvent() }
@@ -65,7 +65,7 @@ class EventsTest {
 
     @Test
     fun `failure restarts the flow`() = runTest {
-        val step = testConferenceStep()
+        val step = testRegistrationStep()
         step.events(store).test {
             event.awaitSubscriptionCountAtLeast(1)
             val event1 = TestEvent()
@@ -81,7 +81,7 @@ class EventsTest {
         }
     }
 
-    private fun TestScope.testConferenceStep() = object : InfinityService.ConferenceStep {
+    private fun TestScope.testRegistrationStep() = object : InfinityService.RegistrationStep {
 
         override fun events(token: Token): EventSourceFactory {
             assertThat(token, "token").isEqualTo(store.get())
