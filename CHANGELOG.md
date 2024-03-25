@@ -7,31 +7,51 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.15.0] - 2024-03-25
+
 ### Added
 
-- `Theme.layout` that provides the currently active layout of the conference
+- `Theme.layout` that provides the currently active layout of the conference, alongside available
+  layouts and their SVGs
 - `Theme.transformLayout` to modify the layout of the conference
 - `UnsupportedInfinityException` to indicate when the deployment is not supported by the SDK
-- `Roster.raiseHand`, `Roster.lowerHand` and `Roster.lowerAllHands`
+- Various methods that modify `Roster`:
+  - `me` and `presenter`
+  - `raiseHand`, `lowerHand` and `lowerAllHands`
+  - `disconnect` and `disconnectAll`
+  - `mute`, `unmute`, `muteAllGuests` and `unmuteAllGuests`
+  - `makeHost` and `makeGuest`
+  - `spotlight` and `unspotlight`
+  - `admit`, `lock` and `unlock`
+- `Participant.me` property to indicate whether the participant is *you*
+- `Participant.speaking` property that signals whether the participant is currently speaking
+- Ability to set a `VideoProcessor`
 
 ### Changed
 
+- Kotlin to 1.9.23
 - ICE restart to happen on default network change. As a result of this change,
   `MediaConnectionConfig.continualGathering` has been deprecated and is ignored
+
+### Fixed
+
+- `Participant` not being deserialized due to `startTime` being `null`
+- Skipping some SSEs due to a race
 
 ### Removed
 
 - `-coroutines` modules
 - `-infinity` modules
+- `BLUETOOTH_CONNECT` permission from `:sdk-media-android`
 
-## [0.14.1] - 2023-02-07
+## [0.14.1] - 2024-02-07
 
 ### Fixed
 
 - SSE restart caused by `SerializationException` in `ParticipantResponseSerializer` due to unknown
   values
 
-## [0.14.0] - 2023-01-18
+## [0.14.0] - 2024-01-18
 
 ### Added
 
@@ -324,7 +344,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.14.1...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.15.0...HEAD
+[0.15.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.15.0
 [0.14.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.14.1
 [0.14.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.14.0
 [0.13.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.13.1
