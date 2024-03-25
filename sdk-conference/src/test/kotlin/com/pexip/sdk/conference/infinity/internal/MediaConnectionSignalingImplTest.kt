@@ -42,6 +42,7 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
+import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
 import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.OfferSignalingEvent

@@ -46,6 +46,7 @@ import com.pexip.sdk.conference.Layout
 import com.pexip.sdk.conference.LayoutId
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.conference.TransformLayoutException
+import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.random.Random

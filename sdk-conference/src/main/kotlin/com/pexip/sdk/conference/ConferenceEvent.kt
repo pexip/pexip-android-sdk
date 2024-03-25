@@ -23,7 +23,7 @@ public sealed interface ConferenceEvent {
 }
 
 @Deprecated(
-    message = "Use Roster.present instead to observe presentation state.",
+    message = "Use Roster.presenter instead to observe presentation state.",
     level = DeprecationLevel.WARNING,
 )
 public data class PresentationStartConferenceEvent(
@@ -33,7 +33,7 @@ public data class PresentationStartConferenceEvent(
 ) : ConferenceEvent
 
 @Deprecated(
-    message = "Use Roster.present instead to observe presentation state.",
+    message = "Use Roster.presenter instead to observe presentation state.",
     level = DeprecationLevel.WARNING,
 )
 public data class PresentationStopConferenceEvent(override val at: Long) : ConferenceEvent

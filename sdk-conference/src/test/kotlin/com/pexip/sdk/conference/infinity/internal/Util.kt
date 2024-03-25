@@ -18,8 +18,6 @@ package com.pexip.sdk.conference.infinity.internal
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
 import com.pexip.sdk.conference.Message
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
 import java.util.UUID
 import kotlin.random.Random
 
@@ -45,8 +43,3 @@ internal fun Random.nextMessage(at: Long = System.currentTimeMillis(), direct: B
         payload = nextString(64),
         direct = direct,
     )
-
-internal suspend fun <T> MutableSharedFlow<T>.awaitSubscriptionCountAtLeast(threshold: Int): Int {
-    require(threshold > 0) { "threshold must be a positive number." }
-    return subscriptionCount.first { it >= threshold }
-}

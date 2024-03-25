@@ -1,8 +1,17 @@
 public abstract interface annotation class com/pexip/sdk/core/InternalSdkApi : java/lang/annotation/Annotation {
 }
 
+public final class com/pexip/sdk/core/MutableSharedFlowKt {
+	public static final fun awaitSubscriptionCountAtLeast (Lkotlinx/coroutines/flow/MutableSharedFlow;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public final class com/pexip/sdk/core/RetryKt {
 	public static final fun retry-FbhrOv8 (IJJDLkotlin/jvm/functions/Function0;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun retry-FbhrOv8$default (IJJDLkotlin/jvm/functions/Function0;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class com/pexip/sdk/core/SharingStartedKt {
+	public static final fun WhileSubscribedWithDebounce-HG0u8IE (Lkotlinx/coroutines/flow/SharingStarted$Companion;J)Lkotlinx/coroutines/flow/SharingStarted;
+	public static synthetic fun WhileSubscribedWithDebounce-HG0u8IE$default (Lkotlinx/coroutines/flow/SharingStarted$Companion;JILjava/lang/Object;)Lkotlinx/coroutines/flow/SharingStarted;
 }
 
