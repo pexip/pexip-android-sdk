@@ -177,6 +177,10 @@ public class InfinityConference private constructor(
          * @return an instance of [InfinityConference]
          * @throws UnsupportedInfinityException if the version of Infinity is not supported
          */
+        @Deprecated(
+            message = "Use a version of this method that accepts ConferenceStep",
+            replaceWith = ReplaceWith("create(service.newRequest(node).conference(conferenceAlias)), response)"),
+        )
         @JvmStatic
         public fun create(
             service: InfinityService,
