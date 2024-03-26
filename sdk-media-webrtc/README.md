@@ -8,6 +8,6 @@ WebRTC-based implementation of sdk-media.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-media-webrtc:0.14.1")
+    implementation("com.pexip.sdk:sdk-media-webrtc:0.15.0")
 }
 ```
