@@ -9,6 +9,10 @@ module:sdk-conference
 com.pexip.sdk.conference
 com.pexip.sdk.conference.coroutines
 com.pexip.sdk.conference.infinity
+module:sdk-core
+com.pexip.sdk.core
+module:sdk-infinity
+com.pexip.sdk.infinity
 module:sdk-media
 com.pexip.sdk.media
 com.pexip.sdk.media.coroutines
