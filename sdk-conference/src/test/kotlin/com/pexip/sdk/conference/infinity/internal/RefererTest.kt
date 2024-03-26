@@ -34,9 +34,9 @@ import com.pexip.sdk.conference.ReferException
 import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.Theme
+import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlinx.coroutines.test.runTest
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -89,7 +89,7 @@ class RefererTest {
             token = Random.nextString(8),
             expires = Random.nextLong(),
             conferenceName = Random.nextString(8),
-            participantId = UUID.randomUUID(),
+            participantId = ParticipantId(Random.nextString(8)),
             participantName = Random.nextString(8),
             directMediaRequested = Random.nextBoolean(),
             version = VersionResponse(Random.nextString(8), Random.nextString(8)),

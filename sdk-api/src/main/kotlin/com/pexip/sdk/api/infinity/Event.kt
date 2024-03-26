@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:UseSerializers(UUIDSerializer::class, ParticipantResponseSerializer::class)
+@file:UseSerializers(ParticipantResponseSerializer::class)
 
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.internal.ParticipantResponseSerializer
-import com.pexip.sdk.api.infinity.internal.UUIDSerializer
+import com.pexip.sdk.infinity.LayoutId
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.Json
-import java.util.UUID
 
 @Serializable
 public data class ConferenceUpdateEvent(
@@ -57,7 +57,7 @@ public value class ParticipantCreateEvent(public val response: ParticipantRespon
 public value class ParticipantUpdateEvent(public val response: ParticipantResponse) : Event
 
 @Serializable
-public data class ParticipantDeleteEvent(@SerialName("uuid") val id: UUID) : Event
+public data class ParticipantDeleteEvent(@SerialName("uuid") val id: ParticipantId) : Event
 
 @Serializable
 public data class NewOfferEvent(val sdp: String) : Event
@@ -81,7 +81,7 @@ public data class PresentationStartEvent(
     @SerialName("presenter_name")
     val presenterName: String,
     @SerialName("presenter_uuid")
-    val presenterId: UUID,
+    val presenterId: ParticipantId,
 ) : Event
 
 public data object PresentationStopEvent : Event
@@ -91,7 +91,7 @@ public data class MessageReceivedEvent(
     @SerialName("origin")
     val participantName: String,
     @SerialName("uuid")
-    val participantId: UUID,
+    val participantId: ParticipantId,
     val type: String,
     val payload: String,
     val direct: Boolean = false,

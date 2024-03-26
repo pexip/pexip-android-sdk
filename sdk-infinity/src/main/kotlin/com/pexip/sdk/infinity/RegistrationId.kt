@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.api.infinity
+package com.pexip.sdk.infinity
 
-@Deprecated(
-    message = "Use com.pexip.sdk.infinity.LayoutId instead.",
-    replaceWith = ReplaceWith(
-        expression = "LayoutId",
-        imports = ["com.pexip.sdk.infinity.LayoutId"],
-    ),
-    level = DeprecationLevel.ERROR,
-)
-public typealias LayoutId = com.pexip.sdk.infinity.LayoutId
+import kotlinx.serialization.Serializable
+
+/**
+ * A unique identifier for a registration.
+ *
+ * @property value a unique identifier for the registration.
+ */
+@Serializable
+@JvmInline
+public value class RegistrationId(public val value: String)

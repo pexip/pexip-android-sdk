@@ -29,6 +29,7 @@ import com.pexip.sdk.api.infinity.DataChannelMessage
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
+import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.media.Data
 import com.pexip.sdk.media.DataChannel
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +37,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -119,7 +119,7 @@ class DataChannelMessengerImplTest {
         }
         val messenger = DataChannelMessengerImpl(
             scope = backgroundScope,
-            senderId = UUID.randomUUID(),
+            senderId = ParticipantId(Random.nextString(8)),
             senderName = Random.nextString(8),
             dataChannel = dataChannel,
             atProvider = { fail("unexpected atProvider()") },
@@ -145,7 +145,7 @@ class DataChannelMessengerImplTest {
         }
         val messenger = DataChannelMessengerImpl(
             scope = backgroundScope,
-            senderId = UUID.randomUUID(),
+            senderId = ParticipantId(Random.nextString(8)),
             senderName = Random.nextString(8),
             dataChannel = dataChannel,
             atProvider = { fail("unexpected atProvider()") },
@@ -172,7 +172,7 @@ class DataChannelMessengerImplTest {
         }
         val messenger = DataChannelMessengerImpl(
             scope = backgroundScope,
-            senderId = UUID.randomUUID(),
+            senderId = ParticipantId(Random.nextString(8)),
             senderName = Random.nextString(8),
             dataChannel = dataChannel,
             atProvider = { at },

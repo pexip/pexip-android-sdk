@@ -20,11 +20,13 @@ package com.pexip.sdk.api.infinity
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.internal.InfinityServiceImpl
+import com.pexip.sdk.infinity.CallId
+import com.pexip.sdk.infinity.LayoutId
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import okhttp3.OkHttpClient
 import java.net.URL
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 /**
@@ -441,7 +443,8 @@ public interface InfinityService {
          *
          * @param participantId an ID of the participant
          */
-        public fun participant(participantId: UUID): ParticipantStep = throw NotImplementedError()
+        public fun participant(participantId: ParticipantId): ParticipantStep =
+            throw NotImplementedError()
     }
 
     /**
@@ -953,7 +956,7 @@ public interface InfinityService {
          *
          * @param callId an ID of the call
          */
-        public fun call(callId: UUID): CallStep = throw NotImplementedError()
+        public fun call(callId: CallId): CallStep = throw NotImplementedError()
     }
 
     /**
@@ -1146,9 +1149,7 @@ public interface InfinityService {
         )
 
         internal fun create(client: OkHttpClient, json: Json) = InfinityServiceImpl(
-            client = client.newBuilder()
-                .readTimeout(1, TimeUnit.MINUTES)
-                .build(),
+            client = client.newBuilder().readTimeout(1, TimeUnit.MINUTES).build(),
             json = json,
         )
     }

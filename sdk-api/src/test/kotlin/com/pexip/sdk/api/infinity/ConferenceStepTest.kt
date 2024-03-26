@@ -30,6 +30,8 @@ import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
 import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
 import com.pexip.sdk.api.infinity.internal.TransformLayoutRequestSerializer
+import com.pexip.sdk.infinity.LayoutId
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -38,7 +40,6 @@ import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import okio.FileSystem
 import org.junit.Rule
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -213,7 +214,7 @@ internal class ConferenceStepTest {
                 val response = RequestTokenResponse(
                     token = Random.nextString(8),
                     conferenceName = Random.nextString(8),
-                    participantId = UUID.randomUUID(),
+                    participantId = ParticipantId(Random.nextString(8)),
                     participantName = Random.nextString(8),
                     expires = 120,
                     analyticsEnabled = Random.nextBoolean(),

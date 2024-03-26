@@ -64,11 +64,12 @@ import com.pexip.sdk.conference.UnlockException
 import com.pexip.sdk.conference.UnmuteAllGuestsException
 import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnspotlightException
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
-import java.util.UUID
+import kotlin.properties.Delegates
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -79,13 +80,14 @@ import com.pexip.sdk.api.infinity.ServiceType as ApiServiceType
 class RosterImplTest {
 
     private lateinit var event: MutableSharedFlow<Event>
-    private lateinit var participantId: UUID
     private lateinit var store: TokenStore
+
+    private var participantId: ParticipantId by Delegates.notNull()
 
     @BeforeTest
     fun setUp() {
         event = MutableSharedFlow(extraBufferCapacity = 1)
-        participantId = UUID.randomUUID()
+        participantId = ParticipantId(Random.nextString(8))
         store = TokenStore.create(Random.nextToken())
     }
 
@@ -256,7 +258,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.raiseHand(UUID.randomUUID())
+        roster.raiseHand(ParticipantId(Random.nextString(8)))
     }
 
     @Test
@@ -270,7 +272,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -316,7 +318,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -357,7 +359,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.disconnect(UUID.randomUUID())
+        roster.disconnect(ParticipantId(Random.nextString(8)))
     }
 
     @Test
@@ -371,7 +373,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -417,7 +419,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -458,7 +460,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.disconnect(UUID.randomUUID())
+        roster.disconnect(ParticipantId(Random.nextString(8)))
     }
 
     @Test
@@ -472,7 +474,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -518,7 +520,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -561,7 +563,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -608,7 +610,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -652,7 +654,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -699,7 +701,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -741,7 +743,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.mute(UUID.randomUUID())
+        roster.mute(ParticipantId(Random.nextString(8)))
     }
 
     @Test
@@ -755,7 +757,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -801,7 +803,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -842,7 +844,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.unmute(UUID.randomUUID())
+        roster.unmute(ParticipantId(Random.nextString(8)))
     }
 
     @Test
@@ -856,7 +858,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -902,7 +904,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -943,7 +945,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.spotlight(UUID.randomUUID())
+        roster.spotlight(ParticipantId(Random.nextString(8)))
     }
 
     @Test
@@ -957,7 +959,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -1003,7 +1005,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -1044,7 +1046,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.unspotlight(UUID.randomUUID())
+        roster.unspotlight(ParticipantId(Random.nextString(8)))
     }
 
     @Test
@@ -1058,7 +1060,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -1104,7 +1106,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -1145,7 +1147,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.lowerHand(UUID.randomUUID())
+        roster.lowerHand(ParticipantId(Random.nextString(8)))
     }
 
     @Test
@@ -1159,7 +1161,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -1205,7 +1207,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId")
                         .isIn(*participants.map(Participant::id).toTypedArray())
                     return object : InfinityService.ParticipantStep {
@@ -1521,7 +1523,7 @@ class RosterImplTest {
 
     private fun Random.nextParticipant(
         index: Int = 0,
-        id: UUID = if (index == 0) participantId else UUID.randomUUID(),
+        id: ParticipantId = if (index == 0) participantId else ParticipantId(Random.nextString(8)),
     ): Participant {
         val startTime = Instant.fromEpochSeconds(index.toLong())
         return Participant(

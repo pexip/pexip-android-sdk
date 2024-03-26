@@ -15,8 +15,8 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 /**
  * Handles sending and receiving messages.
@@ -36,7 +36,11 @@ public interface Messenger {
      * @return a message
      * @throws MessageNotSentException when there was an issue when sending the message
      */
-    public suspend fun send(type: String, payload: String, participantId: UUID? = null): Message
+    public suspend fun send(
+        type: String,
+        payload: String,
+        participantId: ParticipantId? = null,
+    ): Message
 
     /**
      * Sends a message to all participants in the conference.
@@ -63,7 +67,12 @@ public interface Messenger {
         message = "Use the coroutines version of this method.",
         level = DeprecationLevel.ERROR,
     )
-    public fun send(participantId: UUID, type: String, payload: String, callback: SendCallback)
+    public fun send(
+        participantId: ParticipantId,
+        type: String,
+        payload: String,
+        callback: SendCallback,
+    )
 
     /**
      * Registers a [MessageListener].

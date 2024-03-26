@@ -15,8 +15,8 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.datetime.Instant
-import java.util.UUID
 
 /**
  * A conference participant.
@@ -41,7 +41,7 @@ import java.util.UUID
  * @property disconnectSupported whether this participant can be disconnected
  */
 public data class Participant(
-    val id: UUID,
+    val id: ParticipantId,
     val role: Role,
     val serviceType: ServiceType,
     val startTime: Instant?,

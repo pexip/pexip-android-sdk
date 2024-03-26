@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,11 @@
  */
 package com.pexip.sdk.api.infinity
 
-import com.pexip.sdk.api.infinity.internal.UUIDSerializer
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
-import java.util.UUID
 
 @Serializable
 public sealed interface DataChannelMessage {
@@ -33,9 +32,8 @@ public sealed interface DataChannelMessage {
         public data class Body(
             val type: String,
             val payload: String,
-            @Serializable(with = UUIDSerializer::class)
             @SerialName("uuid")
-            val senderId: UUID,
+            val senderId: ParticipantId,
             @SerialName("origin")
             val senderName: String = "",
         )

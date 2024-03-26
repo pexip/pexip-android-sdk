@@ -25,7 +25,7 @@ import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
-import java.util.UUID
+import com.pexip.sdk.infinity.ParticipantId
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -38,7 +38,7 @@ class ConferenceEventTest {
         val at = Random.nextLong(Long.MAX_VALUE)
         val testCases = buildMap {
             val presentationStartEvent = PresentationStartEvent(
-                presenterId = UUID.randomUUID(),
+                presenterId = ParticipantId(Random.nextString(8)),
                 presenterName = Random.nextString(8),
             )
             this[presentationStartEvent] = PresentationStartConferenceEvent(
