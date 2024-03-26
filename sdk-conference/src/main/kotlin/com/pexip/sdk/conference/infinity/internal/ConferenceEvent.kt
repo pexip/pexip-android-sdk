@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,13 @@ import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 @Suppress("ktlint:standard:function-naming")
 internal inline fun ConferenceEvent(
     event: Event,
-    at: () -> Long = System::currentTimeMillis,
+    at: () -> Instant = Clock.System::now,
 ) = when (event) {
     is PresentationStartEvent -> PresentationStartConferenceEvent(
         at = at(),
@@ -50,5 +52,5 @@ internal inline fun ConferenceEvent(
 }
 
 @Suppress("ktlint:standard:function-naming")
-internal inline fun ConferenceEvent(t: Throwable, at: () -> Long = System::currentTimeMillis) =
+internal inline fun ConferenceEvent(t: Throwable, at: () -> Instant = Clock.System::now) =
     FailureConferenceEvent(at(), t)

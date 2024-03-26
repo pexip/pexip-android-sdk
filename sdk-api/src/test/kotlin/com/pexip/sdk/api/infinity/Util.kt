@@ -36,6 +36,8 @@ import kotlin.time.toDuration
 
 private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+internal fun String.quoted() = "\"$this\""
+
 internal fun FileSystem.readUtf8(path: String): String = readUtf8(path.toPath())
 
 internal fun FileSystem.readUtf8(path: Path) = read(path, BufferedSource::readUtf8)

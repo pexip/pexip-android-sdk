@@ -81,6 +81,12 @@ repositories {
 * Android SDK 21+
 * Pexip Infinity 29+
 
+### Android Java API desugaring
+
+This library uses types from `java.time.*` and thus requires the projects to have a `minSdk` that
+has these APIs available or
+use [library desugaring](https://developer.android.com/studio/write/java8-support#library-desugaring).
+
 ## WebRTC versions
 
 | SDK version | WebRTC Milestone |

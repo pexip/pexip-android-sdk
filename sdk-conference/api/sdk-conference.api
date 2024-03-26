@@ -17,7 +17,7 @@ public abstract interface class com/pexip/sdk/conference/Conference {
 }
 
 public abstract interface class com/pexip/sdk/conference/ConferenceEvent {
-	public abstract fun getAt ()J
+	public abstract fun getAt ()Lkotlinx/datetime/Instant;
 }
 
 public abstract interface class com/pexip/sdk/conference/ConferenceEventListener {
@@ -31,13 +31,13 @@ public final class com/pexip/sdk/conference/DisconnectAllException : java/lang/R
 }
 
 public final class com/pexip/sdk/conference/DisconnectConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
-	public fun <init> (JLjava/lang/String;)V
-	public final fun component1 ()J
+	public fun <init> (Lkotlinx/datetime/Instant;Ljava/lang/String;)V
+	public final fun component1 ()Lkotlinx/datetime/Instant;
 	public final fun component2 ()Ljava/lang/String;
-	public final fun copy (JLjava/lang/String;)Lcom/pexip/sdk/conference/DisconnectConferenceEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/DisconnectConferenceEvent;JLjava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/DisconnectConferenceEvent;
+	public final fun copy (Lkotlinx/datetime/Instant;Ljava/lang/String;)Lcom/pexip/sdk/conference/DisconnectConferenceEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/DisconnectConferenceEvent;Lkotlinx/datetime/Instant;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/DisconnectConferenceEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getAt ()J
+	public fun getAt ()Lkotlinx/datetime/Instant;
 	public final fun getReason ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -66,13 +66,13 @@ public final class com/pexip/sdk/conference/Element$Text : com/pexip/sdk/confere
 }
 
 public final class com/pexip/sdk/conference/FailureConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
-	public fun <init> (JLjava/lang/Throwable;)V
-	public final fun component1 ()J
+	public fun <init> (Lkotlinx/datetime/Instant;Ljava/lang/Throwable;)V
+	public final fun component1 ()Lkotlinx/datetime/Instant;
 	public final fun component2 ()Ljava/lang/Throwable;
-	public final fun copy (JLjava/lang/Throwable;)Lcom/pexip/sdk/conference/FailureConferenceEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/FailureConferenceEvent;JLjava/lang/Throwable;ILjava/lang/Object;)Lcom/pexip/sdk/conference/FailureConferenceEvent;
+	public final fun copy (Lkotlinx/datetime/Instant;Ljava/lang/Throwable;)Lcom/pexip/sdk/conference/FailureConferenceEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/FailureConferenceEvent;Lkotlinx/datetime/Instant;Ljava/lang/Throwable;ILjava/lang/Object;)Lcom/pexip/sdk/conference/FailureConferenceEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getAt ()J
+	public fun getAt ()Lkotlinx/datetime/Instant;
 	public final fun getT ()Ljava/lang/Throwable;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -130,17 +130,17 @@ public final class com/pexip/sdk/conference/MakeHostException : java/lang/Runtim
 }
 
 public final class com/pexip/sdk/conference/Message {
-	public synthetic fun <init> (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()J
+	public synthetic fun <init> (Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lkotlinx/datetime/Instant;
 	public final fun component2-UyOe1Tk ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
 	public final fun component6 ()Z
-	public final fun copy-hMR9tMk (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lcom/pexip/sdk/conference/Message;
-	public static synthetic fun copy-hMR9tMk$default (Lcom/pexip/sdk/conference/Message;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/conference/Message;
+	public final fun copy-hMR9tMk (Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lcom/pexip/sdk/conference/Message;
+	public static synthetic fun copy-hMR9tMk$default (Lcom/pexip/sdk/conference/Message;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/conference/Message;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getAt ()J
+	public final fun getAt ()Lkotlinx/datetime/Instant;
 	public final fun getDirect ()Z
 	public final fun getParticipantId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getParticipantName ()Ljava/lang/String;
@@ -226,14 +226,14 @@ public final class com/pexip/sdk/conference/Participant {
 }
 
 public final class com/pexip/sdk/conference/PresentationStartConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
-	public synthetic fun <init> (JLjava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()J
+	public synthetic fun <init> (Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lkotlinx/datetime/Instant;
 	public final fun component2-UyOe1Tk ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy-u6TmcKM (JLjava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;
-	public static synthetic fun copy-u6TmcKM$default (Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;JLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;
+	public final fun copy-u6TmcKM (Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;
+	public static synthetic fun copy-u6TmcKM$default (Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getAt ()J
+	public fun getAt ()Lkotlinx/datetime/Instant;
 	public final fun getPresenterId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getPresenterName ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -241,12 +241,12 @@ public final class com/pexip/sdk/conference/PresentationStartConferenceEvent : c
 }
 
 public final class com/pexip/sdk/conference/PresentationStopConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
-	public fun <init> (J)V
-	public final fun component1 ()J
-	public final fun copy (J)Lcom/pexip/sdk/conference/PresentationStopConferenceEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/PresentationStopConferenceEvent;JILjava/lang/Object;)Lcom/pexip/sdk/conference/PresentationStopConferenceEvent;
+	public fun <init> (Lkotlinx/datetime/Instant;)V
+	public final fun component1 ()Lkotlinx/datetime/Instant;
+	public final fun copy (Lkotlinx/datetime/Instant;)Lcom/pexip/sdk/conference/PresentationStopConferenceEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/PresentationStopConferenceEvent;Lkotlinx/datetime/Instant;ILjava/lang/Object;)Lcom/pexip/sdk/conference/PresentationStopConferenceEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getAt ()J
+	public fun getAt ()Lkotlinx/datetime/Instant;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -258,14 +258,14 @@ public final class com/pexip/sdk/conference/RaiseHandException : java/lang/Runti
 }
 
 public final class com/pexip/sdk/conference/ReferConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
-	public fun <init> (JLjava/lang/String;Ljava/lang/String;)V
-	public final fun component1 ()J
+	public fun <init> (Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Lkotlinx/datetime/Instant;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (JLjava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/conference/ReferConferenceEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/ReferConferenceEvent;JLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/ReferConferenceEvent;
+	public final fun copy (Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/conference/ReferConferenceEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/ReferConferenceEvent;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/ReferConferenceEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getAt ()J
+	public fun getAt ()Lkotlinx/datetime/Instant;
 	public final fun getConferenceAlias ()Ljava/lang/String;
 	public final fun getToken ()Ljava/lang/String;
 	public fun hashCode ()I

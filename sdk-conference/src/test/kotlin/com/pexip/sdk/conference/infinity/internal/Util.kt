@@ -19,7 +19,11 @@ import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.infinity.ParticipantId
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlin.random.Random
+import kotlin.random.nextInt
+import kotlin.time.Duration.Companion.seconds
 
 private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -31,10 +35,10 @@ internal fun Random.nextDigits(length: Int) =
 
 internal fun Random.nextToken() = RefreshTokenResponse(
     token = nextString(8),
-    expires = (60L..600L).random(this),
+    expires = nextInt(10..120).seconds,
 )
 
-internal fun Random.nextMessage(at: Long = System.currentTimeMillis(), direct: Boolean = false) =
+internal fun Random.nextMessage(at: Instant = Clock.System.now(), direct: Boolean = false) =
     Message(
         at = at,
         participantId = ParticipantId(nextString(8)),

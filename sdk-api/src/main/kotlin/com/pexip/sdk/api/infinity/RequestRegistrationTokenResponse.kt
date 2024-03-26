@@ -15,16 +15,17 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.api.infinity.internal.DurationAsSecondsStringSerializer
 import com.pexip.sdk.infinity.RegistrationId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.LongAsStringSerializer
+import kotlin.time.Duration
 
 @Serializable
 public data class RequestRegistrationTokenResponse(
     override val token: String,
-    @Serializable(with = LongAsStringSerializer::class)
-    override val expires: Long,
+    @Serializable(with = DurationAsSecondsStringSerializer::class)
+    override val expires: Duration,
     @SerialName("registration_uuid")
     public val registrationId: RegistrationId,
     @SerialName("directory_enabled")

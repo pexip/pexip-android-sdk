@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.time.Duration.Companion.seconds
 
 /**
  * A token store.
@@ -71,7 +70,7 @@ public interface TokenStore {
                 while (isActive) {
                     val response = refreshToken(get())
                     set(response)
-                    delay(response.expires.seconds / 2)
+                    delay(response.expires / 2)
                 }
             } catch (e: CancellationException) {
                 throw e
