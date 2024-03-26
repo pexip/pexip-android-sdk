@@ -36,6 +36,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 internal class MessengerImpl(
     scope: CoroutineScope,
@@ -44,7 +46,7 @@ internal class MessengerImpl(
     private val senderName: String,
     private val store: TokenStore,
     private val step: InfinityService.ConferenceStep,
-    private val atProvider: () -> Long = System::currentTimeMillis,
+    private val atProvider: () -> Instant = Clock.System::now,
 ) : AbstractMessenger(scope) {
 
     override val message: Flow<Message> = event

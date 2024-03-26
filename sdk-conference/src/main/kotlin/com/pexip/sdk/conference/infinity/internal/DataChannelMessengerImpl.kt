@@ -31,13 +31,15 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 internal class DataChannelMessengerImpl(
     scope: CoroutineScope,
     private val senderId: ParticipantId,
     private val senderName: String,
     private val dataChannel: DataChannel,
-    private val atProvider: () -> Long = System::currentTimeMillis,
+    private val atProvider: () -> Instant = Clock.System::now,
 ) : AbstractMessenger(scope) {
 
     override val message: Flow<Message> = dataChannel.data

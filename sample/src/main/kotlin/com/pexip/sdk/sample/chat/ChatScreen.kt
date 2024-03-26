@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.pexip.sdk.sample.chat
 
-import android.text.format.DateFormat
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
@@ -31,9 +30,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -50,14 +49,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.sample.asMutableState
-import java.util.Date
+import kotlinx.datetime.toJavaInstant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,7 +74,7 @@ fun ChatScreen(rendering: ChatRendering, modifier: Modifier = Modifier) {
                 navigationIcon = {
                     IconButton(onClick = rendering.onBackClick) {
                         Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = null,
                         )
                     }
@@ -87,8 +89,6 @@ fun ChatScreen(rendering: ChatRendering, modifier: Modifier = Modifier) {
             LaunchedEffect(state, rendering.messages.size) {
                 state.animateScrollToItem(0)
             }
-            val context = LocalContext.current
-            val format = remember(context) { DateFormat.getTimeFormat(context) }
             val reversedMessages = remember(rendering.messages) { rendering.messages.asReversed() }
             LazyColumn(
                 state = state,
@@ -96,11 +96,11 @@ fun ChatScreen(rendering: ChatRendering, modifier: Modifier = Modifier) {
                 contentPadding = PaddingValues(vertical = 8.dp),
                 modifier = Modifier.weight(1f),
             ) {
-                items(reversedMessages, Message::at) {
-                    Message(it, format::format)
+                items(reversedMessages, { it.at.toEpochMilliseconds() }) { message ->
+                    Message(message = message)
                 }
             }
-            Divider()
+            HorizontalDivider()
             val (value, onValueChange) = rendering.payload.asMutableState()
             Composer(
                 value = value,
@@ -113,12 +113,7 @@ fun ChatScreen(rendering: ChatRendering, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Message(
-    message: Message,
-    format: (Date) -> String,
-    modifier: Modifier = Modifier,
-) {
-    val date = remember(message.at) { Date(message.at) }
+private fun Message(message: Message, modifier: Modifier = Modifier) {
     ListItem(
         overlineContent = {
             Text(text = message.participantName)
@@ -127,7 +122,10 @@ private fun Message(
             Text(text = message.payload)
         },
         trailingContent = {
-            Text(text = format(date))
+            val at = remember(message.at) {
+                LocalDateTime.ofInstant(message.at.toJavaInstant(), ZoneId.systemDefault())
+            }
+            Text(text = TimeFormatter.format(at))
         },
         modifier = modifier,
     )
@@ -213,3 +211,5 @@ private fun ComposerButton(enabled: Boolean, onClick: () -> Unit, modifier: Modi
         )
     }
 }
+
+private val TimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)

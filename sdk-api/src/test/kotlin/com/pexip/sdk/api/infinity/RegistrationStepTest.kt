@@ -24,10 +24,12 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import java.net.URL
 import kotlin.random.Random
+import kotlin.random.nextInt
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.time.Duration.Companion.seconds
 
 internal class RegistrationStepTest {
 
@@ -87,7 +89,7 @@ internal class RegistrationStepTest {
         val response = RequestRegistrationTokenResponse(
             token = Random.nextString(),
             registrationId = Random.nextRegistrationId(),
-            expires = 120,
+            expires = Random.nextInt(10..120).seconds,
             directoryEnabled = Random.nextBoolean(),
             routeViaRegistrar = Random.nextBoolean(),
             version = VersionResponse(
@@ -145,7 +147,7 @@ internal class RegistrationStepTest {
     fun `refreshToken returns`() {
         val response = RefreshRegistrationTokenResponse(
             token = Random.nextString(),
-            expires = 120,
+            expires = Random.nextInt(10..120).seconds,
         )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
         assertEquals(response, step.refreshToken(token).execute())

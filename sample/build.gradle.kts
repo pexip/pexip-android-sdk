@@ -30,6 +30,9 @@ android {
             )
         }
     }
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
     kotlinOptions {
         freeCompilerArgs += "-opt-in=com.squareup.workflow1.ui.WorkflowUiExperimentalApi"
     }
@@ -47,6 +50,7 @@ wire {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.android.desugar)
     implementation(project(":sdk-conference"))
     implementation(project(":sdk-media-webrtc-compose"))
     implementation(libs.androidx.activity.compose)

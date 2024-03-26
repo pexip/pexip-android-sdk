@@ -16,6 +16,7 @@
 package com.pexip.sdk.conference
 
 import com.pexip.sdk.infinity.ParticipantId
+import kotlinx.datetime.Instant
 
 /**
  * A message that can be received from [Messenger].
@@ -28,7 +29,7 @@ import com.pexip.sdk.infinity.ParticipantId
  * @property direct true if this is a direct message, false otherwise
  */
 public data class Message(
-    val at: Long,
+    val at: Instant,
     val participantId: ParticipantId,
     val participantName: String,
     val type: String,

@@ -16,10 +16,11 @@
 package com.pexip.sdk.conference
 
 import com.pexip.sdk.infinity.ParticipantId
+import kotlinx.datetime.Instant
 
 public sealed interface ConferenceEvent {
 
-    public val at: Long
+    public val at: Instant
 }
 
 @Deprecated(
@@ -27,7 +28,7 @@ public sealed interface ConferenceEvent {
     level = DeprecationLevel.WARNING,
 )
 public data class PresentationStartConferenceEvent(
-    override val at: Long,
+    override val at: Instant,
     val presenterId: ParticipantId,
     val presenterName: String,
 ) : ConferenceEvent
@@ -36,17 +37,20 @@ public data class PresentationStartConferenceEvent(
     message = "Use Roster.presenter instead to observe presentation state.",
     level = DeprecationLevel.WARNING,
 )
-public data class PresentationStopConferenceEvent(override val at: Long) : ConferenceEvent
+public data class PresentationStopConferenceEvent(override val at: Instant) : ConferenceEvent
 
 public data class ReferConferenceEvent(
-    override val at: Long,
+    override val at: Instant,
     val conferenceAlias: String,
     val token: String,
 ) : ConferenceEvent
 
 public data class DisconnectConferenceEvent(
-    override val at: Long,
+    override val at: Instant,
     val reason: String,
 ) : ConferenceEvent
 
-public data class FailureConferenceEvent(override val at: Long, val t: Throwable) : ConferenceEvent
+public data class FailureConferenceEvent(
+    override val at: Instant,
+    val t: Throwable,
+) : ConferenceEvent

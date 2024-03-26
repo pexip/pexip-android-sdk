@@ -43,8 +43,10 @@ import okhttp3.mockwebserver.MockWebServer
 import okio.FileSystem
 import org.junit.Rule
 import kotlin.random.Random
+import kotlin.random.nextInt
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.seconds
 
 internal class ConferenceStepTest {
 
@@ -218,7 +220,7 @@ internal class ConferenceStepTest {
                     conferenceName = Random.nextString(),
                     participantId = Random.nextParticipantId(),
                     participantName = Random.nextString(),
-                    expires = 120,
+                    expires = Random.nextInt(10..120).seconds,
                     analyticsEnabled = Random.nextBoolean(),
                     chatEnabled = Random.nextBoolean(),
                     guestsCanPresent = Random.nextBoolean(),
@@ -300,7 +302,7 @@ internal class ConferenceStepTest {
     fun `refreshToken returns`() {
         val response = RefreshTokenResponse(
             token = Random.nextString(),
-            expires = 120,
+            expires = Random.nextInt(10..120).seconds,
         )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
         assertThat(step.refreshToken(token).execute(), "response").isEqualTo(response)

@@ -35,6 +35,8 @@ import kotlin.test.assertEquals
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+internal fun String.quoted() = "\"$this\""
+
 internal fun FileSystem.readUtf8(path: String): String = readUtf8(path.toPath())
 
 internal fun FileSystem.readUtf8(path: Path) = read(path, BufferedSource::readUtf8)

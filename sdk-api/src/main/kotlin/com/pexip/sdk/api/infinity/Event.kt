@@ -18,6 +18,7 @@
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.Event
+import com.pexip.sdk.api.infinity.internal.DurationAsMillisecondsSerializer
 import com.pexip.sdk.api.infinity.internal.ParticipantResponseSerializer
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.ParticipantId
@@ -26,6 +27,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration
 
 @Serializable
 public data class ConferenceUpdateEvent(
@@ -110,7 +112,8 @@ public data class LayoutEvent(
 @Serializable
 public data class FeccEvent(
     public val action: FeccAction = FeccAction.UNKNOWN,
-    public val timeout: Long,
+    @Serializable(with = DurationAsMillisecondsSerializer::class)
+    public val timeout: Duration,
     public val movement: List<FeccMovement>,
 ) : Event
 

@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Clock
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -161,7 +162,7 @@ class DataChannelMessengerImplTest {
 
     @Test
     fun `onData maps Data to Message`() = runTest {
-        val at = System.currentTimeMillis()
+        val at = Clock.System.now()
         val dataChannel = object : DataChannel {
 
             override val id: Int
