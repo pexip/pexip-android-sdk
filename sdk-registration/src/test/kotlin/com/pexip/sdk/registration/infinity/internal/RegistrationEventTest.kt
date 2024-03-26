@@ -21,6 +21,7 @@ import com.pexip.sdk.api.infinity.IncomingEvent
 import com.pexip.sdk.registration.FailureRegistrationEvent
 import com.pexip.sdk.registration.IncomingCancelledRegistrationEvent
 import com.pexip.sdk.registration.IncomingRegistrationEvent
+import kotlinx.datetime.Clock
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,7 +31,7 @@ internal class RegistrationEventTest {
 
     @Test
     fun `returns RegistrationEvent if type is registered`() {
-        val at = Random.nextLong(Long.MAX_VALUE)
+        val at = Clock.System.now()
         val testCases = buildMap {
             val incomingEvent = IncomingEvent(
                 conferenceAlias = Random.nextString(8),

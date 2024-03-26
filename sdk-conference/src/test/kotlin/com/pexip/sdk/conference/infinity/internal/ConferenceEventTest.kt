@@ -26,6 +26,7 @@ import com.pexip.sdk.conference.PresentationStartConferenceEvent
 import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
 import com.pexip.sdk.infinity.ParticipantId
+import kotlinx.datetime.Clock
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -35,7 +36,7 @@ class ConferenceEventTest {
 
     @Test
     fun `returns ConferenceEvent if type is registered`() {
-        val at = Random.nextLong(Long.MAX_VALUE)
+        val at = Clock.System.now()
         val testCases = buildMap {
             val presentationStartEvent = PresentationStartEvent(
                 presenterId = ParticipantId(Random.nextString(8)),

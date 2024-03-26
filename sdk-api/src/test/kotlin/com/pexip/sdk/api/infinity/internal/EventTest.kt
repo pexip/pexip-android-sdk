@@ -60,6 +60,9 @@ import kotlinx.datetime.Instant
 import okio.FileSystem
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 internal class EventTest {
 
@@ -119,7 +122,7 @@ internal class EventTest {
                 val2 = "fecc_start.json",
                 val3 = FeccEvent(
                     action = FeccAction.START,
-                    timeout = 1000,
+                    timeout = 1.seconds,
                     movement = listOf(FeccMovement.PAN_LEFT, FeccMovement.TILT_UP),
                 ),
             )
@@ -128,7 +131,7 @@ internal class EventTest {
                 val2 = "fecc_continue.json",
                 val3 = FeccEvent(
                     action = FeccAction.CONTINUE,
-                    timeout = 200,
+                    timeout = 200.milliseconds,
                     movement = listOf(FeccMovement.ZOOM_IN, FeccMovement.PAN_RIGHT),
                 ),
             )
@@ -137,7 +140,7 @@ internal class EventTest {
                 val2 = "fecc_stop.json",
                 val3 = FeccEvent(
                     action = FeccAction.STOP,
-                    timeout = 100,
+                    timeout = 100.milliseconds,
                     movement = listOf(FeccMovement.TILT_DOWN, FeccMovement.ZOOM_OUT),
                 ),
             )
@@ -146,7 +149,7 @@ internal class EventTest {
                 val2 = "fecc_unknown.json",
                 val3 = FeccEvent(
                     action = FeccAction.UNKNOWN,
-                    timeout = 0,
+                    timeout = Duration.ZERO,
                     movement = List(3) { FeccMovement.UNKNOWN },
                 ),
             )

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,16 @@
  */
 package com.pexip.sdk.api.infinity
 
+import kotlin.time.Duration
+
 /**
  * An Infinity token.
  *
  * @property token an actual token value
- * @property expires a duration in seconds for which this token remains valid
+ * @property expires a duration for which this token remains valid
  */
 public interface Token {
 
     public val token: String
-    public val expires: Long
+    public val expires: Duration
 }

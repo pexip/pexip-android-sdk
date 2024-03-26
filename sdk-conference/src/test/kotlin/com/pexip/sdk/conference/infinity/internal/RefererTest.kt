@@ -37,9 +37,12 @@ import com.pexip.sdk.conference.Theme
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Clock
 import kotlin.random.Random
+import kotlin.random.nextInt
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.seconds
 
 class RefererTest {
 
@@ -48,7 +51,7 @@ class RefererTest {
     @BeforeTest
     fun setUp() {
         event = ReferConferenceEvent(
-            at = Random.nextLong(),
+            at = Clock.System.now(),
             conferenceAlias = Random.nextString(8),
             token = Random.nextString(8),
         )
@@ -87,7 +90,7 @@ class RefererTest {
     fun `transfer returns a new Conference`() = runTest {
         val response = RequestTokenResponse(
             token = Random.nextString(8),
-            expires = Random.nextLong(),
+            expires = Random.nextInt(10..120).seconds,
             conferenceName = Random.nextString(8),
             participantId = ParticipantId(Random.nextString(8)),
             participantName = Random.nextString(8),

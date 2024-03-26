@@ -394,17 +394,17 @@ public final class com/pexip/sdk/api/infinity/FeccAction$Companion {
 
 public final class com/pexip/sdk/api/infinity/FeccEvent : com/pexip/sdk/api/Event {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/FeccEvent$Companion;
-	public fun <init> (Lcom/pexip/sdk/api/infinity/FeccAction;JLjava/util/List;)V
 	public synthetic fun <init> (Lcom/pexip/sdk/api/infinity/FeccAction;JLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/pexip/sdk/api/infinity/FeccAction;JLjava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lcom/pexip/sdk/api/infinity/FeccAction;
-	public final fun component2 ()J
+	public final fun component2-UwyO8pc ()J
 	public final fun component3 ()Ljava/util/List;
-	public final fun copy (Lcom/pexip/sdk/api/infinity/FeccAction;JLjava/util/List;)Lcom/pexip/sdk/api/infinity/FeccEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/FeccEvent;Lcom/pexip/sdk/api/infinity/FeccAction;JLjava/util/List;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/FeccEvent;
+	public final fun copy-8Mi8wO0 (Lcom/pexip/sdk/api/infinity/FeccAction;JLjava/util/List;)Lcom/pexip/sdk/api/infinity/FeccEvent;
+	public static synthetic fun copy-8Mi8wO0$default (Lcom/pexip/sdk/api/infinity/FeccEvent;Lcom/pexip/sdk/api/infinity/FeccAction;JLjava/util/List;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/FeccEvent;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAction ()Lcom/pexip/sdk/api/infinity/FeccAction;
 	public final fun getMovement ()Ljava/util/List;
-	public final fun getTimeout ()J
+	public final fun getTimeout-UwyO8pc ()J
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -1177,13 +1177,13 @@ public final class com/pexip/sdk/api/infinity/ReferEvent$Companion {
 
 public final class com/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse : com/pexip/sdk/api/infinity/Token {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse$Companion;
-	public fun <init> (Ljava/lang/String;J)V
+	public synthetic fun <init> (Ljava/lang/String;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()J
-	public final fun copy (Ljava/lang/String;J)Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;Ljava/lang/String;JILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;
+	public final fun component2-UwyO8pc ()J
+	public final fun copy-HG0u8IE (Ljava/lang/String;J)Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;
+	public static synthetic fun copy-HG0u8IE$default (Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;Ljava/lang/String;JILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getExpires ()J
+	public fun getExpires-UwyO8pc ()J
 	public fun getToken ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1206,13 +1206,13 @@ public final class com/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse$C
 
 public final class com/pexip/sdk/api/infinity/RefreshTokenResponse : com/pexip/sdk/api/infinity/Token {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/RefreshTokenResponse$Companion;
-	public fun <init> (Ljava/lang/String;J)V
+	public synthetic fun <init> (Ljava/lang/String;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()J
-	public final fun copy (Ljava/lang/String;J)Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;Ljava/lang/String;JILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;
+	public final fun component2-UwyO8pc ()J
+	public final fun copy-HG0u8IE (Ljava/lang/String;J)Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;
+	public static synthetic fun copy-HG0u8IE$default (Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;Ljava/lang/String;JILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getExpires ()J
+	public fun getExpires-UwyO8pc ()J
 	public fun getToken ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1269,16 +1269,16 @@ public final class com/pexip/sdk/api/infinity/RequestRegistrationTokenResponse :
 	public static final field Companion Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse$Companion;
 	public synthetic fun <init> (Ljava/lang/String;JLjava/lang/String;ZZLcom/pexip/sdk/api/infinity/VersionResponse;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()J
+	public final fun component2-UwyO8pc ()J
 	public final fun component3-BYJB4LU ()Ljava/lang/String;
 	public final fun component4 ()Z
 	public final fun component5 ()Z
 	public final fun component6 ()Lcom/pexip/sdk/api/infinity/VersionResponse;
-	public final fun copy-Zm_CHjM (Ljava/lang/String;JLjava/lang/String;ZZLcom/pexip/sdk/api/infinity/VersionResponse;)Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;
-	public static synthetic fun copy-Zm_CHjM$default (Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;Ljava/lang/String;JLjava/lang/String;ZZLcom/pexip/sdk/api/infinity/VersionResponse;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;
+	public final fun copy-d35bQJg (Ljava/lang/String;JLjava/lang/String;ZZLcom/pexip/sdk/api/infinity/VersionResponse;)Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;
+	public static synthetic fun copy-d35bQJg$default (Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;Ljava/lang/String;JLjava/lang/String;ZZLcom/pexip/sdk/api/infinity/VersionResponse;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDirectoryEnabled ()Z
-	public fun getExpires ()J
+	public fun getExpires-UwyO8pc ()J
 	public final fun getRegistrationId-BYJB4LU ()Ljava/lang/String;
 	public final fun getRouteViaRegistrar ()Z
 	public fun getToken ()Ljava/lang/String;
@@ -1355,7 +1355,7 @@ public final class com/pexip/sdk/api/infinity/RequestTokenResponse : com/pexip/s
 	public final fun component15 ()I
 	public final fun component16-UwyO8pc ()J
 	public final fun component17 ()Z
-	public final fun component2 ()J
+	public final fun component2-UwyO8pc ()J
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4-UyOe1Tk ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
@@ -1363,8 +1363,8 @@ public final class com/pexip/sdk/api/infinity/RequestTokenResponse : com/pexip/s
 	public final fun component7 ()Z
 	public final fun component8 ()Z
 	public final fun component9 ()Z
-	public final fun copy-5RAnzsY (Ljava/lang/String;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZ)Lcom/pexip/sdk/api/infinity/RequestTokenResponse;
-	public static synthetic fun copy-5RAnzsY$default (Lcom/pexip/sdk/api/infinity/RequestTokenResponse;Ljava/lang/String;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestTokenResponse;
+	public final fun copy-gQtxkdk (Ljava/lang/String;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZ)Lcom/pexip/sdk/api/infinity/RequestTokenResponse;
+	public static synthetic fun copy-gQtxkdk$default (Lcom/pexip/sdk/api/infinity/RequestTokenResponse;Ljava/lang/String;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestTokenResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAnalyticsEnabled ()Z
 	public final fun getChatEnabled ()Z
@@ -1373,7 +1373,7 @@ public final class com/pexip/sdk/api/infinity/RequestTokenResponse : com/pexip/s
 	public final fun getDataChannelId ()I
 	public final fun getDirectMedia ()Z
 	public final fun getDirectMediaRequested ()Z
-	public fun getExpires ()J
+	public fun getExpires-UwyO8pc ()J
 	public final fun getGuestsCanPresent ()Z
 	public final fun getParticipantId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getParticipantName ()Ljava/lang/String;
@@ -1681,7 +1681,7 @@ public final class com/pexip/sdk/api/infinity/StunResponse$Companion {
 }
 
 public abstract interface class com/pexip/sdk/api/infinity/Token {
-	public abstract fun getExpires ()J
+	public abstract fun getExpires-UwyO8pc ()J
 	public abstract fun getToken ()Ljava/lang/String;
 }
 

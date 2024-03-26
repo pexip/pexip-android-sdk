@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,26 @@
  */
 package com.pexip.sdk.registration
 
+import kotlinx.datetime.Instant
+
 public sealed interface RegistrationEvent {
 
-    public val at: Long
+    public val at: Instant
 }
 
 public data class IncomingRegistrationEvent(
-    override val at: Long,
+    override val at: Instant,
     val conferenceAlias: String,
     val remoteDisplayName: String,
     val token: String,
 ) : RegistrationEvent
 
 public data class IncomingCancelledRegistrationEvent(
-    override val at: Long,
+    override val at: Instant,
     val token: String,
 ) : RegistrationEvent
 
 public data class FailureRegistrationEvent(
-    override val at: Long,
+    override val at: Instant,
     val t: Throwable,
 ) : RegistrationEvent

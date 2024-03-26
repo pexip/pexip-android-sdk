@@ -16,13 +16,16 @@
 package com.pexip.sdk.api.infinity
 
 import kotlin.random.Random
+import kotlin.random.nextInt
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 data class FakeToken(
     override val token: String,
-    override val expires: Long,
+    override val expires: Duration,
 ) : Token
 
 fun Random.nextFakeToken() = FakeToken(
     token = nextString(8),
-    expires = nextLong(Long.MAX_VALUE),
+    expires = nextInt(10..120).seconds,
 )
