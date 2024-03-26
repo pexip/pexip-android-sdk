@@ -21,7 +21,6 @@ import com.pexip.sdk.api.infinity.IllegalLayoutTransformException
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidPinException
 import com.pexip.sdk.api.infinity.InvalidTokenException
-import com.pexip.sdk.api.infinity.LayoutId
 import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.NoSuchConferenceException
 import com.pexip.sdk.api.infinity.NoSuchNodeException
@@ -34,12 +33,13 @@ import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.SsoRedirectException
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TransformLayoutRequest
+import com.pexip.sdk.infinity.LayoutId
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
-import java.util.UUID
 
 internal class ConferenceStepImpl(
     override val requestBuilder: RequestBuilderImpl,
@@ -272,7 +272,7 @@ internal class ConferenceStepImpl(
         json = json,
     )
 
-    override fun participant(participantId: UUID): InfinityService.ParticipantStep =
+    override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
         ParticipantStepImpl(this, participantId)
 
     private fun parseRequestToken(response: Response) = when (response.code) {

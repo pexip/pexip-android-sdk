@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.infinity.LayoutId
 import kotlinx.coroutines.flow.StateFlow
 
 /**

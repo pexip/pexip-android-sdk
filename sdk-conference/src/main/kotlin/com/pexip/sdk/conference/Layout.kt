@@ -15,6 +15,8 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.infinity.LayoutId
+
 /**
  * The layout of this [Conference].
  *

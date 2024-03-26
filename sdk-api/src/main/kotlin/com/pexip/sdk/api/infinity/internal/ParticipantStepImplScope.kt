@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 package com.pexip.sdk.api.infinity.internal
 
-import java.util.UUID
+import com.pexip.sdk.infinity.ParticipantId
 
 internal sealed interface ParticipantStepImplScope : ConferenceStepImplScope {
 
-    val participantId: UUID
+    val participantId: ParticipantId
 }

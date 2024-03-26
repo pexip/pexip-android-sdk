@@ -31,7 +31,6 @@ import com.pexip.sdk.api.infinity.IncomingCancelledEvent
 import com.pexip.sdk.api.infinity.IncomingEvent
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.LayoutEvent
-import com.pexip.sdk.api.infinity.LayoutId
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.NewCandidateEvent
 import com.pexip.sdk.api.infinity.NewOfferEvent
@@ -55,9 +54,10 @@ import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.api.infinity.nextString
 import com.pexip.sdk.api.infinity.readUtf8
+import com.pexip.sdk.infinity.LayoutId
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.datetime.Instant
 import okio.FileSystem
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.Test
 
@@ -81,7 +81,7 @@ internal class EventTest {
                 val2 = "message_received.json",
                 val3 = MessageReceivedEvent(
                     participantName = "George",
-                    participantId = UUID.fromString("dc46269f-5b39-4356-93fd-94d31b890bd5"),
+                    participantId = ParticipantId("dc46269f-5b39-4356-93fd-94d31b890bd5"),
                     type = "text/plain",
                     payload = "hello",
                     direct = true,
@@ -91,7 +91,7 @@ internal class EventTest {
                 val1 = "presentation_start",
                 val2 = "presentation_start.json",
                 val3 = PresentationStartEvent(
-                    presenterId = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                    presenterId = ParticipantId("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
                     presenterName = "George",
                 ),
             )
@@ -208,7 +208,7 @@ internal class EventTest {
                 val2 = "participant_create.json",
                 val3 = ParticipantCreateEvent(
                     response = ParticipantResponse(
-                        id = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                        id = ParticipantId("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
                         startTime = Instant.fromEpochSeconds(
                             epochSeconds = 1700484383,
                             nanosecondAdjustment = 846972000,
@@ -231,7 +231,7 @@ internal class EventTest {
                 val2 = "participant_create_unknown.json",
                 val3 = ParticipantCreateEvent(
                     response = ParticipantResponse(
-                        id = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                        id = ParticipantId("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
                         startTime = Instant.fromEpochSeconds(
                             epochSeconds = 1700484383,
                             nanosecondAdjustment = 846972000,
@@ -254,7 +254,7 @@ internal class EventTest {
                 val2 = "participant_update.json",
                 val3 = ParticipantUpdateEvent(
                     response = ParticipantResponse(
-                        id = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                        id = ParticipantId("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
                         startTime = Instant.fromEpochSeconds(
                             epochSeconds = 1700486477,
                             nanosecondAdjustment = 114828000,
@@ -284,7 +284,7 @@ internal class EventTest {
                 val1 = "participant_delete",
                 val2 = "participant_delete.json",
                 val3 = ParticipantDeleteEvent(
-                    id = UUID.fromString("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
+                    id = ParticipantId("0296f038-7f41-4c73-8dcf-0b95bd0138c7"),
                 ),
             )
             .row(
@@ -321,11 +321,11 @@ internal class EventTest {
                 val2 = "stage.json",
                 val3 = StageEvent(
                     SpeakerResponse(
-                        participantId = UUID.fromString("119895e3-c614-4e92-b906-90fd2afd6dff"),
+                        participantId = ParticipantId("119895e3-c614-4e92-b906-90fd2afd6dff"),
                         vad = 100,
                     ),
                     SpeakerResponse(
-                        participantId = UUID.fromString("25206ea5-5fa6-4bfb-93ff-3c6aa74e03c2"),
+                        participantId = ParticipantId("25206ea5-5fa6-4bfb-93ff-3c6aa74e03c2"),
                         vad = 0,
                     ),
                 ),

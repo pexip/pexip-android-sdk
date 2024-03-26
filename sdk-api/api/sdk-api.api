@@ -132,15 +132,15 @@ public final class com/pexip/sdk/api/infinity/CallsRequest$Companion {
 
 public final class com/pexip/sdk/api/infinity/CallsResponse : com/pexip/sdk/api/infinity/OfferResponse {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/CallsResponse$Companion;
-	public fun <init> (Ljava/util/UUID;Ljava/lang/String;Z)V
-	public synthetic fun <init> (Ljava/util/UUID;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/util/UUID;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-XxhQU_c ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Z
-	public final fun copy (Ljava/util/UUID;Ljava/lang/String;Z)Lcom/pexip/sdk/api/infinity/CallsResponse;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/CallsResponse;Ljava/util/UUID;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/CallsResponse;
+	public final fun copy-LZczc2U (Ljava/lang/String;Ljava/lang/String;Z)Lcom/pexip/sdk/api/infinity/CallsResponse;
+	public static synthetic fun copy-LZczc2U$default (Lcom/pexip/sdk/api/infinity/CallsResponse;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/CallsResponse;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getCallId ()Ljava/util/UUID;
+	public final fun getCallId-XxhQU_c ()Ljava/lang/String;
 	public fun getOfferIgnored ()Z
 	public fun getSdp ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -232,17 +232,17 @@ public final class com/pexip/sdk/api/infinity/DataChannelMessage$Message$$serial
 
 public final class com/pexip/sdk/api/infinity/DataChannelMessage$Message$Body {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Ljava/util/UUID;
+	public final fun component3-UyOe1Tk ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;
+	public final fun copy-hDSlXqM (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;
+	public static synthetic fun copy-hDSlXqM$default (Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getPayload ()Ljava/lang/String;
-	public final fun getSenderId ()Ljava/util/UUID;
+	public final fun getSenderId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getSenderName ()Ljava/lang/String;
 	public final fun getType ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -606,7 +606,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Confe
 	public fun message (Lcom/pexip/sdk/api/infinity/MessageRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun message (Lcom/pexip/sdk/api/infinity/MessageRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public fun muteGuests (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
-	public fun participant (Ljava/util/UUID;)Lcom/pexip/sdk/api/infinity/InfinityService$ParticipantStep;
+	public fun participant-hvPPU4g (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/InfinityService$ParticipantStep;
 	public fun refreshToken (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun refreshToken (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public fun releaseToken (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
@@ -626,7 +626,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Confe
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$ParticipantStep {
 	public fun buzz (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun buzz (Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
-	public fun call (Ljava/util/UUID;)Lcom/pexip/sdk/api/infinity/InfinityService$CallStep;
+	public fun call-ZWg4wSc (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/InfinityService$CallStep;
 	public fun calls (Lcom/pexip/sdk/api/infinity/CallsRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun calls (Lcom/pexip/sdk/api/infinity/CallsRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
 	public fun clearBuzz (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
@@ -696,13 +696,13 @@ public final class com/pexip/sdk/api/infinity/LayoutEvent : com/pexip/sdk/api/Ev
 	public static final field Companion Lcom/pexip/sdk/api/infinity/LayoutEvent$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1-09AyAb0 ()Ljava/lang/String;
+	public final fun component1-wCTOAKM ()Ljava/lang/String;
 	public final fun component2 ()Lcom/pexip/sdk/api/infinity/RequestedLayout;
 	public final fun component3 ()Z
-	public final fun copy-oaHaZIw (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;Z)Lcom/pexip/sdk/api/infinity/LayoutEvent;
-	public static synthetic fun copy-oaHaZIw$default (Lcom/pexip/sdk/api/infinity/LayoutEvent;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/LayoutEvent;
+	public final fun copy-0RoT9YM (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;Z)Lcom/pexip/sdk/api/infinity/LayoutEvent;
+	public static synthetic fun copy-0RoT9YM$default (Lcom/pexip/sdk/api/infinity/LayoutEvent;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/LayoutEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLayout-09AyAb0 ()Ljava/lang/String;
+	public final fun getLayout-wCTOAKM ()Ljava/lang/String;
 	public final fun getOverlayTextEnabled ()Z
 	public final fun getRequestedLayout ()Lcom/pexip/sdk/api/infinity/RequestedLayout;
 	public fun hashCode ()I
@@ -724,50 +724,20 @@ public final class com/pexip/sdk/api/infinity/LayoutEvent$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/LayoutId {
-	public static final field Companion Lcom/pexip/sdk/api/infinity/LayoutId$Companion;
-	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/LayoutId;
-	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
-	public final fun getValue ()Ljava/lang/String;
-	public fun hashCode ()I
-	public static fun hashCode-impl (Ljava/lang/String;)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Ljava/lang/String;
-}
-
-public final class com/pexip/sdk/api/infinity/LayoutId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
-	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/LayoutId$$serializer;
-	public fun childSerializers ()[Lkotlinx/serialization/KSerializer;
-	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun deserialize-Usdm_rY (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun serialize-tzsas1o (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
-}
-
-public final class com/pexip/sdk/api/infinity/LayoutId$Companion {
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
 public final class com/pexip/sdk/api/infinity/MessageReceivedEvent : com/pexip/sdk/api/Event {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/MessageReceivedEvent$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;Z)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/util/UUID;
+	public final fun component2-UyOe1Tk ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()Z
-	public final fun copy (Ljava/lang/String;Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;Z)Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;Ljava/lang/String;Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;
+	public final fun copy-L3D7rAk (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;
+	public static synthetic fun copy-L3D7rAk$default (Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDirect ()Z
-	public final fun getParticipantId ()Ljava/util/UUID;
+	public final fun getParticipantId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getParticipantName ()Ljava/lang/String;
 	public final fun getPayload ()Ljava/lang/String;
 	public final fun getType ()Ljava/lang/String;
@@ -982,12 +952,12 @@ public final class com/pexip/sdk/api/infinity/ParticipantCreateEvent$Companion {
 
 public final class com/pexip/sdk/api/infinity/ParticipantDeleteEvent : com/pexip/sdk/api/Event {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent$Companion;
-	public fun <init> (Ljava/util/UUID;)V
-	public final fun component1 ()Ljava/util/UUID;
-	public final fun copy (Ljava/util/UUID;)Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent;Ljava/util/UUID;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyOe1Tk ()Ljava/lang/String;
+	public final fun copy-hvPPU4g (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent;
+	public static synthetic fun copy-hvPPU4g$default (Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getId ()Ljava/util/UUID;
+	public final fun getId-UyOe1Tk ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -1009,9 +979,9 @@ public final class com/pexip/sdk/api/infinity/ParticipantDeleteEvent$Companion {
 
 public final class com/pexip/sdk/api/infinity/ParticipantResponse {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/ParticipantResponse$Companion;
-	public fun <init> (Ljava/util/UUID;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/api/infinity/Role;Lcom/pexip/sdk/api/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;)V
-	public synthetic fun <init> (Ljava/util/UUID;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/api/infinity/Role;Lcom/pexip/sdk/api/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/util/UUID;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/api/infinity/Role;Lcom/pexip/sdk/api/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/api/infinity/Role;Lcom/pexip/sdk/api/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyOe1Tk ()Ljava/lang/String;
 	public final fun component10 ()Z
 	public final fun component11 ()Lcom/pexip/sdk/api/infinity/Role;
 	public final fun component12 ()Lcom/pexip/sdk/api/infinity/ServiceType;
@@ -1025,14 +995,14 @@ public final class com/pexip/sdk/api/infinity/ParticipantResponse {
 	public final fun component7 ()Z
 	public final fun component8 ()Z
 	public final fun component9 ()Z
-	public final fun copy (Ljava/util/UUID;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/api/infinity/Role;Lcom/pexip/sdk/api/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/ParticipantResponse;Ljava/util/UUID;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/api/infinity/Role;Lcom/pexip/sdk/api/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
+	public final fun copy-3FWsSrM (Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/api/infinity/Role;Lcom/pexip/sdk/api/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
+	public static synthetic fun copy-3FWsSrM$default (Lcom/pexip/sdk/api/infinity/ParticipantResponse;Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/api/infinity/Role;Lcom/pexip/sdk/api/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAudioMuted ()Z
 	public final fun getBuzzTime ()Lkotlinx/datetime/Instant;
 	public final fun getDisconnectSupported ()Z
 	public final fun getDisplayName ()Ljava/lang/String;
-	public final fun getId ()Ljava/util/UUID;
+	public final fun getId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getMuteSupported ()Z
 	public final fun getOverlayText ()Ljava/lang/String;
 	public final fun getPresenting ()Z
@@ -1142,13 +1112,13 @@ public final class com/pexip/sdk/api/infinity/PreferredAspectRatioRequest$Compan
 
 public final class com/pexip/sdk/api/infinity/PresentationStartEvent : com/pexip/sdk/api/Event {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/PresentationStartEvent$Companion;
-	public fun <init> (Ljava/lang/String;Ljava/util/UUID;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/util/UUID;
-	public final fun copy (Ljava/lang/String;Ljava/util/UUID;)Lcom/pexip/sdk/api/infinity/PresentationStartEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/PresentationStartEvent;Ljava/lang/String;Ljava/util/UUID;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/PresentationStartEvent;
+	public final fun component2-UyOe1Tk ()Ljava/lang/String;
+	public final fun copy-hv8Mw98 (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/PresentationStartEvent;
+	public static synthetic fun copy-hv8Mw98$default (Lcom/pexip/sdk/api/infinity/PresentationStartEvent;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/PresentationStartEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getPresenterId ()Ljava/util/UUID;
+	public final fun getPresenterId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getPresenterName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1297,19 +1267,19 @@ public final class com/pexip/sdk/api/infinity/RegistrationResponse$Companion {
 
 public final class com/pexip/sdk/api/infinity/RequestRegistrationTokenResponse : com/pexip/sdk/api/infinity/Token {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse$Companion;
-	public fun <init> (Ljava/lang/String;JLjava/util/UUID;ZZLcom/pexip/sdk/api/infinity/VersionResponse;)V
+	public synthetic fun <init> (Ljava/lang/String;JLjava/lang/String;ZZLcom/pexip/sdk/api/infinity/VersionResponse;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()J
-	public final fun component3 ()Ljava/util/UUID;
+	public final fun component3-BYJB4LU ()Ljava/lang/String;
 	public final fun component4 ()Z
 	public final fun component5 ()Z
 	public final fun component6 ()Lcom/pexip/sdk/api/infinity/VersionResponse;
-	public final fun copy (Ljava/lang/String;JLjava/util/UUID;ZZLcom/pexip/sdk/api/infinity/VersionResponse;)Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;Ljava/lang/String;JLjava/util/UUID;ZZLcom/pexip/sdk/api/infinity/VersionResponse;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;
+	public final fun copy-Zm_CHjM (Ljava/lang/String;JLjava/lang/String;ZZLcom/pexip/sdk/api/infinity/VersionResponse;)Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;
+	public static synthetic fun copy-Zm_CHjM$default (Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;Ljava/lang/String;JLjava/lang/String;ZZLcom/pexip/sdk/api/infinity/VersionResponse;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDirectoryEnabled ()Z
 	public fun getExpires ()J
-	public final fun getRegistrationId ()Ljava/util/UUID;
+	public final fun getRegistrationId-BYJB4LU ()Ljava/lang/String;
 	public final fun getRouteViaRegistrar ()Z
 	public fun getToken ()Ljava/lang/String;
 	public final fun getVersion ()Lcom/pexip/sdk/api/infinity/VersionResponse;
@@ -1374,8 +1344,8 @@ public final class com/pexip/sdk/api/infinity/RequestTokenRequest$Companion {
 
 public final class com/pexip/sdk/api/infinity/RequestTokenResponse : com/pexip/sdk/api/infinity/Token {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/RequestTokenResponse$Companion;
-	public synthetic fun <init> (Ljava/lang/String;JLjava/lang/String;Ljava/util/UUID;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;JLjava/lang/String;Ljava/util/UUID;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()Lcom/pexip/sdk/api/infinity/ServiceType;
 	public final fun component11 ()Ljava/util/List;
@@ -1387,14 +1357,14 @@ public final class com/pexip/sdk/api/infinity/RequestTokenResponse : com/pexip/s
 	public final fun component17 ()Z
 	public final fun component2 ()J
 	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()Ljava/util/UUID;
+	public final fun component4-UyOe1Tk ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
 	public final fun component6 ()Lcom/pexip/sdk/api/infinity/VersionResponse;
 	public final fun component7 ()Z
 	public final fun component8 ()Z
 	public final fun component9 ()Z
-	public final fun copy-pgF73Fw (Ljava/lang/String;JLjava/lang/String;Ljava/util/UUID;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZ)Lcom/pexip/sdk/api/infinity/RequestTokenResponse;
-	public static synthetic fun copy-pgF73Fw$default (Lcom/pexip/sdk/api/infinity/RequestTokenResponse;Ljava/lang/String;JLjava/lang/String;Ljava/util/UUID;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestTokenResponse;
+	public final fun copy-5RAnzsY (Ljava/lang/String;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZ)Lcom/pexip/sdk/api/infinity/RequestTokenResponse;
+	public static synthetic fun copy-5RAnzsY$default (Lcom/pexip/sdk/api/infinity/RequestTokenResponse;Ljava/lang/String;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/api/infinity/VersionResponse;ZZZLcom/pexip/sdk/api/infinity/ServiceType;Ljava/util/List;Ljava/util/List;ZZIJZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestTokenResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAnalyticsEnabled ()Z
 	public final fun getChatEnabled ()Z
@@ -1405,7 +1375,7 @@ public final class com/pexip/sdk/api/infinity/RequestTokenResponse : com/pexip/s
 	public final fun getDirectMediaRequested ()Z
 	public fun getExpires ()J
 	public final fun getGuestsCanPresent ()Z
-	public final fun getParticipantId ()Ljava/util/UUID;
+	public final fun getParticipantId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getParticipantName ()Ljava/lang/String;
 	public final fun getServiceType ()Lcom/pexip/sdk/api/infinity/ServiceType;
 	public final fun getStun ()Ljava/util/List;
@@ -1513,13 +1483,13 @@ public final class com/pexip/sdk/api/infinity/RoleRequest$Companion {
 public final class com/pexip/sdk/api/infinity/Screen {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/Screen$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1-09AyAb0 ()Ljava/lang/String;
-	public final fun component2-09AyAb0 ()Ljava/lang/String;
-	public final fun copy-PBtoF5M (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/Screen;
-	public static synthetic fun copy-PBtoF5M$default (Lcom/pexip/sdk/api/infinity/Screen;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/Screen;
+	public final fun component1-wCTOAKM ()Ljava/lang/String;
+	public final fun component2-wCTOAKM ()Ljava/lang/String;
+	public final fun copy-0Xk8fGI (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/Screen;
+	public static synthetic fun copy-0Xk8fGI$default (Lcom/pexip/sdk/api/infinity/Screen;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/Screen;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getGuestLayout-09AyAb0 ()Ljava/lang/String;
-	public final fun getHostLayout-09AyAb0 ()Ljava/lang/String;
+	public final fun getGuestLayout-wCTOAKM ()Ljava/lang/String;
+	public final fun getHostLayout-wCTOAKM ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -1560,13 +1530,13 @@ public final class com/pexip/sdk/api/infinity/ServiceType$Companion {
 
 public final class com/pexip/sdk/api/infinity/SpeakerResponse {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/SpeakerResponse$Companion;
-	public fun <init> (Ljava/util/UUID;I)V
-	public final fun component1 ()Ljava/util/UUID;
+	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyOe1Tk ()Ljava/lang/String;
 	public final fun component2 ()I
-	public final fun copy (Ljava/util/UUID;I)Lcom/pexip/sdk/api/infinity/SpeakerResponse;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/SpeakerResponse;Ljava/util/UUID;IILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/SpeakerResponse;
+	public final fun copy-5K0EZTY (Ljava/lang/String;I)Lcom/pexip/sdk/api/infinity/SpeakerResponse;
+	public static synthetic fun copy-5K0EZTY$default (Lcom/pexip/sdk/api/infinity/SpeakerResponse;Ljava/lang/String;IILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/SpeakerResponse;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getParticipantId ()Ljava/util/UUID;
+	public final fun getParticipantId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getSpeaking ()Z
 	public final fun getVad ()I
 	public fun hashCode ()I
@@ -1731,15 +1701,15 @@ public final class com/pexip/sdk/api/infinity/TransformLayoutRequest {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/TransformLayoutRequest$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1-8Fcadpo ()Ljava/lang/String;
-	public final fun component2-8Fcadpo ()Ljava/lang/String;
+	public final fun component1-1KBGLM4 ()Ljava/lang/String;
+	public final fun component2-1KBGLM4 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/Boolean;
-	public final fun copy-aEplfBc (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;)Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;
-	public static synthetic fun copy-aEplfBc$default (Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;
+	public final fun copy-CmckpFA (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;)Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;
+	public static synthetic fun copy-CmckpFA$default (Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEnableOverlayText ()Ljava/lang/Boolean;
-	public final fun getGuestLayout-8Fcadpo ()Ljava/lang/String;
-	public final fun getLayout-8Fcadpo ()Ljava/lang/String;
+	public final fun getGuestLayout-1KBGLM4 ()Ljava/lang/String;
+	public final fun getLayout-1KBGLM4 ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

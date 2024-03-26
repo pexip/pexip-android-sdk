@@ -15,10 +15,12 @@
  */
 package com.pexip.sdk.conference
 
-/**
- * A unique identifier for a layout in a conference.
- *
- * @property value a unique identifier for the layout.
- */
-@JvmInline
-public value class LayoutId(public val value: String)
+@Deprecated(
+    message = "Use com.pexip.sdk.infinity.LayoutId instead.",
+    replaceWith = ReplaceWith(
+        expression = "LayoutId",
+        imports = ["com.pexip.sdk.infinity.LayoutId"],
+    ),
+    level = DeprecationLevel.ERROR,
+)
+public typealias LayoutId = com.pexip.sdk.infinity.LayoutId

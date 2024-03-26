@@ -15,13 +15,13 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.infinity.RegistrationId
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import java.net.URL
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -85,7 +85,7 @@ internal class RegistrationStepTest {
     fun `requestToken returns`() {
         val response = RequestRegistrationTokenResponse(
             token = Random.nextString(8),
-            registrationId = UUID.randomUUID(),
+            registrationId = RegistrationId(Random.nextString(8)),
             expires = 120,
             directoryEnabled = Random.nextBoolean(),
             routeViaRegistrar = Random.nextBoolean(),

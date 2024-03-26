@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.api.infinity
+package com.pexip.sdk.infinity
 
-@Deprecated(
-    message = "Renamed to LayoutId",
-    replaceWith = ReplaceWith("LayoutId", "com.pexip.sdk.api.infinity.LayoutId"),
-    level = DeprecationLevel.ERROR,
-)
-public typealias Layout = LayoutId
+import kotlinx.serialization.Serializable
+
+/**
+ * A unique identifier for a layout in a conference.
+ *
+ * @property value a unique identifier for the layout.
+ */
+@Serializable
+@JvmInline
+public value class LayoutId(public val value: String)

@@ -15,8 +15,8 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.flow.StateFlow
-import java.util.UUID
 
 /**
  * Handles conference participants.
@@ -67,7 +67,7 @@ public interface Roster {
      * @param participantId an ID of the participant
      * @throws AdmitException if the operation failed
      */
-    public suspend fun admit(participantId: UUID): Unit = throw NotImplementedError()
+    public suspend fun admit(participantId: ParticipantId): Unit = throw NotImplementedError()
 
     /**
      * Disconnects the specified participant or self.
@@ -75,7 +75,8 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws DisconnectException if the operation failed
      */
-    public suspend fun disconnect(participantId: UUID? = null): Unit = throw NotImplementedError()
+    public suspend fun disconnect(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
 
     /**
      * Changes the role of the participant to host.
@@ -83,7 +84,8 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws MakeHostException if the operation failed
      */
-    public suspend fun makeHost(participantId: UUID? = null): Unit = throw NotImplementedError()
+    public suspend fun makeHost(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
 
     /**
      * Changes the role of the participant to guest.
@@ -91,7 +93,8 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws MakeGuestException if the operation failed
      */
-    public suspend fun makeGuest(participantId: UUID? = null): Unit = throw NotImplementedError()
+    public suspend fun makeGuest(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
 
     /**
      * Mutes the specified participant or self.
@@ -99,7 +102,8 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws MuteException if the operation failed
      */
-    public suspend fun mute(participantId: UUID? = null): Unit = throw NotImplementedError()
+    public suspend fun mute(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
 
     /**
      * Unmutes the specified participant or self.
@@ -107,7 +111,8 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws UnmuteException if the operation failed
      */
-    public suspend fun unmute(participantId: UUID? = null): Unit = throw NotImplementedError()
+    public suspend fun unmute(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
 
     /**
      * Enables the "spotlight" on a participant or self.
@@ -115,7 +120,8 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws SpotlightException if the operation failed
      */
-    public suspend fun spotlight(participantId: UUID? = null): Unit = throw NotImplementedError()
+    public suspend fun spotlight(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
 
     /**
      * Disables the "spotlight" on a participant or self.
@@ -123,7 +129,8 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws UnspotlightException if the operation failed
      */
-    public suspend fun unspotlight(participantId: UUID? = null): Unit = throw NotImplementedError()
+    public suspend fun unspotlight(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
 
     /**
      * Raises hand of the specified participant or self.
@@ -131,7 +138,8 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws RaiseHandException if the operation failed
      */
-    public suspend fun raiseHand(participantId: UUID? = null): Unit = throw NotImplementedError()
+    public suspend fun raiseHand(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
 
     /**
      * Lowers hand of the specified participant or self.
@@ -139,7 +147,8 @@ public interface Roster {
      * @param participantId an ID of the participant, null for self
      * @throws LowerHandException if the operation failed
      */
-    public suspend fun lowerHand(participantId: UUID? = null): Unit = throw NotImplementedError()
+    public suspend fun lowerHand(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
 
     /**
      * Lowers all hands.

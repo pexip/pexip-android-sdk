@@ -15,7 +15,7 @@
  */
 package com.pexip.sdk.api.infinity.internal
 
-import com.pexip.sdk.api.infinity.LayoutId
+import com.pexip.sdk.infinity.LayoutId
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 

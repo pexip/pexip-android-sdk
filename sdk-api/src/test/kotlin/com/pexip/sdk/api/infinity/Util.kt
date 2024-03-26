@@ -28,7 +28,6 @@ import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import java.net.URL
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.test.assertEquals
@@ -50,7 +49,7 @@ internal fun Random.nextDigits(length: Int) =
 internal fun Random.nextDuration(unit: DurationUnit = DurationUnit.SECONDS) =
     nextInt(0, 1000).toDuration(unit)
 
-internal fun Random.nextIdentityProviderId() = IdentityProviderId(nextUuid())
+internal fun Random.nextIdentityProviderId() = IdentityProviderId(nextString(8))
 
 internal fun Random.nextPin(): String = "${nextInt(1000..9999)}"
 
@@ -110,5 +109,3 @@ internal fun RecordedRequest.assertPin(pin: String?) = assertEquals(
 
 private fun RecordedRequest.assertContentType(contentType: String?) =
     assertEquals(contentType, getHeader("Content-Type"))
-
-private fun Random.nextUuid() = UUID.randomUUID().toString()

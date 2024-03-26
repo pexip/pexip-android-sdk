@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,11 @@
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.infinity.internal.DurationAsMillisecondsSerializer
-import com.pexip.sdk.api.infinity.internal.UUIDSerializer
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.builtins.LongAsStringSerializer
-import java.util.UUID
 import kotlin.time.Duration
 
 @Serializable
@@ -31,9 +30,8 @@ public data class RequestTokenResponse(
     override val expires: Long,
     @SerialName("conference_name")
     public val conferenceName: String,
-    @Serializable(with = UUIDSerializer::class)
     @SerialName("participant_uuid")
-    public val participantId: UUID,
+    public val participantId: ParticipantId,
     @SerialName("display_name")
     public val participantName: String,
     public val version: VersionResponse,

@@ -20,9 +20,9 @@ import com.pexip.sdk.conference.MessageListener
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.SendCallback
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.util.UUID
 import java.util.concurrent.CopyOnWriteArraySet
 
 internal abstract class AbstractMessenger(private val scope: CoroutineScope) : Messenger {
@@ -40,8 +40,12 @@ internal abstract class AbstractMessenger(private val scope: CoroutineScope) : M
         message = "Use the coroutines version of this method.",
         level = DeprecationLevel.ERROR,
     )
-    override fun send(participantId: UUID, type: String, payload: String, callback: SendCallback) =
-        sendInternal(type, payload, callback, participantId)
+    override fun send(
+        participantId: ParticipantId,
+        type: String,
+        payload: String,
+        callback: SendCallback,
+    ) = sendInternal(type, payload, callback, participantId)
 
     @Deprecated(message = "Use message property", level = DeprecationLevel.ERROR)
     override fun registerMessageListener(listener: MessageListener) {
@@ -59,7 +63,7 @@ internal abstract class AbstractMessenger(private val scope: CoroutineScope) : M
         type: String,
         payload: String,
         callback: SendCallback,
-        participantId: UUID? = null,
+        participantId: ParticipantId? = null,
     ) {
         scope.launch {
             try {

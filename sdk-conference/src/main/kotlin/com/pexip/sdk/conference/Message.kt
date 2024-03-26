@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.pexip.sdk.conference
 
-import java.util.UUID
+import com.pexip.sdk.infinity.ParticipantId
 
 /**
  * A message that can be received from [Messenger].
@@ -29,7 +29,7 @@ import java.util.UUID
  */
 public data class Message(
     val at: Long,
-    val participantId: UUID,
+    val participantId: ParticipantId,
     val participantName: String,
     val type: String,
     val payload: String,

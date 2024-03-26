@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:UseSerializers(UUIDSerializer::class)
-
 package com.pexip.sdk.api.infinity
 
-import com.pexip.sdk.api.infinity.internal.UUIDSerializer
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UseSerializers
-import java.util.UUID
 
 @Serializable
 public data class SpeakerResponse(
     @SerialName("participant_uuid")
-    val participantId: UUID,
+    val participantId: ParticipantId,
     val vad: Int,
 ) {
 

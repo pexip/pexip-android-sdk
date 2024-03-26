@@ -21,6 +21,8 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.internal.addPathSegment
+import com.pexip.sdk.infinity.CallId
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -28,7 +30,7 @@ import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import java.net.URL
-import java.util.UUID
+import kotlin.properties.Delegates
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -42,16 +44,17 @@ internal class ParticipantStepTest {
 
     private lateinit var node: URL
     private lateinit var conferenceAlias: String
-    private lateinit var participantId: UUID
     private lateinit var json: Json
     private lateinit var token: Token
     private lateinit var step: InfinityService.ParticipantStep
+
+    private var participantId: ParticipantId by Delegates.notNull()
 
     @BeforeTest
     fun setUp() {
         node = server.url("/").toUrl()
         conferenceAlias = Random.nextString(8)
-        participantId = UUID.randomUUID()
+        participantId = ParticipantId(Random.nextString(8))
         json = Json { ignoreUnknownKeys = true }
         val service = InfinityService.create(OkHttpClient(), json)
         token = Random.nextFakeToken()
@@ -103,7 +106,7 @@ internal class ParticipantStepTest {
     @Test
     fun `calls returns CallsResponse`() {
         val response = CallsResponse(
-            callId = UUID.randomUUID(),
+            callId = CallId(Random.nextString(8)),
             sdp = Random.nextString(8),
         )
         server.enqueue {

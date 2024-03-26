@@ -43,6 +43,7 @@ import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
+import com.pexip.sdk.infinity.CallId
 import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.OfferSignalingEvent
@@ -52,7 +53,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.Path.Companion.toPath
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -281,17 +281,17 @@ internal class MediaConnectionSignalingImplTest {
         val fecc = Random.nextBoolean()
         val responses = setOf(
             CallsResponse(
-                callId = UUID.randomUUID(),
+                callId = CallId(Random.nextString(8)),
                 sdp = Random.nextString(8),
             ),
             CallsResponse(
-                callId = UUID.randomUUID(),
+                callId = CallId(Random.nextString(8)),
                 offerIgnored = true,
             ),
             // Malformed responses should still be handled correctly
-            CallsResponse(callId = UUID.randomUUID()),
+            CallsResponse(callId = CallId(Random.nextString(8))),
             CallsResponse(
-                callId = UUID.randomUUID(),
+                callId = CallId(Random.nextString(8)),
                 sdp = Random.nextString(8),
                 offerIgnored = true,
             ),
@@ -310,7 +310,7 @@ internal class MediaConnectionSignalingImplTest {
                         }
                     }
 
-                override fun call(callId: UUID): InfinityService.CallStep {
+                override fun call(callId: CallId): InfinityService.CallStep {
                     assertThat(callId, "callId").isEqualTo(response.callId)
                     return callStep
                 }

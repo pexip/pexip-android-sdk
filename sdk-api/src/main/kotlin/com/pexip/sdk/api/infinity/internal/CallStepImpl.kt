@@ -26,16 +26,16 @@ import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateResponse
+import com.pexip.sdk.infinity.CallId
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 internal class CallStepImpl(
     override val participantStep: ParticipantStepImpl,
-    private val callId: UUID,
+    private val callId: CallId,
 ) : InfinityService.CallStep, ParticipantStepImplScope by participantStep {
 
     override fun newCandidate(request: NewCandidateRequest, token: Token): Call<Unit> = RealCall(

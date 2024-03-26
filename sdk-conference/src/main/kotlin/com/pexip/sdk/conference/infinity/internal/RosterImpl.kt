@@ -53,6 +53,7 @@ import com.pexip.sdk.conference.UnmuteAllGuestsException
 import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.core.retry
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -66,21 +67,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.UUID
 import com.pexip.sdk.api.infinity.Role as ApiRole
 import com.pexip.sdk.api.infinity.ServiceType as ApiServiceType
 
 internal class RosterImpl(
     scope: CoroutineScope,
     event: Flow<Event>,
-    private val participantId: UUID,
+    private val participantId: ParticipantId,
     private val store: TokenStore,
     private val step: InfinityService.ConferenceStep,
 ) : Roster {
 
     private val mutex = Mutex()
-    private val participantMap = mutableMapOf<UUID, Participant>()
-    private val participantStepMap = mutableMapOf<UUID, InfinityService.ParticipantStep>()
+    private val participantMap = mutableMapOf<ParticipantId, Participant>()
+    private val participantStepMap = mutableMapOf<ParticipantId, InfinityService.ParticipantStep>()
 
     private val participantMapFlow = channelFlow {
         var syncing = false
@@ -128,13 +128,12 @@ internal class RosterImpl(
         }
     }.stateIn(scope, SharingStarted.Eagerly, emptyMap())
 
-    override val participants: StateFlow<List<Participant>> = participantMapFlow
-        .map { it.values.toList() }
-        .stateIn(scope, SharingStarted.Eagerly, emptyList())
+    override val participants: StateFlow<List<Participant>> =
+        participantMapFlow.map { it.values.toList() }
+            .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    override val me: StateFlow<Participant?> = participantMapFlow
-        .map { it[participantId] }
-        .stateIn(scope, SharingStarted.Eagerly, null)
+    override val me: StateFlow<Participant?> =
+        participantMapFlow.map { it[participantId] }.stateIn(scope, SharingStarted.Eagerly, null)
 
     override val presenter: StateFlow<Participant?> = combine(
         flow = event.filter { it is PresentationStartEvent || it is PresentationStopEvent },
@@ -147,79 +146,78 @@ internal class RosterImpl(
         },
     ).stateIn(scope, SharingStarted.Eagerly, null)
 
-    override val locked: StateFlow<Boolean> = event.filterIsInstance<ConferenceUpdateEvent>()
-        .map { it.locked }
-        .stateIn(scope, SharingStarted.Eagerly, false)
-
-    override val allGuestsMuted: StateFlow<Boolean> =
-        event.filterIsInstance<ConferenceUpdateEvent>()
-            .map { it.guestsMuted }
+    override val locked: StateFlow<Boolean> =
+        event.filterIsInstance<ConferenceUpdateEvent>().map { it.locked }
             .stateIn(scope, SharingStarted.Eagerly, false)
 
-    override suspend fun admit(participantId: UUID) {
+    override val allGuestsMuted: StateFlow<Boolean> =
+        event.filterIsInstance<ConferenceUpdateEvent>().map { it.guestsMuted }
+            .stateIn(scope, SharingStarted.Eagerly, false)
+
+    override suspend fun admit(participantId: ParticipantId) {
         perform(::AdmitException) {
             val step = participantStep(participantId) ?: return
             step.unlock(it)
         }
     }
 
-    override suspend fun disconnect(participantId: UUID?) {
+    override suspend fun disconnect(participantId: ParticipantId?) {
         perform(::DisconnectException) {
             val step = participantStep(participantId) ?: return
             step.disconnect(it)
         }
     }
 
-    override suspend fun makeHost(participantId: UUID?) {
+    override suspend fun makeHost(participantId: ParticipantId?) {
         perform(::MakeHostException) {
             val step = participantStep(participantId) ?: return
             step.role(RoleRequest(ApiRole.HOST), it)
         }
     }
 
-    override suspend fun makeGuest(participantId: UUID?) {
+    override suspend fun makeGuest(participantId: ParticipantId?) {
         perform(::MakeGuestException) {
             val step = participantStep(participantId) ?: return
             step.role(RoleRequest(ApiRole.GUEST), it)
         }
     }
 
-    override suspend fun mute(participantId: UUID?) {
+    override suspend fun mute(participantId: ParticipantId?) {
         perform(::MuteException) {
             val step = participantStep(participantId) ?: return
             step.mute(it)
         }
     }
 
-    override suspend fun unmute(participantId: UUID?) {
+    override suspend fun unmute(participantId: ParticipantId?) {
         perform(::UnmuteException) {
             val step = participantStep(participantId) ?: return
             step.unmute(it)
         }
     }
 
-    override suspend fun spotlight(participantId: UUID?) {
+    override suspend fun spotlight(participantId: ParticipantId?) {
         perform(::SpotlightException) {
             val step = participantStep(participantId) ?: return
             step.spotlightOn(it)
         }
     }
 
-    override suspend fun unspotlight(participantId: UUID?) {
+    override suspend fun unspotlight(participantId: ParticipantId?) {
         perform(::UnspotlightException) {
             val step = participantStep(participantId) ?: return
             step.spotlightOff(it)
         }
     }
 
-    override suspend fun raiseHand(participantId: UUID?) {
+    override suspend fun raiseHand(participantId: ParticipantId?) {
         perform(::RaiseHandException) {
             val step = participantStep(participantId) ?: return
             step.buzz(it)
         }
     }
 
-    override suspend fun lowerHand(participantId: UUID?) {
+    override suspend fun lowerHand(participantId: ParticipantId?) {
         perform(::LowerHandException) {
             val step = participantStep(participantId) ?: return
             step.clearBuzz(it)
@@ -261,14 +259,14 @@ internal class RosterImpl(
         throw error(t)
     }
 
-    private suspend fun participantStep(participantId: UUID?) = mutex.withLock {
+    private suspend fun participantStep(participantId: ParticipantId?) = mutex.withLock {
         when (val id = participantId ?: this.participantId) {
             in participantMap -> participantStepMap.getOrPut(id) { step.participant(id) }
             else -> null
         }
     }
 
-    private fun MutableMap<UUID, Participant>.put(response: ParticipantResponse) = put(
+    private fun MutableMap<ParticipantId, Participant>.put(response: ParticipantResponse) = put(
         key = response.id,
         value = Participant(
             id = response.id,

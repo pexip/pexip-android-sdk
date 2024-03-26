@@ -15,7 +15,7 @@
  */
 package com.pexip.sdk.conference
 
-import java.util.UUID
+import com.pexip.sdk.infinity.ParticipantId
 
 public sealed interface ConferenceEvent {
 
@@ -28,7 +28,7 @@ public sealed interface ConferenceEvent {
 )
 public data class PresentationStartConferenceEvent(
     override val at: Long,
-    val presenterId: UUID,
+    val presenterId: ParticipantId,
     val presenterName: String,
 ) : ConferenceEvent
 
