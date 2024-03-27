@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.sse.EventSources
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 
 internal class RealEventSourceFactory(
     client: OkHttpClient,
@@ -30,7 +30,7 @@ internal class RealEventSourceFactory(
     private val json: Json,
 ) : EventSourceFactory {
 
-    private val factory = EventSources.createFactory(client) { readTimeout(0, TimeUnit.SECONDS) }
+    private val factory = EventSources.createFactory(client) { readTimeout(Duration.ZERO) }
 
     override fun create(listener: EventSourceListener): EventSource =
         RealEventSource(factory, request, json, listener)

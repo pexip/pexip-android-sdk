@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package com.pexip.sdk.api.infinity
 
-import okhttp3.mockwebserver.MockWebServer
+import mockwebserver3.MockWebServer
+import mockwebserver3.junit4.MockWebServerRule
 import org.junit.Rule
 import java.net.URL
 import kotlin.properties.Delegates
@@ -28,7 +29,9 @@ import kotlin.test.assertTrue
 internal class RequestBuilderTest {
 
     @get:Rule
-    val server = MockWebServer()
+    val rule = MockWebServerRule()
+
+    private val server = rule.server
 
     private lateinit var builder: InfinityService.RequestBuilder
 
@@ -43,28 +46,28 @@ internal class RequestBuilderTest {
 
     @Test
     fun `status throws IllegalStateException`() {
-        server.enqueue { setResponseCode(500) }
+        server.enqueue { code(500) }
         assertFailsWith<IllegalStateException> { builder.status().execute() }
         server.verifyStatus()
     }
 
     @Test
     fun `status throws NoSuchNodeException`() {
-        server.enqueue { setResponseCode(404) }
+        server.enqueue { code(404) }
         assertFailsWith<NoSuchNodeException> { builder.status().execute() }
         server.verifyStatus()
     }
 
     @Test
     fun `status returns false`() {
-        server.enqueue { setResponseCode(503) }
+        server.enqueue { code(503) }
         assertFalse(builder.status().execute())
         server.verifyStatus()
     }
 
     @Test
     fun `status returns true`() {
-        server.enqueue { setResponseCode(200) }
+        server.enqueue { code(200) }
         assertTrue(builder.status().execute())
         server.verifyStatus()
     }
