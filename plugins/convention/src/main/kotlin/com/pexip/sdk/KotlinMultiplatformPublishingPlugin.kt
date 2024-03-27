@@ -34,14 +34,14 @@ class KotlinMultiplatformPublishingPlugin : Plugin<Project> {
             apply(LicenseePlugin::class)
             apply(PublishingPlugin::class)
         }
-        val javadocJar = tasks.register<Jar>("javadocJar") {
-            val dokkaJavadoc = tasks.named("dokkaJavadoc")
-            dependsOn(dokkaJavadoc)
-            from(dokkaJavadoc)
-            archiveClassifier.set("javadoc")
-        }
         configure<PublishingExtension> {
             publications.withType<MavenPublication> {
+                val name = name
+                val javadocJar = tasks.register<Jar>("${name}JavadocJar") {
+                    from(tasks.named("dokkaJavadoc"))
+                    archiveClassifier.set("javadoc")
+                    archiveBaseName.set("${archiveBaseName.get()}-$name")
+                }
                 artifact(javadocJar)
             }
         }
