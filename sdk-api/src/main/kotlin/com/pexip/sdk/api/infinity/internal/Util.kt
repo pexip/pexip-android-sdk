@@ -88,4 +88,6 @@ internal inline fun <reified T : Any> Request.Builder.withTag(tag: T?) = tag(T::
 internal inline fun <reified T : Any> Request.tagOrElse(block: () -> T) =
     tag(T::class.java) ?: block()
 
+internal val EMPTY_REQUEST = "".toRequestBody()
+
 private val ApplicationJson by lazy { "application/json; charset=utf-8".toMediaType() }

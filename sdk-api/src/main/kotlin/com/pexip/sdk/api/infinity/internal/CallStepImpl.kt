@@ -30,7 +30,6 @@ import com.pexip.sdk.infinity.CallId
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.internal.EMPTY_REQUEST
 import java.util.concurrent.TimeUnit
 
 internal class CallStepImpl(
