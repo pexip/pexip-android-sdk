@@ -15,8 +15,8 @@
  */
 package com.pexip.sdk.core
 
+import com.pexip.sdk.core.internal.IOException
 import kotlinx.coroutines.delay
-import java.io.IOException
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds

@@ -19,9 +19,8 @@ import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import com.pexip.sdk.core.internal.IOException
 import kotlinx.coroutines.test.runTest
-import java.io.IOException
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test

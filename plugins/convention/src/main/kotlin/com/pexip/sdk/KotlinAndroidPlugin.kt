@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk
 
+import com.pexip.sdk.internal.assertk
 import com.pexip.sdk.internal.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -30,9 +31,9 @@ class KotlinAndroidPlugin : Plugin<Project> {
         pluginManager.apply("org.jetbrains.kotlin.android")
         dependencies {
             "testImplementation"(kotlin("test-junit"))
-            "testImplementation"(libs.findLibrary("assertk").get())
+            "testImplementation"(libs.assertk)
             "androidTestImplementation"(kotlin("test-junit"))
-            "androidTestImplementation"(libs.findLibrary("assertk").get())
+            "androidTestImplementation"(libs.assertk)
         }
         tasks.withType<KotlinCompile>().configureEach {
             compilerOptions {
