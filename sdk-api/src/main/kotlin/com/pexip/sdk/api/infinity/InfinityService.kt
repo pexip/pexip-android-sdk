@@ -25,7 +25,7 @@ import kotlinx.serialization.modules.SerializersModule
 import okhttp3.OkHttpClient
 import java.net.URL
 import java.util.UUID
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * A fluent client for Infinity REST API v2.
@@ -1147,7 +1147,7 @@ public interface InfinityService {
 
         internal fun create(client: OkHttpClient, json: Json) = InfinityServiceImpl(
             client = client.newBuilder()
-                .readTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1.minutes)
                 .build(),
             json = json,
         )

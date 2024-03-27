@@ -14,6 +14,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json.okio)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.okhttp.mockwebserver.junit4)
 }
 
 publishing.publications.withType<MavenPublication>().configureEach {
