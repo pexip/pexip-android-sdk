@@ -304,19 +304,19 @@ internal class ParticipantStepImpl(
         response: Response,
         deserializer: DeserializationStrategy<T>,
     ) = when (response.code) {
-        200 -> json.decodeFromResponseBody(deserializer, response.body!!)
+        200 -> json.decodeFromResponseBody(deserializer, response.body)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
     private fun Response.parse403(): Nothing {
-        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        val message = json.decodeFromResponseBody(StringSerializer, body)
         throw InvalidTokenException(message)
     }
 
     private fun Response.parse404(): Nothing = try {
-        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        val message = json.decodeFromResponseBody(StringSerializer, body)
         throw NoSuchConferenceException(message)
     } catch (e: SerializationException) {
         throw NoSuchNodeException()

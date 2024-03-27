@@ -276,7 +276,7 @@ internal class ConferenceStepImpl(
 
     private fun parseRequestToken(response: Response) = when (response.code) {
         200 -> {
-            val r = json.decodeFromResponseBody(RequestTokenResponseSerializer, response.body!!)
+            val r = json.decodeFromResponseBody(RequestTokenResponseSerializer, response.body)
             val directMediaRequested = response.request.tagOrElse { false }
             r.copy(directMediaRequested = directMediaRequested)
         }
@@ -286,7 +286,7 @@ internal class ConferenceStepImpl(
     }
 
     private fun Response.parseRequestToken403(): Nothing {
-        val r = json.decodeFromResponseBody(RequestToken403ResponseSerializer, body!!)
+        val r = json.decodeFromResponseBody(RequestToken403ResponseSerializer, body)
         throw when (r) {
             is RequiredPinResponse -> RequiredPinException(r.guest_pin == "required")
             is RequiredSsoResponse -> RequiredSsoException(r.idp)
@@ -297,7 +297,7 @@ internal class ConferenceStepImpl(
 
     private fun parseTransformLayout(response: Response) = when (response.code) {
         400 -> {
-            val message = json.decodeFromResponseBody(StringSerializer, response.body!!)
+            val message = json.decodeFromResponseBody(StringSerializer, response.body)
             throw IllegalLayoutTransformException(message)
         }
         else -> parse(response, BooleanSerializer)
@@ -312,19 +312,19 @@ internal class ConferenceStepImpl(
         response: Response,
         deserializer: DeserializationStrategy<T>,
     ) = when (response.code) {
-        200 -> json.decodeFromResponseBody(deserializer, response.body!!)
+        200 -> json.decodeFromResponseBody(deserializer, response.body)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
     private fun Response.parse403(): Nothing {
-        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        val message = json.decodeFromResponseBody(StringSerializer, body)
         throw InvalidTokenException(message)
     }
 
     private fun Response.parse404(): Nothing = try {
-        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        val message = json.decodeFromResponseBody(StringSerializer, body)
         throw NoSuchConferenceException(message)
     } catch (e: SerializationException) {
         throw NoSuchNodeException()

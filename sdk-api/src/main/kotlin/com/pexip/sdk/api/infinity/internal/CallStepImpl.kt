@@ -30,7 +30,7 @@ import com.pexip.sdk.infinity.CallId
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 
 internal class CallStepImpl(
     override val participantStep: ParticipantStepImpl,
@@ -54,7 +54,7 @@ internal class CallStepImpl(
 
     override fun ack(token: Token): Call<Unit> = RealCall(
         client = client.newBuilder()
-            .readTimeout(0, TimeUnit.SECONDS)
+            .readTimeout(Duration.ZERO)
             .build(),
         request = Request.Builder()
             .post(EMPTY_REQUEST)
@@ -71,7 +71,7 @@ internal class CallStepImpl(
 
     override fun ack(request: AckRequest, token: Token): Call<Unit> = RealCall(
         client = client.newBuilder()
-            .readTimeout(0, TimeUnit.SECONDS)
+            .readTimeout(Duration.ZERO)
             .build(),
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
@@ -131,26 +131,26 @@ internal class CallStepImpl(
     }
 
     private fun parseUpdate(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(UpdateResponseSerializer, response.body!!)
+        200 -> json.decodeFromResponseBody(UpdateResponseSerializer, response.body)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
     private fun parseDtmf(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body)
         403 -> response.parse403()
         404 -> response.parse404()
         else -> throw IllegalStateException()
     }
 
     private fun Response.parse403(): Nothing {
-        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        val message = json.decodeFromResponseBody(StringSerializer, body)
         throw InvalidTokenException(message)
     }
 
     private fun Response.parse404(): Nothing = try {
-        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        val message = json.decodeFromResponseBody(StringSerializer, body)
         throw NoSuchConferenceException(message)
     } catch (e: SerializationException) {
         throw NoSuchNodeException()

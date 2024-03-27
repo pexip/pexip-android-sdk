@@ -115,7 +115,7 @@ internal class RegistrationStepImpl(
     private fun parseRequestToken(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(
             deserializer = RequestRegistrationTokenResponseSerializer,
-            body = response.body!!,
+            body = response.body,
         )
         401 -> response.parse401()
         403 -> response.parse403()
@@ -126,7 +126,7 @@ internal class RegistrationStepImpl(
     private fun parseRefreshToken(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(
             deserializer = RefreshRegistrationTokenResponseSerializer,
-            body = response.body!!,
+            body = response.body,
         )
         401 -> response.parse401()
         403 -> response.parse403()
@@ -135,7 +135,7 @@ internal class RegistrationStepImpl(
     }
 
     private fun parseReleaseToken(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body)
         401 -> response.parse401()
         403 -> response.parse403()
         404 -> response.parse404()
@@ -143,7 +143,7 @@ internal class RegistrationStepImpl(
     }
 
     private fun parseRegistrations(response: Response) = when (response.code) {
-        200 -> json.decodeFromResponseBody(RegistrationResponseSerializer, response.body!!)
+        200 -> json.decodeFromResponseBody(RegistrationResponseSerializer, response.body)
         401 -> response.parse401()
         403 -> response.parse403()
         404 -> response.parse404()
@@ -151,16 +151,16 @@ internal class RegistrationStepImpl(
     }
 
     private fun Response.parse401(): Nothing {
-        throw NoSuchRegistrationException(body?.string())
+        throw NoSuchRegistrationException(body.string())
     }
 
     private fun Response.parse403(): Nothing {
-        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        val message = json.decodeFromResponseBody(StringSerializer, body)
         throw InvalidTokenException(message)
     }
 
     private fun Response.parse404(): Nothing = try {
-        val message = json.decodeFromResponseBody(StringSerializer, body!!)
+        val message = json.decodeFromResponseBody(StringSerializer, body)
         throw NoSuchConferenceException(message)
     } catch (e: SerializationException) {
         throw NoSuchNodeException()
