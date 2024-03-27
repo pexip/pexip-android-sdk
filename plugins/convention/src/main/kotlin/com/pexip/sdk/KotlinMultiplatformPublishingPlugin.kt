@@ -35,7 +35,9 @@ class KotlinMultiplatformPublishingPlugin : Plugin<Project> {
             apply(PublishingPlugin::class)
         }
         val javadocJar = tasks.register<Jar>("javadocJar") {
-            from(tasks.named("dokkaJavadoc"))
+            val dokkaJavadoc = tasks.named("dokkaJavadoc")
+            dependsOn(dokkaJavadoc)
+            from(dokkaJavadoc)
             archiveClassifier.set("javadoc")
         }
         configure<PublishingExtension> {
