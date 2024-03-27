@@ -15,11 +15,13 @@
  */
 package com.pexip.sdk.api.infinity
 
+import assertk.assertions.isEqualTo
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mockwebserver3.MockWebServer
 import mockwebserver3.junit4.MockWebServerRule
 import okhttp3.OkHttpClient
+import okio.ByteString.Companion.encodeUtf8
 import org.junit.Rule
 import java.net.URL
 import java.util.UUID
@@ -267,7 +269,8 @@ internal class RegistrationStepTest {
             addPathSegment(deviceAlias)
             addPathSegment("request_token")
         }
-        assertAuthorization(username, password)
+        val base64 = "$username:$password".encodeUtf8().base64Url()
+        assertThatHeader("Authorization").isEqualTo("x-pexip-basic $base64")
         assertPostEmptyBody()
     }
 

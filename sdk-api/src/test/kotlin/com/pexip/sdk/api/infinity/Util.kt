@@ -15,9 +15,9 @@
  */
 package com.pexip.sdk.api.infinity
 
-import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import assertk.assertions.isZero
 import assertk.assertions.prop
 import kotlinx.serialization.DeserializationStrategy
@@ -25,11 +25,9 @@ import kotlinx.serialization.json.Json
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import mockwebserver3.RecordedRequest
-import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okio.BufferedSource
-import okio.ByteString.Companion.encodeUtf8
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
@@ -70,17 +68,17 @@ internal inline fun MockWebServer.enqueue(block: MockResponse.Builder.() -> Unit
 internal inline fun MockWebServer.takeRequest(block: RecordedRequest.() -> Unit) =
     with(takeRequest(), block)
 
-internal fun RecordedRequest.assertGet() = assertMethod("GET")
+internal fun RecordedRequest.assertGet() = assertThatMethod().isEqualTo("GET")
 
 internal fun RecordedRequest.assertPostEmptyBody() {
-    assertMethod("POST")
-    assertContentType(null)
+    assertThatMethod().isEqualTo("POST")
+    assertThatHeader("Content-Type").isNull()
     assertThat(::bodySize).isZero()
 }
 
 internal inline fun <reified T> RecordedRequest.assertPost(json: Json, request: T) {
-    assertMethod("POST")
-    assertContentType("application/json; charset=utf-8")
+    assertThatMethod().isEqualTo("POST")
+    assertThatHeader("Content-Type").isEqualTo("application/json; charset=utf-8")
     assertThat(json.decodeFromString<T>(body.readUtf8()), "body").isEqualTo(request)
 }
 
@@ -89,8 +87,8 @@ internal fun <T> RecordedRequest.assertPost(
     serializer: DeserializationStrategy<T>,
     request: T,
 ) {
-    assertMethod("POST")
-    assertContentType("application/json; charset=utf-8")
+    assertThatMethod().isEqualTo("POST")
+    assertThatHeader("Content-Type").isEqualTo("application/json; charset=utf-8")
     assertThat(json.decodeFromString(serializer, body.readUtf8()), "body").isEqualTo(request)
 }
 
@@ -100,25 +98,12 @@ internal fun RecordedRequest.assertRequestUrl(url: URL, block: HttpUrl.Builder.(
 internal fun RecordedRequest.assertRequestUrl(url: HttpUrl, block: HttpUrl.Builder.() -> Unit) =
     assertThat(::requestUrl).isEqualTo(url.newBuilder().apply(block).build())
 
-internal fun RecordedRequest.assertToken(token: Token?) = assertThat(::headers)
-    .header("token")
-    .isEqualTo(token?.token)
+internal fun RecordedRequest.assertToken(token: Token?) =
+    assertThatHeader("token").isEqualTo(token?.token)
 
-internal fun RecordedRequest.assertMethod(method: String) = assertThat(::method).isEqualTo(method)
+internal fun RecordedRequest.assertThatMethod() = assertThat(::method)
 
-internal fun RecordedRequest.assertAuthorization(username: String, password: String) {
-    val base64 = "$username:$password".encodeUtf8().base64Url()
-    assertThat(::headers).header("Authorization").isEqualTo("x-pexip-basic $base64")
-}
-
-internal fun RecordedRequest.assertPin(pin: String?) = assertThat(::headers)
-    .header("pin")
-    .isEqualTo(pin?.let { if (it.isBlank()) "none" else it.trim() })
-
-private fun RecordedRequest.assertContentType(contentType: String?) = assertThat(::headers)
-    .header("Content-Type")
-    .isEqualTo(contentType)
+internal fun RecordedRequest.assertThatHeader(name: String) =
+    assertThat(::headers).prop(name) { it[name] }
 
 private fun Random.nextUuid() = UUID.randomUUID().toString()
-
-private fun Assert<Headers>.header(name: String) = prop(name) { it[name] }

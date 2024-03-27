@@ -1008,7 +1008,7 @@ internal class ConferenceStepTest {
             addPathSegment(conferenceAlias)
             addPathSegment("request_token")
         }
-        assertPin(pin)
+        assertThatHeader("pin").isEqualTo(pin?.let { if (it.isBlank()) "none" else it.trim() })
         assertPost(json, request)
     }
 
