@@ -39,7 +39,6 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.internal.EMPTY_REQUEST
 
 internal class ConferenceStepImpl(
     override val requestBuilder: RequestBuilderImpl,
