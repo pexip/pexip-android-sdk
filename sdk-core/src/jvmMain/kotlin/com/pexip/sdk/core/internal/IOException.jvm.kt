@@ -15,5 +15,5 @@
  */
 package com.pexip.sdk.core.internal
 
-@Suppress("ACTUAL_WITHOUT_EXPECT")
+@Suppress("ACTUAL_WITHOUT_EXPECT", "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 internal actual typealias IOException = java.io.IOException

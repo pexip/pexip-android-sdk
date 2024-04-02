@@ -15,4 +15,5 @@
  */
 package com.pexip.sdk.core.internal
 
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 internal expect open class IOException : Exception
