@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.infinity.test.nextString
 import kotlin.random.Random
 
 data class FakeToken(
@@ -23,6 +24,6 @@ data class FakeToken(
 ) : Token
 
 fun Random.nextFakeToken() = FakeToken(
-    token = nextString(8),
+    token = nextString(),
     expires = nextLong(Long.MAX_VALUE),
 )

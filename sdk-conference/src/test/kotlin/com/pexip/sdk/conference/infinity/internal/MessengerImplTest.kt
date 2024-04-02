@@ -32,10 +32,12 @@ import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.MessageNotSentException
+import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -147,10 +149,10 @@ class MessengerImplTest {
     @Test
     fun `send() to a participant is successful`() = runTest {
         val expected = Random.nextMessage(direct = true)
-        val id = UUID.randomUUID()
+        val id = Random.nextParticipantId()
         val step = object : InfinityService.ConferenceStep {
 
-            override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+            override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                 assertThat(participantId, "participantId").isEqualTo(id)
                 return object : InfinityService.ParticipantStep {
 
@@ -182,10 +184,10 @@ class MessengerImplTest {
     @Test
     fun `send() to a participant failed to send`() = runTest {
         val expected = Random.nextMessage(direct = true)
-        val id = UUID.randomUUID()
+        val id = Random.nextParticipantId()
         val step = object : InfinityService.ConferenceStep {
 
-            override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+            override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                 assertThat(participantId, "participantId").isEqualTo(id)
                 return object : InfinityService.ParticipantStep {
 
@@ -222,10 +224,10 @@ class MessengerImplTest {
     fun `send() to a participant throws`() = runTest {
         val expected = Random.nextMessage(direct = true)
         val expectedThrowable = Throwable()
-        val id = UUID.randomUUID()
+        val id = Random.nextParticipantId()
         val step = object : InfinityService.ConferenceStep {
 
-            override fun participant(participantId: UUID): InfinityService.ParticipantStep {
+            override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
                 assertThat(participantId, "participantId").isEqualTo(id)
                 return object : InfinityService.ParticipantStep {
 
@@ -264,8 +266,8 @@ class MessengerImplTest {
         val messenger = MessengerImpl(
             scope = backgroundScope,
             event = event,
-            senderId = UUID.randomUUID(),
-            senderName = Random.nextString(8),
+            senderId = Random.nextParticipantId(),
+            senderName = Random.nextString(),
             store = store,
             step = object : InfinityService.ConferenceStep {},
             atProvider = { at },

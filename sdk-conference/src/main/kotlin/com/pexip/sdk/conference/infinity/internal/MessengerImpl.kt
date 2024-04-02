@@ -24,6 +24,7 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.core.retry
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,12 +36,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
-import java.util.UUID
 
 internal class MessengerImpl(
     scope: CoroutineScope,
     event: Flow<Event>,
-    private val senderId: UUID,
+    private val senderId: ParticipantId,
     private val senderName: String,
     private val store: TokenStore,
     private val step: InfinityService.ConferenceStep,
@@ -68,7 +68,11 @@ internal class MessengerImpl(
             .launchIn(scope)
     }
 
-    override suspend fun send(type: String, payload: String, participantId: UUID?): Message {
+    override suspend fun send(
+        type: String,
+        payload: String,
+        participantId: ParticipantId?,
+    ): Message {
         val request = MessageRequest(type = type, payload = payload)
         val token = store.get()
         val call = when (participantId) {

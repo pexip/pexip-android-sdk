@@ -18,6 +18,7 @@ package com.pexip.sdk.conference.infinity.internal
 import com.pexip.sdk.api.infinity.DataChannelMessage
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
+import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.media.Data
 import com.pexip.sdk.media.DataChannel
 import kotlinx.coroutines.CancellationException
@@ -30,11 +31,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
-import java.util.UUID
 
 internal class DataChannelMessengerImpl(
     scope: CoroutineScope,
-    private val senderId: UUID,
+    private val senderId: ParticipantId,
     private val senderName: String,
     private val dataChannel: DataChannel,
     private val atProvider: () -> Long = System::currentTimeMillis,
@@ -51,7 +51,11 @@ internal class DataChannelMessengerImpl(
             .launchIn(scope)
     }
 
-    override suspend fun send(type: String, payload: String, participantId: UUID?): Message {
+    override suspend fun send(
+        type: String,
+        payload: String,
+        participantId: ParticipantId?,
+    ): Message {
         val message = Message(
             at = atProvider(),
             participantId = senderId,

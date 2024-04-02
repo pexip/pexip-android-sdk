@@ -28,11 +28,11 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.TransformLayoutRequest
 import com.pexip.sdk.conference.Element
 import com.pexip.sdk.conference.Layout
-import com.pexip.sdk.conference.LayoutId
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.conference.Theme
 import com.pexip.sdk.conference.TransformLayoutException
 import com.pexip.sdk.core.retry
+import com.pexip.sdk.infinity.LayoutId
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -47,7 +47,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
-import com.pexip.sdk.api.infinity.LayoutId as ApiLayoutId
 
 internal class ThemeImpl(
     scope: CoroutineScope,
@@ -75,8 +74,8 @@ internal class ThemeImpl(
     ) {
         try {
             val request = TransformLayoutRequest(
-                layout = layout?.let(::ApiLayoutId),
-                guestLayout = guestLayout?.let(::ApiLayoutId),
+                layout = layout,
+                guestLayout = guestLayout,
                 enableOverlayText = enableOverlayText,
             )
             retry { step.transformLayout(request, store.get()).await() }
@@ -89,21 +88,19 @@ internal class ThemeImpl(
 
     private fun toLayout(
         event: LayoutEvent,
-        layoutIds: Set<ApiLayoutId>,
-        layoutSvgs: Map<ApiLayoutId, String>,
+        layoutIds: Set<LayoutId>,
+        layoutSvgs: Map<LayoutId, String>,
     ) = Layout(
-        layout = LayoutId(event.layout),
-        layouts = layoutIds.asSequence().map(::LayoutId).toSet(),
+        layout = event.layout,
+        layouts = layoutIds,
         requestedPrimaryScreenHostLayout = event.requestedLayout
             ?.primaryScreen
-            ?.hostLayout
-            ?.let(::LayoutId),
+            ?.hostLayout,
         requestedPrimaryScreenGuestLayout = event.requestedLayout
             ?.primaryScreen
-            ?.guestLayout
-            ?.let(::LayoutId),
+            ?.guestLayout,
         overlayTextEnabled = event.overlayTextEnabled,
-        layoutSvgs = layoutSvgs.mapKeys { LayoutId(it.key) },
+        layoutSvgs = layoutSvgs,
     )
 
     private fun toSplashScreen(
@@ -137,10 +134,6 @@ internal class ThemeImpl(
         .retryOrDefault(::emptyMap)
 
     private fun TokenStore.asFlow() = flow { emit(get()) }
-
-    private fun LayoutId(id: ApiLayoutId): LayoutId = LayoutId(id.value)
-
-    private fun ApiLayoutId(id: LayoutId): ApiLayoutId = ApiLayoutId(id.value)
 
     private fun <T> Flow<T>.retryOrDefault(value: () -> T) = retryWhen { cause, attempt ->
         when (cause) {

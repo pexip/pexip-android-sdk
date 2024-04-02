@@ -1,21 +1,18 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("com.pexip.sdk.kotlin.jvm.publishing")
 }
 
+kotlin.sourceSets.all {
+    languageSettings.optIn("com.pexip.sdk.core.InternalSdkApi")
+}
+
 dependencies {
     api(project(":sdk-api"))
+    testImplementation(project(":sdk-infinity-test"))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+publishing.publications.withType<MavenPublication> {
     pom.description = "A set of tools to interact with registrations."
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions {
-        freeCompilerArgs.add("-opt-in=com.pexip.sdk.core.InternalSdkApi")
-    }
 }

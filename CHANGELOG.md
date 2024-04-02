@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING**: `java.util.UUID` usages to `ParticipantId`, `CallId`, and `RegistrationId`. Note
+  that it in normal use it will only break tests that instantiated classes or called functions that
+  use `java.util.UUID`
+
 ## [0.15.0] - 2024-03-25
 
 ### Added

@@ -29,6 +29,8 @@ import com.pexip.sdk.api.infinity.DataChannelMessage
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import com.pexip.sdk.media.Data
 import com.pexip.sdk.media.DataChannel
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +38,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -119,8 +120,8 @@ class DataChannelMessengerImplTest {
         }
         val messenger = DataChannelMessengerImpl(
             scope = backgroundScope,
-            senderId = UUID.randomUUID(),
-            senderName = Random.nextString(8),
+            senderId = Random.nextParticipantId(),
+            senderName = Random.nextString(),
             dataChannel = dataChannel,
             atProvider = { fail("unexpected atProvider()") },
         )
@@ -145,8 +146,8 @@ class DataChannelMessengerImplTest {
         }
         val messenger = DataChannelMessengerImpl(
             scope = backgroundScope,
-            senderId = UUID.randomUUID(),
-            senderName = Random.nextString(8),
+            senderId = Random.nextParticipantId(),
+            senderName = Random.nextString(),
             dataChannel = dataChannel,
             atProvider = { fail("unexpected atProvider()") },
         )
@@ -172,14 +173,14 @@ class DataChannelMessengerImplTest {
         }
         val messenger = DataChannelMessengerImpl(
             scope = backgroundScope,
-            senderId = UUID.randomUUID(),
-            senderName = Random.nextString(8),
+            senderId = Random.nextParticipantId(),
+            senderName = Random.nextString(),
             dataChannel = dataChannel,
             atProvider = { at },
         )
         messenger.message.test {
             flow.awaitSubscriptionCountAtLeast(1)
-            val strings = List(10) { "{\"type\": \"${Random.nextString(8)}\"}" }
+            val strings = List(10) { "{\"type\": \"${Random.nextString()}\"}" }
             strings.forEach {
                 val data = Data(it.encodeToByteArray(), false)
                 flow.emit(data)

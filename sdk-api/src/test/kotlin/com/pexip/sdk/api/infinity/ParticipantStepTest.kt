@@ -21,6 +21,10 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.internal.addPathSegment
+import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextCallId
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -28,7 +32,7 @@ import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import java.net.URL
-import java.util.UUID
+import kotlin.properties.Delegates
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -42,16 +46,17 @@ internal class ParticipantStepTest {
 
     private lateinit var node: URL
     private lateinit var conferenceAlias: String
-    private lateinit var participantId: UUID
     private lateinit var json: Json
     private lateinit var token: Token
     private lateinit var step: InfinityService.ParticipantStep
 
+    private var participantId: ParticipantId by Delegates.notNull()
+
     @BeforeTest
     fun setUp() {
         node = server.url("/").toUrl()
-        conferenceAlias = Random.nextString(8)
-        participantId = UUID.randomUUID()
+        conferenceAlias = Random.nextString()
+        participantId = Random.nextParticipantId()
         json = Json { ignoreUnknownKeys = true }
         val service = InfinityService.create(OkHttpClient(), json)
         token = Random.nextFakeToken()
@@ -103,8 +108,8 @@ internal class ParticipantStepTest {
     @Test
     fun `calls returns CallsResponse`() {
         val response = CallsResponse(
-            callId = UUID.randomUUID(),
-            sdp = Random.nextString(8),
+            callId = Random.nextCallId(),
+            sdp = Random.nextString(),
         )
         server.enqueue {
             setResponseCode(200)
@@ -118,7 +123,7 @@ internal class ParticipantStepTest {
     @Test
     fun `dtmf throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
-        val request = DtmfRequest(Random.nextDigits(8))
+        val request = DtmfRequest(Random.nextDigits())
         assertFailsWith<IllegalStateException> { step.dtmf(request, token).execute() }
         server.verifyDtmf(request, token)
     }
@@ -126,7 +131,7 @@ internal class ParticipantStepTest {
     @Test
     fun `dtmf throws NoSuchNodeException`() {
         server.enqueue { setResponseCode(404) }
-        val request = DtmfRequest(Random.nextDigits(8))
+        val request = DtmfRequest(Random.nextDigits())
         assertFailsWith<NoSuchNodeException> { step.dtmf(request, token).execute() }
         server.verifyDtmf(request, token)
     }
@@ -138,7 +143,7 @@ internal class ParticipantStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        val request = DtmfRequest(Random.nextDigits(8))
+        val request = DtmfRequest(Random.nextDigits())
         assertFailsWith<NoSuchConferenceException> { step.dtmf(request, token).execute() }
         server.verifyDtmf(request, token)
     }
@@ -150,7 +155,7 @@ internal class ParticipantStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val request = DtmfRequest(Random.nextDigits(8))
+        val request = DtmfRequest(Random.nextDigits())
         assertFailsWith<InvalidTokenException> { step.dtmf(request, token).execute() }
         server.verifyDtmf(request, token)
     }
@@ -162,7 +167,7 @@ internal class ParticipantStepTest {
             setResponseCode(200)
             setBody(json.encodeToString(Box(response)))
         }
-        val request = DtmfRequest(Random.nextDigits(8))
+        val request = DtmfRequest(Random.nextDigits())
         assertEquals(response, step.dtmf(request, token).execute())
         server.verifyDtmf(request, token)
     }
@@ -968,9 +973,9 @@ internal class ParticipantStepTest {
     }
 
     private fun Random.nextCallsRequest() = CallsRequest(
-        sdp = nextString(8),
-        present = nextString(8),
-        callType = nextString(8),
+        sdp = nextString(),
+        present = nextString(),
+        callType = nextString(),
         fecc = nextBoolean(),
     )
 

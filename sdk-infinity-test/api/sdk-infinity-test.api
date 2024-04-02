@@ -1,0 +1,9 @@
+public final class com/pexip/sdk/infinity/test/RandomKt {
+	public static final fun nextCallId (Lkotlin/random/Random;)Ljava/lang/String;
+	public static final fun nextLayoutId (Lkotlin/random/Random;)Ljava/lang/String;
+	public static final fun nextParticipantId (Lkotlin/random/Random;)Ljava/lang/String;
+	public static final fun nextRegistrationId (Lkotlin/random/Random;)Ljava/lang/String;
+	public static final fun nextString (Lkotlin/random/Random;I)Ljava/lang/String;
+	public static synthetic fun nextString$default (Lkotlin/random/Random;IILjava/lang/Object;)Ljava/lang/String;
+}
+

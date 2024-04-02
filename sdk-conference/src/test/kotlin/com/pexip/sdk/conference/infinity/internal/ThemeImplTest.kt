@@ -16,18 +16,14 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import app.cash.turbine.test
-import assertk.Assert
 import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
-import assertk.assertions.containsExactly
-import assertk.assertions.extracting
 import assertk.assertions.hasCause
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import assertk.assertions.key
 import assertk.assertions.prop
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
@@ -43,16 +39,17 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.TransformLayoutRequest
 import com.pexip.sdk.conference.Element
 import com.pexip.sdk.conference.Layout
-import com.pexip.sdk.conference.LayoutId
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.conference.TransformLayoutException
 import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
+import com.pexip.sdk.infinity.LayoutId
+import com.pexip.sdk.infinity.test.nextLayoutId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import com.pexip.sdk.api.infinity.LayoutId as ApiLayoutId
 import com.pexip.sdk.api.infinity.RequestedLayout as ApiRequestedLayout
 import com.pexip.sdk.api.infinity.Screen as ApiScreen
 
@@ -87,28 +84,27 @@ class ThemeImplTest {
 
     @Test
     fun `emits the current layout`() = runTest {
-        val layouts = generateSequence { Random.nextString(8) }
-            .map(::ApiLayoutId)
+        val layouts = generateSequence { Random.nextLayoutId() }
             .take(10)
             .toSet()
-        val layoutSvgs = layouts.associateWith { Random.nextString(8) }
+        val layoutSvgs = layouts.associateWith { Random.nextString() }
         val step = object : InfinityService.ConferenceStep {
 
-            override fun availableLayouts(token: Token): Call<Set<ApiLayoutId>> {
+            override fun availableLayouts(token: Token): Call<Set<LayoutId>> {
                 assertThat(token).isEqualTo(store.get())
-                return object : TestCall<Set<ApiLayoutId>> {
+                return object : TestCall<Set<LayoutId>> {
 
-                    override fun enqueue(callback: Callback<Set<ApiLayoutId>>) {
+                    override fun enqueue(callback: Callback<Set<LayoutId>>) {
                         callback.onSuccess(this, layouts)
                     }
                 }
             }
 
-            override fun layoutSvgs(token: Token): Call<Map<ApiLayoutId, String>> {
+            override fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> {
                 assertThat(token).isEqualTo(store.get())
-                return object : TestCall<Map<ApiLayoutId, String>> {
+                return object : TestCall<Map<LayoutId, String>> {
 
-                    override fun enqueue(callback: Callback<Map<ApiLayoutId, String>>) {
+                    override fun enqueue(callback: Callback<Map<LayoutId, String>>) {
                         callback.onSuccess(this, layoutSvgs)
                     }
                 }
@@ -139,9 +135,7 @@ class ThemeImplTest {
                     .isNotNull()
                     .all {
                         prop(Layout::layout).isEqualTo(e.layout)
-                        prop(Layout::layouts)
-                            .extracting(LayoutId::value)
-                            .containsExactly(*layouts.map(ApiLayoutId::value).toTypedArray())
+                        prop(Layout::layouts).isEqualTo(layouts)
                         prop(Layout::requestedPrimaryScreenHostLayout)
                             .isNotNull()
                             .isEqualTo(e.requestedLayout?.primaryScreen?.hostLayout)
@@ -149,9 +143,7 @@ class ThemeImplTest {
                             .isNotNull()
                             .isEqualTo(e.requestedLayout?.primaryScreen?.guestLayout)
                         prop(Layout::overlayTextEnabled).isEqualTo(e.overlayTextEnabled)
-                        prop(Layout::layoutSvgs).all {
-                            layoutSvgs.forEach { key(LayoutId(it.key.value)).isEqualTo(it.value) }
-                        }
+                        prop(Layout::layoutSvgs).isEqualTo(layoutSvgs)
                     }
             }
             expectNoEvents()
@@ -162,15 +154,15 @@ class ThemeImplTest {
     fun `emits the current splash screen`() = runTest {
         fun pathToUrl(path: String) = "https://$path.com"
 
-        val response = generateSequence { Random.nextString(8) }
+        val response = generateSequence { Random.nextString() }
             .take(10)
             .associateWith {
                 SplashScreenResponse(
-                    background = BackgroundResponse(Random.nextString(8)),
+                    background = BackgroundResponse(Random.nextString()),
                     elements = List(10) {
                         ElementResponse.Text(
                             color = Random.nextLong(Long.MAX_VALUE),
-                            text = Random.nextString(8),
+                            text = Random.nextString(),
                         )
                     },
                 )
@@ -201,7 +193,7 @@ class ThemeImplTest {
         theme.splashScreen.test {
             event.awaitSubscriptionCountAtLeast(2)
             assertThat(awaitItem()).isNull()
-            event.emit(SplashScreenEvent(Random.nextString(8)))
+            event.emit(SplashScreenEvent(Random.nextString()))
             expectNoEvents()
             response.forEach { (key, response) ->
                 event.emit(SplashScreenEvent(key))
@@ -236,12 +228,9 @@ class ThemeImplTest {
                         request: TransformLayoutRequest,
                         token: Token,
                     ): Call<Boolean> {
-                        assertThat(request::layout)
-                            .isEqualTo(layout?.let { ApiLayoutId(it.value) })
-                        assertThat(request::guestLayout)
-                            .isEqualTo(guestLayout?.let { ApiLayoutId(it.value) })
-                        assertThat(request::enableOverlayText)
-                            .isEqualTo(enableOverlayText)
+                        assertThat(request::layout).isEqualTo(layout)
+                        assertThat(request::guestLayout).isEqualTo(guestLayout)
+                        assertThat(request::enableOverlayText).isEqualTo(enableOverlayText)
                         return object : TestCall<Boolean> {
 
                             override fun enqueue(callback: Callback<Boolean>) =
@@ -270,12 +259,9 @@ class ThemeImplTest {
                     request: TransformLayoutRequest,
                     token: Token,
                 ): Call<Boolean> {
-                    assertThat(request::layout)
-                        .isEqualTo(layout?.let { ApiLayoutId(it.value) })
-                    assertThat(request::guestLayout)
-                        .isEqualTo(guestLayout?.let { ApiLayoutId(it.value) })
-                    assertThat(request::enableOverlayText)
-                        .isEqualTo(enableOverlayText)
+                    assertThat(request::layout).isEqualTo(layout)
+                    assertThat(request::guestLayout).isEqualTo(guestLayout)
+                    assertThat(request::enableOverlayText).isEqualTo(enableOverlayText)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -292,9 +278,4 @@ class ThemeImplTest {
             theme.transformLayout(layout, guestLayout, enableOverlayText)
         }
     }
-
-    private fun Assert<LayoutId>.isEqualTo(id: ApiLayoutId?) =
-        prop(LayoutId::value).isEqualTo(id?.value)
-
-    private fun Random.nextLayoutId() = LayoutId(nextString(8))
 }

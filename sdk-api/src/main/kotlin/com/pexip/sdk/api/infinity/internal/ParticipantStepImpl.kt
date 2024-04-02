@@ -27,16 +27,17 @@ import com.pexip.sdk.api.infinity.NoSuchNodeException
 import com.pexip.sdk.api.infinity.PreferredAspectRatioRequest
 import com.pexip.sdk.api.infinity.RoleRequest
 import com.pexip.sdk.api.infinity.Token
+import com.pexip.sdk.infinity.CallId
+import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
-import java.util.UUID
 
 internal class ParticipantStepImpl(
     override val conferenceStep: ConferenceStepImpl,
-    override val participantId: UUID,
+    override val participantId: ParticipantId,
 ) : InfinityService.ParticipantStep,
     ParticipantStepImplScope,
     ConferenceStepImplScope by conferenceStep {
@@ -282,7 +283,7 @@ internal class ParticipantStepImpl(
         mapper = { parse(it, BooleanSerializer) },
     )
 
-    override fun call(callId: UUID): InfinityService.CallStep = CallStepImpl(this, callId)
+    override fun call(callId: CallId): InfinityService.CallStep = CallStepImpl(this, callId)
 
     private fun parseMuteUnmute(response: Response) = when (response.code) {
         200 -> Unit

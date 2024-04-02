@@ -80,37 +80,23 @@ public final class com/pexip/sdk/conference/FailureConferenceEvent : com/pexip/s
 
 public final class com/pexip/sdk/conference/Layout {
 	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Map;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1--VXmZqM ()Ljava/lang/String;
+	public final fun component1-wCTOAKM ()Ljava/lang/String;
 	public final fun component2 ()Ljava/util/Set;
-	public final fun component3-9iqCO30 ()Ljava/lang/String;
-	public final fun component4-9iqCO30 ()Ljava/lang/String;
+	public final fun component3-1KBGLM4 ()Ljava/lang/String;
+	public final fun component4-1KBGLM4 ()Ljava/lang/String;
 	public final fun component5 ()Z
 	public final fun component6 ()Ljava/util/Map;
-	public final fun copy-vlG9LLU (Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Map;)Lcom/pexip/sdk/conference/Layout;
-	public static synthetic fun copy-vlG9LLU$default (Lcom/pexip/sdk/conference/Layout;Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Map;ILjava/lang/Object;)Lcom/pexip/sdk/conference/Layout;
+	public final fun copy-5M4SLec (Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Map;)Lcom/pexip/sdk/conference/Layout;
+	public static synthetic fun copy-5M4SLec$default (Lcom/pexip/sdk/conference/Layout;Ljava/lang/String;Ljava/util/Set;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Map;ILjava/lang/Object;)Lcom/pexip/sdk/conference/Layout;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLayout--VXmZqM ()Ljava/lang/String;
+	public final fun getLayout-wCTOAKM ()Ljava/lang/String;
 	public final fun getLayoutSvgs ()Ljava/util/Map;
 	public final fun getLayouts ()Ljava/util/Set;
 	public final fun getOverlayTextEnabled ()Z
-	public final fun getRequestedPrimaryScreenGuestLayout-9iqCO30 ()Ljava/lang/String;
-	public final fun getRequestedPrimaryScreenHostLayout-9iqCO30 ()Ljava/lang/String;
+	public final fun getRequestedPrimaryScreenGuestLayout-1KBGLM4 ()Ljava/lang/String;
+	public final fun getRequestedPrimaryScreenHostLayout-1KBGLM4 ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/pexip/sdk/conference/LayoutId {
-	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/conference/LayoutId;
-	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
-	public final fun getValue ()Ljava/lang/String;
-	public fun hashCode ()I
-	public static fun hashCode-impl (Ljava/lang/String;)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
 public final class com/pexip/sdk/conference/LockException : java/lang/RuntimeException {
@@ -144,19 +130,19 @@ public final class com/pexip/sdk/conference/MakeHostException : java/lang/Runtim
 }
 
 public final class com/pexip/sdk/conference/Message {
-	public fun <init> (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+	public synthetic fun <init> (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()J
-	public final fun component2 ()Ljava/util/UUID;
+	public final fun component2-UyOe1Tk ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
 	public final fun component6 ()Z
-	public final fun copy (JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lcom/pexip/sdk/conference/Message;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/Message;JLjava/util/UUID;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/conference/Message;
+	public final fun copy-hMR9tMk (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Lcom/pexip/sdk/conference/Message;
+	public static synthetic fun copy-hMR9tMk$default (Lcom/pexip/sdk/conference/Message;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/conference/Message;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAt ()J
 	public final fun getDirect ()Z
-	public final fun getParticipantId ()Ljava/util/UUID;
+	public final fun getParticipantId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getParticipantName ()Ljava/lang/String;
 	public final fun getPayload ()Ljava/lang/String;
 	public final fun getType ()Ljava/lang/String;
@@ -179,9 +165,9 @@ public abstract interface class com/pexip/sdk/conference/Messenger {
 	public abstract fun getMessage ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun registerMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
 	public abstract fun send (Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
-	public abstract fun send (Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun send (Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
-	public static synthetic fun send$default (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun send-PEZlPic (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
+	public abstract fun send-QiMpFz8 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun send-QiMpFz8$default (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun unregisterMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
 }
 
@@ -198,9 +184,9 @@ public final class com/pexip/sdk/conference/MuteException : java/lang/RuntimeExc
 }
 
 public final class com/pexip/sdk/conference/Participant {
-	public fun <init> (Ljava/util/UUID;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZ)V
-	public synthetic fun <init> (Ljava/util/UUID;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/util/UUID;
+	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-UyOe1Tk ()Ljava/lang/String;
 	public final fun component10 ()Z
 	public final fun component11 ()Z
 	public final fun component12 ()Z
@@ -216,14 +202,14 @@ public final class com/pexip/sdk/conference/Participant {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()Z
-	public final fun copy (Ljava/util/UUID;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZ)Lcom/pexip/sdk/conference/Participant;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/Participant;Ljava/util/UUID;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZILjava/lang/Object;)Lcom/pexip/sdk/conference/Participant;
+	public final fun copy-uQylcWo (Ljava/lang/String;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZ)Lcom/pexip/sdk/conference/Participant;
+	public static synthetic fun copy-uQylcWo$default (Lcom/pexip/sdk/conference/Participant;Ljava/lang/String;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZILjava/lang/Object;)Lcom/pexip/sdk/conference/Participant;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAudioMuted ()Z
 	public final fun getBuzzTime ()Lkotlinx/datetime/Instant;
 	public final fun getDisconnectSupported ()Z
 	public final fun getDisplayName ()Ljava/lang/String;
-	public final fun getId ()Ljava/util/UUID;
+	public final fun getId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getMe ()Z
 	public final fun getMuteSupported ()Z
 	public final fun getOverlayText ()Ljava/lang/String;
@@ -240,15 +226,15 @@ public final class com/pexip/sdk/conference/Participant {
 }
 
 public final class com/pexip/sdk/conference/PresentationStartConferenceEvent : com/pexip/sdk/conference/ConferenceEvent {
-	public fun <init> (JLjava/util/UUID;Ljava/lang/String;)V
+	public synthetic fun <init> (JLjava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()J
-	public final fun component2 ()Ljava/util/UUID;
+	public final fun component2-UyOe1Tk ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (JLjava/util/UUID;Ljava/lang/String;)Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;JLjava/util/UUID;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;
+	public final fun copy-u6TmcKM (JLjava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;
+	public static synthetic fun copy-u6TmcKM$default (Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;JLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/PresentationStartConferenceEvent;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getAt ()J
-	public final fun getPresenterId ()Ljava/util/UUID;
+	public final fun getPresenterId-UyOe1Tk ()Ljava/lang/String;
 	public final fun getPresenterName ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -306,11 +292,11 @@ public final class com/pexip/sdk/conference/Role : java/lang/Enum {
 }
 
 public abstract interface class com/pexip/sdk/conference/Roster {
-	public fun admit (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun admit$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun disconnect (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun disconnect$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun disconnect$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun admit-5K0EZTY (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun admit-5K0EZTY$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun disconnect-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun disconnect-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun disconnect-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun disconnectAll (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun disconnectAll$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getAllGuestsMuted ()Lkotlinx/coroutines/flow/StateFlow;
@@ -322,36 +308,36 @@ public abstract interface class com/pexip/sdk/conference/Roster {
 	public static synthetic fun lock$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun lowerAllHands (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun lowerAllHands$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun lowerHand (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun lowerHand$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun lowerHand$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun makeGuest (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun makeGuest$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun makeGuest$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun makeHost (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun makeHost$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun makeHost$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun mute (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun mute$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun mute$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun lowerHand-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun lowerHand-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun lowerHand-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun makeGuest-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun makeGuest-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun makeGuest-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun makeHost-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun makeHost-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun makeHost-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun mute-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun mute-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun mute-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun muteAllGuests (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun muteAllGuests$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun raiseHand (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun raiseHand$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun raiseHand$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun spotlight (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun spotlight$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun spotlight$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun raiseHand-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun raiseHand-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun raiseHand-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun spotlight-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun spotlight-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun spotlight-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unlock (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun unlock$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun unmute (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun unmute$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun unmute$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun unmute-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unmute-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun unmute-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unmuteAllGuests (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun unmuteAllGuests$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun unspotlight (Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun unspotlight$default (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun unspotlight$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/util/UUID;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun unspotlight-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unspotlight-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun unspotlight-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class com/pexip/sdk/conference/SendCallback {
@@ -397,8 +383,8 @@ public final class com/pexip/sdk/conference/SpotlightException : java/lang/Runti
 public abstract interface class com/pexip/sdk/conference/Theme {
 	public abstract fun getLayout ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getSplashScreen ()Lkotlinx/coroutines/flow/StateFlow;
-	public abstract fun transformLayout-ea01N14 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun transformLayout-ea01N14$default (Lcom/pexip/sdk/conference/Theme;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun transformLayout-VlDFPn4 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun transformLayout-VlDFPn4$default (Lcom/pexip/sdk/conference/Theme;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class com/pexip/sdk/conference/TransformLayoutException : java/lang/RuntimeException {

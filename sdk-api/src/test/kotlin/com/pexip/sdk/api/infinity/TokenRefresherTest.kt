@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.fail
 import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
@@ -102,7 +103,7 @@ class TokenRefresherTest {
     }
 
     private data class TestToken(
-        override val token: String = Random.nextString(8),
+        override val token: String = Random.nextString(),
         override val expires: Long = Random.nextLong(10L..120L),
     ) : Token
 }

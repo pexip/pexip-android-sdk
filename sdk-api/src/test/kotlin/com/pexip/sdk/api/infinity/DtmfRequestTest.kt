@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.infinity.test.nextString
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals

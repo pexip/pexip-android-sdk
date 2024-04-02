@@ -34,9 +34,10 @@ import com.pexip.sdk.conference.ReferException
 import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.Theme
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlinx.coroutines.test.runTest
-import java.util.UUID
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -49,8 +50,8 @@ class RefererTest {
     fun setUp() {
         event = ReferConferenceEvent(
             at = Random.nextLong(),
-            conferenceAlias = Random.nextString(8),
-            token = Random.nextString(8),
+            conferenceAlias = Random.nextString(),
+            token = Random.nextString(),
         )
     }
 
@@ -86,13 +87,13 @@ class RefererTest {
     @Test
     fun `transfer returns a new Conference`() = runTest {
         val response = RequestTokenResponse(
-            token = Random.nextString(8),
+            token = Random.nextString(),
             expires = Random.nextLong(),
-            conferenceName = Random.nextString(8),
-            participantId = UUID.randomUUID(),
-            participantName = Random.nextString(8),
+            conferenceName = Random.nextString(),
+            participantId = Random.nextParticipantId(),
+            participantName = Random.nextString(),
             directMediaRequested = Random.nextBoolean(),
-            version = VersionResponse(Random.nextString(8), Random.nextString(8)),
+            version = VersionResponse(Random.nextString(), Random.nextString()),
         )
         val step = object : InfinityService.ConferenceStep {
 
