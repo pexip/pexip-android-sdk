@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.internal
+package com.pexip.sdk.core
 
-import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalog
-import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.kotlin.dsl.getByType
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+expect class AtomicInteger() {
 
-internal val Project.libs
-    get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
+    fun get(): Int
 
-internal val VersionCatalog.assertk
-    get() = findLibrary("assertk").get()
+    fun incrementAndGet(): Int
+}

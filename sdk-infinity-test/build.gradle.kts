@@ -1,9 +1,16 @@
 plugins {
-    id("com.pexip.sdk.kotlin.jvm.publishing")
+    id("com.pexip.sdk.kotlin.multiplatform.publishing")
 }
 
-dependencies {
-    api(project(":sdk-infinity"))
+kotlin {
+    jvm()
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(project(":sdk-infinity"))
+            }
+        }
+    }
 }
 
 publishing.publications.withType<MavenPublication> {

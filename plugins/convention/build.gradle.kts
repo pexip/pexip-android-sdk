@@ -32,6 +32,14 @@ gradlePlugin {
             id = "com.pexip.sdk.kotlin.jvm.publishing"
             implementationClass = "com.pexip.sdk.KotlinJvmPublishingPlugin"
         }
+        register("kotlinMultiplatform") {
+            id = "com.pexip.sdk.kotlin.multiplatform"
+            implementationClass = "com.pexip.sdk.KotlinMultiplatformPlugin"
+        }
+        register("kotlinMultiplatformPublishing") {
+            id = "com.pexip.sdk.kotlin.multiplatform.publishing"
+            implementationClass = "com.pexip.sdk.KotlinMultiplatformPublishingPlugin"
+        }
         register("licensee") {
             id = "com.pexip.sdk.licensee"
             implementationClass = "com.pexip.sdk.LicenseePlugin"
