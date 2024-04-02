@@ -29,7 +29,8 @@ import com.pexip.sdk.api.infinity.DataChannelMessage
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
-import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import com.pexip.sdk.media.Data
 import com.pexip.sdk.media.DataChannel
 import kotlinx.coroutines.flow.Flow
@@ -119,8 +120,8 @@ class DataChannelMessengerImplTest {
         }
         val messenger = DataChannelMessengerImpl(
             scope = backgroundScope,
-            senderId = ParticipantId(Random.nextString(8)),
-            senderName = Random.nextString(8),
+            senderId = Random.nextParticipantId(),
+            senderName = Random.nextString(),
             dataChannel = dataChannel,
             atProvider = { fail("unexpected atProvider()") },
         )
@@ -145,8 +146,8 @@ class DataChannelMessengerImplTest {
         }
         val messenger = DataChannelMessengerImpl(
             scope = backgroundScope,
-            senderId = ParticipantId(Random.nextString(8)),
-            senderName = Random.nextString(8),
+            senderId = Random.nextParticipantId(),
+            senderName = Random.nextString(),
             dataChannel = dataChannel,
             atProvider = { fail("unexpected atProvider()") },
         )
@@ -172,14 +173,14 @@ class DataChannelMessengerImplTest {
         }
         val messenger = DataChannelMessengerImpl(
             scope = backgroundScope,
-            senderId = ParticipantId(Random.nextString(8)),
-            senderName = Random.nextString(8),
+            senderId = Random.nextParticipantId(),
+            senderName = Random.nextString(),
             dataChannel = dataChannel,
             atProvider = { at },
         )
         messenger.message.test {
             flow.awaitSubscriptionCountAtLeast(1)
-            val strings = List(10) { "{\"type\": \"${Random.nextString(8)}\"}" }
+            val strings = List(10) { "{\"type\": \"${Random.nextString()}\"}" }
             strings.forEach {
                 val data = Data(it.encodeToByteArray(), false)
                 flow.emit(data)

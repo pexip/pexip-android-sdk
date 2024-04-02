@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,10 @@
 package com.pexip.sdk.registration.infinity.internal
 
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
+import com.pexip.sdk.infinity.test.nextString
 import kotlin.random.Random
 
-private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-internal fun Random.nextString(length: Int) =
-    CharArray(length) { CHARACTERS.random(this) }.concatToString()
-
 internal fun Random.nextToken() = RefreshTokenResponse(
-    token = nextString(8),
+    token = nextString(),
     expires = (60L..600L).random(this),
 )

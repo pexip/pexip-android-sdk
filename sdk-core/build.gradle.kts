@@ -1,7 +1,9 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("com.pexip.sdk.kotlin.jvm.publishing")
+}
+
+kotlin.sourceSets.all {
+    languageSettings.optIn("com.pexip.sdk.core.InternalSdkApi")
 }
 
 dependencies {
@@ -9,12 +11,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+publishing.publications.withType<MavenPublication> {
     pom.description = "Pexip SDK core"
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions {
-        freeCompilerArgs.add("-opt-in=com.pexip.sdk.core.InternalSdkApi")
-    }
 }

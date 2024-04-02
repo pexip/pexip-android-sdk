@@ -43,6 +43,8 @@ import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.conference.TransformLayoutException
 import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
 import com.pexip.sdk.infinity.LayoutId
+import com.pexip.sdk.infinity.test.nextLayoutId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
@@ -85,7 +87,7 @@ class ThemeImplTest {
         val layouts = generateSequence { Random.nextLayoutId() }
             .take(10)
             .toSet()
-        val layoutSvgs = layouts.associateWith { Random.nextString(8) }
+        val layoutSvgs = layouts.associateWith { Random.nextString() }
         val step = object : InfinityService.ConferenceStep {
 
             override fun availableLayouts(token: Token): Call<Set<LayoutId>> {
@@ -152,15 +154,15 @@ class ThemeImplTest {
     fun `emits the current splash screen`() = runTest {
         fun pathToUrl(path: String) = "https://$path.com"
 
-        val response = generateSequence { Random.nextString(8) }
+        val response = generateSequence { Random.nextString() }
             .take(10)
             .associateWith {
                 SplashScreenResponse(
-                    background = BackgroundResponse(Random.nextString(8)),
+                    background = BackgroundResponse(Random.nextString()),
                     elements = List(10) {
                         ElementResponse.Text(
                             color = Random.nextLong(Long.MAX_VALUE),
-                            text = Random.nextString(8),
+                            text = Random.nextString(),
                         )
                     },
                 )
@@ -191,7 +193,7 @@ class ThemeImplTest {
         theme.splashScreen.test {
             event.awaitSubscriptionCountAtLeast(2)
             assertThat(awaitItem()).isNull()
-            event.emit(SplashScreenEvent(Random.nextString(8)))
+            event.emit(SplashScreenEvent(Random.nextString()))
             expectNoEvents()
             response.forEach { (key, response) ->
                 event.emit(SplashScreenEvent(key))
@@ -276,6 +278,4 @@ class ThemeImplTest {
             theme.transformLayout(layout, guestLayout, enableOverlayText)
         }
     }
-
-    private fun Random.nextLayoutId() = LayoutId(nextString(8))
 }

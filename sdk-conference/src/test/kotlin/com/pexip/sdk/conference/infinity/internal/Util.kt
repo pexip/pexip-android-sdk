@@ -18,28 +18,24 @@ package com.pexip.sdk.conference.infinity.internal
 import com.pexip.sdk.api.infinity.DtmfRequest
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
 import com.pexip.sdk.conference.Message
-import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import kotlin.random.Random
 
-private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-internal fun Random.nextString(length: Int) =
-    CharArray(length) { CHARACTERS.random(this) }.concatToString()
-
-internal fun Random.nextDigits(length: Int) =
+internal fun Random.nextDigits(length: Int = 8) =
     CharArray(length) { DtmfRequest.ALLOWED_DIGITS.random(this) }.concatToString()
 
 internal fun Random.nextToken() = RefreshTokenResponse(
-    token = nextString(8),
+    token = nextString(),
     expires = (60L..600L).random(this),
 )
 
 internal fun Random.nextMessage(at: Long = System.currentTimeMillis(), direct: Boolean = false) =
     Message(
         at = at,
-        participantId = ParticipantId(nextString(8)),
-        participantName = nextString(8),
-        type = nextString(8),
+        participantId = nextParticipantId(),
+        participantName = nextString(),
+        type = nextString(),
         payload = nextString(64),
         direct = direct,
     )

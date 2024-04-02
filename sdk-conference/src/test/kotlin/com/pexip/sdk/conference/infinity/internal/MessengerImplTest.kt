@@ -33,6 +33,8 @@ import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.MessageNotSentException
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -147,7 +149,7 @@ class MessengerImplTest {
     @Test
     fun `send() to a participant is successful`() = runTest {
         val expected = Random.nextMessage(direct = true)
-        val id = ParticipantId(Random.nextString(8))
+        val id = Random.nextParticipantId()
         val step = object : InfinityService.ConferenceStep {
 
             override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
@@ -182,7 +184,7 @@ class MessengerImplTest {
     @Test
     fun `send() to a participant failed to send`() = runTest {
         val expected = Random.nextMessage(direct = true)
-        val id = ParticipantId(Random.nextString(8))
+        val id = Random.nextParticipantId()
         val step = object : InfinityService.ConferenceStep {
 
             override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
@@ -222,7 +224,7 @@ class MessengerImplTest {
     fun `send() to a participant throws`() = runTest {
         val expected = Random.nextMessage(direct = true)
         val expectedThrowable = Throwable()
-        val id = ParticipantId(Random.nextString(8))
+        val id = Random.nextParticipantId()
         val step = object : InfinityService.ConferenceStep {
 
             override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
@@ -264,8 +266,8 @@ class MessengerImplTest {
         val messenger = MessengerImpl(
             scope = backgroundScope,
             event = event,
-            senderId = ParticipantId(Random.nextString(8)),
-            senderName = Random.nextString(8),
+            senderId = Random.nextParticipantId(),
+            senderName = Random.nextString(),
             store = store,
             step = object : InfinityService.ConferenceStep {},
             atProvider = { at },

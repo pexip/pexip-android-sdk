@@ -52,10 +52,10 @@ import com.pexip.sdk.api.infinity.SpeakerResponse
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
-import com.pexip.sdk.api.infinity.nextString
 import com.pexip.sdk.api.infinity.readUtf8
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.datetime.Instant
 import okio.FileSystem
 import kotlin.random.Random
@@ -334,7 +334,7 @@ internal class EventTest {
                 val data = FileSystem.RESOURCES.readUtf8(filename)
                 val actual = Event(
                     json = InfinityService.Json,
-                    id = Random.nextString(8),
+                    id = Random.nextString(),
                     type = type,
                     data = data.trim(),
                 )
@@ -346,9 +346,9 @@ internal class EventTest {
     fun `returns null if the type is not registered`() {
         val actual = Event(
             json = InfinityService.Json,
-            id = Random.nextString(8),
-            type = Random.nextString(8),
-            data = Random.nextString(8),
+            id = Random.nextString(),
+            type = Random.nextString(),
+            data = Random.nextString(),
         )
         assertThat(actual, "event").isNull()
     }

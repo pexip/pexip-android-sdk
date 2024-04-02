@@ -21,6 +21,7 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RegistrationResponse
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
+import com.pexip.sdk.infinity.test.nextString
 import com.pexip.sdk.registration.RegisteredDevice
 import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
@@ -41,7 +42,7 @@ internal class RegisteredDevicesFetcherTest {
     @Test
     fun `fetch triggers onFailure`() = runTest {
         val throwable = Throwable()
-        val q = Random.nextString(8)
+        val q = Random.nextString()
         val step = object : InfinityService.RegistrationStep {
 
             override fun registrations(
@@ -70,7 +71,7 @@ internal class RegisteredDevicesFetcherTest {
                 username = username,
             )
         }
-        val q = Random.nextString(8)
+        val q = Random.nextString()
         val step = object : InfinityService.RegistrationStep {
 
             override fun registrations(

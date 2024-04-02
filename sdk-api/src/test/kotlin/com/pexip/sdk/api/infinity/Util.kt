@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -34,28 +35,23 @@ import kotlin.test.assertEquals
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
 internal fun FileSystem.readUtf8(path: String): String = readUtf8(path.toPath())
 
 internal fun FileSystem.readUtf8(path: Path) = read(path, BufferedSource::readUtf8)
 
-internal fun Random.nextString(length: Int) =
-    CharArray(length) { CHARACTERS.random(this) }.concatToString()
-
-internal fun Random.nextDigits(length: Int) =
+internal fun Random.nextDigits(length: Int = 8) =
     CharArray(length) { DtmfRequest.ALLOWED_DIGITS.random(this) }.concatToString()
 
 internal fun Random.nextDuration(unit: DurationUnit = DurationUnit.SECONDS) =
     nextInt(0, 1000).toDuration(unit)
 
-internal fun Random.nextIdentityProviderId() = IdentityProviderId(nextString(8))
+internal fun Random.nextIdentityProviderId() = IdentityProviderId(nextString())
 
 internal fun Random.nextPin(): String = "${nextInt(1000..9999)}"
 
 internal fun Random.nextMessageRequest() = MessageRequest(
-    payload = nextString(8),
-    type = nextString(8),
+    payload = nextString(),
+    type = nextString(),
 )
 
 internal inline fun MockWebServer.enqueue(block: MockResponse.() -> Unit) =

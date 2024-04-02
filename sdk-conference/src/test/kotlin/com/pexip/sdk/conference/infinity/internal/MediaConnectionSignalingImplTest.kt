@@ -44,6 +44,8 @@ import com.pexip.sdk.api.infinity.UpdateResponse
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
 import com.pexip.sdk.infinity.CallId
+import com.pexip.sdk.infinity.test.nextCallId
+import com.pexip.sdk.infinity.test.nextString
 import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.OfferSignalingEvent
@@ -51,6 +53,7 @@ import com.pexip.sdk.media.RestartSignalingEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
+import okio.BufferedSource
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import kotlin.random.Random
@@ -68,7 +71,7 @@ internal class MediaConnectionSignalingImplTest {
         store = TokenStore.create(Random.nextToken())
         event = MutableSharedFlow(extraBufferCapacity = 1)
         iceServers = List(10) {
-            IceServer.Builder(listOf("turn:turn$it.example.com:3478?transport=udp"))
+            IceServer.Builder(listOf("turn:turn$it.example.com:347?transport=udp"))
                 .username("${it shl 1}")
                 .password("${it shr 1}")
                 .build()
@@ -162,7 +165,7 @@ internal class MediaConnectionSignalingImplTest {
         signaling.event.test {
             event.awaitSubscriptionCountAtLeast(1)
             repeat(10) {
-                val e = NewOfferEvent(Random.nextString(8))
+                val e = NewOfferEvent(Random.nextString())
                 event.emit(e)
                 assertThat(awaitItem(), "event")
                     .isInstanceOf<OfferSignalingEvent>()
@@ -188,7 +191,7 @@ internal class MediaConnectionSignalingImplTest {
         signaling.event.test {
             event.awaitSubscriptionCountAtLeast(1)
             repeat(10) {
-                val e = UpdateSdpEvent(Random.nextString(8))
+                val e = UpdateSdpEvent(Random.nextString())
                 event.emit(e)
                 assertThat(awaitItem(), "event")
                     .isInstanceOf<OfferSignalingEvent>()
@@ -215,10 +218,10 @@ internal class MediaConnectionSignalingImplTest {
             event.awaitSubscriptionCountAtLeast(1)
             repeat(10) {
                 val e = NewCandidateEvent(
-                    candidate = Random.nextString(8),
-                    mid = Random.nextString(8),
-                    ufrag = Random.nextString(8),
-                    pwd = Random.nextString(8),
+                    candidate = Random.nextString(),
+                    mid = Random.nextString(),
+                    ufrag = Random.nextString(),
+                    pwd = Random.nextString(),
                 )
                 event.emit(e)
                 assertThat(awaitItem(), "event")
@@ -275,24 +278,24 @@ internal class MediaConnectionSignalingImplTest {
 
     @Test
     fun `onOffer() returns Answer (first call)`() = runTest {
-        val callType = Random.nextString(8)
+        val callType = Random.nextString()
         val sdp = read("session_description_original")
         val presentationInMain = Random.nextBoolean()
         val fecc = Random.nextBoolean()
         val responses = setOf(
             CallsResponse(
-                callId = CallId(Random.nextString(8)),
-                sdp = Random.nextString(8),
+                callId = Random.nextCallId(),
+                sdp = Random.nextString(),
             ),
             CallsResponse(
-                callId = CallId(Random.nextString(8)),
+                callId = Random.nextCallId(),
                 offerIgnored = true,
             ),
             // Malformed responses should still be handled correctly
-            CallsResponse(callId = CallId(Random.nextString(8))),
+            CallsResponse(callId = Random.nextCallId()),
             CallsResponse(
-                callId = CallId(Random.nextString(8)),
-                sdp = Random.nextString(8),
+                callId = Random.nextCallId(),
+                sdp = Random.nextString(),
                 offerIgnored = true,
             ),
         )
@@ -343,15 +346,15 @@ internal class MediaConnectionSignalingImplTest {
 
     @Test
     fun `onOffer() returns Answer (subsequent calls)`() = runTest {
-        val callType = Random.nextString(8)
+        val callType = Random.nextString()
         val sdp = read("session_description_original")
         val presentationInMain = Random.nextBoolean()
         val fecc = Random.nextBoolean()
         val responses = setOf(
-            UpdateResponse(sdp = Random.nextString(8)),
+            UpdateResponse(sdp = Random.nextString()),
             UpdateResponse(offerIgnored = true),
             UpdateResponse(),
-            UpdateResponse(sdp = Random.nextString(8), offerIgnored = true),
+            UpdateResponse(sdp = Random.nextString(), offerIgnored = true),
         )
         responses.forEach { response ->
             val signaling = MediaConnectionSignalingImpl(
@@ -423,7 +426,7 @@ internal class MediaConnectionSignalingImplTest {
     @Test
     fun `onAnswer() returns`() = runTest {
         val called = Job()
-        val sdp = Random.nextString(8)
+        val sdp = Random.nextString()
         val signaling = MediaConnectionSignalingImpl(
             scope = backgroundScope,
             event = event,
@@ -478,10 +481,10 @@ internal class MediaConnectionSignalingImplTest {
     @Test
     fun `onCandidate() returns`() = runTest {
         val called = Job()
-        val candidate = Random.nextString(8)
-        val mid = Random.nextString(8)
-        val ufrag = Random.nextString(8)
-        val pwd = Random.nextString(8)
+        val candidate = Random.nextString()
+        val mid = Random.nextString()
+        val ufrag = Random.nextString()
+        val pwd = Random.nextString()
         val signaling = MediaConnectionSignalingImpl(
             scope = backgroundScope,
             event = event,
@@ -513,7 +516,7 @@ internal class MediaConnectionSignalingImplTest {
     @Test
     fun `onDtmf() returns`() = runTest {
         val called = Job()
-        val digits = Random.nextDigits(8)
+        val digits = Random.nextDigits()
         val result = Random.nextBoolean()
         val signaling = MediaConnectionSignalingImpl(
             scope = backgroundScope,
@@ -690,5 +693,6 @@ internal class MediaConnectionSignalingImplTest {
     }
 
     @Suppress("SameParameterValue")
-    private fun read(fileName: String) = FileSystem.RESOURCES.read(fileName.toPath()) { readUtf8() }
+    private fun read(fileName: String) =
+        FileSystem.RESOURCES.read(fileName.toPath(), BufferedSource::readUtf8)
 }

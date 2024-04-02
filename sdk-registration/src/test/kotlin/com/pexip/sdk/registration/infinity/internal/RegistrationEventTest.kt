@@ -18,6 +18,7 @@ package com.pexip.sdk.registration.infinity.internal
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.IncomingCancelledEvent
 import com.pexip.sdk.api.infinity.IncomingEvent
+import com.pexip.sdk.infinity.test.nextString
 import com.pexip.sdk.registration.FailureRegistrationEvent
 import com.pexip.sdk.registration.IncomingCancelledRegistrationEvent
 import com.pexip.sdk.registration.IncomingRegistrationEvent
@@ -33,9 +34,9 @@ internal class RegistrationEventTest {
         val at = Random.nextLong(Long.MAX_VALUE)
         val testCases = buildMap {
             val incomingEvent = IncomingEvent(
-                conferenceAlias = Random.nextString(8),
-                remoteDisplayName = Random.nextString(8),
-                token = Random.nextString(8),
+                conferenceAlias = Random.nextString(),
+                remoteDisplayName = Random.nextString(),
+                token = Random.nextString(),
             )
             this[incomingEvent] = IncomingRegistrationEvent(
                 at = at,
@@ -43,7 +44,7 @@ internal class RegistrationEventTest {
                 remoteDisplayName = incomingEvent.remoteDisplayName,
                 token = incomingEvent.token,
             )
-            val incomingCancelledEvent = IncomingCancelledEvent(Random.nextString(8))
+            val incomingCancelledEvent = IncomingCancelledEvent(Random.nextString())
             this[incomingCancelledEvent] = IncomingCancelledRegistrationEvent(
                 at = at,
                 token = incomingCancelledEvent.token,

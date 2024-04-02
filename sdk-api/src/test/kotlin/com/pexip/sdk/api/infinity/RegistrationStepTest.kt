@@ -15,7 +15,8 @@
  */
 package com.pexip.sdk.api.infinity
 
-import com.pexip.sdk.infinity.RegistrationId
+import com.pexip.sdk.infinity.test.nextRegistrationId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -44,9 +45,9 @@ internal class RegistrationStepTest {
     @BeforeTest
     fun setUp() {
         node = server.url("/").toUrl()
-        deviceAlias = Random.nextString(8)
-        username = Random.nextString(8)
-        password = Random.nextString(8)
+        deviceAlias = Random.nextString()
+        username = Random.nextString()
+        password = Random.nextString()
         json = Json { ignoreUnknownKeys = true }
         val service = InfinityService.create(OkHttpClient(), json)
         token = Random.nextFakeToken()
@@ -84,14 +85,14 @@ internal class RegistrationStepTest {
     @Test
     fun `requestToken returns`() {
         val response = RequestRegistrationTokenResponse(
-            token = Random.nextString(8),
-            registrationId = RegistrationId(Random.nextString(8)),
+            token = Random.nextString(),
+            registrationId = Random.nextRegistrationId(),
             expires = 120,
             directoryEnabled = Random.nextBoolean(),
             routeViaRegistrar = Random.nextBoolean(),
             version = VersionResponse(
-                versionId = Random.nextString(8),
-                pseudoVersion = Random.nextString(8),
+                versionId = Random.nextString(),
+                pseudoVersion = Random.nextString(),
             ),
         )
         server.enqueue {
@@ -143,7 +144,7 @@ internal class RegistrationStepTest {
     @Test
     fun `refreshToken returns`() {
         val response = RefreshRegistrationTokenResponse(
-            token = Random.nextString(8),
+            token = Random.nextString(),
             expires = 120,
         )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
@@ -238,7 +239,7 @@ internal class RegistrationStepTest {
 
     @Test
     fun `registrations returns a list of registrations on 200`() {
-        val queries = List(10) { if (it == 0) "" else Random.nextString(8) }
+        val queries = List(10) { if (it == 0) "" else Random.nextString() }
         queries.forEach { query ->
             val result = List(10) {
                 val username = "device$it"

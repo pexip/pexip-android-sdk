@@ -65,6 +65,8 @@ import com.pexip.sdk.conference.UnmuteAllGuestsException
 import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -87,7 +89,7 @@ class RosterImplTest {
     @BeforeTest
     fun setUp() {
         event = MutableSharedFlow(extraBufferCapacity = 1)
-        participantId = ParticipantId(Random.nextString(8))
+        participantId = Random.nextParticipantId()
         store = TokenStore.create(Random.nextToken())
     }
 
@@ -258,7 +260,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.raiseHand(ParticipantId(Random.nextString(8)))
+        roster.raiseHand(Random.nextParticipantId())
     }
 
     @Test
@@ -359,7 +361,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.disconnect(ParticipantId(Random.nextString(8)))
+        roster.disconnect(Random.nextParticipantId())
     }
 
     @Test
@@ -460,7 +462,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.disconnect(ParticipantId(Random.nextString(8)))
+        roster.disconnect(Random.nextParticipantId())
     }
 
     @Test
@@ -743,7 +745,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.mute(ParticipantId(Random.nextString(8)))
+        roster.mute(Random.nextParticipantId())
     }
 
     @Test
@@ -844,7 +846,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.unmute(ParticipantId(Random.nextString(8)))
+        roster.unmute(Random.nextParticipantId())
     }
 
     @Test
@@ -945,7 +947,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.spotlight(ParticipantId(Random.nextString(8)))
+        roster.spotlight(Random.nextParticipantId())
     }
 
     @Test
@@ -1046,7 +1048,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.unspotlight(ParticipantId(Random.nextString(8)))
+        roster.unspotlight(Random.nextParticipantId())
     }
 
     @Test
@@ -1147,7 +1149,7 @@ class RosterImplTest {
             store = store,
             step = object : InfinityService.ConferenceStep {},
         )
-        roster.lowerHand(ParticipantId(Random.nextString(8)))
+        roster.lowerHand(Random.nextParticipantId())
     }
 
     @Test
@@ -1523,7 +1525,7 @@ class RosterImplTest {
 
     private fun Random.nextParticipant(
         index: Int = 0,
-        id: ParticipantId = if (index == 0) participantId else ParticipantId(Random.nextString(8)),
+        id: ParticipantId = if (index == 0) participantId else nextParticipantId(),
     ): Participant {
         val startTime = Instant.fromEpochSeconds(index.toLong())
         return Participant(
@@ -1533,8 +1535,8 @@ class RosterImplTest {
             serviceType = ServiceType.entries.random(this),
             buzzTime = startTime + nextInt(0, 100).seconds,
             spotlightTime = startTime + nextInt(0, 100).seconds,
-            displayName = nextString(8),
-            overlayText = nextString(8),
+            displayName = nextString(),
+            overlayText = nextString(),
             me = id == participantId,
             audioMuted = nextBoolean(),
             videoMuted = nextBoolean(),

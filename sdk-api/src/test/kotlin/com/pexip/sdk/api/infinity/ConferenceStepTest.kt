@@ -31,7 +31,9 @@ import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
 import com.pexip.sdk.api.infinity.internal.TransformLayoutRequestSerializer
 import com.pexip.sdk.infinity.LayoutId
-import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextLayoutId
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -60,7 +62,7 @@ internal class ConferenceStepTest {
     fun setUp() {
         fileSystem = FileSystem.RESOURCES
         node = server.url("/")
-        conferenceAlias = Random.nextString(8)
+        conferenceAlias = Random.nextString()
         json = InfinityService.Json
         val service = InfinityService.create(OkHttpClient(), json)
         token = Random.nextFakeToken()
@@ -184,46 +186,46 @@ internal class ConferenceStepTest {
             .row(RequestTokenRequest(directMedia = Random.nextBoolean()), "   ")
             .row(
                 val1 = RequestTokenRequest(
-                    ssoToken = Random.nextString(8),
+                    ssoToken = Random.nextString(),
                     directMedia = false,
                 ),
-                val2 = Random.nextString(8),
+                val2 = Random.nextString(),
             )
             .row(
                 val1 = RequestTokenRequest(
-                    ssoToken = Random.nextString(8),
+                    ssoToken = Random.nextString(),
                     directMedia = true,
                 ),
-                val2 = Random.nextString(8),
+                val2 = Random.nextString(),
             )
             .row(
                 val1 = RequestTokenRequest(
-                    incomingToken = Random.nextString(8),
+                    incomingToken = Random.nextString(),
                     directMedia = Random.nextBoolean(),
                 ),
-                val2 = Random.nextString(8),
+                val2 = Random.nextString(),
             )
             .row(
                 val1 = RequestTokenRequest(
-                    registrationToken = Random.nextString(8),
+                    registrationToken = Random.nextString(),
                     directMedia = Random.nextBoolean(),
                 ),
-                val2 = Random.nextString(8),
+                val2 = Random.nextString(),
             )
             .forAll { request, pin ->
                 val response = RequestTokenResponse(
-                    token = Random.nextString(8),
-                    conferenceName = Random.nextString(8),
-                    participantId = ParticipantId(Random.nextString(8)),
-                    participantName = Random.nextString(8),
+                    token = Random.nextString(),
+                    conferenceName = Random.nextString(),
+                    participantId = Random.nextParticipantId(),
+                    participantName = Random.nextString(),
                     expires = 120,
                     analyticsEnabled = Random.nextBoolean(),
                     chatEnabled = Random.nextBoolean(),
                     guestsCanPresent = Random.nextBoolean(),
                     serviceType = ServiceType.entries.random(),
                     version = VersionResponse(
-                        versionId = Random.nextString(8),
-                        pseudoVersion = Random.nextString(8),
+                        versionId = Random.nextString(),
+                        pseudoVersion = Random.nextString(),
                     ),
                     stun = List(10) {
                         StunResponse("stun:stun$it.example.com:19302")
@@ -297,7 +299,7 @@ internal class ConferenceStepTest {
     @Test
     fun `refreshToken returns`() {
         val response = RefreshTokenResponse(
-            token = Random.nextString(8),
+            token = Random.nextString(),
             expires = 120,
         )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
@@ -534,8 +536,8 @@ internal class ConferenceStepTest {
     fun `transformLayout throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         val request = TransformLayoutRequest(
-            layout = LayoutId(Random.nextString(8)),
-            guestLayout = LayoutId(Random.nextString(8)),
+            layout = Random.nextLayoutId(),
+            guestLayout = Random.nextLayoutId(),
             enableOverlayText = Random.nextBoolean(),
         )
         assertFailure { step.transformLayout(request, token).await() }
@@ -551,8 +553,8 @@ internal class ConferenceStepTest {
             setBody(body)
         }
         val request = TransformLayoutRequest(
-            layout = LayoutId(Random.nextString(8)),
-            guestLayout = LayoutId(Random.nextString(8)),
+            layout = Random.nextLayoutId(),
+            guestLayout = Random.nextLayoutId(),
             enableOverlayText = Random.nextBoolean(),
         )
         assertFailure { step.transformLayout(request, token).await() }
@@ -564,8 +566,8 @@ internal class ConferenceStepTest {
     fun `transformLayout throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
         val request = TransformLayoutRequest(
-            layout = LayoutId(Random.nextString(8)),
-            guestLayout = LayoutId(Random.nextString(8)),
+            layout = Random.nextLayoutId(),
+            guestLayout = Random.nextLayoutId(),
             enableOverlayText = Random.nextBoolean(),
         )
         assertFailure { step.transformLayout(request, token).await() }
@@ -581,8 +583,8 @@ internal class ConferenceStepTest {
             setBody(body)
         }
         val request = TransformLayoutRequest(
-            layout = LayoutId(Random.nextString(8)),
-            guestLayout = LayoutId(Random.nextString(8)),
+            layout = Random.nextLayoutId(),
+            guestLayout = Random.nextLayoutId(),
             enableOverlayText = Random.nextBoolean(),
         )
         assertFailure { step.transformLayout(request, token).await() }
@@ -598,8 +600,8 @@ internal class ConferenceStepTest {
             setBody(body)
         }
         val request = TransformLayoutRequest(
-            layout = LayoutId(Random.nextString(8)),
-            guestLayout = LayoutId(Random.nextString(8)),
+            layout = Random.nextLayoutId(),
+            guestLayout = Random.nextLayoutId(),
             enableOverlayText = Random.nextBoolean(),
         )
         assertFailure { step.transformLayout(request, token).await() }
@@ -616,8 +618,8 @@ internal class ConferenceStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             val request = TransformLayoutRequest(
-                layout = LayoutId(Random.nextString(8)),
-                guestLayout = LayoutId(Random.nextString(8)),
+                layout = Random.nextLayoutId(),
+                guestLayout = Random.nextLayoutId(),
                 enableOverlayText = Random.nextBoolean(),
             )
             assertThat(step.transformLayout(request, token).await(), "response").isEqualTo(result)
@@ -671,12 +673,12 @@ internal class ConferenceStepTest {
     @Test
     fun `theme returns a map on 200`() {
         val map = mapOf(
-            Random.nextString(8) to SplashScreenResponse(
+            Random.nextString() to SplashScreenResponse(
                 background = BackgroundResponse("background.jpg"),
                 elements = List(10) {
                     ElementResponse.Text(
                         color = Random.nextLong(Long.MAX_VALUE),
-                        text = Random.nextString(8),
+                        text = Random.nextString(),
                     )
                 },
             ),
@@ -691,7 +693,7 @@ internal class ConferenceStepTest {
 
     @Test
     fun `theme with path returns correct URL with token`() {
-        val path = Random.nextString(8)
+        val path = Random.nextString()
         val actual = step.theme(path, token)
         val expected = node.newBuilder("/api/client/v2/conferences")!!
             .addPathSegment(conferenceAlias)

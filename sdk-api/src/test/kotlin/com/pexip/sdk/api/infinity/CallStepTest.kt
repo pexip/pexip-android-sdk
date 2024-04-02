@@ -24,6 +24,9 @@ import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.internal.addPathSegment
 import com.pexip.sdk.infinity.CallId
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextCallId
+import com.pexip.sdk.infinity.test.nextParticipantId
+import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -53,9 +56,9 @@ internal class CallStepTest {
     @BeforeTest
     fun setUp() {
         node = server.url("/").toUrl()
-        conferenceAlias = Random.nextString(8)
-        participantId = ParticipantId(Random.nextString(8))
-        callId = CallId(Random.nextString(8))
+        conferenceAlias = Random.nextString()
+        participantId = Random.nextParticipantId()
+        callId = Random.nextCallId()
         json = Json { ignoreUnknownKeys = true }
         val service = InfinityService.create(OkHttpClient(), json)
         token = Random.nextFakeToken()
@@ -231,7 +234,7 @@ internal class CallStepTest {
 
     @Test
     fun `update returns on 200`() = runTest {
-        val response = UpdateResponse(Random.nextString(8))
+        val response = UpdateResponse(Random.nextString())
         server.enqueue {
             setResponseCode(200)
             setBody(json.encodeToString(Box(response)))
@@ -361,21 +364,21 @@ internal class CallStepTest {
     }
 
     private fun Random.nextNewCandidateRequest() = NewCandidateRequest(
-        candidate = nextString(8),
-        mid = nextString(8),
-        ufrag = nextString(8),
-        pwd = nextString(8),
+        candidate = nextString(),
+        mid = nextString(),
+        ufrag = nextString(),
+        pwd = nextString(),
     )
 
     private fun Random.nextUpdateRequest() = UpdateRequest(
-        sdp = nextString(8),
+        sdp = nextString(),
         fecc = nextBoolean(),
     )
 
     private fun Random.nextAckRequest(): AckRequest {
         val offerIgnored = nextBoolean()
         return AckRequest(
-            sdp = if (offerIgnored) "" else nextString(8),
+            sdp = if (offerIgnored) "" else nextString(),
             offerIgnored = offerIgnored,
         )
     }
