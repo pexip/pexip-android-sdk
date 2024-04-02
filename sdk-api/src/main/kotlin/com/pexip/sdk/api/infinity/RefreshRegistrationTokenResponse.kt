@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.api.infinity.internal.DurationAsSecondsStringSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.LongAsStringSerializer
+import kotlin.time.Duration
 
 @Serializable
 public data class RefreshRegistrationTokenResponse(
     override val token: String,
-    @Serializable(with = LongAsStringSerializer::class)
-    override val expires: Long,
+    @Serializable(with = DurationAsSecondsStringSerializer::class)
+    override val expires: Duration,
 ) : Token

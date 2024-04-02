@@ -16,18 +16,18 @@
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.infinity.internal.DurationAsMillisecondsSerializer
+import com.pexip.sdk.api.infinity.internal.DurationAsSecondsStringSerializer
 import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.builtins.LongAsStringSerializer
 import kotlin.time.Duration
 
 @Serializable
 public data class RequestTokenResponse(
     override val token: String,
-    @Serializable(with = LongAsStringSerializer::class)
-    override val expires: Long,
+    @Serializable(with = DurationAsSecondsStringSerializer::class)
+    override val expires: Duration,
     @SerialName("conference_name")
     public val conferenceName: String,
     @SerialName("participant_uuid")

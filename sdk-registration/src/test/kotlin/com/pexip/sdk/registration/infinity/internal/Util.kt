@@ -18,8 +18,10 @@ package com.pexip.sdk.registration.infinity.internal
 import com.pexip.sdk.api.infinity.RefreshTokenResponse
 import com.pexip.sdk.infinity.test.nextString
 import kotlin.random.Random
+import kotlin.random.nextInt
+import kotlin.time.Duration.Companion.seconds
 
 internal fun Random.nextToken() = RefreshTokenResponse(
     token = nextString(),
-    expires = (60L..600L).random(this),
+    expires = nextInt(10..120).seconds,
 )

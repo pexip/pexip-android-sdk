@@ -21,11 +21,13 @@ import com.pexip.sdk.api.infinity.IncomingEvent
 import com.pexip.sdk.registration.FailureRegistrationEvent
 import com.pexip.sdk.registration.IncomingCancelledRegistrationEvent
 import com.pexip.sdk.registration.IncomingRegistrationEvent
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 @Suppress("ktlint:standard:function-naming")
 internal inline fun RegistrationEvent(
     event: Event,
-    at: () -> Long = System::currentTimeMillis,
+    at: () -> Instant = Clock.System::now,
 ) = when (event) {
     is IncomingEvent -> IncomingRegistrationEvent(
         at = at(),
@@ -41,5 +43,5 @@ internal inline fun RegistrationEvent(
 }
 
 @Suppress("ktlint:standard:function-naming")
-internal inline fun RegistrationEvent(t: Throwable, at: () -> Long = System::currentTimeMillis) =
+internal inline fun RegistrationEvent(t: Throwable, at: () -> Instant = Clock.System::now) =
     FailureRegistrationEvent(at(), t)

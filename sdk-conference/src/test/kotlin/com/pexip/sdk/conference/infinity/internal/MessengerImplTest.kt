@@ -32,12 +32,13 @@ import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.MessageNotSentException
+import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Clock
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -262,7 +263,7 @@ class MessengerImplTest {
 
     @Test
     fun `onEvent maps MessageReceivedEvent to Message`() = runTest {
-        val at = System.currentTimeMillis()
+        val at = Clock.System.now()
         val messenger = MessengerImpl(
             scope = backgroundScope,
             event = event,
@@ -273,7 +274,7 @@ class MessengerImplTest {
             atProvider = { at },
         )
         messenger.message.test {
-            event.subscriptionCount.first { it > 0 }
+            event.awaitSubscriptionCountAtLeast(1)
             val messages = List(10) { Random.nextMessage(at = at, direct = it % 2 == 0) }
             messages.forEach {
                 val e = MessageReceivedEvent(

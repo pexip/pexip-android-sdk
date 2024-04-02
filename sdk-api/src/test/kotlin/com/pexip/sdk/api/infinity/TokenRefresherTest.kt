@@ -27,8 +27,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
-import kotlin.random.nextLong
+import kotlin.random.nextInt
 import kotlin.test.Test
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class TokenRefresherTest {
@@ -50,9 +51,9 @@ class TokenRefresherTest {
         )
         repeat(tokens.size - 2) {
             val token = tokens[it + 1]
-            testScheduler.advanceTimeBy(token.expires.seconds / 4)
+            testScheduler.advanceTimeBy(token.expires / 4)
             assertThat(store.get(), "token").isEqualTo(token)
-            testScheduler.advanceTimeBy(token.expires.seconds / 4)
+            testScheduler.advanceTimeBy(token.expires / 4)
             yield()
             val newToken = tokens[it + 2]
             assertThat(store.get(), "token").isEqualTo(newToken)
@@ -104,6 +105,6 @@ class TokenRefresherTest {
 
     private data class TestToken(
         override val token: String = Random.nextString(),
-        override val expires: Long = Random.nextLong(10L..120L),
+        override val expires: Duration = Random.nextInt(10..120).seconds,
     ) : Token
 }
