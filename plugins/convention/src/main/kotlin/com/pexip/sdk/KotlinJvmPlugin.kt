@@ -30,7 +30,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 class KotlinJvmPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
-        pluginManager.apply("org.jetbrains.kotlin.jvm")
+        with(pluginManager) {
+            apply("org.jetbrains.kotlin.jvm")
+            apply("com.android.lint")
+        }
         with(kotlinExtension) {
             explicitApi()
             jvmToolchain(11)
