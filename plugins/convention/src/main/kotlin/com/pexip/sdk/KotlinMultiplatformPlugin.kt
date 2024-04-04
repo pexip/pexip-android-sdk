@@ -28,7 +28,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 class KotlinMultiplatformPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
-        pluginManager.apply("org.jetbrains.kotlin.multiplatform")
+        with(pluginManager) {
+            apply("org.jetbrains.kotlin.multiplatform")
+            apply("com.android.lint")
+        }
         with(kotlinExtension) {
             explicitApi()
             jvmToolchain(11)
