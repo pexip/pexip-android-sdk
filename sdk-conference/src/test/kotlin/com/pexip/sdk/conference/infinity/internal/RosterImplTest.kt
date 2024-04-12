@@ -55,6 +55,7 @@ import com.pexip.sdk.conference.MakeGuestException
 import com.pexip.sdk.conference.MakeHostException
 import com.pexip.sdk.conference.MuteAllGuestsException
 import com.pexip.sdk.conference.MuteException
+import com.pexip.sdk.conference.MuteVideoException
 import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
 import com.pexip.sdk.conference.Role
@@ -63,6 +64,7 @@ import com.pexip.sdk.conference.SpotlightException
 import com.pexip.sdk.conference.UnlockException
 import com.pexip.sdk.conference.UnmuteAllGuestsException
 import com.pexip.sdk.conference.UnmuteException
+import com.pexip.sdk.conference.UnmuteVideoException
 import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.infinity.test.nextParticipantId
@@ -850,7 +852,7 @@ class RosterImplTest {
     }
 
     @Test
-    fun `unmute() throws MuteException`() = runTest {
+    fun `unmute() throws UnmuteException`() = runTest {
         val participants = List(10) { Random.nextParticipant(it) }
         val causes = participants.associate { it.id to Throwable() }
         val roster = RosterImpl(
@@ -936,6 +938,208 @@ class RosterImplTest {
             }
         }
         participants.forEach { roster.unmute(it.id) }
+    }
+
+    @Test
+    fun `muteVideo() returns if participantId does not exist`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {},
+        )
+        roster.muteVideo(Random.nextParticipantId())
+    }
+
+    @Test
+    fun `muteVideo() throws MuteVideoException`() = runTest {
+        val participants = List(10) { Random.nextParticipant(it) }
+        val causes = participants.associate { it.id to Throwable() }
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun videoMuted(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.muteVideo(it.id) }
+                .isInstanceOf<MuteVideoException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    @Test
+    fun `muteVideo() returns`() = runTest {
+        val participants = List(10) { Random.nextParticipant(it) }
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun videoMuted(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onSuccess(this, Unit)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.muteVideo(it.id) }
+    }
+
+    @Test
+    fun `unmuteVideo() returns if participantId does not exist`() = runTest {
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {},
+        )
+        roster.unmuteVideo(Random.nextParticipantId())
+    }
+
+    @Test
+    fun `unmuteVideo() throws UnmuteVideoException`() = runTest {
+        val participants = List(10) { Random.nextParticipant(it) }
+        val causes = participants.associate { it.id to Throwable() }
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun videoUnmuted(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.unmuteVideo(it.id) }
+                .isInstanceOf<UnmuteVideoException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    @Test
+    fun `unmuteVideo() returns`() = runTest {
+        val participants = List(10) { Random.nextParticipant(it) }
+        val roster = RosterImpl(
+            scope = backgroundScope,
+            event = event,
+            participantId = participantId,
+            store = store,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId")
+                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun videoUnmuted(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.get())
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onSuccess(this, Unit)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.unmuteVideo(it.id) }
     }
 
     @Test

@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `Roster.muteVideo(ParticipantId?)` and `Roster.unmuteVideo(ParticipantId?)` to control state of
+  participant's video track
+
 ### Changed
 
 - **BREAKING**: `java.util.UUID` usages to `ParticipantId`, `CallId`, and `RegistrationId`. Note

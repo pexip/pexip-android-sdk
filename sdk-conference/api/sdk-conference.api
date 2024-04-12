@@ -183,6 +183,12 @@ public final class com/pexip/sdk/conference/MuteException : java/lang/RuntimeExc
 	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
+public final class com/pexip/sdk/conference/MuteVideoException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/pexip/sdk/conference/Participant {
 	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/conference/Role;Lcom/pexip/sdk/conference/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -322,6 +328,9 @@ public abstract interface class com/pexip/sdk/conference/Roster {
 	public static synthetic fun mute-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun muteAllGuests (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun muteAllGuests$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun muteVideo-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun muteVideo-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun muteVideo-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun raiseHand-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun raiseHand-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun raiseHand-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -335,6 +344,9 @@ public abstract interface class com/pexip/sdk/conference/Roster {
 	public static synthetic fun unmute-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unmuteAllGuests (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun unmuteAllGuests$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun unmuteVideo-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unmuteVideo-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun unmuteVideo-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unspotlight-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun unspotlight-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun unspotlight-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -406,6 +418,12 @@ public final class com/pexip/sdk/conference/UnmuteAllGuestsException : java/lang
 }
 
 public final class com/pexip/sdk/conference/UnmuteException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/pexip/sdk/conference/UnmuteVideoException : java/lang/RuntimeException {
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/Throwable;)V
 	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
