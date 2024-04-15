@@ -39,7 +39,7 @@ jobs:
       - run: ./gradlew dokkaHtmlMultiModule
         if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
 
-      - uses: peaceiris/actions-gh-pages@v3
+      - uses: peaceiris/actions-gh-pages@v4
         if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
