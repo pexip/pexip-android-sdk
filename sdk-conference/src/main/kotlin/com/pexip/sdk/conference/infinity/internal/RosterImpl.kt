@@ -42,6 +42,7 @@ import com.pexip.sdk.conference.MakeGuestException
 import com.pexip.sdk.conference.MakeHostException
 import com.pexip.sdk.conference.MuteAllGuestsException
 import com.pexip.sdk.conference.MuteException
+import com.pexip.sdk.conference.MuteVideoException
 import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
 import com.pexip.sdk.conference.Role
@@ -51,6 +52,7 @@ import com.pexip.sdk.conference.SpotlightException
 import com.pexip.sdk.conference.UnlockException
 import com.pexip.sdk.conference.UnmuteAllGuestsException
 import com.pexip.sdk.conference.UnmuteException
+import com.pexip.sdk.conference.UnmuteVideoException
 import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.ParticipantId
@@ -193,6 +195,20 @@ internal class RosterImpl(
         perform(::UnmuteException) {
             val step = participantStep(participantId) ?: return
             step.unmute(it)
+        }
+    }
+
+    override suspend fun muteVideo(participantId: ParticipantId?) {
+        perform(::MuteVideoException) {
+            val step = participantStep(participantId) ?: return
+            step.videoMuted(it)
+        }
+    }
+
+    override suspend fun unmuteVideo(participantId: ParticipantId?) {
+        perform(::UnmuteVideoException) {
+            val step = participantStep(participantId) ?: return
+            step.videoUnmuted(it)
         }
     }
 

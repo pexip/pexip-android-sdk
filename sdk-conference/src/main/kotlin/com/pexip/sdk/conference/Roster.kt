@@ -115,6 +115,24 @@ public interface Roster {
         throw NotImplementedError()
 
     /**
+     * Mutes the video of the specified participant or self.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws MuteVideoException if the operation failed
+     */
+    public suspend fun muteVideo(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
+
+    /**
+     * Unmutes the video of the specified participant or self.
+     *
+     * @param participantId an ID of the participant, null for self
+     * @throws UnmuteVideoException if the operation failed
+     */
+    public suspend fun unmuteVideo(participantId: ParticipantId? = null): Unit =
+        throw NotImplementedError()
+
+    /**
      * Enables the "spotlight" on a participant or self.
      *
      * @param participantId an ID of the participant, null for self
