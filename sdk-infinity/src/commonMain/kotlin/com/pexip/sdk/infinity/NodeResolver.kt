@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.api.infinity
-
-import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.infinity.internal.RealNodeResolver
-import org.minidns.hla.DnssecResolverApi
-import org.minidns.hla.ResolverApi
-import java.net.URL
+package com.pexip.sdk.infinity
 
 /**
  * A class that can resolve node addresses.
  */
-@Deprecated("Superseded by a suspending variant.")
 public fun interface NodeResolver {
 
     /**
@@ -33,18 +26,16 @@ public fun interface NodeResolver {
      * for the recommended flow.
      *
      * @param host a host to use to resolve node addresses
-     * @return a [Call]
+     * @return a list of nodes
      */
-    public fun resolve(host: String): Call<List<URL>>
+    public suspend fun resolve(host: String): List<Node>
 
-    public companion object {
-
-        @JvmStatic
-        @JvmOverloads
-        public fun create(dnssec: Boolean = false): NodeResolver =
-            create(if (dnssec) DnssecResolverApi.INSTANCE else ResolverApi.INSTANCE)
-
-        @JvmStatic
-        public fun create(api: ResolverApi): NodeResolver = RealNodeResolver(api)
-    }
+    public companion object
 }
+
+/**
+ * Creates a new instance of [NodeResolver].
+ *
+ * @param dnssec whether to use DNSSEC or not
+ */
+public expect fun NodeResolver.Companion.create(dnssec: Boolean = false): NodeResolver

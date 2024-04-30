@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@ package com.pexip.sdk.sample.di
 
 import android.util.Log
 import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.NodeResolver
+import com.pexip.sdk.infinity.NodeResolver
+import com.pexip.sdk.infinity.create
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

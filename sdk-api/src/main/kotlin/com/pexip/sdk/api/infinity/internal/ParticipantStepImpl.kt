@@ -45,7 +45,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("calls")
@@ -59,7 +59,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("dtmf")
@@ -73,7 +73,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("mute")
@@ -87,7 +87,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("unmute")
@@ -101,7 +101,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("video_muted")
@@ -115,7 +115,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("video_unmuted")
@@ -129,7 +129,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("take_floor")
@@ -143,7 +143,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("release_floor")
@@ -157,7 +157,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("message")
@@ -174,7 +174,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("preferred_aspect_ratio")
@@ -188,7 +188,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("buzz")
@@ -202,7 +202,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("clearbuzz")
@@ -216,7 +216,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("spotlighton")
@@ -230,7 +230,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("spotlightoff")
@@ -244,7 +244,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("unlock")
@@ -258,7 +258,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("disconnect")
@@ -272,7 +272,7 @@ internal class ParticipantStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 addPathSegment("role")

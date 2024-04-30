@@ -568,6 +568,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/InfinityService$Companion;
 	public static fun create ()Lcom/pexip/sdk/api/infinity/InfinityService;
 	public static fun create (Lokhttp3/OkHttpClient;)Lcom/pexip/sdk/api/infinity/InfinityService;
+	public fun newRequest (Lcom/pexip/sdk/infinity/Node;)Lcom/pexip/sdk/api/infinity/InfinityService$RequestBuilder;
 	public fun newRequest (Ljava/net/URL;)Lcom/pexip/sdk/api/infinity/InfinityService$RequestBuilder;
 }
 

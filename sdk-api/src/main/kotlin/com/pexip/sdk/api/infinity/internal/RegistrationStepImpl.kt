@@ -47,7 +47,7 @@ internal class RegistrationStepImpl(
             client = client,
             request = Request.Builder()
                 .post(EMPTY_REQUEST)
-                .url(node) {
+                .url(url) {
                     registration(deviceAlias)
                     addPathSegment("request_token")
                 }
@@ -61,7 +61,7 @@ internal class RegistrationStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 registration(deviceAlias)
                 addPathSegment("refresh_token")
             }
@@ -74,7 +74,7 @@ internal class RegistrationStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 registration(deviceAlias)
                 addPathSegment("release_token")
             }
@@ -87,7 +87,7 @@ internal class RegistrationStepImpl(
         client = client,
         request = Request.Builder()
             .get()
-            .url(node) {
+            .url(url) {
                 registration(deviceAlias)
                 addPathSegment("events")
             }
@@ -101,7 +101,7 @@ internal class RegistrationStepImpl(
             client = client,
             request = Request.Builder()
                 .get()
-                .url(node) {
+                .url(url) {
                     registration()
                     if (query.isNotBlank()) {
                         addQueryParameter("q", query.trim())

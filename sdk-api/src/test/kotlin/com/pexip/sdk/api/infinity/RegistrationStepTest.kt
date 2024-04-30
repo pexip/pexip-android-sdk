@@ -19,10 +19,9 @@ import com.pexip.sdk.infinity.test.nextRegistrationId
 import com.pexip.sdk.infinity.test.nextString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
+import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
-import java.net.URL
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.test.BeforeTest
@@ -34,9 +33,12 @@ import kotlin.time.Duration.Companion.seconds
 internal class RegistrationStepTest {
 
     @get:Rule
-    val server = MockWebServer()
+    val rule = SecureMockWebServerRule()
 
-    private lateinit var node: URL
+    private val server get() = rule.server
+    private val client get() = rule.client
+
+    private lateinit var node: HttpUrl
     private lateinit var deviceAlias: String
     private lateinit var username: String
     private lateinit var password: String
@@ -46,14 +48,15 @@ internal class RegistrationStepTest {
 
     @BeforeTest
     fun setUp() {
-        node = server.url("/").toUrl()
+        node = server.url("/")
         deviceAlias = Random.nextString()
         username = Random.nextString()
         password = Random.nextString()
-        json = Json { ignoreUnknownKeys = true }
-        val service = InfinityService.create(OkHttpClient(), json)
+        json = InfinityService.Json
         token = Random.nextFakeToken()
-        step = service.newRequest(node).registration(deviceAlias)
+        step = InfinityService.create(client, json)
+            .newRequest(node)
+            .registration(deviceAlias)
     }
 
     @Test

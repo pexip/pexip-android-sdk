@@ -19,6 +19,7 @@ dependencies {
     testImplementation(project(":sdk-infinity-test"))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.okhttp.tls)
 }
 
 publishing.publications.withType<MavenPublication> {
