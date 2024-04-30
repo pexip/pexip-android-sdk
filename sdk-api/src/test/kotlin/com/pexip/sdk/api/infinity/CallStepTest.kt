@@ -30,10 +30,9 @@ import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
+import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
-import java.net.URL
 import kotlin.properties.Delegates
 import kotlin.random.Random
 import kotlin.test.BeforeTest
@@ -42,9 +41,12 @@ import kotlin.test.Test
 internal class CallStepTest {
 
     @get:Rule
-    val server = MockWebServer()
+    val rule = SecureMockWebServerRule()
 
-    private lateinit var node: URL
+    private val server get() = rule.server
+    private val client get() = rule.client
+
+    private lateinit var node: HttpUrl
     private lateinit var conferenceAlias: String
     private lateinit var json: Json
     private lateinit var token: Token
@@ -55,14 +57,14 @@ internal class CallStepTest {
 
     @BeforeTest
     fun setUp() {
-        node = server.url("/").toUrl()
+        node = server.url("/")
         conferenceAlias = Random.nextString()
         participantId = Random.nextParticipantId()
         callId = Random.nextCallId()
-        json = Json { ignoreUnknownKeys = true }
-        val service = InfinityService.create(OkHttpClient(), json)
+        json = InfinityService.Json
         token = Random.nextFakeToken()
-        step = service.newRequest(node)
+        step = InfinityService.create(client, json)
+            .newRequest(node)
             .conference(conferenceAlias)
             .participant(participantId)
             .call(callId)

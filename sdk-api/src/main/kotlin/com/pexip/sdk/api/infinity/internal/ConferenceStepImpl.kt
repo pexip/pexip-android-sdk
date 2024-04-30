@@ -51,7 +51,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("request_token")
             }
@@ -67,7 +67,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("request_token")
             }
@@ -81,7 +81,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("refresh_token")
             }
@@ -94,7 +94,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("release_token")
             }
@@ -107,7 +107,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("message")
             }
@@ -120,7 +120,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .get()
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("available_layouts")
             }
@@ -133,7 +133,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .get()
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("layout_svgs")
             }
@@ -147,7 +147,7 @@ internal class ConferenceStepImpl(
             client = client,
             request = Request.Builder()
                 .post(json.encodeToRequestBody(TransformLayoutRequestSerializer, request))
-                .url(node) {
+                .url(url) {
                     conference(conferenceAlias)
                     addPathSegment("transform_layout")
                 }
@@ -160,7 +160,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .get()
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("theme")
                 addPathSegment("")
@@ -172,7 +172,7 @@ internal class ConferenceStepImpl(
 
     override fun theme(path: String, token: Token): String {
         require(path.isNotBlank()) { "path is blank." }
-        return node.newApiClientV2Builder()
+        return url.newApiClientV2Builder()
             .conference(conferenceAlias)
             .addPathSegment("theme")
             .addPathSegment(path)
@@ -184,7 +184,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("clearallbuzz")
             }
@@ -197,7 +197,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("lock")
             }
@@ -210,7 +210,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("unlock")
             }
@@ -223,7 +223,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("muteguests")
             }
@@ -236,7 +236,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("unmuteguests")
             }
@@ -249,7 +249,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("disconnect")
             }
@@ -262,7 +262,7 @@ internal class ConferenceStepImpl(
         client = client,
         request = Request.Builder()
             .get()
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("events")
             }

@@ -22,6 +22,7 @@ import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.internal.InfinityServiceImpl
 import com.pexip.sdk.infinity.CallId
 import com.pexip.sdk.infinity.LayoutId
+import com.pexip.sdk.infinity.Node
 import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -40,6 +41,15 @@ public interface InfinityService {
      * @param node a conferencing node against which to perform requests
      * @throws IllegalArgumentException if the [node] is invalid
      */
+    public fun newRequest(node: Node): RequestBuilder = throw NotImplementedError()
+
+    /**
+     * Creates a new [RequestBuilder].
+     *
+     * @param node a conferencing node against which to perform requests
+     * @throws IllegalArgumentException if the [node] is invalid
+     */
+    @Deprecated("Superseded by a variant that accepts an instance of Node.")
     public fun newRequest(node: URL): RequestBuilder = throw NotImplementedError()
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@ package com.pexip.sdk.sample.pinrequirement
 
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.api.infinity.NodeResolver
 import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequiredPinException
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.infinity.InfinityConference
+import com.pexip.sdk.infinity.NodeResolver
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -59,7 +59,7 @@ class PinRequirementWorkflow @Inject constructor(
 
     private fun RenderContext.getNodeSideEffect(props: PinRequirementProps) =
         runningSideEffect(props.toString()) {
-            val action = runCatching { resolver.resolve(props.host).await() }
+            val action = runCatching { resolver.resolve(props.host) }
                 .map { it.asSequence().map(service::newRequest) }
                 .mapCatching { it.first { builder -> builder.status().await() } }
                 .fold(::onNode, ::onError)

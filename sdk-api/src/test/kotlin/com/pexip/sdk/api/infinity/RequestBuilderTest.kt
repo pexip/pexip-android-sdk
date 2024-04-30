@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,9 @@
  */
 package com.pexip.sdk.api.infinity
 
+import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
-import java.net.URL
-import kotlin.properties.Delegates
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -28,17 +27,18 @@ import kotlin.test.assertTrue
 internal class RequestBuilderTest {
 
     @get:Rule
-    val server = MockWebServer()
+    val rule = SecureMockWebServerRule()
 
+    private val server get() = rule.server
+    private val client get() = rule.client
+
+    private lateinit var node: HttpUrl
     private lateinit var builder: InfinityService.RequestBuilder
-
-    private var node: URL by Delegates.notNull()
 
     @BeforeTest
     fun setUp() {
-        node = server.url("/").toUrl()
-        val service = InfinityService.create()
-        builder = service.newRequest(node)
+        node = server.url("/")
+        builder = InfinityService.create(client).newRequest(node)
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,29 @@ package com.pexip.sdk.api.infinity.internal
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.NoSuchNodeException
+import com.pexip.sdk.infinity.Node
 import okhttp3.HttpUrl
 import okhttp3.Request
 import okhttp3.Response
 
 internal class RequestBuilderImpl(
     override val infinityService: InfinityServiceImpl,
-    override val node: HttpUrl,
+    node: Node,
 ) : InfinityService.RequestBuilder,
     RequestBuilderImplScope,
     InfinityServiceImplScope by infinityService {
+
+    override val url: HttpUrl = HttpUrl.Builder()
+        .scheme("https")
+        .host(node.host)
+        .port(node.port)
+        .build()
 
     override fun status(): Call<Boolean> = RealCall(
         client = client,
         request = Request.Builder()
             .get()
-            .url(node) { addPathSegment("status") }
+            .url(url) { addPathSegment("status") }
             .build(),
         mapper = ::parseStatus,
     )

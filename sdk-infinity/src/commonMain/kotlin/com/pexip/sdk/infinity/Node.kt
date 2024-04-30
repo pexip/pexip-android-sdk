@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.api.infinity.internal
+package com.pexip.sdk.infinity
 
-import okhttp3.HttpUrl
+/**
+ * An Infinity node.
+ *
+ * @property host a hostname of this node
+ * @property port a port of this node
+ */
+public data class Node(val host: String, val port: Int = 443) {
 
-internal sealed interface RequestBuilderImplScope : InfinityServiceImplScope {
-
-    val url: HttpUrl
+    init {
+        require(host.isNotBlank()) { "host is blank." }
+        require(port in 1..65535) { "invalid port: $port." }
+    }
 }

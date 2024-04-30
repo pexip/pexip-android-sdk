@@ -30,6 +30,7 @@ import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
 import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
 import com.pexip.sdk.api.infinity.internal.TransformLayoutRequestSerializer
+import com.pexip.sdk.api.infinity.internal.newApiClientV2Builder
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.test.nextLayoutId
 import com.pexip.sdk.infinity.test.nextParticipantId
@@ -38,7 +39,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
 import okio.FileSystem
 import org.junit.Rule
@@ -51,7 +51,10 @@ import kotlin.time.Duration.Companion.seconds
 internal class ConferenceStepTest {
 
     @get:Rule
-    val server = MockWebServer()
+    val rule = SecureMockWebServerRule()
+
+    private val server get() = rule.server
+    private val client get() = rule.client
 
     private lateinit var fileSystem: FileSystem
     private lateinit var node: HttpUrl
@@ -66,9 +69,10 @@ internal class ConferenceStepTest {
         node = server.url("/")
         conferenceAlias = Random.nextString()
         json = InfinityService.Json
-        val service = InfinityService.create(OkHttpClient(), json)
         token = Random.nextFakeToken()
-        step = service.newRequest(node.toUrl()).conference(conferenceAlias)
+        step = InfinityService.create(client, json)
+            .newRequest(node)
+            .conference(conferenceAlias)
     }
 
     @Test
@@ -697,7 +701,8 @@ internal class ConferenceStepTest {
     fun `theme with path returns correct URL with token`() {
         val path = Random.nextString()
         val actual = step.theme(path, token)
-        val expected = node.newBuilder("/api/client/v2/conferences")!!
+        val expected = node.newApiClientV2Builder()
+            .addPathSegment("conferences")
             .addPathSegment(conferenceAlias)
             .addPathSegment("theme")
             .addPathSegment(path)

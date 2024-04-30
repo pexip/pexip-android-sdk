@@ -41,7 +41,7 @@ internal class CallStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 call(callId)
@@ -58,7 +58,7 @@ internal class CallStepImpl(
             .build(),
         request = Request.Builder()
             .post(EMPTY_REQUEST)
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 call(callId)
@@ -75,7 +75,7 @@ internal class CallStepImpl(
             .build(),
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 call(callId)
@@ -90,7 +90,7 @@ internal class CallStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 call(callId)
@@ -105,7 +105,7 @@ internal class CallStepImpl(
         client = client,
         request = Request.Builder()
             .post(json.encodeToRequestBody(request))
-            .url(node) {
+            .url(url) {
                 conference(conferenceAlias)
                 participant(participantId)
                 call(callId)

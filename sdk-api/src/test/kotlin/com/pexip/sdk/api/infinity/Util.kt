@@ -15,11 +15,11 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.infinity.Node
 import com.pexip.sdk.infinity.test.nextString
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
@@ -28,7 +28,6 @@ import okio.ByteString.Companion.encodeUtf8
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
-import java.net.URL
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.test.assertEquals
@@ -55,6 +54,8 @@ internal fun Random.nextMessageRequest() = MessageRequest(
     payload = nextString(),
     type = nextString(),
 )
+
+internal fun InfinityService.newRequest(url: HttpUrl) = newRequest(Node(url.host, url.port))
 
 internal inline fun MockWebServer.enqueue(block: MockResponse.() -> Unit) =
     enqueue(MockResponse().apply(block))
@@ -85,9 +86,6 @@ internal fun <T> RecordedRequest.assertPost(
     assertContentType("application/json; charset=utf-8")
     assertEquals(request, json.decodeFromString(serializer, body.readUtf8()))
 }
-
-internal fun RecordedRequest.assertRequestUrl(url: URL, block: HttpUrl.Builder.() -> Unit) =
-    assertEquals(url.toString().toHttpUrl().newBuilder().apply(block).build(), requestUrl)
 
 internal fun RecordedRequest.assertRequestUrl(url: HttpUrl, block: HttpUrl.Builder.() -> Unit) =
     assertEquals(url.newBuilder().apply(block).build(), requestUrl)
