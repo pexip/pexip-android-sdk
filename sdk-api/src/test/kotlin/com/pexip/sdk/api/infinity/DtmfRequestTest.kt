@@ -15,10 +15,11 @@
  */
 package com.pexip.sdk.api.infinity
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.pexip.sdk.infinity.test.nextString
 import kotlin.random.Random
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 internal class DtmfRequestTest {
 
@@ -26,7 +27,7 @@ internal class DtmfRequestTest {
     fun `valid digits return a DtmfRequest`() {
         val digits = Random.nextDigits(100)
         val request = DtmfRequest(digits)
-        assertEquals(digits, request.digits)
+        assertThat(request::digits).isEqualTo(digits)
     }
 
     @Test(IllegalArgumentException::class)

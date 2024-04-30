@@ -15,14 +15,20 @@
  */
 package com.pexip.sdk.api.infinity
 
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
+import com.pexip.sdk.api.coroutines.await
+import com.pexip.sdk.infinity.Node
+import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 internal class RequestBuilderTest {
 
@@ -42,30 +48,36 @@ internal class RequestBuilderTest {
     }
 
     @Test
-    fun `status throws IllegalStateException`() {
+    fun `node returns the correct value`() {
+        val expected = Node(node.host, node.port)
+        assertThat(builder::node).isEqualTo(expected)
+    }
+
+    @Test
+    fun `status throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        assertFailsWith<IllegalStateException> { builder.status().execute() }
+        assertFailure { builder.status().await() }.isInstanceOf<IllegalStateException>()
         server.verifyStatus()
     }
 
     @Test
-    fun `status throws NoSuchNodeException`() {
+    fun `status throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        assertFailsWith<NoSuchNodeException> { builder.status().execute() }
+        assertFailure { builder.status().await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyStatus()
     }
 
     @Test
-    fun `status returns false`() {
+    fun `status returns false`() = runTest {
         server.enqueue { setResponseCode(503) }
-        assertFalse(builder.status().execute())
+        assertThat(builder.status().await(), "status").isFalse()
         server.verifyStatus()
     }
 
     @Test
-    fun `status returns true`() {
+    fun `status returns true`() = runTest {
         server.enqueue { setResponseCode(200) }
-        assertTrue(builder.status().execute())
+        assertThat(builder.status().await()).isTrue()
         server.verifyStatus()
     }
 

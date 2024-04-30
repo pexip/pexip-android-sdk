@@ -76,6 +76,11 @@ internal class ConferenceStepTest {
     }
 
     @Test
+    fun `conferenceAlias returns the correct value`() {
+        assertThat(step::conferenceAlias).isEqualTo(conferenceAlias)
+    }
+
+    @Test
     fun `requestToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val request = RequestTokenRequest()
@@ -336,6 +341,7 @@ internal class ConferenceStepTest {
         }
         assertFailure { step.releaseToken(token).execute() }
             .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyReleaseToken(token)
     }
 
@@ -346,7 +352,9 @@ internal class ConferenceStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.releaseToken(token).execute() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { step.releaseToken(token).execute() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyReleaseToken(token)
     }
 
@@ -388,6 +396,7 @@ internal class ConferenceStepTest {
         val request = Random.nextMessageRequest()
         assertFailure { step.message(request, token).execute() }
             .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyMessage(request, token)
     }
 
@@ -401,6 +410,7 @@ internal class ConferenceStepTest {
         val request = Random.nextMessageRequest()
         assertFailure { step.message(request, token).execute() }
             .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyMessage(request, token)
     }
 
@@ -654,7 +664,9 @@ internal class ConferenceStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.theme(token).execute() }.isInstanceOf<NoSuchConferenceException>()
+        assertFailure { step.theme(token).execute() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyTheme(token)
     }
 
@@ -665,7 +677,9 @@ internal class ConferenceStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.theme(token).execute() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { step.theme(token).execute() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyTheme(token)
     }
 
@@ -732,7 +746,9 @@ internal class ConferenceStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.clearAllBuzz(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        assertFailure { step.clearAllBuzz(token).await() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyClearAllBuzz(token)
     }
 
@@ -743,7 +759,9 @@ internal class ConferenceStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.clearAllBuzz(token).await() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { step.clearAllBuzz(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyClearAllBuzz(token)
     }
 
@@ -781,7 +799,9 @@ internal class ConferenceStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.lock(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        assertFailure { step.lock(token).await() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyLock(token)
     }
 
@@ -792,7 +812,9 @@ internal class ConferenceStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.lock(token).await() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { step.lock(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyLock(token)
     }
 
@@ -830,7 +852,9 @@ internal class ConferenceStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.unlock(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        assertFailure { step.unlock(token).await() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyUnlock(token)
     }
 
@@ -841,7 +865,9 @@ internal class ConferenceStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.unlock(token).await() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { step.unlock(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyUnlock(token)
     }
 
@@ -879,7 +905,9 @@ internal class ConferenceStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.muteGuests(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        assertFailure { step.muteGuests(token).await() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyMuteGuests(token)
     }
 
@@ -890,7 +918,9 @@ internal class ConferenceStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.muteGuests(token).await() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { step.muteGuests(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyMuteGuests(token)
     }
 
@@ -928,7 +958,9 @@ internal class ConferenceStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.unmuteGuests(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        assertFailure { step.unmuteGuests(token).await() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyUnmuteGuests(token)
     }
 
@@ -939,7 +971,9 @@ internal class ConferenceStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.unmuteGuests(token).await() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { step.unmuteGuests(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyUnmuteGuests(token)
     }
 
@@ -977,7 +1011,9 @@ internal class ConferenceStepTest {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.disconnect(token).await() }.isInstanceOf<NoSuchConferenceException>()
+        assertFailure { step.disconnect(token).await() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyDisconnect(token)
     }
 
@@ -988,7 +1024,9 @@ internal class ConferenceStepTest {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.disconnect(token).await() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { step.disconnect(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyDisconnect(token)
     }
 

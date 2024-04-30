@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
 
 internal class CallStepImpl(
     override val participantStep: ParticipantStepImpl,
-    private val callId: CallId,
+    override val callId: CallId,
 ) : InfinityService.CallStep, ParticipantStepImplScope by participantStep {
 
     override fun newCandidate(request: NewCandidateRequest, token: Token): Call<Unit> = RealCall(

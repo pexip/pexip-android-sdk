@@ -54,12 +54,19 @@ public interface InfinityService {
 
     /**
      * Represents the [Other miscellaneous requests](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#misc) section.
-     *
-     * @property infinityService the [InfinityService] that produced this [RequestBuilder]
      */
     public interface RequestBuilder {
 
+        /**
+         * The Infinity service that produced this request builder.
+         */
         public val infinityService: InfinityService
+            get() = throw NotImplementedError()
+
+        /**
+         * A node that this request builder will use.
+         */
+        public val node: Node
             get() = throw NotImplementedError()
 
         /**
@@ -89,12 +96,19 @@ public interface InfinityService {
 
     /**
      * Represents the [Conference control functions](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#conference) section.
-     *
-     * @property requestBuilder the [RequestBuilder] that produced this [ConferenceStep]
      */
     public interface ConferenceStep {
 
+        /**
+         * The request builder that produced this conference step.
+         */
         public val requestBuilder: RequestBuilder
+            get() = throw NotImplementedError()
+
+        /**
+         * A conference alias that this conference step will use.
+         */
+        public val conferenceAlias: String
             get() = throw NotImplementedError()
 
         /**
@@ -459,12 +473,19 @@ public interface InfinityService {
 
     /**
      * Represents the registration control functions section.
-     *
-     * @property requestBuilder the [RequestBuilder] that produced this [RegistrationStep]
      */
     public interface RegistrationStep {
 
+        /**
+         * The request builder that produced this registration step.
+         */
         public val requestBuilder: RequestBuilder
+            get() = throw NotImplementedError()
+
+        /**
+         * The device alias that this registration step will use.
+         */
+        public val deviceAlias: String
             get() = throw NotImplementedError()
 
         /**
@@ -605,7 +626,16 @@ public interface InfinityService {
      */
     public interface ParticipantStep {
 
+        /**
+         * The conference step that produced this participant step.
+         */
         public val conferenceStep: ConferenceStep
+            get() = throw NotImplementedError()
+
+        /**
+         * A participant ID that this participant step will use.
+         */
+        public val participantId: ParticipantId
             get() = throw NotImplementedError()
 
         /**
@@ -971,12 +1001,19 @@ public interface InfinityService {
 
     /**
      * Represents the [Call functions](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#call_functions) section.
-     *
-     * @property participantStep the [ParticipantStep] that produced this [CallStep]
      */
     public interface CallStep {
 
+        /**
+         * The participant step that produced this call step.
+         */
         public val participantStep: ParticipantStep
+            get() = throw NotImplementedError()
+
+        /**
+         * A call ID that this call step will use.
+         */
+        public val callId: CallId
             get() = throw NotImplementedError()
 
         /**
