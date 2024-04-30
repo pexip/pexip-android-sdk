@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("DEPRECATION")
+
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.Call
@@ -24,7 +26,10 @@ import java.net.URL
 /**
  * A class that can resolve node addresses.
  */
-@Deprecated("Superseded by a suspending variant.")
+@Deprecated(
+    message = "Superseded by a suspending variant.",
+    replaceWith = ReplaceWith("NodeResolver", "com.pexip.sdk.infinity.NodeResolver"),
+)
 public fun interface NodeResolver {
 
     /**
@@ -41,10 +46,24 @@ public fun interface NodeResolver {
 
         @JvmStatic
         @JvmOverloads
+        @Deprecated(
+            message = "Superseded by a suspending variant.",
+            replaceWith = ReplaceWith(
+                expression = "NodeResolver.Companion.create(dnssec)",
+                imports = ["com.pexip.sdk.infinity.NodeResolver", "com.pexip.sdk.infinity.create"],
+            ),
+        )
         public fun create(dnssec: Boolean = false): NodeResolver =
             create(if (dnssec) DnssecResolverApi.INSTANCE else ResolverApi.INSTANCE)
 
         @JvmStatic
+        @Deprecated(
+            message = "Superseded by a suspending variant.",
+            replaceWith = ReplaceWith(
+                expression = "NodeResolver.Companion.create(api)",
+                imports = ["com.pexip.sdk.infinity.NodeResolver", "com.pexip.sdk.infinity.create"],
+            ),
+        )
         public fun create(api: ResolverApi): NodeResolver = RealNodeResolver(api)
     }
 }
