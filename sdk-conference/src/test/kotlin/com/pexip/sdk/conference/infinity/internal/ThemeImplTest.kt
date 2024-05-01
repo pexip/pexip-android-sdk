@@ -79,7 +79,7 @@ class ThemeImplTest {
     @BeforeTest
     fun setUp() {
         event = MutableSharedFlow(extraBufferCapacity = 1)
-        store = TokenStore.create(Random.nextToken())
+        store = TokenStore(Random.nextToken())
     }
 
     @Test
@@ -91,7 +91,7 @@ class ThemeImplTest {
         val step = object : InfinityService.ConferenceStep {
 
             override fun availableLayouts(token: Token): Call<Set<LayoutId>> {
-                assertThat(token).isEqualTo(store.get())
+                assertThat(token).isEqualTo(store.token.value)
                 return object : TestCall<Set<LayoutId>> {
 
                     override fun enqueue(callback: Callback<Set<LayoutId>>) {
@@ -101,7 +101,7 @@ class ThemeImplTest {
             }
 
             override fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> {
-                assertThat(token).isEqualTo(store.get())
+                assertThat(token).isEqualTo(store.token.value)
                 return object : TestCall<Map<LayoutId, String>> {
 
                     override fun enqueue(callback: Callback<Map<LayoutId, String>>) {
@@ -170,7 +170,7 @@ class ThemeImplTest {
         val step = object : InfinityService.ConferenceStep {
 
             override fun theme(token: Token): Call<Map<String, SplashScreenResponse>> {
-                assertThat(token).isEqualTo(store.get())
+                assertThat(token).isEqualTo(store.token.value)
                 return object : TestCall<Map<String, SplashScreenResponse>> {
 
                     override fun enqueue(callback: Callback<Map<String, SplashScreenResponse>>) {
@@ -180,7 +180,7 @@ class ThemeImplTest {
             }
 
             override fun theme(path: String, token: Token): String {
-                assertThat(token).isEqualTo(store.get())
+                assertThat(token).isEqualTo(store.token.value)
                 return pathToUrl(path)
             }
         }

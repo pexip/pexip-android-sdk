@@ -36,7 +36,7 @@ internal class RegisteredDevicesFetcherTest {
 
     @BeforeTest
     fun setUp() {
-        store = TokenStore.create(Random.nextToken())
+        store = TokenStore(Random.nextToken())
     }
 
     @Test
@@ -51,7 +51,7 @@ internal class RegisteredDevicesFetcherTest {
             ): Call<List<RegistrationResponse>> = object : TestCall<List<RegistrationResponse>> {
 
                 override fun enqueue(callback: Callback<List<RegistrationResponse>>) {
-                    assertEquals(store.get(), token)
+                    assertEquals(store.token.value, token)
                     assertEquals(q, query)
                     callback.onFailure(this, throwable)
                 }
@@ -80,7 +80,7 @@ internal class RegisteredDevicesFetcherTest {
             ): Call<List<RegistrationResponse>> = object : TestCall<List<RegistrationResponse>> {
 
                 override fun enqueue(callback: Callback<List<RegistrationResponse>>) {
-                    assertEquals(store.get(), token)
+                    assertEquals(store.token.value, token)
                     assertEquals(q, query)
                     callback.onSuccess(this, responses)
                 }

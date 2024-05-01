@@ -268,7 +268,7 @@ internal class RosterImpl(
         error: (Throwable) -> Throwable,
         call: (Token) -> Call<T>,
     ): T = try {
-        retry { call(store.get()).await() }
+        retry { call(store.token.value).await() }
     } catch (e: CancellationException) {
         throw e
     } catch (t: Throwable) {

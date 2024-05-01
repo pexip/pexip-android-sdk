@@ -78,7 +78,7 @@ internal class ThemeImpl(
                 guestLayout = guestLayout,
                 enableOverlayText = enableOverlayText,
             )
-            retry { step.transformLayout(request, store.get()).await() }
+            retry { step.transformLayout(request, store.token.value).await() }
         } catch (e: CancellationException) {
             throw e
         } catch (t: Throwable) {
@@ -112,7 +112,7 @@ internal class ThemeImpl(
         return SplashScreen(
             key = key,
             elements = response.elements.mapNotNull(::toElement),
-            backgroundUrl = step.theme(response.background.path, store.get()),
+            backgroundUrl = step.theme(response.background.path, store.token.value),
         )
     }
 
@@ -133,7 +133,7 @@ internal class ThemeImpl(
         .map { theme(it).await() }
         .retryOrDefault(::emptyMap)
 
-    private fun TokenStore.asFlow() = flow { emit(get()) }
+    private fun TokenStore.asFlow() = flow { emit(token.value) }
 
     private fun <T> Flow<T>.retryOrDefault(value: () -> T) = retryWhen { cause, attempt ->
         when (cause) {

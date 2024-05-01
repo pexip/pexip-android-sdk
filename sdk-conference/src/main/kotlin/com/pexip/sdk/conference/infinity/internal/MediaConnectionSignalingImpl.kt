@@ -85,7 +85,7 @@ internal class MediaConnectionSignalingImpl(
                     present = if (presentationInMain) "main" else null,
                     fecc = fecc,
                 )
-                val response = retry { participantStep.calls(request, store.get()).await() }
+                val response = retry { participantStep.calls(request, store.token.value).await() }
                 callStep.complete(participantStep.call(response.callId))
                 response
             }
@@ -94,7 +94,7 @@ internal class MediaConnectionSignalingImpl(
                     sdp = description,
                     fecc = fecc,
                 )
-                retry { step.update(request, store.get()).await() }
+                retry { step.update(request, store.token.value).await() }
             }
         }
         return if (response.offerIgnored || response.sdp.isBlank()) null else response.sdp
@@ -103,18 +103,18 @@ internal class MediaConnectionSignalingImpl(
     override suspend fun onOfferIgnored() {
         val callStep = callStep.await()
         val request = AckRequest(offerIgnored = true)
-        retry { callStep.ack(request, store.get()).await() }
+        retry { callStep.ack(request, store.token.value).await() }
     }
 
     override suspend fun onAnswer(description: String) {
         val callStep = callStep.await()
         val request = AckRequest(sdp = description)
-        retry { callStep.ack(request, store.get()).await() }
+        retry { callStep.ack(request, store.token.value).await() }
     }
 
     override suspend fun onAck() {
         val callStep = callStep.await()
-        retry { callStep.ack(store.get()).await() }
+        retry { callStep.ack(store.token.value).await() }
     }
 
     override suspend fun onCandidate(candidate: String, mid: String, ufrag: String, pwd: String) {
@@ -125,43 +125,43 @@ internal class MediaConnectionSignalingImpl(
             ufrag = ufrag,
             pwd = pwd,
         )
-        retry { callStep.newCandidate(request, store.get()).await() }
+        retry { callStep.newCandidate(request, store.token.value).await() }
     }
 
     override suspend fun onDtmf(digits: String) {
         val callStep = callStep.await()
         val request = DtmfRequest(digits)
-        retry { callStep.dtmf(request, store.get()).await() }
+        retry { callStep.dtmf(request, store.token.value).await() }
     }
 
     override suspend fun onAudioMuted() = retry {
-        participantStep.mute(store.get()).await()
+        participantStep.mute(store.token.value).await()
     }
 
     override suspend fun onAudioUnmuted() = retry {
-        participantStep.unmute(store.get()).await()
+        participantStep.unmute(store.token.value).await()
     }
 
     override suspend fun onVideoMuted() = retry {
-        participantStep.videoMuted(store.get()).await()
+        participantStep.videoMuted(store.token.value).await()
     }
 
     override suspend fun onVideoUnmuted() = retry {
-        participantStep.videoUnmuted(store.get()).await()
+        participantStep.videoUnmuted(store.token.value).await()
     }
 
     override suspend fun onTakeFloor() = retry {
-        participantStep.takeFloor(store.get()).await()
+        participantStep.takeFloor(store.token.value).await()
     }
 
     override suspend fun onReleaseFloor() = retry {
-        participantStep.releaseFloor(store.get()).await()
+        participantStep.releaseFloor(store.token.value).await()
     }
 
     override suspend fun onPreferredAspectRatio(aspectRatio: Float) {
         try {
             val request = PreferredAspectRatioRequest(aspectRatio.coerceIn(0f, 2f))
-            retry { participantStep.preferredAspectRatio(request, store.get()).await() }
+            retry { participantStep.preferredAspectRatio(request, store.token.value).await() }
         } catch (e: CancellationException) {
             throw e
         } catch (t: Throwable) {

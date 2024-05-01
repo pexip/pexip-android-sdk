@@ -92,7 +92,7 @@ class RosterImplTest {
     fun setUp() {
         event = MutableSharedFlow(extraBufferCapacity = 1)
         participantId = Random.nextParticipantId()
-        store = TokenStore.create(Random.nextToken())
+        store = TokenStore(Random.nextToken())
     }
 
     @Test
@@ -282,7 +282,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun buzz(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -328,7 +328,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun buzz(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -383,7 +383,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun unlock(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -429,7 +429,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun unlock(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -484,7 +484,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun disconnect(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -530,7 +530,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun disconnect(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -573,7 +573,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role, "request").isEqualTo(ApiRole.HOST)
                             return object : TestCall<Boolean> {
 
@@ -620,7 +620,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role).isEqualTo(ApiRole.HOST)
                             return object : TestCall<Boolean> {
 
@@ -664,7 +664,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role, "request").isEqualTo(ApiRole.GUEST)
                             return object : TestCall<Boolean> {
 
@@ -711,7 +711,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role).isEqualTo(ApiRole.GUEST)
                             return object : TestCall<Boolean> {
 
@@ -767,7 +767,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun mute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Unit> {
 
                                 override fun enqueue(callback: Callback<Unit>) =
@@ -813,7 +813,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun mute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Unit> {
 
                                 override fun enqueue(callback: Callback<Unit>) =
@@ -868,7 +868,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun unmute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Unit> {
 
                                 override fun enqueue(callback: Callback<Unit>) =
@@ -914,7 +914,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun unmute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Unit> {
 
                                 override fun enqueue(callback: Callback<Unit>) =
@@ -969,7 +969,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun videoMuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Unit> {
 
                                 override fun enqueue(callback: Callback<Unit>) =
@@ -1015,7 +1015,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun videoMuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Unit> {
 
                                 override fun enqueue(callback: Callback<Unit>) =
@@ -1070,7 +1070,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun videoUnmuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Unit> {
 
                                 override fun enqueue(callback: Callback<Unit>) =
@@ -1116,7 +1116,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun videoUnmuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Unit> {
 
                                 override fun enqueue(callback: Callback<Unit>) =
@@ -1171,7 +1171,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun spotlightOn(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -1217,7 +1217,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun spotlightOn(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -1272,7 +1272,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun spotlightOff(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -1318,7 +1318,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun spotlightOff(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -1373,7 +1373,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun clearBuzz(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -1419,7 +1419,7 @@ class RosterImplTest {
                     return object : InfinityService.ParticipantStep {
 
                         override fun clearBuzz(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.get())
+                            assertThat(token, "token").isEqualTo(store.token.value)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -1456,7 +1456,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun clearAllBuzz(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1480,7 +1480,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun clearAllBuzz(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1503,7 +1503,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun lock(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1527,7 +1527,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun lock(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1550,7 +1550,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun unlock(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1574,7 +1574,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun unlock(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1597,7 +1597,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun muteGuests(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1621,7 +1621,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun muteGuests(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1644,7 +1644,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun unmuteGuests(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1668,7 +1668,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun unmuteGuests(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1691,7 +1691,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun disconnect(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =
@@ -1715,7 +1715,7 @@ class RosterImplTest {
             step = object : InfinityService.ConferenceStep {
 
                 override fun disconnect(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.get())
+                    assertThat(token, "token").isEqualTo(store.token.value)
                     return object : TestCall<Boolean> {
 
                         override fun enqueue(callback: Callback<Boolean>) =

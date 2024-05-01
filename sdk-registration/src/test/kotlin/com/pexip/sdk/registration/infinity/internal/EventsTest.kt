@@ -45,7 +45,7 @@ class EventsTest {
     @BeforeTest
     fun setUp() {
         event = MutableSharedFlow()
-        store = TokenStore.create(Random.nextToken())
+        store = TokenStore(Random.nextToken())
     }
 
     @Test
@@ -84,7 +84,7 @@ class EventsTest {
     private fun TestScope.testRegistrationStep() = object : InfinityService.RegistrationStep {
 
         override fun events(token: Token): EventSourceFactory {
-            assertThat(token, "token").isEqualTo(store.get())
+            assertThat(token, "token").isEqualTo(store.token.value)
             return TestEventSourceFactory(backgroundScope, event)
         }
     }

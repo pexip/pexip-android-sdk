@@ -19,7 +19,6 @@ import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.api.infinity.TokenStore
-import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
@@ -67,7 +66,7 @@ public class InfinityConference private constructor(
     @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
     private val context = newSingleThreadContext("InfinityConference")
     private val scope = CoroutineScope(SupervisorJob() + context)
-    private val store = TokenStore.create(response)
+    private val store = TokenStore(response)
 
     private val event = step.events(store).shareIn(
         scope = scope,

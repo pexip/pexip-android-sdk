@@ -68,7 +68,7 @@ internal class MediaConnectionSignalingImplTest {
 
     @BeforeTest
     fun setUp() {
-        store = TokenStore.create(Random.nextToken())
+        store = TokenStore(Random.nextToken())
         event = MutableSharedFlow(extraBufferCapacity = 1)
         iceServers = List(10) {
             IceServer.Builder(listOf("turn:turn$it.example.com:347?transport=udp"))
@@ -308,7 +308,7 @@ internal class MediaConnectionSignalingImplTest {
                             assertThat(request::sdp).isEqualTo(sdp)
                             assertThat(request::present).isEqualTo(if (presentationInMain) "main" else null)
                             assertThat(request::callType).isEqualTo(callType)
-                            assertThat(token).isEqualTo(store.get())
+                            assertThat(token).isEqualTo(store.token.value)
                             callback.onSuccess(this, response)
                         }
                     }
@@ -371,7 +371,7 @@ internal class MediaConnectionSignalingImplTest {
                     ): Call<UpdateResponse> = object : TestCall<UpdateResponse> {
                         override fun enqueue(callback: Callback<UpdateResponse>) {
                             assertThat(request::sdp).isEqualTo(sdp)
-                            assertThat(token).isEqualTo(store.get())
+                            assertThat(token).isEqualTo(store.token.value)
                             callback.onSuccess(this, response)
                         }
                     }
@@ -410,7 +410,7 @@ internal class MediaConnectionSignalingImplTest {
                         override fun enqueue(callback: Callback<Unit>) {
                             assertThat(request::sdp).isEmpty()
                             assertThat(request::offerIgnored).isTrue()
-                            assertThat(token).isEqualTo(store.get())
+                            assertThat(token).isEqualTo(store.token.value)
                             called.complete()
                             callback.onSuccess(this, Unit)
                         }
@@ -440,7 +440,7 @@ internal class MediaConnectionSignalingImplTest {
                         override fun enqueue(callback: Callback<Unit>) {
                             assertThat(request::sdp).isEqualTo(sdp)
                             assertThat(request::offerIgnored).isFalse()
-                            assertThat(token).isEqualTo(store.get())
+                            assertThat(token).isEqualTo(store.token.value)
                             called.complete()
                             callback.onSuccess(this, Unit)
                         }
@@ -500,7 +500,7 @@ internal class MediaConnectionSignalingImplTest {
                             assertThat(request::mid).isEqualTo(mid)
                             assertThat(request::ufrag).isEqualTo(ufrag)
                             assertThat(request::pwd).isEqualTo(pwd)
-                            assertThat(token).isEqualTo(store.get())
+                            assertThat(token).isEqualTo(store.token.value)
                             called.complete()
                             callback.onSuccess(this, Unit)
                         }
@@ -552,7 +552,7 @@ internal class MediaConnectionSignalingImplTest {
             participantStep = object : InfinityService.ParticipantStep {
                 override fun mute(token: Token): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertThat(token).isEqualTo(store.get())
+                        assertThat(token).isEqualTo(store.token.value)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -577,7 +577,7 @@ internal class MediaConnectionSignalingImplTest {
             participantStep = object : InfinityService.ParticipantStep {
                 override fun unmute(token: Token): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertThat(token).isEqualTo(store.get())
+                        assertThat(token).isEqualTo(store.token.value)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -602,7 +602,7 @@ internal class MediaConnectionSignalingImplTest {
             participantStep = object : InfinityService.ParticipantStep {
                 override fun videoMuted(token: Token): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertThat(token).isEqualTo(store.get())
+                        assertThat(token).isEqualTo(store.token.value)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -627,7 +627,7 @@ internal class MediaConnectionSignalingImplTest {
             participantStep = object : InfinityService.ParticipantStep {
                 override fun videoUnmuted(token: Token): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertThat(token).isEqualTo(store.get())
+                        assertThat(token).isEqualTo(store.token.value)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -652,7 +652,7 @@ internal class MediaConnectionSignalingImplTest {
             participantStep = object : InfinityService.ParticipantStep {
                 override fun takeFloor(token: Token): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertThat(token).isEqualTo(store.get())
+                        assertThat(token).isEqualTo(store.token.value)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
@@ -677,7 +677,7 @@ internal class MediaConnectionSignalingImplTest {
             participantStep = object : InfinityService.ParticipantStep {
                 override fun releaseFloor(token: Token): Call<Unit> = object : TestCall<Unit> {
                     override fun enqueue(callback: Callback<Unit>) {
-                        assertThat(token).isEqualTo(store.get())
+                        assertThat(token).isEqualTo(store.token.value)
                         called.complete()
                         callback.onSuccess(this, Unit)
                     }
