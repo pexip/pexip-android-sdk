@@ -144,21 +144,6 @@ public interface InfinityService {
          * @param token a current valid token
          * @return a new token for the conference
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun refreshToken(token: String): Call<RefreshTokenResponse> =
-            throw NotImplementedError()
-
-        /**
-         * Refreshes the token.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#refresh_token).
-         *
-         * @param token a current valid token
-         * @return a new token for the conference
-         */
         public fun refreshToken(token: Token): Call<RefreshTokenResponse> =
             throw NotImplementedError()
 
@@ -170,37 +155,7 @@ public interface InfinityService {
          * @param token a valid token
          * @return true if operation was successful, false otherwise
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun releaseToken(token: String): Call<Boolean> = throw NotImplementedError()
-
-        /**
-         * Releases the token.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#release_token).
-         *
-         * @param token a valid token
-         * @return true if operation was successful, false otherwise
-         */
         public fun releaseToken(token: Token): Call<Boolean> = throw NotImplementedError()
-
-        /**
-         * Sends a message to all participants in the conference.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#message).
-         *
-         * @param request a request body
-         * @param token a valid token
-         * @return true if operation was successful, false otherwise
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun message(request: MessageRequest, token: String): Call<Boolean> =
-            throw NotImplementedError()
 
         /**
          * Sends a message to all participants in the conference.
@@ -224,40 +179,7 @@ public interface InfinityService {
          * @param token a valid token
          * @return a list of available layouts
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun availableLayouts(token: String): Call<Set<LayoutId>> =
-            throw NotImplementedError()
-
-        /**
-         * This returns a list of all available layouts for the given conference.
-         *
-         * This includes the inbuilt layouts plus any custom layouts available on this conference.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#available_layouts).
-         *
-         * @param token a valid token
-         * @return a list of available layouts
-         */
         public fun availableLayouts(token: Token): Call<Set<LayoutId>> = throw NotImplementedError()
-
-        /**
-         * This provides all SVG representations of the layouts that are active
-         * on the given conference.
-         *
-         * See [documentation](https://docs.pexip.com/beta/api_client/api_rest.htm#layout_svgs).
-         *
-         * @param token a valid token
-         * @return a colleciton of SVG representations
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun layoutSvgs(token: String): Call<Map<LayoutId, String>> =
-            throw NotImplementedError()
 
         /**
          * This provides all SVG representations of the layouts that are active
@@ -269,24 +191,6 @@ public interface InfinityService {
          * @return a collection of SVG representations
          */
         public fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> =
-            throw NotImplementedError()
-
-        /**
-         * This request changes the conference layout, controls streaming content,
-         * and enables/disables indicators and overlay text.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#transform_layout).
-         *
-         * @param request a request containing changes to apply to the conference layout
-         * @param token a valid token
-         * @throws IllegalLayoutTransformException if the requested transformation is not supported
-         * @return true if operation was successful, false otherwise
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun transformLayout(request: TransformLayoutRequest, token: String): Call<Boolean> =
             throw NotImplementedError()
 
         /**
@@ -313,23 +217,6 @@ public interface InfinityService {
          * @param token a valid token
          * @return a [Map] of [SplashScreenResponse]
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun theme(token: String): Call<Map<String, SplashScreenResponse>> =
-            throw NotImplementedError()
-
-        /**
-         * Provides the theme resources of the conference (direct media only). Used in conjunction
-         * with the **splash_screen** server event, the relevant theme resources can be used to
-         * locally render a particular splash screen on the client.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#theme).
-         *
-         * @param token a valid token
-         * @return a [Map] of [SplashScreenResponse]
-         */
         public fun theme(token: Token): Call<Map<String, SplashScreenResponse>> =
             throw NotImplementedError()
 
@@ -341,35 +228,7 @@ public interface InfinityService {
          * @param token a valid token
          * @return a URL of the resource
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun theme(path: String, token: String): String = throw NotImplementedError()
-
-        /**
-         * Creates a URL that points to a specific theme resource, such as an image.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#theme).
-         *
-         * @param token a valid token
-         * @return a URL of the resource
-         */
         public fun theme(path: String, token: Token): String = throw NotImplementedError()
-
-        /**
-         * Lowers all raised hands.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#clearallbuzz).
-         *
-         * @param token a valid token
-         * @return true if operation was successful, false otherwise
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun clearAllBuzz(token: String): Call<Boolean> = throw NotImplementedError()
 
         /**
          * Locks the conference.
@@ -447,19 +306,6 @@ public interface InfinityService {
          *
          * @param token a valid token
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun events(token: String): EventSourceFactory = throw NotImplementedError()
-
-        /**
-         * Subscribes to server-side events.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#server_sent).
-         *
-         * @param token a valid token
-         */
         public fun events(token: Token): EventSourceFactory = throw NotImplementedError()
 
         /**
@@ -515,43 +361,8 @@ public interface InfinityService {
          * @throws IllegalStateException on server error
          * @return a new registration token
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun refreshToken(token: String): Call<RefreshRegistrationTokenResponse> =
-            throw NotImplementedError()
-
-        /**
-         * Refreshes the token.
-         *
-         * @param token a current valid token
-         * @throws IllegalArgumentException if token is blank
-         * @throws NoSuchRegistrationException if device alias does not exist
-         * @throws InvalidTokenException if token is not valid
-         * @throws NoSuchNodeException if the node does not exist
-         * @throws IllegalStateException on server error
-         * @return a new registration token
-         */
         public fun refreshToken(token: Token): Call<RefreshRegistrationTokenResponse> =
             throw NotImplementedError()
-
-        /**
-         * Releases the token.
-         *
-         * @param token a valid token
-         * @throws IllegalArgumentException if token is blank
-         * @throws NoSuchRegistrationException if device alias does not exist
-         * @throws InvalidTokenException if token is not valid
-         * @throws NoSuchNodeException if the node does not exist
-         * @throws IllegalStateException on server error
-         * @return true if operation was successful, false otherwise
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun releaseToken(token: String): Call<Boolean> = throw NotImplementedError()
 
         /**
          * Releases the token.
@@ -573,37 +384,7 @@ public interface InfinityService {
          * @throws IllegalArgumentException if token is blank
          * @return an event source factory
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun events(token: String): EventSourceFactory = throw NotImplementedError()
-
-        /**
-         * Subscribes to server-side events.
-         *
-         * @param token a valid token
-         * @throws IllegalArgumentException if token is blank
-         * @return an event source factory
-         */
         public fun events(token: Token): EventSourceFactory = throw NotImplementedError()
-
-        /**
-         * Returns a list of registrations.
-         *
-         * @param token a valid token
-         * @param query a search query
-         * @throws IllegalArgumentException if token is blank
-         * @return a list of registrations
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun registrations(
-            token: String,
-            query: String = "",
-        ): Call<List<RegistrationResponse>> = throw NotImplementedError()
 
         /**
          * Returns a list of registrations.
@@ -647,39 +428,7 @@ public interface InfinityService {
          * @param token a valid token
          * @return an answer
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun calls(request: CallsRequest, token: String): Call<CallsResponse> =
-            throw NotImplementedError()
-
-        /**
-         * Requests an upgrade of the call to include media.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#calls).
-         *
-         * @param request a request body
-         * @param token a valid token
-         * @return an answer
-         */
         public fun calls(request: CallsRequest, token: Token): Call<CallsResponse> =
-            throw NotImplementedError()
-
-        /**
-         * Sends DTMF digits to the participant.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#dtmf).
-         *
-         * @param request a request body
-         * @param token a valid token
-         * @return true if successful, false otherwise
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun dtmf(request: DtmfRequest, token: String): Call<Boolean> =
             throw NotImplementedError()
 
         /**
@@ -701,33 +450,7 @@ public interface InfinityService {
          *
          * @param token a valid token
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun mute(token: String): Call<Unit> = throw NotImplementedError()
-
-        /**
-         * Requests to mute participant's audio.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#mute).
-         *
-         * @param token a valid token
-         */
         public fun mute(token: Token): Call<Unit> = throw NotImplementedError()
-
-        /**
-         * Requests to unmute participant's audio.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#mute).
-         *
-         * @param token a valid token
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun unmute(token: String): Call<Unit> = throw NotImplementedError()
 
         /**
          * Requests to unmute participant's audio.
@@ -745,33 +468,7 @@ public interface InfinityService {
          *
          * @param token a valid token
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun videoMuted(token: String): Call<Unit> = throw NotImplementedError()
-
-        /**
-         * Requests to mute participant's video.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#videomute).
-         *
-         * @param token a valid token
-         */
         public fun videoMuted(token: Token): Call<Unit> = throw NotImplementedError()
-
-        /**
-         * Requests to unmute participant's video.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#videomute).
-         *
-         * @param token a valid token
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun videoUnmuted(token: String): Call<Unit> = throw NotImplementedError()
 
         /**
          * Requests to unmute participant's video.
@@ -787,29 +484,7 @@ public interface InfinityService {
          *
          * @param token a valid token
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun takeFloor(token: String): Call<Unit> = throw NotImplementedError()
-
-        /**
-         * Requests to take presentation floor.
-         *
-         * @param token a valid token
-         */
         public fun takeFloor(token: Token): Call<Unit> = throw NotImplementedError()
-
-        /**
-         * Requests to release presentation floor.
-         *
-         * @param token a valid token
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun releaseFloor(token: String): Call<Unit> = throw NotImplementedError()
 
         /**
          * Requests to release presentation floor.
@@ -827,41 +502,8 @@ public interface InfinityService {
          * @param token a valid token
          * @return true if operation was successful, false otherwise
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun message(request: MessageRequest, token: String): Call<Boolean> =
-            throw NotImplementedError()
-
-        /**
-         * Sends a message to this participant.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#message).
-         *
-         * @param request a request body
-         * @param token a valid token
-         * @return true if operation was successful, false otherwise
-         */
         public fun message(request: MessageRequest, token: Token): Call<Boolean> =
             throw NotImplementedError()
-
-        /**
-         * Specifies the aspect ratio the participant would like to receive.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#preferred_aspect_ratio).
-         *
-         * @param request a request body
-         * @param token a valid token
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun preferredAspectRatio(
-            request: PreferredAspectRatioRequest,
-            token: String,
-        ): Call<Boolean> = throw NotImplementedError()
 
         /**
          * Specifies the aspect ratio the participant would like to receive.
@@ -884,35 +526,7 @@ public interface InfinityService {
          * @param token a valid token
          * @return true if operation was successful, false otherwise
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun buzz(token: String): Call<Boolean> = throw NotImplementedError()
-
-        /**
-         * Raises a participant's hand.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#buzz).
-         *
-         * @param token a valid token
-         * @return true if operation was successful, false otherwise
-         */
         public fun buzz(token: Token): Call<Boolean> = throw NotImplementedError()
-
-        /**
-         * Lowers a participant's hand.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#clearbuzz).
-         *
-         * @param token a valid token
-         * @return true if operation was successful, false otherwise
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun clearBuzz(token: String): Call<Boolean> = throw NotImplementedError()
 
         /**
          * Lowers a participant's hand.
@@ -954,20 +568,6 @@ public interface InfinityService {
          * @return true if operation was successful, false otherwise
          */
         public fun unlock(token: Token): Call<Boolean> = throw NotImplementedError()
-
-        /**
-         * Disconnects a participant.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#disconnect).
-         *
-         * @param token a valid token
-         * @return true if operation was successful, false otherwise
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun disconnect(token: String): Call<Boolean> = throw NotImplementedError()
 
         /**
          * Disconnects a participant.
@@ -1027,24 +627,6 @@ public interface InfinityService {
          * @throws NoSuchNodeException if the node doesn't exist
          * @throws NoSuchConferenceException if the conference doesn't exist
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun newCandidate(request: NewCandidateRequest, token: String): Call<Unit> =
-            throw NotImplementedError()
-
-        /**
-         * Sends the new ICE candidate.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#new_candidate).
-         *
-         * @param request a request body
-         * @param token a valid token
-         * @throws InvalidTokenException if the token is invalid
-         * @throws NoSuchNodeException if the node doesn't exist
-         * @throws NoSuchConferenceException if the conference doesn't exist
-         */
         public fun newCandidate(request: NewCandidateRequest, token: Token): Call<Unit> =
             throw NotImplementedError()
 
@@ -1058,42 +640,7 @@ public interface InfinityService {
          * @throws NoSuchNodeException if the node doesn't exist
          * @throws NoSuchConferenceException if the conference doesn't exist
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun ack(token: String): Call<Unit> = throw NotImplementedError()
-
-        /**
-         * Acks the call.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack).
-         *
-         * @param token a valid token
-         * @throws InvalidTokenException if the token is invalid
-         * @throws NoSuchNodeException if the node doesn't exist
-         * @throws NoSuchConferenceException if the conference doesn't exist
-         */
         public fun ack(token: Token): Call<Unit> = throw NotImplementedError()
-
-        /**
-         * Acks the call.
-         *
-         * This is only used for direct media calls and should contain the local SDP.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#ack).
-         *
-         * @param request a request body
-         * @param token a valid token
-         * @throws InvalidTokenException if the token is invalid
-         * @throws NoSuchNodeException if the node doesn't exist
-         * @throws NoSuchConferenceException if the conference doesn't exist
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun ack(request: AckRequest, token: String): Call<Unit> = throw NotImplementedError()
 
         /**
          * Acks the call.
@@ -1122,42 +669,7 @@ public interface InfinityService {
          * @throws NoSuchConferenceException if the conference doesn't exist
          * @return a new SDP
          */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun update(request: UpdateRequest, token: String): Call<UpdateResponse> =
-            throw NotImplementedError()
-
-        /**
-         * Sends a new SDP.
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#update).
-         *
-         * @param request a request body
-         * @param token a valid token
-         * @throws InvalidTokenException if the token is invalid
-         * @throws NoSuchNodeException if the node doesn't exist
-         * @throws NoSuchConferenceException if the conference doesn't exist
-         * @return a new SDP
-         */
         public fun update(request: UpdateRequest, token: Token): Call<UpdateResponse> =
-            throw NotImplementedError()
-
-        /**
-         * Sends DTMF digits to the participant (gateway call only).
-         *
-         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#call_dtmf).
-         *
-         * @param request a request body
-         * @param token a valid token
-         * @return true if successful, false otherwise
-         */
-        @Deprecated(
-            message = "Use a version of this method that accepts a Token.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun dtmf(request: DtmfRequest, token: String): Call<Boolean> =
             throw NotImplementedError()
 
         /**

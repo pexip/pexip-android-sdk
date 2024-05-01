@@ -18,8 +18,6 @@ package com.pexip.sdk.conference.coroutines
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
-import com.pexip.sdk.conference.Message
-import com.pexip.sdk.conference.Messenger
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -34,15 +32,3 @@ public fun Conference.getConferenceEvents(): Flow<ConferenceEvent> = callbackFlo
     registerConferenceEventListener(listener)
     awaitClose { unregisterConferenceEventListener(listener) }
 }
-
-/**
- * Converts this [Messenger] to a [Flow] that emits [Message]s.
- *
- * @return a flow of messages
- */
-@Deprecated(
-    message = "Use the member method instead.",
-    replaceWith = ReplaceWith("this.message"),
-    level = DeprecationLevel.ERROR,
-)
-public fun Messenger.getMessages(): Flow<Message> = message

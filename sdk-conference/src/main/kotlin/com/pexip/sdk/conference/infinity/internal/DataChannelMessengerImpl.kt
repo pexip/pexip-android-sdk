@@ -18,18 +18,15 @@ package com.pexip.sdk.conference.infinity.internal
 import com.pexip.sdk.api.infinity.DataChannelMessage
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
+import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.media.Data
 import com.pexip.sdk.media.DataChannel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -40,18 +37,11 @@ internal class DataChannelMessengerImpl(
     private val senderName: String,
     private val dataChannel: DataChannel,
     private val atProvider: () -> Instant = Clock.System::now,
-) : AbstractMessenger(scope) {
+) : Messenger {
 
     override val message: Flow<Message> = dataChannel.data
         .mapNotNull(::toMessage)
         .shareIn(scope, SharingStarted.Eagerly)
-
-    init {
-        message
-            .onEach(::onMessage)
-            .flowOn(Dispatchers.Main.immediate)
-            .launchIn(scope)
-    }
 
     override suspend fun send(
         type: String,

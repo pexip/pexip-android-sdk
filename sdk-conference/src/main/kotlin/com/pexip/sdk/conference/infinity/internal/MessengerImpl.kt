@@ -23,18 +23,15 @@ import com.pexip.sdk.api.infinity.MessageRequest
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.conference.MessageNotSentException
+import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -47,7 +44,7 @@ internal class MessengerImpl(
     private val store: TokenStore,
     private val step: InfinityService.ConferenceStep,
     private val atProvider: () -> Instant = Clock.System::now,
-) : AbstractMessenger(scope) {
+) : Messenger {
 
     override val message: Flow<Message> = event
         .filterIsInstance<MessageReceivedEvent>()
@@ -62,13 +59,6 @@ internal class MessengerImpl(
             )
         }
         .shareIn(scope, SharingStarted.Eagerly)
-
-    init {
-        message
-            .onEach(::onMessage)
-            .flowOn(Dispatchers.Main.immediate)
-            .launchIn(scope)
-    }
 
     override suspend fun send(
         type: String,
