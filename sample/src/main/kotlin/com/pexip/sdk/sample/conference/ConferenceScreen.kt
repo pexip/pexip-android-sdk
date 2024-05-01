@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,13 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Message
+import androidx.compose.material.icons.automirrored.rounded.ScreenShare
+import androidx.compose.material.icons.automirrored.rounded.StopScreenShare
 import androidx.compose.material.icons.rounded.CallEnd
-import androidx.compose.material.icons.rounded.Message
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Pin
-import androidx.compose.material.icons.rounded.ScreenShare
 import androidx.compose.material.icons.rounded.Speed
-import androidx.compose.material.icons.rounded.StopScreenShare
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -140,7 +140,7 @@ fun ConferenceScreen(
                     )
                 }
             }
-            BoxWithConstraints(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .safeContentPadding(),
@@ -308,8 +308,8 @@ private fun ScreenShareIconButton(rendering: ConferenceRendering, modifier: Modi
     ) {
         Icon(
             imageVector = when (rendering.screenCapturing) {
-                true -> Icons.Rounded.StopScreenShare
-                false -> Icons.Rounded.ScreenShare
+                true -> Icons.AutoMirrored.Rounded.StopScreenShare
+                false -> Icons.AutoMirrored.Rounded.ScreenShare
             },
             contentDescription = null,
         )
@@ -367,7 +367,7 @@ private fun ConferenceEventsItem(
             rendering.onChatClick()
         },
         leadingIcon = {
-            Icon(imageVector = Icons.Rounded.Message, contentDescription = null)
+            Icon(imageVector = Icons.AutoMirrored.Rounded.Message, contentDescription = null)
         },
         modifier = modifier,
     )
