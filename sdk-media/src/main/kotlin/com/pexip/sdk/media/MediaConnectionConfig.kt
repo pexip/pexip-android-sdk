@@ -32,9 +32,6 @@ public class MediaConnectionConfig private constructor(
     public val farEndCameraControl: Boolean,
 ) {
 
-    @Deprecated(message = "No longer used internally.", level = DeprecationLevel.ERROR)
-    public val continualGathering: Boolean = false
-
     /**
      * A builder for [MediaConnectionConfig].
      *
@@ -70,23 +67,6 @@ public class MediaConnectionConfig private constructor(
          */
         public fun dscp(dscp: Boolean): Builder = apply {
             this.dscp = dscp
-        }
-
-        /**
-         * Sets whether continual gathering of ICE candidates is enabled (default is true).
-         *
-         * Continual gathering never completes and generally performs better when roaming between
-         * different networks, but may cause connection failures when no ICE candidates were found.
-         *
-         * @param continualGathering true if ICE candidates will be gathered continually, false otherwise
-         * @return this builder
-         */
-        @Deprecated(
-            message = "ICE gathering now only happens once. ICE restart is triggered on network change.",
-            level = DeprecationLevel.ERROR,
-        )
-        public fun continualGathering(continualGathering: Boolean): Builder = apply {
-            // noop
         }
 
         /**

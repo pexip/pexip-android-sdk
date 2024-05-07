@@ -163,12 +163,8 @@ public final class com/pexip/sdk/conference/MessageNotSentException : java/lang/
 
 public abstract interface class com/pexip/sdk/conference/Messenger {
 	public abstract fun getMessage ()Lkotlinx/coroutines/flow/Flow;
-	public abstract fun registerMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
-	public abstract fun send (Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
-	public abstract fun send-PEZlPic (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/pexip/sdk/conference/SendCallback;)V
 	public abstract fun send-QiMpFz8 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun send-QiMpFz8$default (Lcom/pexip/sdk/conference/Messenger;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun unregisterMessageListener (Lcom/pexip/sdk/conference/MessageListener;)V
 }
 
 public final class com/pexip/sdk/conference/MuteAllGuestsException : java/lang/RuntimeException {
@@ -437,7 +433,6 @@ public final class com/pexip/sdk/conference/UnspotlightException : java/lang/Run
 
 public final class com/pexip/sdk/conference/coroutines/UtilKt {
 	public static final fun getConferenceEvents (Lcom/pexip/sdk/conference/Conference;)Lkotlinx/coroutines/flow/Flow;
-	public static final fun getMessages (Lcom/pexip/sdk/conference/Messenger;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pexip/sdk/conference/Conference {
