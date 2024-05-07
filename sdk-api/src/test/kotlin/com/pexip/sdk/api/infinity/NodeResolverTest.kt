@@ -17,12 +17,15 @@
 
 package com.pexip.sdk.api.infinity
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import com.pexip.sdk.api.coroutines.await
+import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.net.URL
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @RunWith(Parameterized::class)
 internal class NodeResolverTest(private val host: String, private val url: String?) {
@@ -35,11 +38,8 @@ internal class NodeResolverTest(private val host: String, private val url: Strin
     }
 
     @Test
-    fun `onSuccess is called`() {
-        assertEquals(
-            expected = listOfNotNull(url?.let(::URL)),
-            actual = resolver.resolve(host).execute(),
-        )
+    fun `onSuccess is called`() = runTest {
+        assertThat(resolver.resolve(host).await()).isEqualTo(listOfNotNull(url?.let(::URL)))
     }
 
     companion object {

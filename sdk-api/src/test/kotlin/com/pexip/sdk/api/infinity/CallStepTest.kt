@@ -71,6 +71,11 @@ internal class CallStepTest {
     }
 
     @Test
+    fun `callId returns the correct value`() {
+        assertThat(step::callId).isEqualTo(callId)
+    }
+
+    @Test
     fun `newCandidate throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         val request = Random.nextNewCandidateRequest()
@@ -98,6 +103,7 @@ internal class CallStepTest {
         val request = Random.nextNewCandidateRequest()
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyNewCandidate(request, token)
     }
 
@@ -111,6 +117,7 @@ internal class CallStepTest {
         val request = Random.nextNewCandidateRequest()
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyNewCandidate(request, token)
     }
 
@@ -158,7 +165,9 @@ internal class CallStepTest {
             null -> step.ack(token)
             else -> step.ack(request, token)
         }
-        assertFailure { call.await() }.isInstanceOf<NoSuchConferenceException>()
+        assertFailure { call.await() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyAck(request, token)
     }
 
@@ -174,7 +183,9 @@ internal class CallStepTest {
             null -> step.ack(token)
             else -> step.ack(request, token)
         }
-        assertFailure { call.await() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { call.await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyAck(request, token)
     }
 
@@ -272,6 +283,7 @@ internal class CallStepTest {
         val request = DtmfRequest(Random.nextDigits(8))
         assertFailure { step.dtmf(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
         server.verifyDtmf(request, token)
     }
 
@@ -283,7 +295,9 @@ internal class CallStepTest {
             setBody(json.encodeToString(Box(message)))
         }
         val request = DtmfRequest(Random.nextDigits(8))
-        assertFailure { step.dtmf(request, token).await() }.isInstanceOf<InvalidTokenException>()
+        assertFailure { step.dtmf(request, token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyDtmf(request, token)
     }
 

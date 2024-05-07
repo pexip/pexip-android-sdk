@@ -33,7 +33,7 @@ import okio.ByteString.Companion.encodeUtf8
 
 internal class RegistrationStepImpl(
     override val requestBuilder: RequestBuilderImpl,
-    private val deviceAlias: String,
+    override val deviceAlias: String,
 ) : InfinityService.RegistrationStep, RequestBuilderImplScope by requestBuilder {
 
     override fun requestToken(

@@ -15,8 +15,15 @@
  */
 package com.pexip.sdk.api.infinity
 
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.hasMessage
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.infinity.test.nextRegistrationId
 import com.pexip.sdk.infinity.test.nextString
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -26,8 +33,6 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.time.Duration.Companion.seconds
 
 internal class RegistrationStepTest {
@@ -60,35 +65,41 @@ internal class RegistrationStepTest {
     }
 
     @Test
-    fun `requestToken throws IllegalStateException`() {
+    fun `deviceAlias returns the correct value`() {
+        assertThat(step::deviceAlias).isEqualTo(deviceAlias)
+    }
+
+    @Test
+    fun `requestToken throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        assertFailsWith<IllegalStateException> { step.requestToken(username, password).execute() }
+        assertFailure { step.requestToken(username, password).await() }
+            .isInstanceOf<IllegalStateException>()
         server.verifyRequestToken()
     }
 
     @Test
-    fun `requestToken throws NoSuchNodeException`() {
+    fun `requestToken throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        assertFailsWith<NoSuchNodeException> { step.requestToken(username, password).execute() }
+        assertFailure { step.requestToken(username, password).await() }
+            .isInstanceOf<NoSuchNodeException>()
         server.verifyRequestToken()
     }
 
     @Test
-    fun `requestToken throws NoSuchRegistrationException`() {
+    fun `requestToken throws NoSuchRegistrationException`() = runTest {
         val message = "Unauthorized"
         server.enqueue {
             setResponseCode(401)
             setBody(message)
         }
-        val e = assertFailsWith<NoSuchRegistrationException> {
-            step.requestToken(username, password).execute()
-        }
-        assertEquals(message, e.message)
+        assertFailure { step.requestToken(username, password).await() }
+            .isInstanceOf<NoSuchRegistrationException>()
+            .hasMessage(message)
         server.verifyRequestToken()
     }
 
     @Test
-    fun `requestToken returns`() {
+    fun `requestToken returns`() = runTest {
         val response = RequestRegistrationTokenResponse(
             token = Random.nextString(),
             registrationId = Random.nextRegistrationId(),
@@ -104,146 +115,154 @@ internal class RegistrationStepTest {
             setResponseCode(200)
             setBody(json.encodeToString(Box(response)))
         }
-        assertEquals(response, step.requestToken(username, password).execute())
+        assertThat(step.requestToken(username, password).await(), "response").isEqualTo(response)
         server.verifyRequestToken()
     }
 
     @Test
-    fun `refreshToken throws IllegalStateException`() {
+    fun `refreshToken throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        assertFailsWith<IllegalStateException> { step.refreshToken(token).execute() }
+        assertFailure { step.refreshToken(token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken throws NoSuchNodeException`() {
+    fun `refreshToken throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        assertFailsWith<NoSuchNodeException> { step.refreshToken(token).execute() }
+        assertFailure { step.refreshToken(token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken throws NoSuchRegistrationException`() {
+    fun `refreshToken throws NoSuchRegistrationException`() = runTest {
         val message = "Unauthorized"
         server.enqueue {
             setResponseCode(401)
             setBody(message)
         }
-        val e = assertFailsWith<NoSuchRegistrationException> { step.refreshToken(token).execute() }
-        assertEquals(message, e.message)
+        assertFailure { step.refreshToken(token).await() }
+            .isInstanceOf<NoSuchRegistrationException>()
+            .hasMessage(message)
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken throws InvalidTokenException`() {
+    fun `refreshToken throws InvalidTokenException`() = runTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        val e = assertFailsWith<InvalidTokenException> { step.refreshToken(token).execute() }
-        assertEquals(message, e.message)
+        assertFailure { step.refreshToken(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken returns`() {
+    fun `refreshToken returns`() = runTest {
         val response = RefreshRegistrationTokenResponse(
             token = Random.nextString(),
             expires = Random.nextInt(10..120).seconds,
         )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
-        assertEquals(response, step.refreshToken(token).execute())
+        assertThat(step.refreshToken(token).await()).isEqualTo(response)
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `releaseToken throws IllegalStateException`() {
+    fun `releaseToken throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        assertFailsWith<IllegalStateException> { step.releaseToken(token).execute() }
+        assertFailure { step.releaseToken(token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `releaseToken throws NoSuchNodeException`() {
+    fun `releaseToken throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        assertFailsWith<NoSuchNodeException> { step.releaseToken(token).execute() }
+        assertFailure { step.releaseToken(token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `releaseToken throws NoSuchRegistrationException`() {
+    fun `releaseToken throws NoSuchRegistrationException`() = runTest {
         val message = "Unauthorized"
         server.enqueue {
             setResponseCode(401)
             setBody(message)
         }
-        val e = assertFailsWith<NoSuchRegistrationException> { step.releaseToken(token).execute() }
-        assertEquals(message, e.message)
+        assertFailure { step.releaseToken(token).await() }
+            .isInstanceOf<NoSuchRegistrationException>()
+            .hasMessage(message)
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `releaseToken throws InvalidTokenException`() {
+    fun `releaseToken throws InvalidTokenException`() = runTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailsWith<InvalidTokenException> { step.releaseToken(token).execute() }
+        assertFailure { step.releaseToken(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `releaseToken returns on 200`() {
+    fun `releaseToken returns on 200`() = runTest {
         val result = Random.nextBoolean()
         server.enqueue {
             setResponseCode(200)
             setBody(json.encodeToString(Box(result)))
         }
-        assertEquals(result, step.releaseToken(token).execute())
+        assertThat(step.releaseToken(token).await(), "response").isEqualTo(result)
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `registrations throws IllegalStateException`() {
+    fun `registrations throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        assertFailsWith<IllegalStateException> { step.registrations(token).execute() }
+        assertFailure { step.registrations(token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyRegistrations(token)
     }
 
     @Test
-    fun `registrations throws NoSuchNodeException`() {
+    fun `registrations throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        assertFailsWith<NoSuchNodeException> { step.registrations(token).execute() }
+        assertFailure { step.registrations(token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyRegistrations(token)
     }
 
     @Test
-    fun `registrations throws NoSuchRegistrationException`() {
+    fun `registrations throws NoSuchRegistrationException`() = runTest {
         val message = "Unauthorized"
         server.enqueue {
             setResponseCode(401)
             setBody(message)
         }
-        val e = assertFailsWith<NoSuchRegistrationException> { step.registrations(token).execute() }
-        assertEquals(message, e.message)
+        assertFailure { step.registrations(token).await() }
+            .isInstanceOf<NoSuchRegistrationException>()
+            .hasMessage(message)
         server.verifyRegistrations(token)
     }
 
     @Test
-    fun `registrations throws InvalidTokenException`() {
+    fun `registrations throws InvalidTokenException`() = runTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailsWith<InvalidTokenException> { step.registrations(token).execute() }
+        assertFailure { step.registrations(token).await() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
         server.verifyRegistrations(token)
     }
 
     @Test
-    fun `registrations returns a list of registrations on 200`() {
+    fun `registrations returns a list of registrations on 200`() = runTest {
         val queries = List(10) { if (it == 0) "" else Random.nextString() }
         queries.forEach { query ->
             val result = List(10) {
@@ -258,7 +277,7 @@ internal class RegistrationStepTest {
                 setResponseCode(200)
                 setBody(json.encodeToString(Box(result)))
             }
-            assertEquals(result, step.registrations(token, query).execute())
+            assertThat(step.registrations(token, query).await(), "response").isEqualTo(result)
             server.verifyRegistrations(token, query)
         }
     }

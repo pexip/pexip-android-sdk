@@ -25,7 +25,7 @@ import okhttp3.Response
 
 internal class RequestBuilderImpl(
     override val infinityService: InfinityServiceImpl,
-    node: Node,
+    override val node: Node,
 ) : InfinityService.RequestBuilder,
     RequestBuilderImplScope,
     InfinityServiceImplScope by infinityService {
