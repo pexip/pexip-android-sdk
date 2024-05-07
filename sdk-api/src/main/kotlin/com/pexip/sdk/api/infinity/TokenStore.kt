@@ -15,13 +15,17 @@
  */
 package com.pexip.sdk.api.infinity
 
-import com.pexip.sdk.api.infinity.internal.RealTokenStore
+import com.pexip.sdk.core.InternalSdkApi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,26 +33,67 @@ import kotlinx.coroutines.withContext
 /**
  * A token store.
  */
-public interface TokenStore {
+@InternalSdkApi
+public class TokenStore(token: Token) {
+
+    private val _token = MutableStateFlow(token)
 
     /**
-     * Gets the token.
-     *
-     * @return a token
+     * The store token.
      */
-    public fun get(): Token
+    public val token: StateFlow<Token> = _token.asStateFlow()
 
     /**
-     * Sets the token.
+     * A helper function to refresh and release the [Token] found in [TokenStore].
      *
-     * @param token a token
+     * Note that this function is not intended for consumers to use directly.
+     *
+     * @param scope a [CoroutineScope] to launch the refresh process in
+     * @param refreshToken a function that refreshes the [Token]
+     * @param releaseToken a function that releases the [Token]
+     * @param onFailure a callback to notify callers about failures
      */
-    public fun set(token: Token)
+    public fun refreshTokenIn(
+        scope: CoroutineScope,
+        refreshToken: suspend (Token) -> Token,
+        releaseToken: suspend (Token) -> Unit,
+        onFailure: suspend (t: Throwable) -> Unit,
+    ): Job = scope.launch(start = CoroutineStart.UNDISPATCHED) {
+        try {
+            while (isActive) {
+                val newToken = update(refreshToken)
+                delay(newToken.expires / 2)
+            }
+        } catch (e: CancellationException) {
+            ensureActive()
+        } catch (t: Throwable) {
+            onFailure(t)
+        } finally {
+            withContext(NonCancellable) {
+                try {
+                    releaseToken(token.value)
+                } catch (t: Throwable) {
+                    // noop
+                }
+            }
+        }
+    }
+
+    internal suspend fun update(block: suspend (Token) -> Token): Token {
+        val token = block(_token.value)
+        _token.value = token
+        return token
+    }
 
     public companion object {
 
         @JvmStatic
-        public fun create(token: Token): TokenStore = RealTokenStore(token)
+        @Deprecated(
+            message = "Should not be used by the consumers of the SDK.",
+            replaceWith = ReplaceWith(expression = "TokenStore(token)"),
+            level = DeprecationLevel.ERROR,
+        )
+        public fun create(token: Token): TokenStore = TokenStore(token)
 
         /**
          * A helper function to refresh and release the [Token] found in [TokenStore].
@@ -60,6 +105,11 @@ public interface TokenStore {
          * @param releaseToken a function that releases the [Token]
          * @param onFailure a callback to notify callers about failures
          */
+        @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+        @Deprecated(
+            message = "Replaced by an instance method.",
+            level = DeprecationLevel.ERROR,
+        )
         public fun TokenStore.refreshTokenIn(
             scope: CoroutineScope,
             refreshToken: suspend (Token) -> Token,
@@ -68,18 +118,17 @@ public interface TokenStore {
         ): Job = scope.launch(start = CoroutineStart.UNDISPATCHED) {
             try {
                 while (isActive) {
-                    val response = refreshToken(get())
-                    set(response)
-                    delay(response.expires / 2)
+                    val newToken = update(refreshToken)
+                    delay(newToken.expires / 2)
                 }
             } catch (e: CancellationException) {
-                throw e
+                ensureActive()
             } catch (t: Throwable) {
                 onFailure(t)
             } finally {
                 withContext(NonCancellable) {
                     try {
-                        releaseToken(get())
+                        releaseToken(token.value)
                     } catch (t: Throwable) {
                         // noop
                     }

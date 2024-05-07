@@ -26,9 +26,10 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal fun InfinityService.RegistrationStep.events(store: TokenStore) = flow { emit(store.get()) }
-    .flatMapLatest { events(it).asFlow() }
-    .retryWhen { _, attempt ->
-        delay(attempt.seconds.coerceAtMost(5.seconds))
-        true
-    }
+internal fun InfinityService.RegistrationStep.events(store: TokenStore) =
+    flow { emit(store.token.value) }
+        .flatMapLatest { events(it).asFlow() }
+        .retryWhen { _, attempt ->
+            delay(attempt.seconds.coerceAtMost(5.seconds))
+            true
+        }

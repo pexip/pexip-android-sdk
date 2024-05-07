@@ -51,7 +51,7 @@ class MessengerImplTest {
     @BeforeTest
     fun setUp() {
         event = MutableSharedFlow(extraBufferCapacity = 1)
-        store = TokenStore.create(Random.nextToken())
+        store = TokenStore(Random.nextToken())
     }
 
     @Test

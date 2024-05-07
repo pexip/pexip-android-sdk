@@ -66,7 +66,7 @@ internal class MessengerImpl(
         participantId: ParticipantId?,
     ): Message {
         val request = MessageRequest(type = type, payload = payload)
-        val token = store.get()
+        val token = store.token.value
         val call = when (participantId) {
             null -> step.message(request, token)
             else -> step.participant(participantId).message(request, token)

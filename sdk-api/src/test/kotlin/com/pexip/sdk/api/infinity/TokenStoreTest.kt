@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,10 @@
  */
 package com.pexip.sdk.api.infinity
 
+import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.fail
-import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
-import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
@@ -27,18 +26,36 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
-import kotlin.random.nextInt
+import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
-class TokenRefresherTest {
+class TokenStoreTest {
+
+    private lateinit var token: Token
+    private lateinit var store: TokenStore
+
+    @BeforeTest
+    fun setUp() {
+        token = Random.nextFakeToken()
+        store = TokenStore(token)
+    }
+
+    @Test
+    fun `token returns the correct value`() = runTest {
+        store.token.test {
+            assertThat(awaitItem(), "token").isEqualTo(token)
+            repeat(10) {
+                val token = store.update { Random.nextFakeToken() }
+                assertThat(awaitItem(), "token").isEqualTo(token)
+            }
+        }
+    }
 
     @Test
     fun `refreshes the token every so often`() = runTest {
         val tokensIndex = AtomicInteger()
-        val tokens = List(10) { TestToken() }
-        val store = TokenStore.create(tokens.first())
+        val tokens = List(10) { Random.nextFakeToken() }
+        val store = TokenStore(tokens.first())
         val releaseTokenDeferred = CompletableDeferred<Token>()
         val job = store.refreshTokenIn(
             scope = this,
@@ -52,11 +69,11 @@ class TokenRefresherTest {
         repeat(tokens.size - 2) {
             val token = tokens[it + 1]
             testScheduler.advanceTimeBy(token.expires / 4)
-            assertThat(store.get(), "token").isEqualTo(token)
+            assertThat(store.token.value, "token").isEqualTo(token)
             testScheduler.advanceTimeBy(token.expires / 4)
             yield()
             val newToken = tokens[it + 2]
-            assertThat(store.get(), "token").isEqualTo(newToken)
+            assertThat(store.token.value, "token").isEqualTo(newToken)
         }
         job.cancelAndJoin()
         assertThat(releaseTokenDeferred.await(), "releaseTokenDeferred")
@@ -66,8 +83,8 @@ class TokenRefresherTest {
     @Test
     fun `invokes the callback on failures`() = runTest {
         val t = Throwable()
-        val token = TestToken()
-        val store = TokenStore.create(token)
+        val token = Random.nextFakeToken()
+        val store = TokenStore(token)
         val tDeferred = CompletableDeferred<Throwable>()
         val releaseTokenDeferred = CompletableDeferred<Token>()
         val job = store.refreshTokenIn(
@@ -87,8 +104,8 @@ class TokenRefresherTest {
     @Test
     fun `ignores releaseToken failures`() = runTest {
         val t = Throwable()
-        val token = TestToken()
-        val store = TokenStore.create(token)
+        val token = Random.nextFakeToken()
+        val store = TokenStore(token)
         val tDeferred = CompletableDeferred<Token>()
         val job = store.refreshTokenIn(
             scope = this,
@@ -102,9 +119,4 @@ class TokenRefresherTest {
         job.cancelAndJoin()
         assertThat(tDeferred.await(), "token").assertThat(token)
     }
-
-    private data class TestToken(
-        override val token: String = Random.nextString(),
-        override val expires: Duration = Random.nextInt(10..120).seconds,
-    ) : Token
 }

@@ -19,7 +19,6 @@ import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestRegistrationTokenResponse
 import com.pexip.sdk.api.infinity.TokenStore
-import com.pexip.sdk.api.infinity.TokenStore.Companion.refreshTokenIn
 import com.pexip.sdk.core.WhileSubscribedWithDebounce
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.UnsupportedInfinityException
@@ -56,7 +55,7 @@ public class InfinityRegistration private constructor(
     @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
     private val context = newSingleThreadContext("InfinityRegistration")
     private val scope = CoroutineScope(SupervisorJob() + context)
-    private val store = TokenStore.create(response)
+    private val store = TokenStore(response)
     private val fetcher = RegisteredDevicesFetcher(step, store)
     private val event = step.events(store).shareIn(
         scope = scope,
