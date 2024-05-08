@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,19 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class RequestTokenRequest(
     @SerialName("conference_extension")
-    public val conferenceExtension: String? = null,
+    val conferenceExtension: String? = null,
     @SerialName("display_name")
-    public val displayName: String? = null,
+    val displayName: String? = null,
     @SerialName("chosen_idp")
-    public val chosenIdp: IdentityProviderId? = null,
+    val chosenIdp: IdentityProviderId? = null,
     @SerialName("sso_token")
-    public val ssoToken: String? = null,
+    val ssoToken: String? = null,
     @SerialName("token")
-    public val incomingToken: String? = null,
+    val incomingToken: String? = null,
     @SerialName("registration_token")
-    public val registrationToken: String? = null,
+    val registrationToken: String? = null,
     @SerialName("direct_media")
-    public val directMedia: Boolean = false,
+    val directMedia: Boolean = false,
+    @SerialName("call_tag")
+    val callTag: String = "",
 )

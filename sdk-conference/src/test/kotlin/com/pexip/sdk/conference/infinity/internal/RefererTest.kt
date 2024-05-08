@@ -48,6 +48,7 @@ import kotlin.time.Duration.Companion.seconds
 class RefererTest {
 
     private lateinit var event: ReferConferenceEvent
+    private lateinit var callTag: String
 
     @BeforeTest
     fun setUp() {
@@ -56,6 +57,7 @@ class RefererTest {
             conferenceAlias = Random.nextString(),
             token = Random.nextString(),
         )
+        callTag = Random.nextString()
     }
 
     @Test
@@ -81,7 +83,7 @@ class RefererTest {
                 return step
             }
         }
-        val referer = RefererImpl(builder, directMedia, ::TestConference)
+        val referer = RefererImpl(builder, callTag, directMedia, ::TestConference)
         assertFailure { referer.refer(event) }
             .isInstanceOf<ReferException>()
             .hasCause(t)
@@ -97,12 +99,14 @@ class RefererTest {
             participantName = Random.nextString(),
             directMediaRequested = Random.nextBoolean(),
             version = VersionResponse(Random.nextString(), Random.nextString()),
+            callTag = callTag,
         )
         val step = object : InfinityService.ConferenceStep {
 
             override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
                 assertThat(request::incomingToken).isEqualTo(event.token)
                 assertThat(request::directMedia).isEqualTo(response.directMediaRequested)
+                assertThat(request::callTag).isEqualTo(response.callTag)
                 return object : TestCall<RequestTokenResponse> {
 
                     override fun enqueue(callback: Callback<RequestTokenResponse>) =
@@ -117,7 +121,7 @@ class RefererTest {
                 return step
             }
         }
-        val referer = RefererImpl(builder, response.directMediaRequested, ::TestConference)
+        val referer = RefererImpl(builder, callTag, response.directMediaRequested, ::TestConference)
         assertThat(referer.refer(event), "conference").isEqualTo(TestConference(step, response))
     }
 

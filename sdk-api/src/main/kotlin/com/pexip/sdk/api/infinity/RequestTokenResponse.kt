@@ -29,31 +29,33 @@ public data class RequestTokenResponse(
     @Serializable(with = DurationAsSecondsStringSerializer::class)
     override val expires: Duration,
     @SerialName("conference_name")
-    public val conferenceName: String,
+    val conferenceName: String,
     @SerialName("participant_uuid")
-    public val participantId: ParticipantId,
+    val participantId: ParticipantId,
     @SerialName("display_name")
-    public val participantName: String,
-    public val version: VersionResponse,
+    val participantName: String,
+    val version: VersionResponse,
     @SerialName("analytics_enabled")
-    public val analyticsEnabled: Boolean = false,
+    val analyticsEnabled: Boolean = false,
     @SerialName("chat_enabled")
-    public val chatEnabled: Boolean = false,
+    val chatEnabled: Boolean = false,
     @SerialName("guests_can_present")
-    public val guestsCanPresent: Boolean = false,
+    val guestsCanPresent: Boolean = false,
     @SerialName("service_type")
-    public val serviceType: ServiceType = ServiceType.UNKNOWN,
-    public val stun: List<StunResponse> = emptyList(),
-    public val turn: List<TurnResponse> = emptyList(),
+    val serviceType: ServiceType = ServiceType.UNKNOWN,
+    val stun: List<StunResponse> = emptyList(),
+    val turn: List<TurnResponse> = emptyList(),
     @SerialName("direct_media")
-    public val directMedia: Boolean = false,
+    val directMedia: Boolean = false,
     @SerialName("use_relay_candidates_only")
-    public val useRelayCandidatesOnly: Boolean = false,
+    val useRelayCandidatesOnly: Boolean = false,
     @SerialName("pex_datachannel_id")
-    public val dataChannelId: Int = -1,
+    val dataChannelId: Int = -1,
     @Serializable(with = DurationAsMillisecondsSerializer::class)
     @SerialName("client_stats_update_interval")
-    public val clientStatsUpdateInterval: Duration = Duration.INFINITE,
+    val clientStatsUpdateInterval: Duration = Duration.INFINITE,
     @Transient
-    public val directMediaRequested: Boolean = false,
+    val directMediaRequested: Boolean = false,
+    @SerialName("call_tag")
+    val callTag: String = "",
 ) : Token
