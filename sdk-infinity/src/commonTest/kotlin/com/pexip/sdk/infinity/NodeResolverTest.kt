@@ -15,8 +15,11 @@
  */
 package com.pexip.sdk.infinity
 
+import assertk.assertFailure
 import assertk.assertThat
+import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.tableOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
@@ -32,12 +35,29 @@ class NodeResolverTest {
     }
 
     @Test
+    fun `throws IllegalArgumentException if the host is invalid`() {
+        tableOf("host", "message")
+            .row("", "host is blank.") // An empty String
+            .row(" ", "host is blank.") // A blank String
+            .forAll(::`throws IllegalArgumentException if the host is invalid`)
+    }
+
+    @Test
     fun `returns a list of nodes`() {
         tableOf("host", "nodes")
             .row("pexip.com", listOf(Node("pexipdemo.com")))
             .row("google.com", listOf(Node("google.com")))
             .row("b.c", listOf())
             .forAll(::`returns a list of nodes`)
+    }
+
+    private fun `throws IllegalArgumentException if the host is invalid`(
+        host: String,
+        message: String,
+    ) = runTest {
+        assertFailure { resolver.resolve(host) }
+            .isInstanceOf<IllegalArgumentException>()
+            .hasMessage(message)
     }
 
     private fun `returns a list of nodes`(host: String, nodes: List<Node>) = runTest {

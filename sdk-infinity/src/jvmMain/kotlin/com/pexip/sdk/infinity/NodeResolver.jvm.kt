@@ -16,7 +16,7 @@
 package com.pexip.sdk.infinity
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runInterruptible
 import org.minidns.hla.DnssecResolverApi
 import org.minidns.hla.ResolverApi
 import java.net.InetAddress
@@ -38,8 +38,11 @@ public actual fun NodeResolver.Companion.create(dnssec: Boolean): NodeResolver =
 public fun NodeResolver.Companion.create(api: ResolverApi): NodeResolver =
     object : NodeResolver {
 
-        override suspend fun resolve(host: String): List<Node> = withContext(Dispatchers.IO) {
-            resolveSrvRecords(host).ifEmpty { resolveARecord(host) }
+        override suspend fun resolve(host: String): List<Node> {
+            require(host.isNotBlank()) { "host is blank." }
+            return runInterruptible(Dispatchers.IO) {
+                resolveSrvRecords(host).ifEmpty { resolveARecord(host) }
+            }
         }
 
         private fun resolveSrvRecords(host: String): List<Node> {
