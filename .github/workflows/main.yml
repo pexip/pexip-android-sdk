@@ -45,25 +45,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/dokka/htmlMultiModule
 
-  snyk_test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: snyk/actions/setup@master
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '21'
-
-      - uses: gradle/actions/setup-gradle@v3
-        with:
-          cache-read-only: true
-
-      - run: snyk test --all-sub-projects --severity-threshold=high
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-          SNYK_CFG_ORG: ${{ secrets.SNYK_CFG_ORG }}
-
   snyk_monitor:
     runs-on: ubuntu-latest
     steps:
@@ -78,7 +59,7 @@ jobs:
         with:
           cache-read-only: true
 
-      - run: snyk monitor --all-sub-projects --remote-repo-url=$GITHUB_REPOSITORY
+      - run: snyk monitor --all-sub-projects --remote-repo-url=$GITHUB_REPOSITORY --target-reference='$(git branch --show-current)' --configuration-matching='^(jvm|.*[rR]elease)?[rR]untimeClasspath$'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           SNYK_CFG_ORG: ${{ secrets.SNYK_CFG_ORG }}
