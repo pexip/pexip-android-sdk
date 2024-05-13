@@ -54,8 +54,8 @@ public data class RequestTokenResponse(
     @Serializable(with = DurationAsMillisecondsSerializer::class)
     @SerialName("client_stats_update_interval")
     val clientStatsUpdateInterval: Duration = Duration.INFINITE,
-    @Transient
-    val directMediaRequested: Boolean = false,
     @SerialName("call_tag")
     val callTag: String = "",
+    @Transient
+    val directMediaRequested: Boolean = false,
 ) : Token
