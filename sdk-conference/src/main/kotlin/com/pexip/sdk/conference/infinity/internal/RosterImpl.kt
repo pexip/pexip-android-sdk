@@ -314,6 +314,7 @@ internal class RosterImpl(
                 ApiServiceType.TEST_CALL -> ServiceType.TEST_CALL
                 ApiServiceType.UNKNOWN -> ServiceType.UNKNOWN
             },
+            callTag = response.callTag,
         ),
     )
 }

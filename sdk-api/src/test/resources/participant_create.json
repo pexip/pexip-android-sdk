@@ -28,7 +28,7 @@
   "disconnect_supported": "YES",
   "mute_supported": "YES",
   "buzz_time": 0,
-  "call_tag": "",
+  "call_tag": "dd806491-eecc-42fc-accb-86a99448fc17",
   "is_video_muted": false,
   "is_video_silent": false,
   "is_main_video_dropped_out": false,
