@@ -18,7 +18,7 @@ package com.pexip.sdk.infinity
 /**
  * A class that can resolve node addresses.
  */
-public fun interface NodeResolver {
+public interface NodeResolver {
 
     /**
      * Resolves the node address for the provided [host]. Clients should consult with
