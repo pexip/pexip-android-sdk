@@ -41,7 +41,7 @@ jobs:
           java-version: '21'
 
       - uses: gradle/actions/setup-gradle@v3
-      - run: snyk test --all-sub-projects --severity-threshold=high
+      - run: snyk-linux test --all-sub-projects --severity-threshold=high --configuration-matching='^(jvm|.*[rR]elease)?[rR]untimeClasspath$'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           SNYK_CFG_ORG: ${{ secrets.SNYK_CFG_ORG }}
