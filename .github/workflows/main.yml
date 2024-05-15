@@ -59,7 +59,7 @@ jobs:
         with:
           cache-read-only: true
 
-      - run: snyk-linux monitor --all-sub-projects --remote-repo-url=$GITHUB_REPOSITORY --target-reference='$(git branch --show-current)' --configuration-matching='^(jvm|.*[rR]elease)?[rR]untimeClasspath$'
+      - run: snyk-linux monitor --all-sub-projects --remote-repo-url=$GITHUB_REPOSITORY --target-reference=$GITHUB_REF_NAME --configuration-matching='^(jvm|.*[rR]elease)?[rR]untimeClasspath$'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           SNYK_CFG_ORG: ${{ secrets.SNYK_CFG_ORG }}
