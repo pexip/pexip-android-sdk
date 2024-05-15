@@ -62,7 +62,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 # Dummy library for Dependabot to pick up ktlint version changes
 ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint" }
-ktlint-compose = { module = "io.nlopez.compose.rules:ktlint", version = "0.3.20" }
+ktlint-compose = { module = "io.nlopez.compose.rules:ktlint", version = "0.3.21" }
 licensee = { module = "app.cash.licensee:licensee-gradle-plugin", version.ref = "licensee" }
 minidns-hla = { module = "org.minidns:minidns-hla", version.ref = "minidns" }
 minidns-android21 = { module = "org.minidns:minidns-android21", version.ref = "minidns" }
