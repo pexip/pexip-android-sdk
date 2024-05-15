@@ -193,12 +193,25 @@ internal class ConferenceStepTest {
     @Test
     fun `requestToken returns`() {
         tableOf("request", "pin")
-            .row<_, String?>(RequestTokenRequest(directMedia = Random.nextBoolean()), null)
-            .row(RequestTokenRequest(directMedia = Random.nextBoolean()), "   ")
+            .row<_, String?>(
+                val1 = RequestTokenRequest(
+                    directMedia = Random.nextBoolean(),
+                    callTag = Random.nextString(),
+                ),
+                val2 = null,
+            )
+            .row(
+                val1 = RequestTokenRequest(
+                    directMedia = Random.nextBoolean(),
+                    callTag = Random.nextString(),
+                ),
+                val2 = "   ",
+            )
             .row(
                 val1 = RequestTokenRequest(
                     ssoToken = Random.nextString(),
                     directMedia = false,
+                    callTag = Random.nextString(),
                 ),
                 val2 = Random.nextString(),
             )
@@ -206,6 +219,7 @@ internal class ConferenceStepTest {
                 val1 = RequestTokenRequest(
                     ssoToken = Random.nextString(),
                     directMedia = true,
+                    callTag = Random.nextString(),
                 ),
                 val2 = Random.nextString(),
             )
@@ -213,6 +227,7 @@ internal class ConferenceStepTest {
                 val1 = RequestTokenRequest(
                     incomingToken = Random.nextString(),
                     directMedia = Random.nextBoolean(),
+                    callTag = Random.nextString(),
                 ),
                 val2 = Random.nextString(),
             )
@@ -220,6 +235,7 @@ internal class ConferenceStepTest {
                 val1 = RequestTokenRequest(
                     registrationToken = Random.nextString(),
                     directMedia = Random.nextBoolean(),
+                    callTag = Random.nextString(),
                 ),
                 val2 = Random.nextString(),
             )
@@ -253,6 +269,7 @@ internal class ConferenceStepTest {
                     useRelayCandidatesOnly = Random.nextBoolean(),
                     dataChannelId = Random.nextInt(-1, 65536),
                     clientStatsUpdateInterval = Random.nextDuration(),
+                    callTag = request.callTag,
                 )
                 server.enqueue {
                     setResponseCode(200)

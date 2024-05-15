@@ -226,6 +226,7 @@ internal class EventTest {
                         disconnectSupported = true,
                         role = Role.GUEST,
                         serviceType = ServiceType.CONFERENCE,
+                        callTag = "dd806491-eecc-42fc-accb-86a99448fc17",
                     ),
                 ),
             )
@@ -249,6 +250,7 @@ internal class EventTest {
                         disconnectSupported = true,
                         role = Role.UNKNOWN,
                         serviceType = ServiceType.CONFERENCE,
+                        callTag = "dd806491-eecc-42fc-accb-86a99448fc17",
                     ),
                 ),
             )
@@ -280,6 +282,7 @@ internal class EventTest {
                         disconnectSupported = true,
                         role = Role.HOST,
                         serviceType = ServiceType.GATEWAY,
+                        callTag = "dd806491-eecc-42fc-accb-86a99448fc17",
                     ),
                 ),
             )

@@ -53,4 +53,6 @@ public data class ParticipantResponse(
     val buzzTime: Instant? = null,
     @SerialName("spotlight")
     val spotlightTime: Instant? = null,
+    @SerialName("call_tag")
+    val callTag: String = "",
 )

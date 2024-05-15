@@ -1748,6 +1748,7 @@ class RosterImplTest {
             muteSupported = nextBoolean(),
             transferSupported = nextBoolean(),
             disconnectSupported = nextBoolean(),
+            callTag = nextString(),
         )
     }
 
@@ -1779,5 +1780,6 @@ class RosterImplTest {
             ServiceType.TEST_CALL -> ApiServiceType.TEST_CALL
             ServiceType.UNKNOWN -> ApiServiceType.UNKNOWN
         },
+        callTag = callTag,
     )
 }
