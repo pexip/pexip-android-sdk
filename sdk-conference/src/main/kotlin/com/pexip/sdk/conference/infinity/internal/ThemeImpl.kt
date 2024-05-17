@@ -42,10 +42,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kotlin.time.Duration.Companion.seconds
 
 internal class ThemeImpl(
@@ -54,6 +54,10 @@ internal class ThemeImpl(
     private val step: InfinityService.ConferenceStep,
     private val store: TokenStore,
 ) : Theme {
+
+    override val avatar: StateFlow<String> = store.token
+        .map(step::avatar)
+        .stateIn(scope, SharingStarted.Eagerly, step.avatar(store.token.value))
 
     override val layout: StateFlow<Layout?> = combine(
         flow = event.filterIsInstance<LayoutEvent>(),
@@ -121,19 +125,20 @@ internal class ThemeImpl(
         is ElementResponse.Unknown -> null
     }
 
-    private fun InfinityService.ConferenceStep.availableLayouts(store: TokenStore) = store.asFlow()
+    private fun InfinityService.ConferenceStep.availableLayouts(store: TokenStore) = store.token
+        .take(1)
         .map { availableLayouts(it).await() }
         .retryOrDefault(::emptySet)
 
-    private fun InfinityService.ConferenceStep.layoutSvgs(store: TokenStore) = store.asFlow()
+    private fun InfinityService.ConferenceStep.layoutSvgs(store: TokenStore) = store.token
+        .take(1)
         .map { layoutSvgs(it).await() }
         .retryOrDefault(::emptyMap)
 
-    private fun InfinityService.ConferenceStep.theme(store: TokenStore) = store.asFlow()
+    private fun InfinityService.ConferenceStep.theme(store: TokenStore) = store.token
+        .take(1)
         .map { theme(it).await() }
         .retryOrDefault(::emptyMap)
-
-    private fun TokenStore.asFlow() = flow { emit(token.value) }
 
     private fun <T> Flow<T>.retryOrDefault(value: () -> T) = retryWhen { cause, attempt ->
         when (cause) {

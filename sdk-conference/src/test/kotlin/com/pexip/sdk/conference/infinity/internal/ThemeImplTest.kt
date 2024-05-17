@@ -83,12 +83,58 @@ class ThemeImplTest {
     }
 
     @Test
+    fun `emits the current avatar`() = runTest {
+        fun pathToUrl(path: String) = "https://$path.com"
+
+        val response = generateSequence { Random.nextString() }
+            .take(10)
+            .associateWith {
+                SplashScreenResponse(
+                    background = BackgroundResponse(Random.nextString()),
+                    elements = List(10) {
+                        ElementResponse.Text(
+                            color = Random.nextLong(Long.MAX_VALUE),
+                            text = Random.nextString(),
+                        )
+                    },
+                )
+            }
+        val step = object : InfinityService.ConferenceStep {
+
+            override fun avatar(token: Token): String {
+                assertThat(token).isEqualTo(store.token.value)
+                return token.token
+            }
+
+            override fun theme(path: String, token: Token): String {
+                assertThat(token).isEqualTo(store.token.value)
+                return pathToUrl(path)
+            }
+        }
+        val theme = ThemeImpl(
+            scope = backgroundScope,
+            event = event,
+            step = step,
+            store = store,
+        )
+        theme.avatar.test {
+            event.awaitSubscriptionCountAtLeast(2)
+            assertThat(awaitItem(), "avatar").isEqualTo(store.token.value.token)
+        }
+    }
+
+    @Test
     fun `emits the current layout`() = runTest {
         val layouts = generateSequence { Random.nextLayoutId() }
             .take(10)
             .toSet()
         val layoutSvgs = layouts.associateWith { Random.nextString() }
         val step = object : InfinityService.ConferenceStep {
+
+            override fun avatar(token: Token): String {
+                assertThat(token).isEqualTo(store.token.value)
+                return token.token
+            }
 
             override fun availableLayouts(token: Token): Call<Set<LayoutId>> {
                 assertThat(token).isEqualTo(store.token.value)
@@ -169,6 +215,11 @@ class ThemeImplTest {
             }
         val step = object : InfinityService.ConferenceStep {
 
+            override fun avatar(token: Token): String {
+                assertThat(token).isEqualTo(store.token.value)
+                return token.token
+            }
+
             override fun theme(token: Token): Call<Map<String, SplashScreenResponse>> {
                 assertThat(token).isEqualTo(store.token.value)
                 return object : TestCall<Map<String, SplashScreenResponse>> {
@@ -224,6 +275,11 @@ class ThemeImplTest {
             .forEachIndexed { i, (layout, guestLayout, enableOverlayText) ->
                 val step = object : InfinityService.ConferenceStep {
 
+                    override fun avatar(token: Token): String {
+                        assertThat(token).isEqualTo(store.token.value)
+                        return token.token
+                    }
+
                     override fun transformLayout(
                         request: TransformLayoutRequest,
                         token: Token,
@@ -254,6 +310,11 @@ class ThemeImplTest {
     fun `transformLayout() succeeds`() = runTest {
         transformLayoutPermutations.forEach { (layout, guestLayout, enableOverlayText) ->
             val step = object : InfinityService.ConferenceStep {
+
+                override fun avatar(token: Token): String {
+                    assertThat(token).isEqualTo(store.token.value)
+                    return token.token
+                }
 
                 override fun transformLayout(
                     request: TransformLayoutRequest,
