@@ -47,6 +47,12 @@ internal class ConferenceStepImpl(
     ConferenceStepImplScope,
     RequestBuilderImplScope by requestBuilder {
 
+    override fun avatar(token: Token): String = url.newApiClientV2Builder()
+        .conference(conferenceAlias)
+        .addPathSegment("avatar.jpg")
+        .token(token)
+        .toString()
+
     override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> = RealCall(
         client = client,
         request = Request.Builder()

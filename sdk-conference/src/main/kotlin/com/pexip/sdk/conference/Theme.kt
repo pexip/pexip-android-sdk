@@ -24,14 +24,22 @@ import kotlinx.coroutines.flow.StateFlow
 public interface Theme {
 
     /**
+     * A [StateFlow] of the logo URL
+     */
+    public val avatar: StateFlow<String>
+        get() = throw NotImplementedError()
+
+    /**
      * A [StateFlow] of current [Layout] state.
      */
     public val layout: StateFlow<Layout?>
+        get() = throw NotImplementedError()
 
     /**
      * A [StateFlow] of [SplashScreen]s that should be displayed.
      */
     public val splashScreen: StateFlow<SplashScreen?>
+        get() = throw NotImplementedError()
 
     /**
      * Transforms the current conference layout given sufficient privileges.
@@ -50,5 +58,7 @@ public interface Theme {
         layout: LayoutId? = null,
         guestLayout: LayoutId? = null,
         enableOverlayText: Boolean? = null,
-    )
+    ) {
+        throw NotImplementedError()
+    }
 }
