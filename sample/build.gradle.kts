@@ -18,9 +18,6 @@ android {
         versionCode = 1
         versionName = version.toString()
     }
-    buildFeatures {
-        compose = true
-    }
     buildTypes {
         release {
             isMinifyEnabled = true
