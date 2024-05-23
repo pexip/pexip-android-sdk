@@ -56,6 +56,8 @@ public data class RequestTokenResponse(
     val clientStatsUpdateInterval: Duration = Duration.INFINITE,
     @SerialName("call_tag")
     val callTag: String = "",
+    @SerialName("parent_participant_uuid")
+    val parentParticipantId: ParticipantId? = null,
     @Transient
     val directMediaRequested: Boolean = false,
 ) : Token
