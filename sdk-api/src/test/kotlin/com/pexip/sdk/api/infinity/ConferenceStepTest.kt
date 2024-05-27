@@ -282,6 +282,7 @@ internal class ConferenceStepTest {
                     dataChannelId = Random.nextInt(-1, 65536),
                     clientStatsUpdateInterval = Random.nextDuration(),
                     callTag = request.callTag,
+                    parentParticipantId = Random.nextParticipantId(),
                 )
                 server.enqueue {
                     setResponseCode(200)
