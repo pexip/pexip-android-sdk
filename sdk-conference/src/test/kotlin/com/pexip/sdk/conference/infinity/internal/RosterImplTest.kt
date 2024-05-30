@@ -2260,8 +2260,8 @@ class RosterImplTest {
 
     @Suppress("TestFunctionName")
     private fun TestScope.RosterImpl(
-        participantId: ParticipantId = this@RosterImplTest.participantId,
-        parentParticipantId: ParticipantId? = null,
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
         step: InfinityService.ConferenceStep = object : InfinityService.ConferenceStep {
             override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
                 object : InfinityService.ParticipantStep {}
