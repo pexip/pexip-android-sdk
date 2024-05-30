@@ -74,7 +74,6 @@ public class InfinityConference private constructor(
     )
     private val listeners = CopyOnWriteArraySet<ConferenceEventListener>()
     private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
-    private val participantId = response.parentParticipantId ?: response.participantId
 
     override val name: String = response.conferenceName
 
@@ -88,7 +87,8 @@ public class InfinityConference private constructor(
     override val roster: Roster = RosterImpl(
         scope = scope,
         event = event,
-        participantId = participantId,
+        participantId = response.participantId,
+        parentParticipantId = response.parentParticipantId,
         store = store,
         step = step,
     )
@@ -103,7 +103,7 @@ public class InfinityConference private constructor(
         scope = scope,
         event = event,
         store = store,
-        participantStep = step.participant(participantId),
+        participantStep = step.participant(response.participantId),
         directMedia = response.directMedia,
         iceServers = buildList(response.stun.size + response.turn.size) {
             this += response.stun.map { IceServer.Builder(it.url).build() }
@@ -125,14 +125,14 @@ public class InfinityConference private constructor(
         null -> MessengerImpl(
             scope = scope,
             event = event,
-            senderId = participantId,
+            senderId = response.participantId,
             senderName = response.participantName,
             store = store,
             step = step,
         )
         else -> DataChannelMessengerImpl(
             scope = scope,
-            senderId = participantId,
+            senderId = response.participantId,
             senderName = response.participantName,
             dataChannel = dataChannel,
         )

@@ -76,6 +76,7 @@ internal class RosterImpl(
     scope: CoroutineScope,
     event: Flow<Event>,
     private val participantId: ParticipantId,
+    private val parentParticipantId: ParticipantId?,
     private val store: TokenStore,
     private val step: InfinityService.ConferenceStep,
 ) : Roster {
@@ -105,7 +106,10 @@ internal class RosterImpl(
                 }
                 is ParticipantCreateEvent -> mutex.withLock {
                     participantMap.put(it.response)
-                    participantStepMap[it.response.id] = step.participant(it.response.id)
+                    participantStepMap[it.response.id] = when (it.response.id) {
+                        parentParticipantId -> step.participant(participantId)
+                        else -> step.participant(it.response.id)
+                    }
                     maybeSendParticipants()
                 }
                 is ParticipantUpdateEvent -> mutex.withLock {
@@ -136,7 +140,7 @@ internal class RosterImpl(
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     override val me: StateFlow<Participant?> = participantMapFlow
-        .map { it[participantId] }
+        .map { it[parentParticipantId ?: participantId] }
         .stateIn(scope, SharingStarted.Eagerly, null)
 
     override val presenter: StateFlow<Participant?> = combine(
@@ -280,7 +284,7 @@ internal class RosterImpl(
     }
 
     private suspend fun participantStep(participantId: ParticipantId?) = mutex.withLock {
-        participantStepMap[participantId ?: this.participantId]
+        participantStepMap[participantId ?: this.parentParticipantId ?: this.participantId]
     }
 
     private fun MutableMap<ParticipantId, Participant>.put(response: ParticipantResponse) = put(
@@ -292,7 +296,7 @@ internal class RosterImpl(
             spotlightTime = response.spotlightTime,
             displayName = response.displayName,
             overlayText = response.overlayText,
-            me = response.id == participantId,
+            me = response.id == (parentParticipantId ?: participantId),
             speaking = get(response.id)?.speaking ?: false,
             audioMuted = response.audioMuted,
             videoMuted = response.videoMuted,

@@ -16,6 +16,7 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import app.cash.turbine.test
+import assertk.Table2
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsOnly
@@ -29,6 +30,7 @@ import assertk.assertions.isIn
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
+import assertk.tableOf
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
@@ -86,6 +88,7 @@ class RosterImplTest {
 
     private lateinit var event: MutableSharedFlow<Event>
     private lateinit var store: TokenStore
+    private lateinit var table: Table2<ParticipantId, ParticipantId?>
 
     private var participantId: ParticipantId by Delegates.notNull()
 
@@ -94,903 +97,164 @@ class RosterImplTest {
         event = MutableSharedFlow(extraBufferCapacity = 1)
         participantId = Random.nextParticipantId()
         store = TokenStore(Random.nextToken())
+        table = tableOf("participantId", "parentParticipantId")
+            .row<ParticipantId, ParticipantId?>(Random.nextParticipantId(), null)
+            .row(Random.nextParticipantId(), Random.nextParticipantId())
     }
 
     @Test
-    fun `does not update the list until syncing is finished`() = runTest {
-        val roster = RosterImpl()
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            event.emit(ParticipantSyncBeginEvent)
-            val participants = List(100) { Random.nextParticipant(it) }
-            participants.forEach {
-                val response = it.toParticipantResponse()
-                event.emit(ParticipantCreateEvent(response))
-            }
-            expectNoEvents()
-            event.emit(ParticipantSyncEndEvent)
-            assertThat(awaitItem(), "participants").isEqualTo(participants)
-            cancelAndIgnoreRemainingEvents()
-        }
+    fun `does not update the list until syncing is finished`() {
+        table.forAll(::`does not update the list until syncing is finished`)
     }
 
     @Test
-    fun `create, update, delete, stage correctly modify the list`() = runTest {
-        val roster = RosterImpl()
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            var participant = Random.nextParticipant()
-            var response = participant.toParticipantResponse()
-            var e: Event = ParticipantCreateEvent(response)
-            event.emit(e)
-            assertThat(awaitItem(), "participants").containsOnly(participant)
-            participant = Random.nextParticipant(id = participant.id)
-            response = participant.toParticipantResponse()
-            e = ParticipantUpdateEvent(response)
-            event.emit(e)
-            assertThat(awaitItem(), "participants").containsOnly(participant)
-            repeat(10) {
-                participant = participant.copy(speaking = !participant.speaking)
-                e = StageEvent(
-                    SpeakerResponse(
-                        participantId = participant.id,
-                        vad = if (participant.speaking) 100 else 0,
-                    ),
-                )
-                event.emit(e)
-                assertThat(awaitItem(), "participants").containsOnly(participant)
-            }
-            e = ParticipantDeleteEvent(participant.id)
-            event.emit(e)
-            assertThat(awaitItem(), "participants").doesNotContain(participant)
-            expectNoEvents()
-            cancelAndIgnoreRemainingEvents()
-        }
+    fun `create, update, delete, stage correctly modify the list`() {
+        table.forAll(::`create, update, delete, stage correctly modify the list`)
     }
 
     @Test
-    fun `update without a matching create does not modify the list`() = runTest {
-        val roster = RosterImpl()
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            val participant = Random.nextParticipant()
-            val response = participant.toParticipantResponse()
-            val e = ParticipantUpdateEvent(response)
-            event.emit(e)
-            expectNoEvents()
-            cancelAndIgnoreRemainingEvents()
-        }
+    fun `update without a matching create does not modify the list`() {
+        table.forAll(::`update without a matching create does not modify the list`)
     }
 
     @Test
-    fun `me produces the correct participant`() = runTest {
-        val roster = RosterImpl()
-        roster.me.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "me").isNull()
-            var me = Random.nextParticipant(id = participantId)
-            event.emit(ParticipantCreateEvent(me.toParticipantResponse()))
-            assertThat(awaitItem(), "me").isEqualTo(me)
-            me = me.copy(audioMuted = !me.audioMuted)
-            event.emit(ParticipantUpdateEvent(me.toParticipantResponse()))
-            assertThat(awaitItem(), "me").isEqualTo(me)
-            // No update with the same Participant
-            event.emit(ParticipantUpdateEvent(me.toParticipantResponse()))
-            // No update with another Participant
-            event.emit(ParticipantCreateEvent(Random.nextParticipant().toParticipantResponse()))
-            expectNoEvents()
-            cancelAndIgnoreRemainingEvents()
-        }
+    fun `me produces the correct participant`() {
+        table.forAll(::`me produces the correct participant`)
     }
 
     @Test
-    fun `locked produces the correct lock state`() = runTest {
-        val roster = RosterImpl()
-        roster.locked.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "locked").isFalse()
-            event.emit(ConferenceUpdateEvent(locked = true))
-            assertThat(awaitItem(), "locked").isTrue()
-            event.emit(ConferenceUpdateEvent(locked = true))
-            expectNoEvents()
-            event.emit(ConferenceUpdateEvent(locked = false))
-            assertThat(awaitItem(), "locked").isFalse()
-            cancelAndIgnoreRemainingEvents()
-        }
+    fun `locked produces the correct lock state`() {
+        table.forAll(::`locked produces the correct lock state`)
     }
 
     @Test
-    fun `allGuestsMuted produces the correct all guests muted state`() = runTest {
-        val roster = RosterImpl()
-        roster.allGuestsMuted.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "guestsMuted").isFalse()
-            event.emit(ConferenceUpdateEvent(guestsMuted = true))
-            assertThat(awaitItem(), "guestsMuted").isTrue()
-            event.emit(ConferenceUpdateEvent(guestsMuted = true))
-            expectNoEvents()
-            event.emit(ConferenceUpdateEvent(guestsMuted = false))
-            assertThat(awaitItem(), "guestsMuted").isFalse()
-            cancelAndIgnoreRemainingEvents()
-        }
+    fun `allGuestsMuted produces the correct all guests muted state`() {
+        table.forAll(::`allGuestsMuted produces the correct all guests muted state`)
     }
 
     @Test
-    fun `raiseHand() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl()
-        roster.raiseHand(Random.nextParticipantId())
+    fun `raiseHand() returns if participantId does not exist`() {
+        table.forAll(::`raiseHand() returns if participantId does not exist`)
     }
 
     @Test
-    fun `raiseHand() throws RaiseHandException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun buzz(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.raiseHand(it.id) }
-                .isInstanceOf<RaiseHandException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `raiseHand() throws RaiseHandException`() {
+        table.forAll(::`raiseHand() throws RaiseHandException`)
     }
 
     @Test
-    fun `raiseHand() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun buzz(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.raiseHand(it.id) }
+    fun `raiseHand() returns`() {
+        table.forAll(::`raiseHand() returns`)
     }
 
     @Test
-    fun `admit() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl()
-        roster.disconnect(Random.nextParticipantId())
+    fun `admit() returns if participantId does not exist`() {
+        table.forAll(::`admit() returns if participantId does not exist`)
     }
 
     @Test
-    fun `admit() throws AdmitException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun unlock(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.admit(it.id) }
-                .isInstanceOf<AdmitException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `admit() throws AdmitException`() {
+        table.forAll(::`admit() throws AdmitException`)
     }
 
     @Test
-    fun `admit() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun unlock(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.admit(it.id) }
+    fun `admit() returns`() {
+        table.forAll(::`admit() returns`)
     }
 
     @Test
-    fun `disconnect() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl()
-        roster.disconnect(Random.nextParticipantId())
+    fun `disconnect() returns if participantId does not exist`() {
+        table.forAll(::`disconnect() returns if participantId does not exist`)
     }
 
     @Test
-    fun `disconnect() throws DisconnectException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun disconnect(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.disconnect(it.id) }
-                .isInstanceOf<DisconnectException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `disconnect() throws DisconnectException`() {
+        table.forAll(::`disconnect() throws DisconnectException`)
     }
 
     @Test
-    fun `disconnect() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun disconnect(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.disconnect(it.id) }
+    fun `disconnect() returns`() {
+        table.forAll(::`disconnect() returns`)
     }
 
     @Test
-    fun `makeHost() throws MakeHostException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role, "request").isEqualTo(ApiRole.HOST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.makeHost(it.id) }
-                .isInstanceOf<MakeHostException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `makeHost() throws MakeHostException`() {
+        table.forAll(::`makeHost() throws MakeHostException`)
     }
 
     @Test
-    fun `makeHost() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role).isEqualTo(ApiRole.HOST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.makeHost(it.id) }
+    fun `makeHost() returns`() {
+        table.forAll(::`makeGuest() returns`)
     }
 
     @Test
-    fun `makeGuest() throws MakeGuestException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role, "request").isEqualTo(ApiRole.GUEST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.makeGuest(it.id) }
-                .isInstanceOf<MakeGuestException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `makeGuest() throws MakeGuestException`() {
+        table.forAll(::`makeHost() throws MakeHostException`)
     }
 
     @Test
-    fun `makeGuest() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role).isEqualTo(ApiRole.GUEST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.makeGuest(it.id) }
+    fun `makeGuest() returns`() {
+        table.forAll(::`makeGuest() returns`)
     }
 
     @Test
-    fun `mute() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl()
-        roster.mute(Random.nextParticipantId())
+    fun `mute() returns if participantId does not exist`() {
+        table.forAll(::`mute() returns if participantId does not exist`)
     }
 
     @Test
-    fun `mute() throws MuteException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun mute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.mute(it.id) }
-                .isInstanceOf<MuteException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `mute() throws MuteException`() {
+        table.forAll(::`mute() throws MuteException`)
     }
 
     @Test
-    fun `mute() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun mute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onSuccess(this, Unit)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.mute(it.id) }
+    fun `mute() returns`() {
+        table.forAll(::`mute() returns`)
     }
 
     @Test
-    fun `unmute() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl()
-        roster.unmute(Random.nextParticipantId())
+    fun `unmute() returns if participantId does not exist`() {
+        table.forAll(::`unmute() returns if participantId does not exist`)
     }
 
     @Test
-    fun `unmute() throws UnmuteException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun unmute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.unmute(it.id) }
-                .isInstanceOf<UnmuteException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `unmute() throws UnmuteException`() {
+        table.forAll(::`unmute() throws UnmuteException`)
     }
 
     @Test
-    fun `unmute() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun unmute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onSuccess(this, Unit)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.unmute(it.id) }
+    fun `unmute() returns`() {
+        table.forAll(::`unmute() returns`)
     }
 
     @Test
-    fun `muteVideo() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl()
-        roster.muteVideo(Random.nextParticipantId())
+    fun `muteVideo() returns if participantId does not exist`() {
+        table.forAll(::`muteVideo() returns if participantId does not exist`)
     }
 
     @Test
-    fun `muteVideo() throws MuteVideoException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun videoMuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.muteVideo(it.id) }
-                .isInstanceOf<MuteVideoException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `muteVideo() throws MuteVideoException`() {
+        table.forAll(::`muteVideo() throws MuteVideoException`)
     }
 
     @Test
-    fun `muteVideo() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun videoMuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onSuccess(this, Unit)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.muteVideo(it.id) }
+    fun `muteVideo() returns`() {
+        table.forAll(::`muteVideo() returns`)
     }
 
     @Test
-    fun `unmuteVideo() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl()
-        roster.unmuteVideo(Random.nextParticipantId())
+    fun `unmuteVideo() returns if participantId does not exist`() {
+        table.forAll(::`unmuteVideo() returns if participantId does not exist`)
     }
 
     @Test
-    fun `unmuteVideo() throws UnmuteVideoException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun videoUnmuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.unmuteVideo(it.id) }
-                .isInstanceOf<UnmuteVideoException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `unmuteVideo() throws UnmuteVideoException`() {
+        table.forAll(::`unmuteVideo() throws UnmuteVideoException`)
     }
 
     @Test
-    fun `unmuteVideo() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun videoUnmuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onSuccess(this, Unit)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.unmuteVideo(it.id) }
+    fun `unmuteVideo() returns`() {
+        table.forAll(::`unmuteVideo() returns`)
     }
 
     @Test
@@ -1488,11 +752,1212 @@ class RosterImplTest {
         roster.disconnectAll()
     }
 
+    private fun `does not update the list until syncing is finished`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            event.emit(ParticipantSyncBeginEvent)
+            val participants = List(100) {
+                Random.nextParticipant(
+                    index = it,
+                    id = when (it) {
+                        0 -> parentParticipantId ?: participantId
+                        else -> Random.nextParticipantId()
+                    },
+                )
+            }
+            participants.forEach {
+                val response = it.toParticipantResponse()
+                event.emit(ParticipantCreateEvent(response))
+            }
+            expectNoEvents()
+            event.emit(ParticipantSyncEndEvent)
+            assertThat(awaitItem(), "participants").isEqualTo(participants)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun `create, update, delete, stage correctly modify the list`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            var participant = Random.nextParticipant(id = parentParticipantId ?: participantId)
+            var response = participant.toParticipantResponse()
+            var e: Event = ParticipantCreateEvent(response)
+            event.emit(e)
+            assertThat(awaitItem(), "participants").containsOnly(participant)
+            participant = Random.nextParticipant(id = participant.id)
+            response = participant.toParticipantResponse()
+            e = ParticipantUpdateEvent(response)
+            event.emit(e)
+            assertThat(awaitItem(), "participants").containsOnly(participant)
+            repeat(10) {
+                participant = participant.copy(speaking = !participant.speaking)
+                e = StageEvent(
+                    SpeakerResponse(
+                        participantId = participant.id,
+                        vad = if (participant.speaking) 100 else 0,
+                    ),
+                )
+                event.emit(e)
+                assertThat(awaitItem(), "participants").containsOnly(participant)
+            }
+            e = ParticipantDeleteEvent(participant.id)
+            event.emit(e)
+            assertThat(awaitItem(), "participants").doesNotContain(participant)
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun `update without a matching create does not modify the list`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            val participant = Random.nextParticipant(id = parentParticipantId ?: participantId)
+            val response = participant.toParticipantResponse()
+            val e = ParticipantUpdateEvent(response)
+            event.emit(e)
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun `me produces the correct participant`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.me.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "me").isNull()
+            var me = Random.nextParticipant(id = parentParticipantId ?: participantId)
+            event.emit(ParticipantCreateEvent(me.toParticipantResponse()))
+            assertThat(awaitItem(), "me").isEqualTo(me)
+            me = me.copy(audioMuted = !me.audioMuted)
+            event.emit(ParticipantUpdateEvent(me.toParticipantResponse()))
+            assertThat(awaitItem(), "me").isEqualTo(me)
+            // No update with the same Participant
+            event.emit(ParticipantUpdateEvent(me.toParticipantResponse()))
+            // No update with another Participant
+            event.emit(ParticipantCreateEvent(Random.nextParticipant().toParticipantResponse()))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun `locked produces the correct lock state`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.locked.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "locked").isFalse()
+            event.emit(ConferenceUpdateEvent(locked = true))
+            assertThat(awaitItem(), "locked").isTrue()
+            event.emit(ConferenceUpdateEvent(locked = true))
+            expectNoEvents()
+            event.emit(ConferenceUpdateEvent(locked = false))
+            assertThat(awaitItem(), "locked").isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun `allGuestsMuted produces the correct all guests muted state`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.allGuestsMuted.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "guestsMuted").isFalse()
+            event.emit(ConferenceUpdateEvent(guestsMuted = true))
+            assertThat(awaitItem(), "guestsMuted").isTrue()
+            event.emit(ConferenceUpdateEvent(guestsMuted = true))
+            expectNoEvents()
+            event.emit(ConferenceUpdateEvent(guestsMuted = false))
+            assertThat(awaitItem(), "guestsMuted").isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun `raiseHand() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.raiseHand(Random.nextParticipantId())
+    }
+
+    private fun `raiseHand() throws RaiseHandException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun buzz(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.raiseHand(it.id) }
+                .isInstanceOf<RaiseHandException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `raiseHand() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun buzz(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onSuccess(this, true)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.raiseHand(it.id) }
+    }
+
+    private fun `admit() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.disconnect(Random.nextParticipantId())
+    }
+
+    private fun `admit() throws AdmitException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun unlock(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.admit(it.id) }
+                .isInstanceOf<AdmitException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `admit() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun unlock(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onSuccess(this, true)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.admit(it.id) }
+    }
+
+    private fun `disconnect() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.disconnect(Random.nextParticipantId())
+    }
+
+    private fun `disconnect() throws DisconnectException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun disconnect(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.disconnect(it.id) }
+                .isInstanceOf<DisconnectException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `disconnect() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun disconnect(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onSuccess(this, true)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.disconnect(it.id) }
+    }
+
+    private fun `makeHost() throws MakeHostException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            assertThat(request::role, "request").isEqualTo(ApiRole.HOST)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.makeHost(it.id) }
+                .isInstanceOf<MakeHostException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `makeHost() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            assertThat(request::role).isEqualTo(ApiRole.HOST)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onSuccess(this, true)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.makeHost(it.id) }
+    }
+
+    private fun `makeGuest() throws MakeGuestException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            assertThat(request::role, "request").isEqualTo(ApiRole.GUEST)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.makeGuest(it.id) }
+                .isInstanceOf<MakeGuestException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `makeGuest() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            assertThat(request::role).isEqualTo(ApiRole.GUEST)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onSuccess(this, true)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.makeGuest(it.id) }
+    }
+
+    private fun `mute() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.mute(Random.nextParticipantId())
+    }
+
+    private fun `mute() throws MuteException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun mute(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.mute(it.id) }
+                .isInstanceOf<MuteException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `mute() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun mute(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onSuccess(this, Unit)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.mute(it.id) }
+    }
+
+    private fun `unmute() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.unmute(Random.nextParticipantId())
+    }
+
+    private fun `unmute() throws UnmuteException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun unmute(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.unmute(it.id) }
+                .isInstanceOf<UnmuteException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `unmute() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun unmute(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onSuccess(this, Unit)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.unmute(it.id) }
+    }
+
+    private fun `muteVideo() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.muteVideo(Random.nextParticipantId())
+    }
+
+    private fun `muteVideo() throws MuteVideoException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun videoMuted(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.muteVideo(it.id) }
+                .isInstanceOf<MuteVideoException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `muteVideo() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun videoMuted(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onSuccess(this, Unit)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.muteVideo(it.id) }
+    }
+
+    private fun `unmuteVideo() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.unmuteVideo(Random.nextParticipantId())
+    }
+
+    private fun `unmuteVideo() throws UnmuteVideoException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun videoUnmuted(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.unmuteVideo(it.id) }
+                .isInstanceOf<UnmuteVideoException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `unmuteVideo() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun videoUnmuted(token: Token): Call<Unit> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Unit> {
+
+                                override fun enqueue(callback: Callback<Unit>) =
+                                    callback.onSuccess(this, Unit)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.unmuteVideo(it.id) }
+    }
+
     private fun Random.nextParticipant(
         index: Int = 0,
         id: ParticipantId = if (index == 0) participantId else nextParticipantId(),
     ): Participant {
-        val startTime = Instant.fromEpochSeconds(index.toLong())
+        val startTime = Instant.fromEpochSeconds(0) + nextInt(0, 100).seconds
         return Participant(
             id = id,
             startTime = startTime,
@@ -1502,7 +1967,7 @@ class RosterImplTest {
             spotlightTime = startTime + nextInt(0, 100).seconds,
             displayName = nextString(),
             overlayText = nextString(),
-            me = id == participantId,
+            me = index == 0,
             audioMuted = nextBoolean(),
             videoMuted = nextBoolean(),
             presenting = nextBoolean(),
@@ -1546,6 +2011,8 @@ class RosterImplTest {
 
     @Suppress("TestFunctionName")
     private fun TestScope.RosterImpl(
+        participantId: ParticipantId = this@RosterImplTest.participantId,
+        parentParticipantId: ParticipantId? = null,
         step: InfinityService.ConferenceStep = object : InfinityService.ConferenceStep {
             override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
                 object : InfinityService.ParticipantStep {}
@@ -1554,6 +2021,7 @@ class RosterImplTest {
         scope = backgroundScope,
         event = event,
         participantId = participantId,
+        parentParticipantId = parentParticipantId,
         store = store,
         step = step,
     )
