@@ -353,42 +353,13 @@ class RosterImplTest {
     }
 
     @Test
-    fun `disconnectAll() throws DisconnectAllException`() = runTest {
-        val cause = Throwable()
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun disconnect(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
-                }
-            },
-        )
-        assertFailure { roster.disconnectAll() }
-            .isInstanceOf<DisconnectAllException>()
-            .hasCause(cause)
+    fun `disconnectAll() throws DisconnectAllException`() {
+        table.forAll(::`disconnectAll() throws DisconnectAllException`)
     }
 
     @Test
-    fun `disconnectAll() returns`() = runTest {
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun disconnect(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
-                }
-            },
-        )
-        roster.disconnectAll()
+    fun `disconnectAll() returns`() {
+        table.forAll(::`disconnectAll() returns`)
     }
 
     private fun `does not update the list until syncing is finished`(
@@ -2182,6 +2153,53 @@ class RosterImplTest {
             },
         )
         roster.unmuteAllGuests()
+    }
+
+    private fun `disconnectAll() throws DisconnectAllException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun disconnect(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.disconnectAll() }
+            .isInstanceOf<DisconnectAllException>()
+            .hasCause(cause)
+    }
+
+    private fun `disconnectAll() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun disconnect(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.disconnectAll()
     }
 
     private fun Random.nextParticipant(
