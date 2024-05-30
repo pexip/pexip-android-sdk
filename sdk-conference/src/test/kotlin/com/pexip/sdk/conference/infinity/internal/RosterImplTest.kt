@@ -367,15 +367,7 @@ class RosterImplTest {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "participants").isEmpty()
             event.emit(ParticipantSyncBeginEvent)
-            val participants = List(100) {
-                Random.nextParticipant(
-                    index = it,
-                    id = when (it) {
-                        0 -> parentParticipantId ?: participantId
-                        else -> Random.nextParticipantId()
-                    },
-                )
-            }
+            val participants = Random.nextParticipantList(participantId, parentParticipantId)
             participants.forEach {
                 val response = it.toParticipantResponse()
                 event.emit(ParticipantCreateEvent(response))
@@ -395,12 +387,15 @@ class RosterImplTest {
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "participants").isEmpty()
-            var participant = Random.nextParticipant(id = parentParticipantId ?: participantId)
+            var participant = Random.nextParticipant(
+                id = parentParticipantId ?: participantId,
+                me = true,
+            )
             var response = participant.toParticipantResponse()
             var e: Event = ParticipantCreateEvent(response)
             event.emit(e)
             assertThat(awaitItem(), "participants").containsOnly(participant)
-            participant = Random.nextParticipant(id = participant.id)
+            participant = Random.nextParticipant(id = participant.id, me = participant.me)
             response = participant.toParticipantResponse()
             e = ParticipantUpdateEvent(response)
             event.emit(e)
@@ -449,7 +444,7 @@ class RosterImplTest {
         roster.me.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "me").isNull()
-            var me = Random.nextParticipant(id = parentParticipantId ?: participantId)
+            var me = Random.nextParticipant(id = parentParticipantId ?: participantId, me = true)
             event.emit(ParticipantCreateEvent(me.toParticipantResponse()))
             assertThat(awaitItem(), "me").isEqualTo(me)
             me = me.copy(audioMuted = !me.audioMuted)
@@ -1935,8 +1930,8 @@ class RosterImplTest {
     }
 
     private fun Random.nextParticipant(
-        index: Int = 0,
         id: ParticipantId = nextParticipantId(),
+        me: Boolean = false,
     ): Participant {
         val startTime = Instant.fromEpochSeconds(0) + nextInt(0, 100).seconds
         return Participant(
@@ -1948,7 +1943,7 @@ class RosterImplTest {
             spotlightTime = startTime + nextInt(0, 100).seconds,
             displayName = nextString(),
             overlayText = nextString(),
-            me = index == 0,
+            me = me,
             audioMuted = nextBoolean(),
             videoMuted = nextBoolean(),
             presenting = nextBoolean(),
@@ -1964,8 +1959,8 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = List(10) {
         nextParticipant(
-            index = it,
             id = if (it == 0) parentParticipantId ?: participantId else nextParticipantId(),
+            me = it == 0,
         )
     }
 
