@@ -273,90 +273,18 @@ class RosterImplTest {
     }
 
     @Test
-    fun `unspotlight() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl()
-        roster.unspotlight(Random.nextParticipantId())
+    fun `unspotlight() returns if participantId does not exist`() {
+        table.forAll(::`unspotlight() returns if participantId does not exist`)
     }
 
     @Test
-    fun `unspotlight() throws UnspotlightException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun spotlightOff(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach {
-            assertFailure { roster.unspotlight(it.id) }
-                .isInstanceOf<UnspotlightException>()
-                .hasCause(causes.getValue(it.id))
-        }
+    fun `unspotlight() throws UnspotlightException`() {
+        table.forAll(::`unspotlight() throws UnspotlightException`)
     }
 
     @Test
-    fun `unspotlight() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
-                    return object : InfinityService.ParticipantStep {
-
-                        override fun spotlightOff(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
-                        }
-                    }
-                }
-            },
-        )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
-        participants.forEach { roster.unspotlight(it.id) }
+    fun `unspotlight() returns`() {
+        table.forAll(::`unspotlight() returns`)
     }
 
     @Test
@@ -1998,6 +1926,125 @@ class RosterImplTest {
             }
         }
         participants.forEach { roster.spotlight(it.id) }
+    }
+
+    private fun `unspotlight() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.unspotlight(Random.nextParticipantId())
+    }
+
+    private fun `unspotlight() throws UnspotlightException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val causes = participantIds.associateWith { Throwable() }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun spotlightOff(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onFailure(this, causes.getValue(participantId))
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach {
+            assertFailure { roster.unspotlight(it.id) }
+                .isInstanceOf<UnspotlightException>()
+                .hasCause(causes.getValue(it.id))
+        }
+    }
+
+    private fun `unspotlight() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = List(10) {
+            Random.nextParticipant(
+                index = it,
+                id = when (it) {
+                    0 -> parentParticipantId ?: participantId
+                    else -> Random.nextParticipantId()
+                },
+            )
+        }
+        val participantIds = buildSet {
+            add(participantId)
+            participants.forEach { add(it.id) }
+        }
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
+                    return object : InfinityService.ParticipantStep {
+
+                        override fun spotlightOff(token: Token): Call<Boolean> {
+                            assertThat(token, "token").isEqualTo(store.token.value)
+                            return object : TestCall<Boolean> {
+
+                                override fun enqueue(callback: Callback<Boolean>) =
+                                    callback.onSuccess(this, true)
+                            }
+                        }
+                    }
+                }
+            },
+        )
+        roster.participants.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "participants").isEmpty()
+            participants.forEachIndexed { index, participant ->
+                val response = participant.toParticipantResponse()
+                val e = ParticipantCreateEvent(response)
+                event.emit(e)
+                assertThat(awaitItem(), "participants")
+                    .index(index)
+                    .isEqualTo(participant)
+            }
+        }
+        participants.forEach { roster.unspotlight(it.id) }
     }
 
     private fun Random.nextParticipant(
