@@ -303,42 +303,13 @@ class RosterImplTest {
     }
 
     @Test
-    fun `lowerAllHands() throws LowerAllHandsException`() = runTest {
-        val cause = Throwable()
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun clearAllBuzz(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
-                }
-            },
-        )
-        assertFailure { roster.lowerAllHands() }
-            .isInstanceOf<LowerAllHandsException>()
-            .hasCause(cause)
+    fun `lowerAllHands() throws LowerAllHandsException`() {
+        table.forAll(::`lowerAllHands() throws LowerAllHandsException`)
     }
 
     @Test
-    fun `lowerAllHands() returns`() = runTest {
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun clearAllBuzz(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
-                }
-            },
-        )
-        roster.lowerAllHands()
+    fun `lowerAllHands() returns`() {
+        table.forAll(::`lowerAllHands() returns`)
     }
 
     @Test
@@ -2092,6 +2063,53 @@ class RosterImplTest {
             }
         }
         participants.forEach { roster.lowerHand(it.id) }
+    }
+
+    private fun `lowerAllHands() throws LowerAllHandsException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun clearAllBuzz(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.lowerAllHands() }
+            .isInstanceOf<LowerAllHandsException>()
+            .hasCause(cause)
+    }
+
+    private fun `lowerAllHands() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun clearAllBuzz(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.lowerAllHands()
     }
 
     private fun Random.nextParticipant(
