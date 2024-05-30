@@ -343,42 +343,13 @@ class RosterImplTest {
     }
 
     @Test
-    fun `unmuteAllGuests() throws UnmuteAllGuestsException`() = runTest {
-        val cause = Throwable()
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun unmuteGuests(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
-                }
-            },
-        )
-        assertFailure { roster.unmuteAllGuests() }
-            .isInstanceOf<UnmuteAllGuestsException>()
-            .hasCause(cause)
+    fun `unmuteAllGuests() throws UnmuteAllGuestsException`() {
+        table.forAll(::`unmuteAllGuests() throws UnmuteAllGuestsException`)
     }
 
     @Test
-    fun `unmuteAllGuests() returns`() = runTest {
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun unmuteGuests(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
-                }
-            },
-        )
-        roster.unmuteAllGuests()
+    fun `unmuteAllGuests() returns`() {
+        table.forAll(::`unmuteAllGuests() returns`)
     }
 
     @Test
@@ -2164,6 +2135,53 @@ class RosterImplTest {
             },
         )
         roster.muteAllGuests()
+    }
+
+    private fun `unmuteAllGuests() throws UnmuteAllGuestsException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun unmuteGuests(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.unmuteAllGuests() }
+            .isInstanceOf<UnmuteAllGuestsException>()
+            .hasCause(cause)
+    }
+
+    private fun `unmuteAllGuests() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun unmuteGuests(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.unmuteAllGuests()
     }
 
     private fun Random.nextParticipant(
