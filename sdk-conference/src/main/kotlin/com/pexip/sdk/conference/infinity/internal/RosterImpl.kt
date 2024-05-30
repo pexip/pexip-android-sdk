@@ -105,6 +105,7 @@ internal class RosterImpl(
                 }
                 is ParticipantCreateEvent -> mutex.withLock {
                     participantMap.put(it.response)
+                    participantStepMap[it.response.id] = step.participant(it.response.id)
                     maybeSendParticipants()
                 }
                 is ParticipantUpdateEvent -> mutex.withLock {
@@ -130,12 +131,13 @@ internal class RosterImpl(
         }
     }.stateIn(scope, SharingStarted.Eagerly, emptyMap())
 
-    override val participants: StateFlow<List<Participant>> =
-        participantMapFlow.map { it.values.toList() }
-            .stateIn(scope, SharingStarted.Eagerly, emptyList())
+    override val participants: StateFlow<List<Participant>> = participantMapFlow
+        .map { it.values.toList() }
+        .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    override val me: StateFlow<Participant?> =
-        participantMapFlow.map { it[participantId] }.stateIn(scope, SharingStarted.Eagerly, null)
+    override val me: StateFlow<Participant?> = participantMapFlow
+        .map { it[participantId] }
+        .stateIn(scope, SharingStarted.Eagerly, null)
 
     override val presenter: StateFlow<Participant?> = combine(
         flow = event.filter { it is PresentationStartEvent || it is PresentationStopEvent },
@@ -148,13 +150,15 @@ internal class RosterImpl(
         },
     ).stateIn(scope, SharingStarted.Eagerly, null)
 
-    override val locked: StateFlow<Boolean> =
-        event.filterIsInstance<ConferenceUpdateEvent>().map { it.locked }
-            .stateIn(scope, SharingStarted.Eagerly, false)
+    override val locked: StateFlow<Boolean> = event
+        .filterIsInstance<ConferenceUpdateEvent>()
+        .map { it.locked }
+        .stateIn(scope, SharingStarted.Eagerly, false)
 
-    override val allGuestsMuted: StateFlow<Boolean> =
-        event.filterIsInstance<ConferenceUpdateEvent>().map { it.guestsMuted }
-            .stateIn(scope, SharingStarted.Eagerly, false)
+    override val allGuestsMuted: StateFlow<Boolean> = event
+        .filterIsInstance<ConferenceUpdateEvent>()
+        .map { it.guestsMuted }
+        .stateIn(scope, SharingStarted.Eagerly, false)
 
     override suspend fun admit(participantId: ParticipantId) {
         perform(::AdmitException) {
@@ -276,10 +280,7 @@ internal class RosterImpl(
     }
 
     private suspend fun participantStep(participantId: ParticipantId?) = mutex.withLock {
-        when (val id = participantId ?: this.participantId) {
-            in participantMap -> participantStepMap.getOrPut(id) { step.participant(id) }
-            else -> null
-        }
+        participantStepMap[participantId ?: this.participantId]
     }
 
     private fun MutableMap<ParticipantId, Participant>.put(response: ParticipantResponse) = put(
