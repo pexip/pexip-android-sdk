@@ -313,42 +313,13 @@ class RosterImplTest {
     }
 
     @Test
-    fun `lock() throws LockException`() = runTest {
-        val cause = Throwable()
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun lock(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
-                }
-            },
-        )
-        assertFailure { roster.lock() }
-            .isInstanceOf<LockException>()
-            .hasCause(cause)
+    fun `lock() throws LockException`() {
+        table.forAll(::`lock() throws LockException`)
     }
 
     @Test
-    fun `lock() returns`() = runTest {
-        val roster = RosterImpl(
-            step = object : InfinityService.ConferenceStep {
-
-                override fun lock(token: Token): Call<Boolean> {
-                    assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
-                }
-            },
-        )
-        roster.lock()
+    fun `lock() returns`() {
+        table.forAll(::`lock() returns`)
     }
 
     @Test
@@ -2110,6 +2081,53 @@ class RosterImplTest {
             },
         )
         roster.lowerAllHands()
+    }
+
+    private fun `lock() throws LockException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun lock(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.lock() }
+            .isInstanceOf<LockException>()
+            .hasCause(cause)
+    }
+
+    private fun `lock() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun lock(token: Token): Call<Boolean> {
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.lock()
     }
 
     private fun Random.nextParticipant(
