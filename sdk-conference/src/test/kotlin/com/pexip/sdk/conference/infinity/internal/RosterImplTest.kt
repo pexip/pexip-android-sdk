@@ -513,10 +513,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -563,10 +560,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -616,10 +610,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -666,10 +657,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -719,10 +707,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -769,10 +754,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -814,10 +796,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -865,10 +844,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -911,10 +887,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -962,10 +935,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -1016,10 +986,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -1066,10 +1033,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -1119,10 +1083,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -1169,10 +1130,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -1222,10 +1180,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -1272,10 +1227,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -1325,10 +1277,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -1375,10 +1324,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -1428,10 +1374,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -1478,10 +1421,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -1531,10 +1471,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -1581,10 +1518,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -1634,10 +1568,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
             participantId = participantId,
@@ -1684,10 +1615,7 @@ class RosterImplTest {
         parentParticipantId: ParticipantId?,
     ) = runTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
-        val participantIds = buildSet {
-            add(participantId)
-            participants.forEach { add(it.id) }
-        }
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
             participantId = participantId,
             parentParticipantId = parentParticipantId,
@@ -2039,6 +1967,11 @@ class RosterImplTest {
             index = it,
             id = if (it == 0) parentParticipantId ?: participantId else nextParticipantId(),
         )
+    }
+
+    private fun List<Participant>.toParticipantIdSet(participantId: ParticipantId) = buildSet {
+        add(participantId)
+        for (participant in this@toParticipantIdSet) add(participant.id)
     }
 
     private fun Participant.toParticipantResponse() = ParticipantResponse(
