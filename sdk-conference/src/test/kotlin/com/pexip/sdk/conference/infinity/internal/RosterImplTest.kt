@@ -16,6 +16,7 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import app.cash.turbine.test
+import assertk.Table2
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsOnly
@@ -29,6 +30,7 @@ import assertk.assertions.isIn
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
+import assertk.tableOf
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
@@ -71,9 +73,9 @@ import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
-import kotlin.properties.Delegates
 import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -85,30 +87,287 @@ class RosterImplTest {
 
     private lateinit var event: MutableSharedFlow<Event>
     private lateinit var store: TokenStore
-
-    private var participantId: ParticipantId by Delegates.notNull()
+    private lateinit var table: Table2<ParticipantId, ParticipantId?>
 
     @BeforeTest
     fun setUp() {
         event = MutableSharedFlow(extraBufferCapacity = 1)
-        participantId = Random.nextParticipantId()
         store = TokenStore(Random.nextToken())
+        table = tableOf("participantId", "parentParticipantId")
+            .row<ParticipantId, ParticipantId?>(Random.nextParticipantId(), null)
+            .row(Random.nextParticipantId(), Random.nextParticipantId())
     }
 
     @Test
-    fun `does not update the list until syncing is finished`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    fun `does not update the list until syncing is finished`() {
+        table.forAll(::`does not update the list until syncing is finished`)
+    }
+
+    @Test
+    fun `create, update, delete, stage correctly modify the list`() {
+        table.forAll(::`create, update, delete, stage correctly modify the list`)
+    }
+
+    @Test
+    fun `update without a matching create does not modify the list`() {
+        table.forAll(::`update without a matching create does not modify the list`)
+    }
+
+    @Test
+    fun `me produces the correct participant`() {
+        table.forAll(::`me produces the correct participant`)
+    }
+
+    @Test
+    fun `locked produces the correct lock state`() {
+        table.forAll(::`locked produces the correct lock state`)
+    }
+
+    @Test
+    fun `allGuestsMuted produces the correct all guests muted state`() {
+        table.forAll(::`allGuestsMuted produces the correct all guests muted state`)
+    }
+
+    @Test
+    fun `raiseHand() returns if participantId does not exist`() {
+        table.forAll(::`raiseHand() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `raiseHand() throws RaiseHandException`() {
+        table.forAll(::`raiseHand() throws RaiseHandException`)
+    }
+
+    @Test
+    fun `raiseHand() returns`() {
+        table.forAll(::`raiseHand() returns`)
+    }
+
+    @Test
+    fun `admit() returns if participantId does not exist`() {
+        table.forAll(::`admit() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `admit() throws AdmitException`() {
+        table.forAll(::`admit() throws AdmitException`)
+    }
+
+    @Test
+    fun `admit() returns`() {
+        table.forAll(::`admit() returns`)
+    }
+
+    @Test
+    fun `disconnect() returns if participantId does not exist`() {
+        table.forAll(::`disconnect() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `disconnect() throws DisconnectException`() {
+        table.forAll(::`disconnect() throws DisconnectException`)
+    }
+
+    @Test
+    fun `disconnect() returns`() {
+        table.forAll(::`disconnect() returns`)
+    }
+
+    @Test
+    fun `makeHost() throws MakeHostException`() {
+        table.forAll(::`makeHost() throws MakeHostException`)
+    }
+
+    @Test
+    fun `makeHost() returns`() {
+        table.forAll(::`makeGuest() returns`)
+    }
+
+    @Test
+    fun `makeGuest() throws MakeGuestException`() {
+        table.forAll(::`makeHost() throws MakeHostException`)
+    }
+
+    @Test
+    fun `makeGuest() returns`() {
+        table.forAll(::`makeGuest() returns`)
+    }
+
+    @Test
+    fun `mute() returns if participantId does not exist`() {
+        table.forAll(::`mute() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `mute() throws MuteException`() {
+        table.forAll(::`mute() throws MuteException`)
+    }
+
+    @Test
+    fun `mute() returns`() {
+        table.forAll(::`mute() returns`)
+    }
+
+    @Test
+    fun `unmute() returns if participantId does not exist`() {
+        table.forAll(::`unmute() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `unmute() throws UnmuteException`() {
+        table.forAll(::`unmute() throws UnmuteException`)
+    }
+
+    @Test
+    fun `unmute() returns`() {
+        table.forAll(::`unmute() returns`)
+    }
+
+    @Test
+    fun `muteVideo() returns if participantId does not exist`() {
+        table.forAll(::`muteVideo() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `muteVideo() throws MuteVideoException`() {
+        table.forAll(::`muteVideo() throws MuteVideoException`)
+    }
+
+    @Test
+    fun `muteVideo() returns`() {
+        table.forAll(::`muteVideo() returns`)
+    }
+
+    @Test
+    fun `unmuteVideo() returns if participantId does not exist`() {
+        table.forAll(::`unmuteVideo() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `unmuteVideo() throws UnmuteVideoException`() {
+        table.forAll(::`unmuteVideo() throws UnmuteVideoException`)
+    }
+
+    @Test
+    fun `unmuteVideo() returns`() {
+        table.forAll(::`unmuteVideo() returns`)
+    }
+
+    @Test
+    fun `spotlight() returns if participantId does not exist`() {
+        table.forAll(::`spotlight() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `spotlight() throws SpotlightException`() {
+        table.forAll(::`spotlight() throws SpotlightException`)
+    }
+
+    @Test
+    fun `spotlight() returns`() {
+        table.forAll(::`spotlight() returns`)
+    }
+
+    @Test
+    fun `unspotlight() returns if participantId does not exist`() {
+        table.forAll(::`unspotlight() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `unspotlight() throws UnspotlightException`() {
+        table.forAll(::`unspotlight() throws UnspotlightException`)
+    }
+
+    @Test
+    fun `unspotlight() returns`() {
+        table.forAll(::`unspotlight() returns`)
+    }
+
+    @Test
+    fun `lowerHand() returns if participantId does not exist`() {
+        table.forAll(::`lowerHand() returns if participantId does not exist`)
+    }
+
+    @Test
+    fun `lowerHand() throws LowerHandException`() {
+        table.forAll(::`lowerHand() throws LowerHandException`)
+    }
+
+    @Test
+    fun `lowerHand() returns`() {
+        table.forAll(::`lowerHand() returns`)
+    }
+
+    @Test
+    fun `lowerAllHands() throws LowerAllHandsException`() {
+        table.forAll(::`lowerAllHands() throws LowerAllHandsException`)
+    }
+
+    @Test
+    fun `lowerAllHands() returns`() {
+        table.forAll(::`lowerAllHands() returns`)
+    }
+
+    @Test
+    fun `lock() throws LockException`() {
+        table.forAll(::`lock() throws LockException`)
+    }
+
+    @Test
+    fun `lock() returns`() {
+        table.forAll(::`lock() returns`)
+    }
+
+    @Test
+    fun `unlock() throws UnlockException`() {
+        table.forAll(::`unlock() throws UnlockException`)
+    }
+
+    @Test
+    fun `unlock() returns`() {
+        table.forAll(::`unlock() returns`)
+    }
+
+    @Test
+    fun `muteAllGuests() throws MuteAllGuestsException`() {
+        table.forAll(::`muteAllGuests() throws MuteAllGuestsException`)
+    }
+
+    @Test
+    fun `muteAllGuests() returns`() {
+        table.forAll(::`muteAllGuests() returns`)
+    }
+
+    @Test
+    fun `unmuteAllGuests() throws UnmuteAllGuestsException`() {
+        table.forAll(::`unmuteAllGuests() throws UnmuteAllGuestsException`)
+    }
+
+    @Test
+    fun `unmuteAllGuests() returns`() {
+        table.forAll(::`unmuteAllGuests() returns`)
+    }
+
+    @Test
+    fun `disconnectAll() throws DisconnectAllException`() {
+        table.forAll(::`disconnectAll() throws DisconnectAllException`)
+    }
+
+    @Test
+    fun `disconnectAll() returns`() {
+        table.forAll(::`disconnectAll() returns`)
+    }
+
+    private fun `does not update the list until syncing is finished`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "participants").isEmpty()
             event.emit(ParticipantSyncBeginEvent)
-            val participants = List(100) { Random.nextParticipant(it) }
+            val participants = Random.nextParticipantList(participantId, parentParticipantId)
             participants.forEach {
                 val response = it.toParticipantResponse()
                 event.emit(ParticipantCreateEvent(response))
@@ -120,24 +379,23 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `create, update, delete, stage correctly modify the list`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `create, update, delete, stage correctly modify the list`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "participants").isEmpty()
-            var participant = Random.nextParticipant()
+            var participant = Random.nextParticipant(
+                id = parentParticipantId ?: participantId,
+                me = true,
+            )
             var response = participant.toParticipantResponse()
             var e: Event = ParticipantCreateEvent(response)
             event.emit(e)
             assertThat(awaitItem(), "participants").containsOnly(participant)
-            participant = Random.nextParticipant(id = participant.id)
+            participant = Random.nextParticipant(id = participant.id, me = participant.me)
             response = participant.toParticipantResponse()
             e = ParticipantUpdateEvent(response)
             event.emit(e)
@@ -161,19 +419,15 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `update without a matching create does not modify the list`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `update without a matching create does not modify the list`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.participants.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "participants").isEmpty()
-            val participant = Random.nextParticipant()
+            val participant = Random.nextParticipant(id = parentParticipantId ?: participantId)
             val response = participant.toParticipantResponse()
             val e = ParticipantUpdateEvent(response)
             event.emit(e)
@@ -182,19 +436,15 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `me produces the correct participant`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `me produces the correct participant`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.me.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "me").isNull()
-            var me = Random.nextParticipant(id = participantId)
+            var me = Random.nextParticipant(id = parentParticipantId ?: participantId, me = true)
             event.emit(ParticipantCreateEvent(me.toParticipantResponse()))
             assertThat(awaitItem(), "me").isEqualTo(me)
             me = me.copy(audioMuted = !me.audioMuted)
@@ -209,15 +459,11 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `locked produces the correct lock state`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `locked produces the correct lock state`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.locked.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "locked").isFalse()
@@ -231,15 +477,11 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `allGuestsMuted produces the correct all guests muted state`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `allGuestsMuted produces the correct all guests muted state`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.allGuestsMuted.test {
             event.subscriptionCount.first { it > 0 }
             assertThat(awaitItem(), "guestsMuted").isFalse()
@@ -253,32 +495,28 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `raiseHand() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `raiseHand() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.raiseHand(Random.nextParticipantId())
     }
 
-    @Test
-    fun `raiseHand() throws RaiseHandException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `raiseHand() throws RaiseHandException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun buzz(token: Token): Call<Boolean> {
@@ -312,19 +550,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `raiseHand() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `raiseHand() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun buzz(token: Token): Call<Boolean> {
@@ -354,32 +592,28 @@ class RosterImplTest {
         participants.forEach { roster.raiseHand(it.id) }
     }
 
-    @Test
-    fun `admit() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `admit() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.disconnect(Random.nextParticipantId())
     }
 
-    @Test
-    fun `admit() throws AdmitException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `admit() throws AdmitException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun unlock(token: Token): Call<Boolean> {
@@ -413,19 +647,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `admit() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `admit() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun unlock(token: Token): Call<Boolean> {
@@ -455,32 +689,28 @@ class RosterImplTest {
         participants.forEach { roster.admit(it.id) }
     }
 
-    @Test
-    fun `disconnect() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `disconnect() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.disconnect(Random.nextParticipantId())
     }
 
-    @Test
-    fun `disconnect() throws DisconnectException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `disconnect() throws DisconnectException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun disconnect(token: Token): Call<Boolean> {
@@ -514,19 +744,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `disconnect() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `disconnect() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun disconnect(token: Token): Call<Boolean> {
@@ -556,20 +786,20 @@ class RosterImplTest {
         participants.forEach { roster.disconnect(it.id) }
     }
 
-    @Test
-    fun `makeHost() throws MakeHostException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `makeHost() throws MakeHostException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
@@ -604,19 +834,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `makeHost() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `makeHost() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
@@ -647,20 +877,20 @@ class RosterImplTest {
         participants.forEach { roster.makeHost(it.id) }
     }
 
-    @Test
-    fun `makeGuest() throws MakeGuestException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `makeGuest() throws MakeGuestException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
@@ -695,19 +925,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `makeGuest() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `makeGuest() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
@@ -738,32 +968,28 @@ class RosterImplTest {
         participants.forEach { roster.makeGuest(it.id) }
     }
 
-    @Test
-    fun `mute() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `mute() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.mute(Random.nextParticipantId())
     }
 
-    @Test
-    fun `mute() throws MuteException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `mute() throws MuteException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun mute(token: Token): Call<Unit> {
@@ -797,19 +1023,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `mute() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `mute() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun mute(token: Token): Call<Unit> {
@@ -839,32 +1065,28 @@ class RosterImplTest {
         participants.forEach { roster.mute(it.id) }
     }
 
-    @Test
-    fun `unmute() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `unmute() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.unmute(Random.nextParticipantId())
     }
 
-    @Test
-    fun `unmute() throws UnmuteException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `unmute() throws UnmuteException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun unmute(token: Token): Call<Unit> {
@@ -898,19 +1120,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `unmute() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `unmute() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun unmute(token: Token): Call<Unit> {
@@ -940,32 +1162,28 @@ class RosterImplTest {
         participants.forEach { roster.unmute(it.id) }
     }
 
-    @Test
-    fun `muteVideo() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `muteVideo() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.muteVideo(Random.nextParticipantId())
     }
 
-    @Test
-    fun `muteVideo() throws MuteVideoException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `muteVideo() throws MuteVideoException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun videoMuted(token: Token): Call<Unit> {
@@ -999,19 +1217,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `muteVideo() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `muteVideo() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun videoMuted(token: Token): Call<Unit> {
@@ -1041,32 +1259,28 @@ class RosterImplTest {
         participants.forEach { roster.muteVideo(it.id) }
     }
 
-    @Test
-    fun `unmuteVideo() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `unmuteVideo() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.unmuteVideo(Random.nextParticipantId())
     }
 
-    @Test
-    fun `unmuteVideo() throws UnmuteVideoException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `unmuteVideo() throws UnmuteVideoException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun videoUnmuted(token: Token): Call<Unit> {
@@ -1100,19 +1314,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `unmuteVideo() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `unmuteVideo() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun videoUnmuted(token: Token): Call<Unit> {
@@ -1142,32 +1356,28 @@ class RosterImplTest {
         participants.forEach { roster.unmuteVideo(it.id) }
     }
 
-    @Test
-    fun `spotlight() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `spotlight() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.spotlight(Random.nextParticipantId())
     }
 
-    @Test
-    fun `spotlight() throws SpotlightException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `spotlight() throws SpotlightException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun spotlightOn(token: Token): Call<Boolean> {
@@ -1201,19 +1411,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `spotlight() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `spotlight() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun spotlightOn(token: Token): Call<Boolean> {
@@ -1243,32 +1453,28 @@ class RosterImplTest {
         participants.forEach { roster.spotlight(it.id) }
     }
 
-    @Test
-    fun `unspotlight() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `unspotlight() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.unspotlight(Random.nextParticipantId())
     }
 
-    @Test
-    fun `unspotlight() throws UnspotlightException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `unspotlight() throws UnspotlightException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun spotlightOff(token: Token): Call<Boolean> {
@@ -1302,19 +1508,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `unspotlight() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `unspotlight() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun spotlightOff(token: Token): Call<Boolean> {
@@ -1344,32 +1550,28 @@ class RosterImplTest {
         participants.forEach { roster.unspotlight(it.id) }
     }
 
-    @Test
-    fun `lowerHand() returns if participantId does not exist`() = runTest {
-        val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
-            participantId = participantId,
-            store = store,
-            step = object : InfinityService.ConferenceStep {},
-        )
+    private fun `lowerHand() returns if participantId does not exist`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
         roster.lowerHand(Random.nextParticipantId())
     }
 
-    @Test
-    fun `lowerHand() throws LowerHandException`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
-        val causes = participants.associate { it.id to Throwable() }
+    private fun `lowerHand() throws LowerHandException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
+        val causes = participantIds.associateWith { Throwable() }
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun clearBuzz(token: Token): Call<Boolean> {
@@ -1403,19 +1605,19 @@ class RosterImplTest {
         }
     }
 
-    @Test
-    fun `lowerHand() returns`() = runTest {
-        val participants = List(10) { Random.nextParticipant(it) }
+    private fun `lowerHand() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val participants = Random.nextParticipantList(participantId, parentParticipantId)
+        val participantIds = participants.toParticipantIdSet(participantId)
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
-                    assertThat(participantId, "participantId")
-                        .isIn(*participants.map(Participant::id).toTypedArray())
+                    assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
                         override fun clearBuzz(token: Token): Call<Boolean> {
@@ -1445,14 +1647,14 @@ class RosterImplTest {
         participants.forEach { roster.lowerHand(it.id) }
     }
 
-    @Test
-    fun `lowerAllHands() throws LowerAllHandsException`() = runTest {
+    private fun `lowerAllHands() throws LowerAllHandsException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val cause = Throwable()
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun clearAllBuzz(token: Token): Call<Boolean> {
@@ -1470,13 +1672,13 @@ class RosterImplTest {
             .hasCause(cause)
     }
 
-    @Test
-    fun `lowerAllHands() returns`() = runTest {
+    private fun `lowerAllHands() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun clearAllBuzz(token: Token): Call<Boolean> {
@@ -1492,14 +1694,14 @@ class RosterImplTest {
         roster.lowerAllHands()
     }
 
-    @Test
-    fun `lock() throws LockException`() = runTest {
+    private fun `lock() throws LockException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val cause = Throwable()
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun lock(token: Token): Call<Boolean> {
@@ -1517,13 +1719,13 @@ class RosterImplTest {
             .hasCause(cause)
     }
 
-    @Test
-    fun `lock() returns`() = runTest {
+    private fun `lock() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun lock(token: Token): Call<Boolean> {
@@ -1539,14 +1741,14 @@ class RosterImplTest {
         roster.lock()
     }
 
-    @Test
-    fun `unlock() throws UnlockException`() = runTest {
+    private fun `unlock() throws UnlockException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val cause = Throwable()
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun unlock(token: Token): Call<Boolean> {
@@ -1564,13 +1766,13 @@ class RosterImplTest {
             .hasCause(cause)
     }
 
-    @Test
-    fun `unlock() returns`() = runTest {
+    private fun `unlock() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun unlock(token: Token): Call<Boolean> {
@@ -1586,14 +1788,14 @@ class RosterImplTest {
         roster.unlock()
     }
 
-    @Test
-    fun `muteAllGuests() throws MuteAllGuestsException`() = runTest {
+    private fun `muteAllGuests() throws MuteAllGuestsException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val cause = Throwable()
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun muteGuests(token: Token): Call<Boolean> {
@@ -1611,13 +1813,13 @@ class RosterImplTest {
             .hasCause(cause)
     }
 
-    @Test
-    fun `muteAllGuests() returns`() = runTest {
+    private fun `muteAllGuests() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun muteGuests(token: Token): Call<Boolean> {
@@ -1633,14 +1835,14 @@ class RosterImplTest {
         roster.muteAllGuests()
     }
 
-    @Test
-    fun `unmuteAllGuests() throws UnmuteAllGuestsException`() = runTest {
+    private fun `unmuteAllGuests() throws UnmuteAllGuestsException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val cause = Throwable()
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun unmuteGuests(token: Token): Call<Boolean> {
@@ -1658,13 +1860,13 @@ class RosterImplTest {
             .hasCause(cause)
     }
 
-    @Test
-    fun `unmuteAllGuests() returns`() = runTest {
+    private fun `unmuteAllGuests() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun unmuteGuests(token: Token): Call<Boolean> {
@@ -1680,14 +1882,14 @@ class RosterImplTest {
         roster.unmuteAllGuests()
     }
 
-    @Test
-    fun `disconnectAll() throws DisconnectAllException`() = runTest {
+    private fun `disconnectAll() throws DisconnectAllException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val cause = Throwable()
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun disconnect(token: Token): Call<Boolean> {
@@ -1705,13 +1907,13 @@ class RosterImplTest {
             .hasCause(cause)
     }
 
-    @Test
-    fun `disconnectAll() returns`() = runTest {
+    private fun `disconnectAll() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
         val roster = RosterImpl(
-            scope = backgroundScope,
-            event = event,
             participantId = participantId,
-            store = store,
+            parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
                 override fun disconnect(token: Token): Call<Boolean> {
@@ -1728,10 +1930,10 @@ class RosterImplTest {
     }
 
     private fun Random.nextParticipant(
-        index: Int = 0,
-        id: ParticipantId = if (index == 0) participantId else nextParticipantId(),
+        id: ParticipantId = nextParticipantId(),
+        me: Boolean = false,
     ): Participant {
-        val startTime = Instant.fromEpochSeconds(index.toLong())
+        val startTime = Instant.fromEpochSeconds(0) + nextInt(0, 100).seconds
         return Participant(
             id = id,
             startTime = startTime,
@@ -1741,7 +1943,7 @@ class RosterImplTest {
             spotlightTime = startTime + nextInt(0, 100).seconds,
             displayName = nextString(),
             overlayText = nextString(),
-            me = id == participantId,
+            me = me,
             audioMuted = nextBoolean(),
             videoMuted = nextBoolean(),
             presenting = nextBoolean(),
@@ -1750,6 +1952,21 @@ class RosterImplTest {
             disconnectSupported = nextBoolean(),
             callTag = nextString(),
         )
+    }
+
+    private fun Random.nextParticipantList(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = List(10) {
+        nextParticipant(
+            id = if (it == 0) parentParticipantId ?: participantId else nextParticipantId(),
+            me = it == 0,
+        )
+    }
+
+    private fun List<Participant>.toParticipantIdSet(participantId: ParticipantId) = buildSet {
+        add(participantId)
+        for (participant in this@toParticipantIdSet) add(participant.id)
     }
 
     private fun Participant.toParticipantResponse() = ParticipantResponse(
@@ -1781,5 +1998,22 @@ class RosterImplTest {
             ServiceType.UNKNOWN -> ApiServiceType.UNKNOWN
         },
         callTag = callTag,
+    )
+
+    @Suppress("TestFunctionName")
+    private fun TestScope.RosterImpl(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+        step: InfinityService.ConferenceStep = object : InfinityService.ConferenceStep {
+            override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
+                object : InfinityService.ParticipantStep {}
+        },
+    ) = RosterImpl(
+        scope = backgroundScope,
+        event = event,
+        participantId = participantId,
+        parentParticipantId = parentParticipantId,
+        store = store,
+        step = step,
     )
 }
