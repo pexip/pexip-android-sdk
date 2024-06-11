@@ -21,6 +21,7 @@ import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasCause
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
@@ -86,19 +87,6 @@ class ThemeImplTest {
     fun `emits the current avatar`() = runTest {
         fun pathToUrl(path: String) = "https://$path.com"
 
-        val response = generateSequence { Random.nextString() }
-            .take(10)
-            .associateWith {
-                SplashScreenResponse(
-                    background = BackgroundResponse(Random.nextString()),
-                    elements = List(10) {
-                        ElementResponse.Text(
-                            color = Random.nextLong(Long.MAX_VALUE),
-                            text = Random.nextString(),
-                        )
-                    },
-                )
-            }
         val step = object : InfinityService.ConferenceStep {
 
             override fun avatar(token: Token): String {
@@ -165,6 +153,16 @@ class ThemeImplTest {
         theme.layout.test {
             event.awaitSubscriptionCountAtLeast(2)
             assertThat(awaitItem(), "layout").isNull()
+            assertThat(awaitItem(), "layout")
+                .isNotNull()
+                .all {
+                    prop(Layout::layout).isEqualTo(LayoutId(""))
+                    prop(Layout::layouts).isEqualTo(layouts)
+                    prop(Layout::requestedPrimaryScreenHostLayout).isNull()
+                    prop(Layout::requestedPrimaryScreenGuestLayout).isNull()
+                    prop(Layout::overlayTextEnabled).isFalse()
+                    prop(Layout::layoutSvgs).isEqualTo(layoutSvgs)
+                }
             repeat(10) {
                 val e = LayoutEvent(
                     layout = layouts.random(),
