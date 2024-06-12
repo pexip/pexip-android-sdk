@@ -200,7 +200,7 @@ public class WebRtcMediaConnectionFactory private constructor(
         return WebRtcMediaConnection(
             factory = this,
             config = config,
-            scope = CoroutineScope(),
+            context = SupervisorJob(job) + workerDispatcher,
             signalingDispatcher = signalingDispatcher,
         )
     }

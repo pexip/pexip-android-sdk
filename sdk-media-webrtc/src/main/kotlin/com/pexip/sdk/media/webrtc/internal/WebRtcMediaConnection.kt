@@ -34,6 +34,7 @@ import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
@@ -67,14 +68,24 @@ import org.webrtc.RtpParameters
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
+    context: CoroutineContext,
     private val config: MediaConnectionConfig,
-    private val scope: CoroutineScope,
     private val signalingDispatcher: CoroutineDispatcher,
 ) : MediaConnection {
+
+    val handler = CoroutineExceptionHandler { _, t ->
+        when (t) {
+            is CancellationException -> throw t
+            else -> {} // Do nothing
+        }
+    }
+
+    private val scope = CoroutineScope(context + handler)
 
     private val mutex = Mutex()
     private var polite = false
