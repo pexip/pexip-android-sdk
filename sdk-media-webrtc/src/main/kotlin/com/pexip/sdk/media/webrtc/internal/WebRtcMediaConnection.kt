@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.media.webrtc.internal
 
+import android.util.Log
 import com.pexip.sdk.media.Bitrate
 import com.pexip.sdk.media.Bitrate.Companion.bps
 import com.pexip.sdk.media.CandidateSignalingEvent
@@ -79,10 +80,7 @@ internal class WebRtcMediaConnection(
 ) : MediaConnection {
 
     private val handler = CoroutineExceptionHandler { _, t ->
-        when (t) {
-            is CancellationException -> throw t
-            else -> {} // Do nothing
-        }
+        Log.v("WebRtcMediaConnection", "Coroutine failed", t)
     }
 
     private val scope = CoroutineScope(context + handler)
