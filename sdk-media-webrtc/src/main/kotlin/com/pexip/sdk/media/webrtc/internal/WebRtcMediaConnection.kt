@@ -78,7 +78,7 @@ internal class WebRtcMediaConnection(
     private val signalingDispatcher: CoroutineDispatcher,
 ) : MediaConnection {
 
-    val handler = CoroutineExceptionHandler { _, t ->
+    private val handler = CoroutineExceptionHandler { _, t ->
         when (t) {
             is CancellationException -> throw t
             else -> {} // Do nothing
