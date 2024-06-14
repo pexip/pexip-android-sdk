@@ -1,15 +1,9 @@
-@file:Suppress("UnstableApiUsage")
-
 plugins {
     id("com.pexip.sdk.kotlin.android.library.publishing")
+    alias(libs.plugins.kotlin.compose)
 }
 
-android {
-    namespace = "com.pexip.sdk.media.webrtc.compose"
-    buildFeatures {
-        compose = true
-    }
-}
+android.namespace = "com.pexip.sdk.media.webrtc.compose"
 
 dependencies {
     api(project(":sdk-media-webrtc"))
