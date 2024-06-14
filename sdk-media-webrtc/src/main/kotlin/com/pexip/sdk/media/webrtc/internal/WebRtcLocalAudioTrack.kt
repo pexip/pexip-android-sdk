@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,18 +33,21 @@ import kotlinx.coroutines.withContext
 import org.webrtc.AudioSource
 import org.webrtc.AudioTrack
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.coroutines.CoroutineContext
 
 internal class WebRtcLocalAudioTrack(
-    context: Context,
+    applicationContext: Context,
     private val audioSource: AudioSource,
     internal val audioTrack: AudioTrack,
-    private val scope: CoroutineScope,
+    context: CoroutineContext,
     signalingDispatcher: CoroutineDispatcher,
 ) : LocalAudioTrack {
 
+    private val scope = CoroutineScope(context)
+
     private val listeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val microphoneMuteObserver =
-        context.microphoneMuteObserverIn(scope + signalingDispatcher)
+        applicationContext.microphoneMuteObserverIn(scope + signalingDispatcher)
 
     override val capturing: Boolean
         get() = !microphoneMuteObserver.microphoneMute.value

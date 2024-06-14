@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,14 @@ import com.pexip.sdk.media.VideoTrack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.webrtc.VideoSink
+import kotlin.coroutines.CoroutineContext
 
 internal class WebRtcVideoTrack(
     private val videoTrack: org.webrtc.VideoTrack,
-    private val scope: CoroutineScope,
+    context: CoroutineContext,
 ) : VideoTrack {
+
+    private val scope = CoroutineScope(context)
 
     override fun addRenderer(renderer: Renderer) {
         require(renderer is VideoSink) { "renderer must be an instance of VideoSink." }

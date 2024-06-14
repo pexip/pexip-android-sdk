@@ -43,7 +43,6 @@ import com.pexip.sdk.media.webrtc.internal.WebRtcLocalVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcMediaConnection
 import com.pexip.sdk.media.webrtc.internal.from
 import com.pexip.sdk.media.webrtc.internal.maybeExecute
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -72,6 +71,7 @@ import org.webrtc.audio.JavaAudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule.AudioRecordStateCallback
 import org.webrtc.audio.JavaAudioDeviceModule.AudioTrackStateCallback
 import java.util.UUID
+import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 
 public class WebRtcMediaConnectionFactory private constructor(
@@ -119,10 +119,10 @@ public class WebRtcMediaConnectionFactory private constructor(
         val audioSource = factory.createAudioSource(MediaConstraints())
         val audioTrack = factory.createAudioTrack(createMediaTrackId(), audioSource)
         return WebRtcLocalAudioTrack(
-            context = applicationContext,
+            applicationContext = applicationContext,
             audioSource = audioSource,
             audioTrack = audioTrack,
-            scope = CoroutineScope(),
+            context = CoroutineContext(),
             signalingDispatcher = signalingDispatcher,
         )
     }
@@ -153,7 +153,7 @@ public class WebRtcMediaConnectionFactory private constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            scope = CoroutineScope(),
+            context = CoroutineContext(),
             signalingDispatcher = signalingDispatcher,
         )
     }
@@ -190,7 +190,7 @@ public class WebRtcMediaConnectionFactory private constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            scope = CoroutineScope(),
+            context = CoroutineContext(),
             signalingDispatcher = signalingDispatcher,
         )
     }
@@ -200,7 +200,7 @@ public class WebRtcMediaConnectionFactory private constructor(
         return WebRtcMediaConnection(
             factory = this,
             config = config,
-            context = SupervisorJob(job) + workerDispatcher,
+            context = CoroutineContext(),
             signalingDispatcher = signalingDispatcher,
         )
     }
@@ -242,8 +242,7 @@ public class WebRtcMediaConnectionFactory private constructor(
 
     private fun createMediaTrackId() = UUID.randomUUID().toString()
 
-    private fun CoroutineScope(): CoroutineScope =
-        CoroutineScope(SupervisorJob(job) + workerDispatcher)
+    private fun CoroutineContext(): CoroutineContext = SupervisorJob(job) + workerDispatcher
 
     private fun checkNotDisposed() =
         check(job.isActive) { "WebRtcMediaConnectionFactory has been disposed!" }

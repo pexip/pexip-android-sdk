@@ -444,7 +444,7 @@ internal class WebRtcMediaConnection(
         key: RtpTransceiverKey,
         flow: MutableStateFlow<VideoTrack?>,
     ) = wrapper.getRemoteVideoTrack(key)
-        .map { track -> track?.let { WebRtcVideoTrack(it, this) } }
+        .map { track -> track?.let { WebRtcVideoTrack(it, this.coroutineContext) } }
         .onEach { flow.value = it }
         .onCompletion { flow.value = null }
         .launchIn(this)

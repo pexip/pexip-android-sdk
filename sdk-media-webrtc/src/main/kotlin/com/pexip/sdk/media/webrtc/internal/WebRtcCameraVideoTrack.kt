@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.webrtc.CameraVideoCapturer
 import org.webrtc.EglBase
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -38,7 +39,7 @@ internal class WebRtcCameraVideoTrack(
     private val videoCapturer: CameraVideoCapturer,
     videoSource: VideoSource,
     videoTrack: VideoTrack,
-    scope: CoroutineScope,
+    context: CoroutineContext,
     signalingDispatcher: CoroutineDispatcher,
 ) : CameraVideoTrack, WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
@@ -46,9 +47,11 @@ internal class WebRtcCameraVideoTrack(
     videoCapturer = videoCapturer,
     videoSource = videoSource,
     videoTrack = videoTrack,
-    scope = scope,
+    context = context,
     signalingDispatcher = signalingDispatcher,
 ) {
+
+    private val scope = CoroutineScope(context)
 
     override fun switchCamera(callback: CameraVideoTrack.SwitchCameraCallback) {
         scope.launch {
