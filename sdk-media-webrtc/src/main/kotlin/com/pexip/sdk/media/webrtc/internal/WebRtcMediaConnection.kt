@@ -74,7 +74,7 @@ import kotlin.coroutines.CoroutineContext
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
-    context: CoroutineContext,
+    coroutineContext: CoroutineContext,
     private val config: MediaConnectionConfig,
     private val signalingDispatcher: CoroutineDispatcher,
 ) : MediaConnection {
@@ -83,7 +83,7 @@ internal class WebRtcMediaConnection(
         Log.v("WebRtcMediaConnection", "Coroutine failed", t)
     }
 
-    private val scope = CoroutineScope(context + handler)
+    private val scope = CoroutineScope(coroutineContext + handler)
 
     private val mutex = Mutex()
     private var polite = false
@@ -444,7 +444,7 @@ internal class WebRtcMediaConnection(
         key: RtpTransceiverKey,
         flow: MutableStateFlow<VideoTrack?>,
     ) = wrapper.getRemoteVideoTrack(key)
-        .map { track -> track?.let { WebRtcVideoTrack(it, this.coroutineContext) } }
+        .map { track -> track?.let { WebRtcVideoTrack(it, this) } }
         .onEach { flow.value = it }
         .onCompletion { flow.value = null }
         .launchIn(this)

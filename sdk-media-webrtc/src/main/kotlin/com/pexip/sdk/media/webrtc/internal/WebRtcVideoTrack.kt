@@ -20,14 +20,11 @@ import com.pexip.sdk.media.VideoTrack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.webrtc.VideoSink
-import kotlin.coroutines.CoroutineContext
 
 internal class WebRtcVideoTrack(
     private val videoTrack: org.webrtc.VideoTrack,
-    context: CoroutineContext,
+    private val scope: CoroutineScope,
 ) : VideoTrack {
-
-    private val scope = CoroutineScope(context)
 
     override fun addRenderer(renderer: Renderer) {
         require(renderer is VideoSink) { "renderer must be an instance of VideoSink." }

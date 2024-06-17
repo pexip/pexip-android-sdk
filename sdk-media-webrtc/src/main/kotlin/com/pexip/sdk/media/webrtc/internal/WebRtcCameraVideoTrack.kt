@@ -39,19 +39,19 @@ internal class WebRtcCameraVideoTrack(
     private val videoCapturer: CameraVideoCapturer,
     videoSource: VideoSource,
     videoTrack: VideoTrack,
-    context: CoroutineContext,
+    coroutineContext: CoroutineContext,
     signalingDispatcher: CoroutineDispatcher,
+    private val scope: CoroutineScope = CoroutineScope(coroutineContext),
 ) : CameraVideoTrack, WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
     eglBase = eglBase,
+    coroutineContext = coroutineContext,
+    scope = scope,
     videoCapturer = videoCapturer,
     videoSource = videoSource,
     videoTrack = videoTrack,
-    context = context,
     signalingDispatcher = signalingDispatcher,
 ) {
-
-    private val scope = CoroutineScope(context)
 
     override fun switchCamera(callback: CameraVideoTrack.SwitchCameraCallback) {
         scope.launch {

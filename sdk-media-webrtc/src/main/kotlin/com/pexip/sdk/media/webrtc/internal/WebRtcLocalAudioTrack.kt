@@ -36,18 +36,18 @@ import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.coroutines.CoroutineContext
 
 internal class WebRtcLocalAudioTrack(
-    applicationContext: Context,
+    context: Context,
     private val audioSource: AudioSource,
     internal val audioTrack: AudioTrack,
-    context: CoroutineContext,
+    coroutineContext: CoroutineContext,
     signalingDispatcher: CoroutineDispatcher,
 ) : LocalAudioTrack {
 
-    private val scope = CoroutineScope(context)
+    private val scope = CoroutineScope(coroutineContext)
 
     private val listeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val microphoneMuteObserver =
-        applicationContext.microphoneMuteObserverIn(scope + signalingDispatcher)
+        context.microphoneMuteObserverIn(scope + signalingDispatcher)
 
     override val capturing: Boolean
         get() = !microphoneMuteObserver.microphoneMute.value

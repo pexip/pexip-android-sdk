@@ -119,10 +119,10 @@ public class WebRtcMediaConnectionFactory private constructor(
         val audioSource = factory.createAudioSource(MediaConstraints())
         val audioTrack = factory.createAudioTrack(createMediaTrackId(), audioSource)
         return WebRtcLocalAudioTrack(
-            applicationContext = applicationContext,
+            context = applicationContext,
             audioSource = audioSource,
             audioTrack = audioTrack,
-            context = CoroutineContext(),
+            coroutineContext = CoroutineContext(),
             signalingDispatcher = signalingDispatcher,
         )
     }
@@ -153,7 +153,7 @@ public class WebRtcMediaConnectionFactory private constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            context = CoroutineContext(),
+            coroutineContext = CoroutineContext(),
             signalingDispatcher = signalingDispatcher,
         )
     }
@@ -190,7 +190,7 @@ public class WebRtcMediaConnectionFactory private constructor(
             videoCapturer = videoCapturer,
             videoSource = videoSource,
             videoTrack = factory.createVideoTrack(createMediaTrackId(), videoSource),
-            context = CoroutineContext(),
+            coroutineContext = CoroutineContext(),
             signalingDispatcher = signalingDispatcher,
         )
     }
@@ -200,7 +200,7 @@ public class WebRtcMediaConnectionFactory private constructor(
         return WebRtcMediaConnection(
             factory = this,
             config = config,
-            context = CoroutineContext(),
+            coroutineContext = CoroutineContext(),
             signalingDispatcher = signalingDispatcher,
         )
     }
