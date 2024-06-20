@@ -45,10 +45,27 @@ internal open class WebRtcLocalVideoTrack(
     private val videoCapturer: VideoCapturer,
     private val videoSource: VideoSource,
     internal val videoTrack: org.webrtc.VideoTrack,
-    internal val coroutineContext: CoroutineContext,
-    private val scope: CoroutineScope = CoroutineScope(coroutineContext),
+    private val scope: CoroutineScope,
     protected val signalingDispatcher: CoroutineDispatcher,
 ) : LocalVideoTrack, VideoTrack by WebRtcVideoTrack(videoTrack, scope) {
+
+    internal constructor(
+        applicationContext: Context,
+        eglBase: EglBase?,
+        videoCapturer: VideoCapturer,
+        videoSource: VideoSource,
+        videoTrack: org.webrtc.VideoTrack,
+        coroutineContext: CoroutineContext,
+        signalingDispatcher: CoroutineDispatcher,
+    ) : this(
+        applicationContext = applicationContext,
+        eglBase = eglBase,
+        videoCapturer = videoCapturer,
+        videoSource = videoSource,
+        videoTrack = videoTrack,
+        scope = CoroutineScope(coroutineContext),
+        signalingDispatcher = signalingDispatcher,
+    )
 
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val textureHelper =

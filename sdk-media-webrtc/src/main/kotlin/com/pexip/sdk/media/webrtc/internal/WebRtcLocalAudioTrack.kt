@@ -39,11 +39,23 @@ internal class WebRtcLocalAudioTrack(
     context: Context,
     private val audioSource: AudioSource,
     internal val audioTrack: AudioTrack,
-    coroutineContext: CoroutineContext,
+    private val scope: CoroutineScope,
     signalingDispatcher: CoroutineDispatcher,
 ) : LocalAudioTrack {
 
-    private val scope = CoroutineScope(coroutineContext)
+    internal constructor(
+        context: Context,
+        audioSource: AudioSource,
+        audioTrack: AudioTrack,
+        coroutineContext: CoroutineContext,
+        signalingDispatcher: CoroutineDispatcher,
+    ) : this(
+        context = context,
+        audioSource = audioSource,
+        audioTrack = audioTrack,
+        scope = CoroutineScope(coroutineContext),
+        signalingDispatcher = signalingDispatcher,
+    )
 
     private val listeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val microphoneMuteObserver =
