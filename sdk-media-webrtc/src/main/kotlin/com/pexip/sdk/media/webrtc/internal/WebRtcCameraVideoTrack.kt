@@ -41,7 +41,7 @@ internal class WebRtcCameraVideoTrack(
     videoTrack: VideoTrack,
     private val scope: CoroutineScope,
     signalingDispatcher: CoroutineDispatcher,
-) : CameraVideoTrack, WebRtcLocalVideoTrack(
+) : WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
     eglBase = eglBase,
     scope = scope,
@@ -49,9 +49,10 @@ internal class WebRtcCameraVideoTrack(
     videoSource = videoSource,
     videoTrack = videoTrack,
     signalingDispatcher = signalingDispatcher,
-) {
+),
+    CameraVideoTrack {
 
-    internal constructor(
+    constructor(
         factory: CameraVideoTrackFactory,
         applicationContext: Context,
         eglBase: EglBase?,
