@@ -45,7 +45,7 @@ internal open class WebRtcLocalVideoTrack(
     private val videoCapturer: VideoCapturer,
     private val videoSource: VideoSource,
     internal val videoTrack: org.webrtc.VideoTrack,
-    private val scope: CoroutineScope,
+    protected val scope: CoroutineScope,
     protected val signalingDispatcher: CoroutineDispatcher,
 ) : LocalVideoTrack,
     VideoTrack by WebRtcVideoTrack(videoTrack, scope) {
