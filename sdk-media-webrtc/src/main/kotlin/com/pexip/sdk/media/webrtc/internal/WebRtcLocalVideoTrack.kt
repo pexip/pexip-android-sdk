@@ -37,6 +37,7 @@ import org.webrtc.VideoFrame
 import org.webrtc.VideoSource
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 
 internal open class WebRtcLocalVideoTrack(
     applicationContext: Context,
@@ -46,7 +47,26 @@ internal open class WebRtcLocalVideoTrack(
     internal val videoTrack: org.webrtc.VideoTrack,
     protected val scope: CoroutineScope,
     protected val signalingDispatcher: CoroutineDispatcher,
-) : LocalVideoTrack, VideoTrack by WebRtcVideoTrack(videoTrack, scope) {
+) : LocalVideoTrack,
+    VideoTrack by WebRtcVideoTrack(videoTrack, scope) {
+
+    constructor(
+        applicationContext: Context,
+        eglBase: EglBase?,
+        videoCapturer: VideoCapturer,
+        videoSource: VideoSource,
+        videoTrack: org.webrtc.VideoTrack,
+        coroutineContext: CoroutineContext,
+        signalingDispatcher: CoroutineDispatcher,
+    ) : this(
+        applicationContext = applicationContext,
+        eglBase = eglBase,
+        videoCapturer = videoCapturer,
+        videoSource = videoSource,
+        videoTrack = videoTrack,
+        scope = CoroutineScope(coroutineContext),
+        signalingDispatcher = signalingDispatcher,
+    )
 
     private val capturingListeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
     private val textureHelper =

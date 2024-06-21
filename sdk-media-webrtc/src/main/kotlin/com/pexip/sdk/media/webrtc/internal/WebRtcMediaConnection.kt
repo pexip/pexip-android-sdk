@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.media.webrtc.internal
 
+import android.util.Log
 import com.pexip.sdk.media.Bitrate
 import com.pexip.sdk.media.Bitrate.Companion.bps
 import com.pexip.sdk.media.CandidateSignalingEvent
@@ -34,6 +35,7 @@ import com.pexip.sdk.media.coroutines.getCapturing
 import com.pexip.sdk.media.webrtc.WebRtcMediaConnectionFactory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
@@ -67,14 +69,21 @@ import org.webrtc.RtpParameters
 import org.webrtc.RtpTransceiver.RtpTransceiverDirection
 import org.webrtc.SessionDescription
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class WebRtcMediaConnection(
     factory: WebRtcMediaConnectionFactory,
+    coroutineContext: CoroutineContext,
     private val config: MediaConnectionConfig,
-    private val scope: CoroutineScope,
     private val signalingDispatcher: CoroutineDispatcher,
 ) : MediaConnection {
+
+    private val handler = CoroutineExceptionHandler { _, t ->
+        Log.v("WebRtcMediaConnection", "Coroutine failed", t)
+    }
+
+    private val scope = CoroutineScope(coroutineContext + handler)
 
     private val mutex = Mutex()
     private var polite = false

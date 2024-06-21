@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.webrtc.CameraVideoCapturer
 import org.webrtc.EglBase
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -40,15 +41,38 @@ internal class WebRtcCameraVideoTrack(
     videoTrack: VideoTrack,
     scope: CoroutineScope,
     signalingDispatcher: CoroutineDispatcher,
-) : CameraVideoTrack, WebRtcLocalVideoTrack(
+) : WebRtcLocalVideoTrack(
     applicationContext = applicationContext,
     eglBase = eglBase,
+    scope = scope,
     videoCapturer = videoCapturer,
     videoSource = videoSource,
     videoTrack = videoTrack,
-    scope = scope,
     signalingDispatcher = signalingDispatcher,
-) {
+),
+    CameraVideoTrack {
+
+    constructor(
+        factory: CameraVideoTrackFactory,
+        applicationContext: Context,
+        eglBase: EglBase?,
+        deviceName: String,
+        videoCapturer: CameraVideoCapturer,
+        videoSource: VideoSource,
+        videoTrack: VideoTrack,
+        coroutineContext: CoroutineContext,
+        signalingDispatcher: CoroutineDispatcher,
+    ) : this(
+        factory = factory,
+        applicationContext = applicationContext,
+        eglBase = eglBase,
+        deviceName = deviceName,
+        videoCapturer = videoCapturer,
+        videoSource = videoSource,
+        videoTrack = videoTrack,
+        scope = CoroutineScope(coroutineContext),
+        signalingDispatcher = signalingDispatcher,
+    )
 
     override fun switchCamera(callback: CameraVideoTrack.SwitchCameraCallback) {
         scope.launch {
