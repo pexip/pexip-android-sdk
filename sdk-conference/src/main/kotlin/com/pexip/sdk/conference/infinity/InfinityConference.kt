@@ -25,6 +25,7 @@ import com.pexip.sdk.conference.ConferenceEventListener
 import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.Roster
+import com.pexip.sdk.conference.ServiceType
 import com.pexip.sdk.conference.Theme
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.DataChannelImpl
@@ -35,6 +36,7 @@ import com.pexip.sdk.conference.infinity.internal.RefererImpl
 import com.pexip.sdk.conference.infinity.internal.RosterImpl
 import com.pexip.sdk.conference.infinity.internal.ThemeImpl
 import com.pexip.sdk.conference.infinity.internal.events
+import com.pexip.sdk.conference.toServiceType
 import com.pexip.sdk.core.WhileSubscribedWithDebounce
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.UnsupportedInfinityException
@@ -76,6 +78,8 @@ public class InfinityConference private constructor(
     private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
 
     override val name: String = response.conferenceName
+
+    override val serviceType: ServiceType = response.serviceType.toServiceType()
 
     override val theme: Theme = ThemeImpl(
         scope = scope,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.pexip.sdk.conference
+
+import com.pexip.sdk.api.infinity.ServiceType as ApiServiceType
 
 /**
  * A service type.
@@ -62,4 +64,15 @@ public enum class ServiceType {
      * version of the SDK.
      */
     UNKNOWN,
+}
+
+internal fun ApiServiceType.toServiceType() = when (this) {
+    ApiServiceType.CONNECTING -> ServiceType.CONNECTING
+    ApiServiceType.WAITING_ROOM -> ServiceType.WAITING_ROOM
+    ApiServiceType.IVR -> ServiceType.IVR
+    ApiServiceType.CONFERENCE -> ServiceType.CONFERENCE
+    ApiServiceType.LECTURE -> ServiceType.LECTURE
+    ApiServiceType.GATEWAY -> ServiceType.GATEWAY
+    ApiServiceType.TEST_CALL -> ServiceType.TEST_CALL
+    ApiServiceType.UNKNOWN -> ServiceType.UNKNOWN
 }

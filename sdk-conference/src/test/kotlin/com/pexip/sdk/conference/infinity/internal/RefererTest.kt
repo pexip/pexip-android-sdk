@@ -33,6 +33,7 @@ import com.pexip.sdk.conference.ReferConferenceEvent
 import com.pexip.sdk.conference.ReferException
 import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.Roster
+import com.pexip.sdk.conference.ServiceType
 import com.pexip.sdk.conference.Theme
 import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString
@@ -135,6 +136,7 @@ class RefererTest {
         override val roster: Roster get() = TODO()
         override val referer: Referer get() = TODO()
         override val messenger: Messenger get() = TODO()
+        override val serviceType: ServiceType get() = TODO()
         override val signaling: MediaConnectionSignaling get() = TODO()
 
         override fun registerConferenceEventListener(listener: ConferenceEventListener): Unit =
