@@ -32,6 +32,7 @@ import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
 import com.pexip.sdk.api.infinity.internal.TransformLayoutRequestSerializer
 import com.pexip.sdk.api.infinity.internal.newApiClientV2Builder
 import com.pexip.sdk.infinity.LayoutId
+import com.pexip.sdk.infinity.ServiceType
 import com.pexip.sdk.infinity.test.nextLayoutId
 import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString

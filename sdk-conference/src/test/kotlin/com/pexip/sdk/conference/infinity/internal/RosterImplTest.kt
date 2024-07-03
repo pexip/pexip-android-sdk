@@ -60,8 +60,6 @@ import com.pexip.sdk.conference.MuteException
 import com.pexip.sdk.conference.MuteVideoException
 import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
-import com.pexip.sdk.conference.Role
-import com.pexip.sdk.conference.ServiceType
 import com.pexip.sdk.conference.SpotlightException
 import com.pexip.sdk.conference.UnlockException
 import com.pexip.sdk.conference.UnmuteAllGuestsException
@@ -69,6 +67,8 @@ import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnmuteVideoException
 import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.Role
+import com.pexip.sdk.infinity.ServiceType
 import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -80,8 +80,6 @@ import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.seconds
-import com.pexip.sdk.api.infinity.Role as ApiRole
-import com.pexip.sdk.api.infinity.ServiceType as ApiServiceType
 
 class RosterImplTest {
 
@@ -804,7 +802,7 @@ class RosterImplTest {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role, "request").isEqualTo(ApiRole.HOST)
+                            assertThat(request::role, "request").isEqualTo(Role.HOST)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -851,7 +849,7 @@ class RosterImplTest {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role).isEqualTo(ApiRole.HOST)
+                            assertThat(request::role).isEqualTo(Role.HOST)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -895,7 +893,7 @@ class RosterImplTest {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role, "request").isEqualTo(ApiRole.GUEST)
+                            assertThat(request::role, "request").isEqualTo(Role.GUEST)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -942,7 +940,7 @@ class RosterImplTest {
 
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role).isEqualTo(ApiRole.GUEST)
+                            assertThat(request::role).isEqualTo(Role.GUEST)
                             return object : TestCall<Boolean> {
 
                                 override fun enqueue(callback: Callback<Boolean>) =
@@ -1983,19 +1981,19 @@ class RosterImplTest {
         transferSupported = transferSupported,
         disconnectSupported = disconnectSupported,
         role = when (role) {
-            Role.HOST -> ApiRole.HOST
-            Role.GUEST -> ApiRole.GUEST
-            Role.UNKNOWN -> ApiRole.UNKNOWN
+            Role.HOST -> Role.HOST
+            Role.GUEST -> Role.GUEST
+            Role.UNKNOWN -> Role.UNKNOWN
         },
         serviceType = when (serviceType) {
-            ServiceType.CONNECTING -> ApiServiceType.CONNECTING
-            ServiceType.WAITING_ROOM -> ApiServiceType.WAITING_ROOM
-            ServiceType.IVR -> ApiServiceType.IVR
-            ServiceType.CONFERENCE -> ApiServiceType.CONFERENCE
-            ServiceType.LECTURE -> ApiServiceType.LECTURE
-            ServiceType.GATEWAY -> ApiServiceType.GATEWAY
-            ServiceType.TEST_CALL -> ApiServiceType.TEST_CALL
-            ServiceType.UNKNOWN -> ApiServiceType.UNKNOWN
+            ServiceType.CONNECTING -> ServiceType.CONNECTING
+            ServiceType.WAITING_ROOM -> ServiceType.WAITING_ROOM
+            ServiceType.IVR -> ServiceType.IVR
+            ServiceType.CONFERENCE -> ServiceType.CONFERENCE
+            ServiceType.LECTURE -> ServiceType.LECTURE
+            ServiceType.GATEWAY -> ServiceType.GATEWAY
+            ServiceType.TEST_CALL -> ServiceType.TEST_CALL
+            ServiceType.UNKNOWN -> ServiceType.UNKNOWN
         },
         callTag = callTag,
     )

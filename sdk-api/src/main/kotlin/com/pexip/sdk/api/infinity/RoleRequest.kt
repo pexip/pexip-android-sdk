@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.api.infinity
 
+import com.pexip.sdk.infinity.Role
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -18,6 +18,7 @@ package com.pexip.sdk.api.infinity
 import com.pexip.sdk.api.infinity.internal.DurationAsMillisecondsSerializer
 import com.pexip.sdk.api.infinity.internal.DurationAsSecondsStringSerializer
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.ServiceType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
