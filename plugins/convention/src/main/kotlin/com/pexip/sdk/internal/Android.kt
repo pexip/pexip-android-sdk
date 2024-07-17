@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ import org.gradle.api.JavaVersion
 
 internal object Android {
 
-    const val minSdk = 21
-    const val targetSdk = 33
-    const val compileSdk = 34
+    const val MIN_SDK = 21
+    const val TARGET_SDK = 34
+    const val COMPILE_SDK = 34
 
-    const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    const val TEST_INSTRUMENTATION_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
 
     val sourceCompatibility = JavaVersion.VERSION_11
     val targetCompatibility = JavaVersion.VERSION_11

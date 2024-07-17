@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ConferenceService : Service() {
+class ConferenceMediaProjectionService : Service() {
 
     @Inject
     lateinit var manager: NotificationManagerCompat
@@ -46,7 +46,7 @@ class ConferenceService : Service() {
         manager.createNotificationChannel(notificationChannel)
         val notification = NotificationCompat.Builder(this, notificationChannel.id)
             .setOngoing(true)
-            .setContentTitle(getString(R.string.conference_notification_content_title))
+            .setContentTitle(getString(R.string.conference_media_projection_notification_content_title))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
         val serviceType =
@@ -63,7 +63,7 @@ class ConferenceService : Service() {
 
     private companion object {
 
-        const val NOTIFICATION_ID = 1
+        const val NOTIFICATION_ID = 2
         const val NOTIFICATION_CHANNEL_IMPORTANCE = NotificationManagerCompat.IMPORTANCE_DEFAULT
     }
 }

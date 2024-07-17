@@ -32,10 +32,10 @@ class AndroidLibraryPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.library")
         configure<LibraryExtension> {
-            compileSdk = Android.compileSdk
+            compileSdk = Android.COMPILE_SDK
             defaultConfig {
-                minSdk = Android.minSdk
-                testInstrumentationRunner = Android.testInstrumentationRunner
+                minSdk = Android.MIN_SDK
+                testInstrumentationRunner = Android.TEST_INSTRUMENTATION_RUNNER
             }
             buildFeatures {
                 buildConfig = false
