@@ -6,6 +6,7 @@
     <string name="conference_notification_channel_id" translatable="false">conference</string>
     <string name="conference_notification_channel_name">Conference</string>
     <string name="conference_notification_content_title">Conference</string>
+    <string name="conference_media_projection_notification_content_title">Sharing screen</string>
     <!-- PERMISSIONS -->
     <string name="permissions_title">Grant permissions</string>
     <string name="permissions_description">Granting permission in the next screen will make sure other participants are able to see and hear you if you’ve enabled your camera and microphone</string>

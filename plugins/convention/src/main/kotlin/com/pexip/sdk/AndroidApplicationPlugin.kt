@@ -32,11 +32,11 @@ class AndroidApplicationPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("com.android.application")
         configure<ApplicationExtension> {
-            compileSdk = Android.compileSdk
+            compileSdk = Android.COMPILE_SDK
             defaultConfig {
-                minSdk = Android.minSdk
-                targetSdk = Android.targetSdk
-                testInstrumentationRunner = Android.testInstrumentationRunner
+                minSdk = Android.MIN_SDK
+                targetSdk = Android.TARGET_SDK
+                testInstrumentationRunner = Android.TEST_INSTRUMENTATION_RUNNER
             }
             buildFeatures {
                 buildConfig = true

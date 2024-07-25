@@ -235,9 +235,25 @@ class ConferenceWorkflow @Inject constructor(
     private fun RenderContext.screenCapturingSideEffect(track: LocalVideoTrack?) {
         if (track != null) {
             runningSideEffect("screenCapturingSideEffect($track)") {
-                track.getCapturing()
-                    .map(::onScreenCapturing)
-                    .collectLatest(actionSink::send)
+                val connection = object : ServiceConnection {
+                    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                        track.startCapture(QualityProfile.VeryHigh)
+                    }
+
+                    override fun onServiceDisconnected(name: ComponentName) {
+                        track.stopCapture()
+                    }
+                }
+                try {
+                    val intent =
+                        Intent(applicationContext, ConferenceMediaProjectionService::class.java)
+                    applicationContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+                    track.getCapturing()
+                        .map(::onScreenCapturing)
+                        .collectLatest(actionSink::send)
+                } finally {
+                    applicationContext.unbindService(connection)
+                }
             }
         }
     }
@@ -339,7 +355,6 @@ class ConferenceWorkflow @Inject constructor(
                 screenCaptureVideoTrack = localVideoTrack,
             )
             state.connection.setPresentationVideoTrack(localVideoTrack)
-            localVideoTrack.startCapture(QualityProfile.VeryHigh)
         }
 
     private fun onStopScreenCapture() = action({ "onStopScreenCapture()" }) {
