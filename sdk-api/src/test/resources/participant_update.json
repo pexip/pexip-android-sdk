@@ -34,5 +34,6 @@
   "is_main_video_dropped_out": false,
   "needs_presentation_in_mix": false,
   "show_live_captions": false,
-  "is_idp_authenticated": false
+  "is_idp_authenticated": false,
+  "is_client_muted": true
 }

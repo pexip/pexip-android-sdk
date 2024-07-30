@@ -283,6 +283,7 @@ internal class EventTest {
                         role = Role.HOST,
                         serviceType = ServiceType.GATEWAY,
                         callTag = "dd806491-eecc-42fc-accb-86a99448fc17",
+                        clientAudioMuted = true,
                     ),
                 ),
             )

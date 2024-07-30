@@ -97,6 +97,34 @@ internal class ParticipantStepImpl(
         mapper = ::parseMuteUnmute,
     )
 
+    override fun clientMute(token: Token): Call<Unit> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(url) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("client_mute")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseClientMuteClientUnmute,
+    )
+
+    override fun clientUnmute(token: Token): Call<Unit> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(url) {
+                conference(conferenceAlias)
+                participant(participantId)
+                addPathSegment("client_unmute")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseClientMuteClientUnmute,
+    )
+
     override fun videoMuted(token: Token): Call<Unit> = RealCall(
         client = client,
         request = Request.Builder()
@@ -285,6 +313,13 @@ internal class ParticipantStepImpl(
     override fun call(callId: CallId): InfinityService.CallStep = CallStepImpl(this, callId)
 
     private fun parseMuteUnmute(response: Response) = when (response.code) {
+        200 -> Unit
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseClientMuteClientUnmute(response: Response) = when (response.code) {
         200 -> Unit
         403 -> response.parse403()
         404 -> response.parse404()
