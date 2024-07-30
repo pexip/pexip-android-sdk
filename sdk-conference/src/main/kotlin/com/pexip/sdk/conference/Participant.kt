@@ -16,6 +16,8 @@
 package com.pexip.sdk.conference
 
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.Role
+import com.pexip.sdk.infinity.ServiceType
 import kotlinx.datetime.Instant
 
 /**

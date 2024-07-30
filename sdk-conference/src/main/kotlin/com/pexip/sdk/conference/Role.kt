@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,11 @@
  */
 package com.pexip.sdk.conference
 
-/**
- * A conference role that affects privileges that a [Participant] has
- *
- * See [documentation](https://docs.pexip.com/admin/pins_hosts_guests.htm) for additional info.
- */
-public enum class Role {
-
-    /**
-     * Has the ability to control the conference.
-     */
-    HOST,
-
-    /**
-     * Can only participate in the conference.
-     */
-    GUEST,
-
-    /**
-     * An unknown role.
-     *
-     * This is provided for forward-compatibility; if you encounter this value consider updating the
-     * version of the SDK.
-     */
-    UNKNOWN,
-}
+@Deprecated(
+    message = "Use com.pexip.sdk.infinity.Role instead.",
+    replaceWith = ReplaceWith(
+        expression = "Role",
+        imports = ["com.pexip.sdk.infinity.Role"],
+    ),
+)
+public typealias Role = com.pexip.sdk.infinity.Role

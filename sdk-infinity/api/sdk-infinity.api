@@ -146,6 +146,39 @@ public final class com/pexip/sdk/infinity/RegistrationId$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/pexip/sdk/infinity/Role : java/lang/Enum {
+	public static final field Companion Lcom/pexip/sdk/infinity/Role$Companion;
+	public static final field GUEST Lcom/pexip/sdk/infinity/Role;
+	public static final field HOST Lcom/pexip/sdk/infinity/Role;
+	public static final field UNKNOWN Lcom/pexip/sdk/infinity/Role;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/infinity/Role;
+	public static fun values ()[Lcom/pexip/sdk/infinity/Role;
+}
+
+public final class com/pexip/sdk/infinity/Role$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/infinity/ServiceType : java/lang/Enum {
+	public static final field CONFERENCE Lcom/pexip/sdk/infinity/ServiceType;
+	public static final field CONNECTING Lcom/pexip/sdk/infinity/ServiceType;
+	public static final field Companion Lcom/pexip/sdk/infinity/ServiceType$Companion;
+	public static final field GATEWAY Lcom/pexip/sdk/infinity/ServiceType;
+	public static final field IVR Lcom/pexip/sdk/infinity/ServiceType;
+	public static final field LECTURE Lcom/pexip/sdk/infinity/ServiceType;
+	public static final field TEST_CALL Lcom/pexip/sdk/infinity/ServiceType;
+	public static final field UNKNOWN Lcom/pexip/sdk/infinity/ServiceType;
+	public static final field WAITING_ROOM Lcom/pexip/sdk/infinity/ServiceType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/infinity/ServiceType;
+	public static fun values ()[Lcom/pexip/sdk/infinity/ServiceType;
+}
+
+public final class com/pexip/sdk/infinity/ServiceType$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/pexip/sdk/infinity/UnsupportedInfinityException : java/lang/IllegalArgumentException {
 	public fun <init> (Ljava/lang/String;)V
 	public final fun getVersion ()Ljava/lang/String;

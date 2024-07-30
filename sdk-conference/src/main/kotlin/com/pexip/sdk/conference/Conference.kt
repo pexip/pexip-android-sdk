@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.infinity.ServiceType
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionSignaling
 

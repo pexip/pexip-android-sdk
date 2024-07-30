@@ -45,9 +45,7 @@ import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.ReferEvent
 import com.pexip.sdk.api.infinity.RequestedLayout
-import com.pexip.sdk.api.infinity.Role
 import com.pexip.sdk.api.infinity.Screen
-import com.pexip.sdk.api.infinity.ServiceType
 import com.pexip.sdk.api.infinity.SpeakerResponse
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.StageEvent
@@ -55,6 +53,8 @@ import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.api.infinity.readUtf8
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.Role
+import com.pexip.sdk.infinity.ServiceType
 import com.pexip.sdk.infinity.test.nextString
 import kotlinx.datetime.Instant
 import okio.FileSystem

@@ -15,17 +15,11 @@
  */
 package com.pexip.sdk.api.infinity
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
-public enum class Role {
-
-    @SerialName("chair")
-    HOST,
-
-    @SerialName("guest")
-    GUEST,
-
-    UNKNOWN,
-}
+@Deprecated(
+    message = "Use com.pexip.sdk.infinity.Role instead.",
+    replaceWith = ReplaceWith(
+        expression = "Role",
+        imports = ["com.pexip.sdk.infinity.Role"],
+    ),
+)
+public typealias Role = com.pexip.sdk.infinity.Role

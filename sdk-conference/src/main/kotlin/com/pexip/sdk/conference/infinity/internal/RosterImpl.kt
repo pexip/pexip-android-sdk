@@ -45,7 +45,6 @@ import com.pexip.sdk.conference.MuteException
 import com.pexip.sdk.conference.MuteVideoException
 import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
-import com.pexip.sdk.conference.Role
 import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.SpotlightException
 import com.pexip.sdk.conference.UnlockException
@@ -53,9 +52,9 @@ import com.pexip.sdk.conference.UnmuteAllGuestsException
 import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnmuteVideoException
 import com.pexip.sdk.conference.UnspotlightException
-import com.pexip.sdk.conference.toServiceType
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.Role
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -69,7 +68,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import com.pexip.sdk.api.infinity.Role as ApiRole
 
 internal class RosterImpl(
     scope: CoroutineScope,
@@ -180,14 +178,14 @@ internal class RosterImpl(
     override suspend fun makeHost(participantId: ParticipantId?) {
         perform(::MakeHostException) {
             val step = participantStep(participantId) ?: return
-            step.role(RoleRequest(ApiRole.HOST), it)
+            step.role(RoleRequest(Role.HOST), it)
         }
     }
 
     override suspend fun makeGuest(participantId: ParticipantId?) {
         perform(::MakeGuestException) {
             val step = participantStep(participantId) ?: return
-            step.role(RoleRequest(ApiRole.GUEST), it)
+            step.role(RoleRequest(Role.GUEST), it)
         }
     }
 
@@ -303,12 +301,8 @@ internal class RosterImpl(
             muteSupported = response.muteSupported,
             transferSupported = response.transferSupported,
             disconnectSupported = response.disconnectSupported,
-            role = when (response.role) {
-                ApiRole.HOST -> Role.HOST
-                ApiRole.GUEST -> Role.GUEST
-                ApiRole.UNKNOWN -> Role.UNKNOWN
-            },
-            serviceType = response.serviceType.toServiceType(),
+            role = response.role,
+            serviceType = response.serviceType,
             callTag = response.callTag,
         ),
     )

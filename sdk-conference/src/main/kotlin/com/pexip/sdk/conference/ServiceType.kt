@@ -15,64 +15,11 @@
  */
 package com.pexip.sdk.conference
 
-import com.pexip.sdk.api.infinity.ServiceType as ApiServiceType
-
-/**
- * A service type.
- */
-public enum class ServiceType {
-
-    /**
-     * If a dial-out participant that has not answered.
-     */
-    CONNECTING,
-
-    /**
-     * If waiting to be allowed to join a locked conference.
-     */
-    WAITING_ROOM,
-
-    /**
-     * If on the PIN entry screen.
-     */
-    IVR,
-
-    /**
-     * If in a VMR.
-     */
-    CONFERENCE,
-
-    /**
-     * If in a Virtual Auditorium.
-     */
-    LECTURE,
-
-    /**
-     * If in a gateway call.
-     */
-    GATEWAY,
-
-    /**
-     * If in a test call.
-     */
-    TEST_CALL,
-
-    /**
-     * An unknown service type.
-     *
-     * This is provided for forward-compatibility; if you encounter this value consider updating the
-     * version of the SDK.
-     */
-    UNKNOWN,
-}
-
-internal fun ApiServiceType.toServiceType() = when (this) {
-    ApiServiceType.CONNECTING -> ServiceType.CONNECTING
-    ApiServiceType.WAITING_ROOM -> ServiceType.WAITING_ROOM
-    ApiServiceType.IVR -> ServiceType.IVR
-    ApiServiceType.CONFERENCE -> ServiceType.CONFERENCE
-    ApiServiceType.LECTURE -> ServiceType.LECTURE
-    ApiServiceType.GATEWAY -> ServiceType.GATEWAY
-    ApiServiceType.TEST_CALL -> ServiceType.TEST_CALL
-    ApiServiceType.UNKNOWN -> ServiceType.UNKNOWN
-}
+@Deprecated(
+    message = "Use com.pexip.sdk.infinity.ServiceType instead.",
+    replaceWith = ReplaceWith(
+        expression = "ServiceType",
+        imports = ["com.pexip.sdk.infinity.ServiceType"],
+    ),
+)
+public typealias ServiceType = com.pexip.sdk.infinity.ServiceType
