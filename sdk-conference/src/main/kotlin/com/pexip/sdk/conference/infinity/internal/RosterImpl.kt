@@ -47,13 +47,13 @@ import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
 import com.pexip.sdk.conference.Role
 import com.pexip.sdk.conference.Roster
-import com.pexip.sdk.conference.ServiceType
 import com.pexip.sdk.conference.SpotlightException
 import com.pexip.sdk.conference.UnlockException
 import com.pexip.sdk.conference.UnmuteAllGuestsException
 import com.pexip.sdk.conference.UnmuteException
 import com.pexip.sdk.conference.UnmuteVideoException
 import com.pexip.sdk.conference.UnspotlightException
+import com.pexip.sdk.conference.toServiceType
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.coroutines.CancellationException
@@ -70,7 +70,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import com.pexip.sdk.api.infinity.Role as ApiRole
-import com.pexip.sdk.api.infinity.ServiceType as ApiServiceType
 
 internal class RosterImpl(
     scope: CoroutineScope,
@@ -309,16 +308,7 @@ internal class RosterImpl(
                 ApiRole.GUEST -> Role.GUEST
                 ApiRole.UNKNOWN -> Role.UNKNOWN
             },
-            serviceType = when (response.serviceType) {
-                ApiServiceType.CONNECTING -> ServiceType.CONNECTING
-                ApiServiceType.WAITING_ROOM -> ServiceType.WAITING_ROOM
-                ApiServiceType.IVR -> ServiceType.IVR
-                ApiServiceType.CONFERENCE -> ServiceType.CONFERENCE
-                ApiServiceType.LECTURE -> ServiceType.LECTURE
-                ApiServiceType.GATEWAY -> ServiceType.GATEWAY
-                ApiServiceType.TEST_CALL -> ServiceType.TEST_CALL
-                ApiServiceType.UNKNOWN -> ServiceType.UNKNOWN
-            },
+            serviceType = response.serviceType.toServiceType(),
             callTag = response.callTag,
         ),
     )

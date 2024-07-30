@@ -9,6 +9,7 @@ public abstract interface class com/pexip/sdk/conference/Conference {
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getReferer ()Lcom/pexip/sdk/conference/Referer;
 	public abstract fun getRoster ()Lcom/pexip/sdk/conference/Roster;
+	public abstract fun getServiceType ()Lcom/pexip/sdk/conference/ServiceType;
 	public abstract fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public abstract fun getTheme ()Lcom/pexip/sdk/conference/Theme;
 	public abstract fun leave ()V
@@ -448,6 +449,7 @@ public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pe
 	public fun getName ()Ljava/lang/String;
 	public fun getReferer ()Lcom/pexip/sdk/conference/Referer;
 	public fun getRoster ()Lcom/pexip/sdk/conference/Roster;
+	public fun getServiceType ()Lcom/pexip/sdk/conference/ServiceType;
 	public fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public fun getTheme ()Lcom/pexip/sdk/conference/Theme;
 	public fun leave ()V

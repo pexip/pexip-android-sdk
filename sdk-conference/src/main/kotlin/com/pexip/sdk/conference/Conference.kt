@@ -40,6 +40,8 @@ public interface Conference {
 
     public val messenger: Messenger
 
+    public val serviceType: ServiceType
+
     public val signaling: MediaConnectionSignaling
 
     /**
