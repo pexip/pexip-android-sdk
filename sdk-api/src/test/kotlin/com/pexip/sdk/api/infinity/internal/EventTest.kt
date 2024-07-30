@@ -227,6 +227,7 @@ internal class EventTest {
                         role = Role.GUEST,
                         serviceType = ServiceType.CONFERENCE,
                         callTag = "dd806491-eecc-42fc-accb-86a99448fc17",
+                        clientAudioMuted = false,
                     ),
                 ),
             )
@@ -251,6 +252,7 @@ internal class EventTest {
                         role = Role.UNKNOWN,
                         serviceType = ServiceType.CONFERENCE,
                         callTag = "dd806491-eecc-42fc-accb-86a99448fc17",
+                        clientAudioMuted = false,
                     ),
                 ),
             )
