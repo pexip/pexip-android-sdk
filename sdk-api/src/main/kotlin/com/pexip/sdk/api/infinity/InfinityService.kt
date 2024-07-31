@@ -470,6 +470,28 @@ public interface InfinityService {
         public fun unmute(token: Token): Call<Unit> = throw NotImplementedError()
 
         /**
+         * Signals that the participant has muted themselves.
+         *
+         * Only applicable to self.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#client_mute).
+         *
+         * @param token a valid token
+         */
+        public fun clientMute(token: Token): Call<Unit> = throw NotImplementedError()
+
+        /**
+         * Signals that the participant has unmuted themselves.
+         *
+         * Only applicable to self.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#client_unmute).
+         *
+         * @param token a valid token
+         */
+        public fun clientUnmute(token: Token): Call<Unit> = throw NotImplementedError()
+
+        /**
          * Requests to mute participant's video.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#videomute).

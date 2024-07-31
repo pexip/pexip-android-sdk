@@ -57,4 +57,6 @@ public data class ParticipantResponse(
     val spotlightTime: Instant? = null,
     @SerialName("call_tag")
     val callTag: String = "",
+    @SerialName("is_client_muted")
+    val clientAudioMuted: Boolean = audioMuted,
 )

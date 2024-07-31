@@ -617,6 +617,8 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Parti
 	public fun call-ZWg4wSc (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/InfinityService$CallStep;
 	public fun calls (Lcom/pexip/sdk/api/infinity/CallsRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun clearBuzz (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public fun clientMute (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public fun clientUnmute (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun disconnect (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun dtmf (Lcom/pexip/sdk/api/infinity/DtmfRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun getConferenceStep ()Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;
@@ -953,8 +955,8 @@ public final class com/pexip/sdk/api/infinity/ParticipantDeleteEvent$Companion {
 
 public final class com/pexip/sdk/api/infinity/ParticipantResponse {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/ParticipantResponse$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-UyOe1Tk ()Ljava/lang/String;
 	public final fun component10 ()Z
 	public final fun component11 ()Lcom/pexip/sdk/infinity/Role;
@@ -962,6 +964,7 @@ public final class com/pexip/sdk/api/infinity/ParticipantResponse {
 	public final fun component13 ()Lkotlinx/datetime/Instant;
 	public final fun component14 ()Lkotlinx/datetime/Instant;
 	public final fun component15 ()Ljava/lang/String;
+	public final fun component16 ()Z
 	public final fun component2 ()Lkotlinx/datetime/Instant;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
@@ -970,12 +973,13 @@ public final class com/pexip/sdk/api/infinity/ParticipantResponse {
 	public final fun component7 ()Z
 	public final fun component8 ()Z
 	public final fun component9 ()Z
-	public final fun copy-r1mxKX4 (Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
-	public static synthetic fun copy-r1mxKX4$default (Lcom/pexip/sdk/api/infinity/ParticipantResponse;Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
+	public final fun copy-uQylcWo (Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Z)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
+	public static synthetic fun copy-uQylcWo$default (Lcom/pexip/sdk/api/infinity/ParticipantResponse;Ljava/lang/String;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZLcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAudioMuted ()Z
 	public final fun getBuzzTime ()Lkotlinx/datetime/Instant;
 	public final fun getCallTag ()Ljava/lang/String;
+	public final fun getClientAudioMuted ()Z
 	public final fun getDisconnectSupported ()Z
 	public final fun getDisplayName ()Ljava/lang/String;
 	public final fun getId-UyOe1Tk ()Ljava/lang/String;
