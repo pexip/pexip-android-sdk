@@ -1,0 +1,30 @@
+{
+  "status": "success",
+  "result": {
+    "token": "yaanKhAlQFdKJSLRHhxzNHulGdyFzmjUyescAVAdRK3kiC3uj5G2puAicBq3uG_Et4kHkNF-5jP7V-Ku4-XSahWZLHjIMWYvyzXb1EIzqWW_297MPZF7FEsEHKTM7yAnr9-Hdv-C6qWeqZxQe6eEw8vY7x8QbdphXH3xpOjTnKel3AP6KXy1QkhQE329_deztUWEjE7ZGZwpmUgIjv3eU1bVmDdWyp3K29wOK30kAGACkRptZqPh0Q1R9mhGo9yPzhg=",
+    "expires": "120",
+    "display_name": "George",
+    "participant_uuid": "614221f4-3a5c-4d1f-8df6-3ae27188df54",
+    "current_service_type": "conference",
+    "route_via_registrar": true,
+    "role": "HOST",
+    "call_tag": "",
+    "version": {
+      "version_id": "36",
+      "pseudo_version": "79019.0.0"
+    },
+    "idp_uuid": "",
+    "fecc_enabled": false,
+    "trickle_ice_enabled": true,
+    "direct_media": true,
+    "pex_datachannel_id": 3,
+    "client_stats_update_interval": 4411.068996234768,
+    "conference_name": "example",
+    "service_name": "example",
+    "call_type": "video",
+    "guests_can_present": true,
+    "turn": [],
+    "use_relay_candidates_only": false,
+    "chat_enabled": true
+  }
+}
