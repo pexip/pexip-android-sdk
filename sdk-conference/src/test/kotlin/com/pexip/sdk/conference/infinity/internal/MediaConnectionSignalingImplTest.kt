@@ -44,6 +44,7 @@ import com.pexip.sdk.api.infinity.UpdateResponse
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
 import com.pexip.sdk.infinity.CallId
+import com.pexip.sdk.infinity.Infinity
 import com.pexip.sdk.infinity.test.nextCallId
 import com.pexip.sdk.infinity.test.nextString
 import com.pexip.sdk.media.CandidateSignalingEvent
@@ -64,12 +65,14 @@ internal class MediaConnectionSignalingImplTest {
 
     private lateinit var store: TokenStore
     private lateinit var event: MutableSharedFlow<Event>
+    private lateinit var versionId: String
     private lateinit var iceServers: List<IceServer>
 
     @BeforeTest
     fun setUp() {
         store = TokenStore(Random.nextToken())
         event = MutableSharedFlow(extraBufferCapacity = 1)
+        versionId = Infinity.VERSION_35
         iceServers = List(10) {
             IceServer.Builder(listOf("turn:turn$it.example.com:347?transport=udp"))
                 .username("${it shl 1}")
@@ -89,6 +92,7 @@ internal class MediaConnectionSignalingImplTest {
                     event = event,
                     store = store,
                     participantStep = object : InfinityService.ParticipantStep {},
+                    versionId = versionId,
                     directMedia = it,
                     iceServers = iceServers,
                     iceTransportsRelayOnly = Random.nextBoolean(),
@@ -105,6 +109,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = object : InfinityService.ParticipantStep {},
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -124,6 +129,7 @@ internal class MediaConnectionSignalingImplTest {
                     event = event,
                     store = store,
                     participantStep = object : InfinityService.ParticipantStep {},
+                    versionId = versionId,
                     directMedia = Random.nextBoolean(),
                     iceServers = iceServers,
                     iceTransportsRelayOnly = it,
@@ -141,6 +147,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = object : InfinityService.ParticipantStep {},
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -157,6 +164,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = participantStep,
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -183,6 +191,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = participantStep,
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -209,6 +218,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = participantStep,
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -242,6 +252,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = participantStep,
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -264,6 +275,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = participantStep,
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -323,6 +335,7 @@ internal class MediaConnectionSignalingImplTest {
                 event = event,
                 store = store,
                 participantStep = participantStep,
+                versionId = versionId,
                 directMedia = Random.nextBoolean(),
                 iceServers = iceServers,
                 iceTransportsRelayOnly = Random.nextBoolean(),
@@ -362,6 +375,7 @@ internal class MediaConnectionSignalingImplTest {
                 event = event,
                 store = store,
                 participantStep = object : InfinityService.ParticipantStep {},
+                versionId = versionId,
                 directMedia = Random.nextBoolean(),
                 iceServers = iceServers,
                 callStep = object : InfinityService.CallStep {
@@ -402,6 +416,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = object : InfinityService.ParticipantStep {},
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : InfinityService.CallStep {
@@ -432,6 +447,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = object : InfinityService.ParticipantStep {},
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : InfinityService.CallStep {
@@ -461,6 +477,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = object : InfinityService.ParticipantStep {},
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : InfinityService.CallStep {
@@ -490,6 +507,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = object : InfinityService.ParticipantStep {},
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : InfinityService.CallStep {
@@ -523,6 +541,7 @@ internal class MediaConnectionSignalingImplTest {
             event = event,
             store = store,
             participantStep = object : InfinityService.ParticipantStep {},
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             callStep = object : InfinityService.CallStep {
@@ -558,6 +577,33 @@ internal class MediaConnectionSignalingImplTest {
                     }
                 }
             },
+            versionId = versionId,
+            directMedia = Random.nextBoolean(),
+            iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannel = null,
+        )
+        signaling.onAudioMuted()
+        called.join()
+    }
+
+    @Test
+    fun `onAudioMuted() returns on v36+`() = runTest {
+        val called = Job()
+        val signaling = MediaConnectionSignalingImpl(
+            scope = backgroundScope,
+            event = event,
+            store = store,
+            participantStep = object : InfinityService.ParticipantStep {
+                override fun clientMute(token: Token): Call<Unit> = object : TestCall<Unit> {
+                    override fun enqueue(callback: Callback<Unit>) {
+                        assertThat(token).isEqualTo(store.token.value)
+                        called.complete()
+                        callback.onSuccess(this, Unit)
+                    }
+                }
+            },
+            versionId = Infinity.VERSION_36,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -583,6 +629,33 @@ internal class MediaConnectionSignalingImplTest {
                     }
                 }
             },
+            versionId = versionId,
+            directMedia = Random.nextBoolean(),
+            iceServers = iceServers,
+            iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannel = null,
+        )
+        signaling.onAudioUnmuted()
+        called.join()
+    }
+
+    @Test
+    fun `onAudioUnmuted() returns on v36+`() = runTest {
+        val called = Job()
+        val signaling = MediaConnectionSignalingImpl(
+            scope = backgroundScope,
+            event = event,
+            store = store,
+            participantStep = object : InfinityService.ParticipantStep {
+                override fun clientUnmute(token: Token): Call<Unit> = object : TestCall<Unit> {
+                    override fun enqueue(callback: Callback<Unit>) {
+                        assertThat(token).isEqualTo(store.token.value)
+                        called.complete()
+                        callback.onSuccess(this, Unit)
+                    }
+                }
+            },
+            versionId = Infinity.VERSION_36,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -608,6 +681,7 @@ internal class MediaConnectionSignalingImplTest {
                     }
                 }
             },
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -633,6 +707,7 @@ internal class MediaConnectionSignalingImplTest {
                     }
                 }
             },
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -658,6 +733,7 @@ internal class MediaConnectionSignalingImplTest {
                     }
                 }
             },
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -683,6 +759,7 @@ internal class MediaConnectionSignalingImplTest {
                     }
                 }
             },
+            versionId = versionId,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
