@@ -187,8 +187,8 @@ public final class com/pexip/sdk/conference/MuteVideoException : java/lang/Runti
 }
 
 public final class com/pexip/sdk/conference/Participant {
-	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLjava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLjava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLjava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-UyOe1Tk ()Ljava/lang/String;
 	public final fun component10 ()Z
 	public final fun component11 ()Z
@@ -198,6 +198,7 @@ public final class com/pexip/sdk/conference/Participant {
 	public final fun component15 ()Z
 	public final fun component16 ()Z
 	public final fun component17 ()Ljava/lang/String;
+	public final fun component18 ()Z
 	public final fun component2 ()Lcom/pexip/sdk/infinity/Role;
 	public final fun component3 ()Lcom/pexip/sdk/infinity/ServiceType;
 	public final fun component4 ()Lkotlinx/datetime/Instant;
@@ -206,12 +207,13 @@ public final class com/pexip/sdk/conference/Participant {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()Z
-	public final fun copy-D5HsMCU (Ljava/lang/String;Lcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLjava/lang/String;)Lcom/pexip/sdk/conference/Participant;
-	public static synthetic fun copy-D5HsMCU$default (Lcom/pexip/sdk/conference/Participant;Ljava/lang/String;Lcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLjava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/conference/Participant;
+	public final fun copy-P5gMSsI (Ljava/lang/String;Lcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLjava/lang/String;Z)Lcom/pexip/sdk/conference/Participant;
+	public static synthetic fun copy-P5gMSsI$default (Lcom/pexip/sdk/conference/Participant;Ljava/lang/String;Lcom/pexip/sdk/infinity/Role;Lcom/pexip/sdk/infinity/ServiceType;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Lkotlinx/datetime/Instant;Ljava/lang/String;Ljava/lang/String;ZZZZZZZZLjava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/conference/Participant;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAudioMuted ()Z
 	public final fun getBuzzTime ()Lkotlinx/datetime/Instant;
 	public final fun getCallTag ()Ljava/lang/String;
+	public final fun getClientAudioMuted ()Z
 	public final fun getDisconnectSupported ()Z
 	public final fun getDisplayName ()Ljava/lang/String;
 	public final fun getId-UyOe1Tk ()Ljava/lang/String;

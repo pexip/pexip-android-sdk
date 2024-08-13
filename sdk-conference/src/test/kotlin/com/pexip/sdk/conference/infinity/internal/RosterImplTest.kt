@@ -1949,6 +1949,7 @@ class RosterImplTest {
             transferSupported = nextBoolean(),
             disconnectSupported = nextBoolean(),
             callTag = nextString(),
+            clientAudioMuted = nextBoolean(),
         )
     }
 
@@ -1996,6 +1997,7 @@ class RosterImplTest {
             ServiceType.UNKNOWN -> ServiceType.UNKNOWN
         },
         callTag = callTag,
+        clientAudioMuted = clientAudioMuted,
     )
 
     @Suppress("TestFunctionName")
