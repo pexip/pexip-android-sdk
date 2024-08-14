@@ -304,6 +304,7 @@ internal class RosterImpl(
             role = response.role,
             serviceType = response.serviceType,
             callTag = response.callTag,
+            clientAudioMuted = response.clientAudioMuted,
         ),
     )
 }

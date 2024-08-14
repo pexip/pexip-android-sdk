@@ -42,6 +42,7 @@ import kotlinx.datetime.Instant
  * @property transferSupported whether this participant can be transferred to a different conference
  * @property disconnectSupported whether this participant can be disconnected
  * @property callTag a call tag set on this participant
+ * @property clientAudioMuted whether this participant has their device audio muted
  */
 public data class Participant(
     val id: ParticipantId,
@@ -61,4 +62,5 @@ public data class Participant(
     val transferSupported: Boolean = false,
     val disconnectSupported: Boolean = false,
     val callTag: String = "",
+    val clientAudioMuted: Boolean = audioMuted,
 )
