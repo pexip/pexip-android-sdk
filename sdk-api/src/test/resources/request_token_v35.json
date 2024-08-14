@@ -1,0 +1,30 @@
+{
+  "status": "success",
+  "result": {
+    "token": "stK5GSZbt0KzXNGZG8VuSpEHrfGlWLinudoy7uMXV6awryupbBgY5i8ltpsTmGFJ_heiFjsxoTho6ystEDpJ8yASEqif-YfyUyxsvzpxWcYwSRCdo1J8nBU2FuoeoL3MY2WtEtOzbnQD8GCeU2T9ha2Bnvu_iFu6q3dS6iirOBoZ7SIxndrpB4z6zjxENhvSWYkaE6eS3oIZVg2hk0rDNykDt3OHPmBIu6hgQXXORYHUQrs6d1g=",
+    "expires": "120",
+    "display_name": "George",
+    "participant_uuid": "f22f8f50-0d85-47ea-bbf7-97f4eaa39f53",
+    "current_service_type": "conference",
+    "route_via_registrar": true,
+    "role": "HOST",
+    "call_tag": "",
+    "version": {
+      "version_id": "35",
+      "pseudo_version": "77524.0.0"
+    },
+    "idp_uuid": "",
+    "fecc_enabled": false,
+    "trickle_ice_enabled": true,
+    "direct_media": true,
+    "pex_datachannel_id": 3,
+    "client_stats_update_interval": 5000,
+    "conference_name": "example",
+    "service_name": "example",
+    "call_type": "video",
+    "guests_can_present": true,
+    "turn": [],
+    "use_relay_candidates_only": false,
+    "chat_enabled": true
+  }
+}

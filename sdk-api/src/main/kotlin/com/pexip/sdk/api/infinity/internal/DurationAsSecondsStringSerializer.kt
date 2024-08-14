@@ -22,15 +22,25 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 internal object DurationAsSecondsStringSerializer : KSerializer<Duration> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("DurationAsSecondsStringSerializer", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): Duration = decoder.decodeString().toInt().seconds
+    override fun deserialize(decoder: Decoder): Duration =
+        Duration.parseIsoString("PT${decoder.decodeString()}S")
 
-    override fun serialize(encoder: Encoder, value: Duration) =
-        encoder.encodeString(value.inWholeSeconds.toString())
+    override fun serialize(encoder: Encoder, value: Duration) {
+        val s = value.toComponents { seconds, nanoseconds ->
+            buildString {
+                append(seconds)
+                if (nanoseconds != 0) {
+                    append('.')
+                    append(nanoseconds)
+                }
+            }
+        }
+        encoder.encodeString(s)
+    }
 }

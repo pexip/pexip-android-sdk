@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,22 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
 
 internal object DurationAsMillisecondsSerializer : KSerializer<Duration> {
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("DurationAsMillisecondsSerializer", PrimitiveKind.LONG)
 
-    override fun deserialize(decoder: Decoder): Duration = decoder.decodeLong().milliseconds
+    override fun deserialize(decoder: Decoder): Duration = decoder.decodeDouble().milliseconds
 
-    override fun serialize(encoder: Encoder, value: Duration) =
-        encoder.encodeLong(value.inWholeMilliseconds)
+    override fun serialize(encoder: Encoder, value: Duration) {
+        when (val d = value.toDouble(DurationUnit.MILLISECONDS)) {
+            Double.POSITIVE_INFINITY -> encoder.encodeLong(Long.MAX_VALUE)
+            else -> when (d % 1) {
+                0.0 -> encoder.encodeLong(d.toLong())
+                else -> encoder.encodeDouble(d)
+            }
+        }
+    }
 }
