@@ -107,6 +107,7 @@ public class InfinityConference private constructor(
         event = event,
         store = store,
         participantStep = step.participant(response.participantId),
+        versionId = response.version.versionId,
         directMedia = response.directMedia,
         iceServers = buildList(response.stun.size + response.turn.size) {
             this += response.stun.map { IceServer.Builder(it.url).build() }

@@ -28,6 +28,12 @@ public final class com/pexip/sdk/infinity/CallId$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/pexip/sdk/infinity/Infinity {
+	public static final field INSTANCE Lcom/pexip/sdk/infinity/Infinity;
+	public static final field VERSION_35 Ljava/lang/String;
+	public static final field VERSION_36 Ljava/lang/String;
+}
+
 public final class com/pexip/sdk/infinity/LayoutId {
 	public static final field Companion Lcom/pexip/sdk/infinity/LayoutId$Companion;
 	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/infinity/LayoutId;
