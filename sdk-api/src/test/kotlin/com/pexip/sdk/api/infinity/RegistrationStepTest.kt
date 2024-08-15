@@ -23,6 +23,7 @@ import assertk.assertions.isInstanceOf
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.infinity.test.nextRegistrationId
 import com.pexip.sdk.infinity.test.nextString
+import com.pexip.sdk.infinity.test.nextVersionId
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -107,7 +108,7 @@ internal class RegistrationStepTest {
             directoryEnabled = Random.nextBoolean(),
             routeViaRegistrar = Random.nextBoolean(),
             version = VersionResponse(
-                versionId = Random.nextString(),
+                versionId = Random.nextVersionId(),
                 pseudoVersion = Random.nextString(),
             ),
         )

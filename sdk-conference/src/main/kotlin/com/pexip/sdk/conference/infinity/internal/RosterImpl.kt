@@ -19,7 +19,8 @@ import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.ConferenceUpdateEvent
-import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.InfinityService.ConferenceStep
+import com.pexip.sdk.api.infinity.InfinityService.ParticipantStep
 import com.pexip.sdk.api.infinity.ParticipantCreateEvent
 import com.pexip.sdk.api.infinity.ParticipantDeleteEvent
 import com.pexip.sdk.api.infinity.ParticipantResponse
@@ -33,6 +34,8 @@ import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
+import com.pexip.sdk.conference.ClientMuteException
+import com.pexip.sdk.conference.ClientUnmuteException
 import com.pexip.sdk.conference.DisconnectAllException
 import com.pexip.sdk.conference.DisconnectException
 import com.pexip.sdk.conference.LockException
@@ -55,6 +58,7 @@ import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.infinity.Role
+import com.pexip.sdk.infinity.VersionId
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -72,15 +76,16 @@ import kotlinx.coroutines.sync.withLock
 internal class RosterImpl(
     scope: CoroutineScope,
     event: Flow<Event>,
+    private val versionId: VersionId,
     private val participantId: ParticipantId,
     private val parentParticipantId: ParticipantId?,
     private val store: TokenStore,
-    private val step: InfinityService.ConferenceStep,
+    private val step: ConferenceStep,
 ) : Roster {
 
     private val mutex = Mutex()
     private val participantMap = mutableMapOf<ParticipantId, Participant>()
-    private val participantStepMap = mutableMapOf<ParticipantId, InfinityService.ParticipantStep>()
+    private val participantStepMap = mutableMapOf<ParticipantId, ParticipantStep>()
 
     private val participantMapFlow = channelFlow {
         var syncing = false
@@ -162,125 +167,133 @@ internal class RosterImpl(
         .stateIn(scope, SharingStarted.Eagerly, false)
 
     override suspend fun admit(participantId: ParticipantId) {
-        perform(::AdmitException) {
-            val step = participantStep(participantId) ?: return
-            step.unlock(it)
-        }
+        perform(participantId, ParticipantStep::unlock, ::AdmitException)
     }
 
     override suspend fun disconnect(participantId: ParticipantId?) {
-        perform(::DisconnectException) {
-            val step = participantStep(participantId) ?: return
-            step.disconnect(it)
-        }
+        perform(participantId, ParticipantStep::disconnect, ::DisconnectException)
     }
 
     override suspend fun makeHost(participantId: ParticipantId?) {
-        perform(::MakeHostException) {
-            val step = participantStep(participantId) ?: return
-            step.role(RoleRequest(Role.HOST), it)
-        }
+        perform(
+            participantId = participantId,
+            callFactory = { role(RoleRequest(Role.HOST), it) },
+            errorFactory = ::MakeHostException,
+        )
     }
 
     override suspend fun makeGuest(participantId: ParticipantId?) {
-        perform(::MakeGuestException) {
-            val step = participantStep(participantId) ?: return
-            step.role(RoleRequest(Role.GUEST), it)
-        }
+        perform(
+            participantId = participantId,
+            callFactory = { role(RoleRequest(Role.GUEST), it) },
+            errorFactory = ::MakeGuestException,
+        )
+    }
+
+    override suspend fun clientMute() {
+        perform(
+            // client_mute can only be performed on self
+            participantId = null,
+            callFactory = when (versionId >= VersionId.V36) {
+                true -> ParticipantStep::clientMute
+                else -> ParticipantStep::mute
+            },
+            errorFactory = ::ClientMuteException,
+        )
+    }
+
+    override suspend fun clientUnmute() {
+        perform(
+            // client_unmute can only be performed on self
+            participantId = null,
+            callFactory = when (versionId >= VersionId.V36) {
+                true -> ParticipantStep::clientUnmute
+                else -> ParticipantStep::unmute
+            },
+            errorFactory = ::ClientUnmuteException,
+        )
     }
 
     override suspend fun mute(participantId: ParticipantId?) {
-        perform(::MuteException) {
-            val step = participantStep(participantId) ?: return
-            step.mute(it)
-        }
+        perform(participantId, ParticipantStep::mute, ::MuteException)
     }
 
     override suspend fun unmute(participantId: ParticipantId?) {
-        perform(::UnmuteException) {
-            val step = participantStep(participantId) ?: return
-            step.unmute(it)
-        }
+        perform(participantId, ParticipantStep::unmute, ::UnmuteException)
     }
 
     override suspend fun muteVideo(participantId: ParticipantId?) {
-        perform(::MuteVideoException) {
-            val step = participantStep(participantId) ?: return
-            step.videoMuted(it)
-        }
+        perform(participantId, ParticipantStep::videoMuted, ::MuteVideoException)
     }
 
     override suspend fun unmuteVideo(participantId: ParticipantId?) {
-        perform(::UnmuteVideoException) {
-            val step = participantStep(participantId) ?: return
-            step.videoUnmuted(it)
-        }
+        perform(participantId, ParticipantStep::videoUnmuted, ::UnmuteVideoException)
     }
 
     override suspend fun spotlight(participantId: ParticipantId?) {
-        perform(::SpotlightException) {
-            val step = participantStep(participantId) ?: return
-            step.spotlightOn(it)
-        }
+        perform(participantId, ParticipantStep::spotlightOn, ::SpotlightException)
     }
 
     override suspend fun unspotlight(participantId: ParticipantId?) {
-        perform(::UnspotlightException) {
-            val step = participantStep(participantId) ?: return
-            step.spotlightOff(it)
-        }
+        perform(participantId, ParticipantStep::spotlightOff, ::UnspotlightException)
     }
 
     override suspend fun raiseHand(participantId: ParticipantId?) {
-        perform(::RaiseHandException) {
-            val step = participantStep(participantId) ?: return
-            step.buzz(it)
-        }
+        perform(participantId, ParticipantStep::buzz, ::RaiseHandException)
     }
 
     override suspend fun lowerHand(participantId: ParticipantId?) {
-        perform(::LowerHandException) {
-            val step = participantStep(participantId) ?: return
-            step.clearBuzz(it)
-        }
+        perform(participantId, ParticipantStep::clearBuzz, ::LowerHandException)
     }
 
     override suspend fun lowerAllHands() {
-        perform(::LowerAllHandsException, step::clearAllBuzz)
+        perform(ConferenceStep::clearAllBuzz, ::LowerAllHandsException)
     }
 
     override suspend fun lock() {
-        perform(::LockException, step::lock)
+        perform(ConferenceStep::lock, ::LockException)
     }
 
     override suspend fun unlock() {
-        perform(::UnlockException, step::unlock)
+        perform(ConferenceStep::unlock, ::UnlockException)
     }
 
     override suspend fun muteAllGuests() {
-        perform(::MuteAllGuestsException, step::muteGuests)
+        perform(ConferenceStep::muteGuests, ::MuteAllGuestsException)
     }
 
     override suspend fun unmuteAllGuests() {
-        perform(::UnmuteAllGuestsException, step::unmuteGuests)
+        perform(ConferenceStep::unmuteGuests, ::UnmuteAllGuestsException)
     }
 
     override suspend fun disconnectAll() {
-        perform(::DisconnectAllException, step::disconnect)
+        perform(ConferenceStep::disconnect, ::DisconnectAllException)
     }
 
     private suspend inline fun <T> perform(
-        error: (Throwable) -> Throwable,
-        call: (Token) -> Call<T>,
-    ): T = try {
-        retry { call(store.token.value).await() }
+        participantId: ParticipantId?,
+        callFactory: ParticipantStep.(Token) -> Call<T>,
+        errorFactory: (Throwable) -> Throwable,
+    ) = try {
+        retry { participantStep(participantId)?.callFactory(store.token.value)?.await() }
     } catch (e: CancellationException) {
         throw e
     } catch (t: Throwable) {
-        throw error(t)
+        throw errorFactory(t)
     }
 
-    private suspend fun participantStep(participantId: ParticipantId?) = mutex.withLock {
+    private suspend inline fun <T> perform(
+        callFactory: ConferenceStep.(Token) -> Call<T>,
+        errorFactory: (Throwable) -> Throwable,
+    ) = try {
+        retry { step.callFactory(store.token.value).await() }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (t: Throwable) {
+        throw errorFactory(t)
+    }
+
+    private suspend fun participantStep(participantId: ParticipantId? = null) = mutex.withLock {
         participantStepMap[participantId ?: this.parentParticipantId ?: this.participantId]
     }
 

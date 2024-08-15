@@ -22,6 +22,7 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.core.WhileSubscribedWithDebounce
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.UnsupportedInfinityException
+import com.pexip.sdk.infinity.VersionId
 import com.pexip.sdk.registration.RegisteredDevicesCallback
 import com.pexip.sdk.registration.Registration
 import com.pexip.sdk.registration.RegistrationEvent
@@ -150,7 +151,7 @@ public class InfinityRegistration private constructor(
             step: InfinityService.RegistrationStep,
             response: RequestRegistrationTokenResponse,
         ): InfinityRegistration {
-            if (response.version.versionId < "29") {
+            if (response.version.versionId < VersionId.V29) {
                 throw UnsupportedInfinityException(response.version.versionId)
             }
             return InfinityRegistration(step, response)

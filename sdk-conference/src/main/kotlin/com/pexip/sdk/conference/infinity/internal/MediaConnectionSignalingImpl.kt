@@ -30,7 +30,7 @@ import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.api.infinity.UpdateRequest
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.core.retry
-import com.pexip.sdk.infinity.Infinity
+import com.pexip.sdk.infinity.VersionId
 import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.Data
 import com.pexip.sdk.media.DataSender
@@ -52,7 +52,7 @@ internal class MediaConnectionSignalingImpl(
     event: Flow<Event>,
     private val store: TokenStore,
     private val participantStep: InfinityService.ParticipantStep,
-    private val versionId: String,
+    private val versionId: VersionId,
     override val directMedia: Boolean,
     override val iceServers: List<IceServer>,
     override val iceTransportsRelayOnly: Boolean,
@@ -138,7 +138,7 @@ internal class MediaConnectionSignalingImpl(
 
     override suspend fun onAudioMuted() = retry {
         val token = store.token.value
-        val call = when (versionId >= Infinity.VERSION_36) {
+        val call = when (versionId >= VersionId.V36) {
             true -> participantStep.clientMute(token)
             else -> participantStep.mute(token)
         }
@@ -147,7 +147,7 @@ internal class MediaConnectionSignalingImpl(
 
     override suspend fun onAudioUnmuted() = retry {
         val token = store.token.value
-        val call = when (versionId >= Infinity.VERSION_36) {
+        val call = when (versionId >= VersionId.V36) {
             true -> participantStep.clientUnmute(token)
             else -> participantStep.unmute(token)
         }

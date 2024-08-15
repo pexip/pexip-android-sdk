@@ -97,6 +97,24 @@ public interface Roster {
         throw NotImplementedError()
 
     /**
+     * Signals that the local microphone has been muted.
+     *
+     * Can only be called on self.
+     *
+     * @throws ClientMuteException if the operation failed
+     */
+    public suspend fun clientMute(): Unit = throw NotImplementedError()
+
+    /**
+     * Signals that the local microphone has been unmuted.
+     *
+     * Can only be called on self.
+     *
+     * @throws ClientUnmuteException if the operation failed
+     */
+    public suspend fun clientUnmute(): Unit = throw NotImplementedError()
+
+    /**
      * Mutes the specified participant or self.
      *
      * @param participantId an ID of the participant, null for self
