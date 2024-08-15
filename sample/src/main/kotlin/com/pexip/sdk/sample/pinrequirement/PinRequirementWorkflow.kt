@@ -22,6 +22,7 @@ import com.pexip.sdk.api.infinity.RequiredPinException
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.infinity.InfinityConference
 import com.pexip.sdk.infinity.NodeResolver
+import com.pexip.sdk.infinity.asSequence
 import com.pexip.sdk.sample.settings.SettingsStore
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
@@ -60,7 +61,8 @@ class PinRequirementWorkflow @Inject constructor(
     private fun RenderContext.getNodeSideEffect(props: PinRequirementProps) =
         runningSideEffect(props.toString()) {
             val action = runCatching { resolver.resolve(props.host) }
-                .map { it.asSequence().map(service::newRequest) }
+                .map { it?.asSequence() ?: emptySequence() }
+                .map { it.map(service::newRequest) }
                 .mapCatching { it.first { builder -> builder.status().await() } }
                 .fold(::onNode, ::onError)
             actionSink.send(action)

@@ -44,10 +44,10 @@ class NodeResolverTest {
 
     @Test
     fun `returns a list of nodes`() {
-        tableOf("host", "nodes")
-            .row("pexip.com", listOf(Node("pexipdemo.com")))
-            .row("google.com", listOf(Node("google.com")))
-            .row("b.c", listOf())
+        tableOf("host", "record")
+            .row<String, Nodes?>("pexip.vc", Nodes.Srv(listOf(Node("pexip.vc"))))
+            .row("example.com", Nodes.A(Node("example.com")))
+            .row("b.c", null)
             .forAll(::`returns a list of nodes`)
     }
 
@@ -60,7 +60,7 @@ class NodeResolverTest {
             .hasMessage(message)
     }
 
-    private fun `returns a list of nodes`(host: String, nodes: List<Node>) = runTest {
+    private fun `returns a list of nodes`(host: String, nodes: Nodes?) = runTest {
         assertThat(resolver.resolve(host), "nodes").isEqualTo(nodes)
     }
 }

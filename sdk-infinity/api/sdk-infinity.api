@@ -92,6 +92,41 @@ public final class com/pexip/sdk/infinity/NodeResolver_jvmKt {
 	public static synthetic fun create$default (Lcom/pexip/sdk/infinity/NodeResolver$Companion;ZILjava/lang/Object;)Lcom/pexip/sdk/infinity/NodeResolver;
 }
 
+public abstract interface class com/pexip/sdk/infinity/Nodes {
+}
+
+public final class com/pexip/sdk/infinity/Nodes$A : com/pexip/sdk/infinity/Nodes {
+	public static final synthetic fun box-impl (Lcom/pexip/sdk/infinity/Node;)Lcom/pexip/sdk/infinity/Nodes$A;
+	public static fun constructor-impl (Lcom/pexip/sdk/infinity/Node;)Lcom/pexip/sdk/infinity/Node;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Lcom/pexip/sdk/infinity/Node;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Lcom/pexip/sdk/infinity/Node;Lcom/pexip/sdk/infinity/Node;)Z
+	public final fun getNode ()Lcom/pexip/sdk/infinity/Node;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Lcom/pexip/sdk/infinity/Node;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Lcom/pexip/sdk/infinity/Node;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Lcom/pexip/sdk/infinity/Node;
+}
+
+public final class com/pexip/sdk/infinity/Nodes$Srv : com/pexip/sdk/infinity/Nodes {
+	public static final synthetic fun box-impl (Ljava/util/List;)Lcom/pexip/sdk/infinity/Nodes$Srv;
+	public static fun constructor-impl (Ljava/util/List;)Ljava/util/List;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/util/List;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/util/List;Ljava/util/List;)Z
+	public final fun getNodes ()Ljava/util/List;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/util/List;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/util/List;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/util/List;
+}
+
+public final class com/pexip/sdk/infinity/NodesKt {
+	public static final fun asSequence (Lcom/pexip/sdk/infinity/Nodes;)Lkotlin/sequences/Sequence;
+}
+
 public final class com/pexip/sdk/infinity/ParticipantId {
 	public static final field Companion Lcom/pexip/sdk/infinity/ParticipantId$Companion;
 	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/infinity/ParticipantId;
