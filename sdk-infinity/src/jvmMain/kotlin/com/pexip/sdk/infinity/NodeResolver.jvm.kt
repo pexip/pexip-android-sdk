@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import org.minidns.hla.DnssecResolverApi
 import org.minidns.hla.ResolverApi
+import org.minidns.hla.SrvResolverResult
 import java.net.InetAddress
 import java.net.UnknownHostException
 
@@ -38,23 +39,29 @@ public actual fun NodeResolver.Companion.create(dnssec: Boolean): NodeResolver =
 public fun NodeResolver.Companion.create(api: ResolverApi): NodeResolver =
     object : NodeResolver {
 
-        override suspend fun resolve(host: String): List<Node> {
+        override suspend fun resolve(host: String): Nodes? {
             require(host.isNotBlank()) { "host is blank." }
-            return runInterruptible(Dispatchers.IO) {
-                resolveSrvRecords(host).ifEmpty { resolveARecord(host) }
+            val srv = resolveSrvRecords(host)
+            if (srv.isNotEmpty()) return Nodes.Srv(srv)
+            val a = resolveARecord(host)
+            if (a != null) return Nodes.A(a)
+            return null
+        }
+
+        private suspend fun resolveSrvRecords(host: String) = runInterruptible(Dispatchers.IO) {
+            api.resolveSrv("_pexapp._tcp.$host")
+                ?.takeIf(SrvResolverResult::wasSuccessful)
+                ?.sortedSrvResolvedAddresses
+                ?.map { Node(it.srv.target.ace, it.srv.port) }
+                ?: emptyList()
+        }
+
+        private suspend fun resolveARecord(host: String) = runInterruptible(Dispatchers.IO) {
+            try {
+                val address = InetAddress.getByName(host)
+                Node(address.hostName)
+            } catch (e: UnknownHostException) {
+                null
             }
-        }
-
-        private fun resolveSrvRecords(host: String): List<Node> {
-            val result = api.resolveSrv("_pexapp._tcp.$host")
-            if (!result.wasSuccessful()) return emptyList()
-            return result.sortedSrvResolvedAddresses.map { Node(it.srv.target.ace, it.srv.port) }
-        }
-
-        private fun resolveARecord(host: String) = try {
-            val address = InetAddress.getByName(host)
-            listOf(Node(address.hostName))
-        } catch (e: UnknownHostException) {
-            emptyList()
         }
     }

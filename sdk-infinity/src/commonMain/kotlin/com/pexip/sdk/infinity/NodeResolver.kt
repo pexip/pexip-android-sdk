@@ -26,9 +26,9 @@ public interface NodeResolver {
      * for the recommended flow.
      *
      * @param host a host to use to resolve node addresses
-     * @return a list of nodes
+     * @return nodes that were found on the specified host, or null
      */
-    public suspend fun resolve(host: String): List<Node>
+    public suspend fun resolve(host: String): Nodes?
 
     public companion object
 }
