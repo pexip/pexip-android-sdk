@@ -43,7 +43,7 @@ public sealed interface Nodes {
 /**
  * Converts this [Nodes] to a sequence of [Node]s.
  *
- * @return a list of nodes
+ * @return a sequence of nodes
  */
 public fun Nodes.asSequence(): Sequence<Node> = when (this) {
     is Srv -> nodes.asSequence()
