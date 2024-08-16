@@ -44,7 +44,7 @@ import com.pexip.sdk.api.infinity.UpdateResponse
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.core.awaitSubscriptionCountAtLeast
 import com.pexip.sdk.infinity.CallId
-import com.pexip.sdk.infinity.Infinity
+import com.pexip.sdk.infinity.VersionId
 import com.pexip.sdk.infinity.test.nextCallId
 import com.pexip.sdk.infinity.test.nextString
 import com.pexip.sdk.media.CandidateSignalingEvent
@@ -65,14 +65,14 @@ internal class MediaConnectionSignalingImplTest {
 
     private lateinit var store: TokenStore
     private lateinit var event: MutableSharedFlow<Event>
-    private lateinit var versionId: String
     private lateinit var iceServers: List<IceServer>
+
+    private val versionId = VersionId.V35
 
     @BeforeTest
     fun setUp() {
         store = TokenStore(Random.nextToken())
         event = MutableSharedFlow(extraBufferCapacity = 1)
-        versionId = Infinity.VERSION_35
         iceServers = List(10) {
             IceServer.Builder(listOf("turn:turn$it.example.com:347?transport=udp"))
                 .username("${it shl 1}")
@@ -603,7 +603,7 @@ internal class MediaConnectionSignalingImplTest {
                     }
                 }
             },
-            versionId = Infinity.VERSION_36,
+            versionId = VersionId.V36,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),
@@ -655,7 +655,7 @@ internal class MediaConnectionSignalingImplTest {
                     }
                 }
             },
-            versionId = Infinity.VERSION_36,
+            versionId = VersionId.V36,
             directMedia = Random.nextBoolean(),
             iceServers = iceServers,
             iceTransportsRelayOnly = Random.nextBoolean(),

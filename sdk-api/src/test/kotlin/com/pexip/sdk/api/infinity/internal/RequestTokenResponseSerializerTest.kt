@@ -24,6 +24,7 @@ import com.pexip.sdk.api.infinity.VersionResponse
 import com.pexip.sdk.api.infinity.readUtf8
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.infinity.ServiceType
+import com.pexip.sdk.infinity.VersionId
 import kotlinx.serialization.json.Json
 import okio.FileSystem
 import kotlin.test.BeforeTest
@@ -53,7 +54,7 @@ class RequestTokenResponseSerializerTest {
                     participantId = ParticipantId("f22f8f50-0d85-47ea-bbf7-97f4eaa39f53"),
                     participantName = "George",
                     version = VersionResponse(
-                        versionId = "35",
+                        versionId = VersionId.V35,
                         pseudoVersion = "77524.0.0",
                     ),
                     chatEnabled = true,
@@ -73,7 +74,7 @@ class RequestTokenResponseSerializerTest {
                     participantId = ParticipantId("614221f4-3a5c-4d1f-8df6-3ae27188df54"),
                     participantName = "George",
                     version = VersionResponse(
-                        versionId = "36",
+                        versionId = VersionId.V36,
                         pseudoVersion = "79019.0.0",
                     ),
                     chatEnabled = true,

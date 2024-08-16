@@ -37,6 +37,7 @@ import com.pexip.sdk.conference.Theme
 import com.pexip.sdk.infinity.ServiceType
 import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString
+import com.pexip.sdk.infinity.test.nextVersionId
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Clock
@@ -99,7 +100,10 @@ class RefererTest {
             participantId = Random.nextParticipantId(),
             participantName = Random.nextString(),
             directMediaRequested = Random.nextBoolean(),
-            version = VersionResponse(Random.nextString(), Random.nextString()),
+            version = VersionResponse(
+                versionId = Random.nextVersionId(),
+                pseudoVersion = Random.nextString(),
+            ),
             callTag = callTag,
         )
         val step = object : InfinityService.ConferenceStep {

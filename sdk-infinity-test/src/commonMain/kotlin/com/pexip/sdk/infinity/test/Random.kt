@@ -19,6 +19,7 @@ import com.pexip.sdk.infinity.CallId
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.infinity.RegistrationId
+import com.pexip.sdk.infinity.VersionId
 import kotlin.random.Random
 
 private const val CHARACTERS = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -51,3 +52,8 @@ public fun Random.nextParticipantId(): ParticipantId = ParticipantId(nextString(
  * Gets the next random [RegistrationId] from the random number generator.
  */
 public fun Random.nextRegistrationId(): RegistrationId = RegistrationId(nextString())
+
+/**
+ * Gets the next random [VersionId] from the random number generator.
+ */
+public fun Random.nextVersionId(): VersionId = VersionId(nextString())

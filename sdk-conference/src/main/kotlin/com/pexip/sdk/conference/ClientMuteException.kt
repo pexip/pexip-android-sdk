@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.infinity
+package com.pexip.sdk.conference
 
-import com.pexip.sdk.core.InternalSdkApi
-
-@InternalSdkApi
-public object Infinity {
-
-    public const val VERSION_35: String = "35"
-
-    /**
-     * New APIs:
-     * - client_mute
-     * - client_unmute
-     * - is_client_muted
-     */
-    public const val VERSION_36: String = "36"
-}
+/**
+ * Thrown to indicate that client mute failed.
+ *
+ * @property cause a cause of this exception
+ */
+public class ClientMuteException @JvmOverloads constructor(cause: Throwable? = null) : RuntimeException("Failed to mute client.", cause)

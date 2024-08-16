@@ -36,6 +36,7 @@ import com.pexip.sdk.infinity.ServiceType
 import com.pexip.sdk.infinity.test.nextLayoutId
 import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString
+import com.pexip.sdk.infinity.test.nextVersionId
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -264,7 +265,7 @@ internal class ConferenceStepTest {
                     guestsCanPresent = Random.nextBoolean(),
                     serviceType = ServiceType.entries.random(),
                     version = VersionResponse(
-                        versionId = Random.nextString(),
+                        versionId = Random.nextVersionId(),
                         pseudoVersion = Random.nextString(),
                     ),
                     stun = List(10) {

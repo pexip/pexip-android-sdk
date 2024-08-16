@@ -28,12 +28,6 @@ public final class com/pexip/sdk/infinity/CallId$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/infinity/Infinity {
-	public static final field INSTANCE Lcom/pexip/sdk/infinity/Infinity;
-	public static final field VERSION_35 Ljava/lang/String;
-	public static final field VERSION_36 Ljava/lang/String;
-}
-
 public final class com/pexip/sdk/infinity/LayoutId {
 	public static final field Companion Lcom/pexip/sdk/infinity/LayoutId$Companion;
 	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/infinity/LayoutId;
@@ -221,7 +215,44 @@ public final class com/pexip/sdk/infinity/ServiceType$Companion {
 }
 
 public final class com/pexip/sdk/infinity/UnsupportedInfinityException : java/lang/IllegalArgumentException {
-	public fun <init> (Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getVersion ()Ljava/lang/String;
+	public final fun getVersionId-WvCEiEU ()Ljava/lang/String;
+}
+
+public final class com/pexip/sdk/infinity/VersionId : java/lang/Comparable {
+	public static final field Companion Lcom/pexip/sdk/infinity/VersionId$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/pexip/sdk/infinity/VersionId;
+	public synthetic fun compareTo (Ljava/lang/Object;)I
+	public fun compareTo-nWcezAY (Ljava/lang/String;)I
+	public static fun compareTo-nWcezAY (Ljava/lang/String;Ljava/lang/String;)I
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public synthetic class com/pexip/sdk/infinity/VersionId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/infinity/VersionId$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-htA5qwM (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-AL5BK0g (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/infinity/VersionId$Companion {
+	public final fun getV29-WvCEiEU ()Ljava/lang/String;
+	public final fun getV35-WvCEiEU ()Ljava/lang/String;
+	public final fun getV36-WvCEiEU ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

@@ -4,6 +4,18 @@ public final class com/pexip/sdk/conference/AdmitException : java/lang/RuntimeEx
 	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
+public final class com/pexip/sdk/conference/ClientMuteException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/pexip/sdk/conference/ClientUnmuteException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public abstract interface class com/pexip/sdk/conference/Conference {
 	public abstract fun getMessenger ()Lcom/pexip/sdk/conference/Messenger;
 	public abstract fun getName ()Ljava/lang/String;
@@ -292,6 +304,10 @@ public abstract interface class com/pexip/sdk/conference/Referer {
 public abstract interface class com/pexip/sdk/conference/Roster {
 	public fun admit-5K0EZTY (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun admit-5K0EZTY$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun clientMute (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun clientMute$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun clientUnmute (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun clientUnmute$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun disconnect-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun disconnect-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun disconnect-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

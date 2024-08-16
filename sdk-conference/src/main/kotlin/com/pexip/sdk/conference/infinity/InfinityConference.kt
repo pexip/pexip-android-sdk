@@ -39,6 +39,7 @@ import com.pexip.sdk.core.WhileSubscribedWithDebounce
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.ServiceType
 import com.pexip.sdk.infinity.UnsupportedInfinityException
+import com.pexip.sdk.infinity.VersionId
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.MediaConnectionSignaling
 import kotlinx.coroutines.CoroutineScope
@@ -90,6 +91,7 @@ public class InfinityConference private constructor(
     override val roster: Roster = RosterImpl(
         scope = scope,
         event = event,
+        versionId = response.version.versionId,
         participantId = response.participantId,
         parentParticipantId = response.parentParticipantId,
         store = store,
@@ -214,7 +216,7 @@ public class InfinityConference private constructor(
             step: InfinityService.ConferenceStep,
             response: RequestTokenResponse,
         ): InfinityConference {
-            if (response.version.versionId < "29") {
+            if (response.version.versionId < VersionId.V29) {
                 throw UnsupportedInfinityException(response.version.versionId)
             }
             return InfinityConference(step, response)

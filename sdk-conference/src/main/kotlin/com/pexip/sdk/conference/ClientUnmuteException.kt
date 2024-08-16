@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.api.infinity
+package com.pexip.sdk.conference
 
-import com.pexip.sdk.infinity.VersionId
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
-public data class VersionResponse(
-    @SerialName("version_id")
-    val versionId: VersionId,
-    @SerialName("pseudo_version")
-    val pseudoVersion: String,
-)
+/**
+ * Thrown to indicate that client unmute failed.
+ *
+ * @property cause a cause of this exception
+ */
+public class ClientUnmuteException @JvmOverloads constructor(cause: Throwable? = null) : RuntimeException("Failed to unmute client.", cause)

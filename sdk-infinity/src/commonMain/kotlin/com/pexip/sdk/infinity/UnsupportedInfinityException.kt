@@ -18,7 +18,16 @@ package com.pexip.sdk.infinity
 /**
  * Thrown to indicate that the Infinity deployment is not supported
  *
- * @property version a version of Infinity that caused this exception
+ * @property versionId a version of Infinity that caused this exception
  */
-public class UnsupportedInfinityException(public val version: String) :
-    IllegalArgumentException("Infinity $version is not supported by the SDK. Please upgrade your Infinity deployment to 29 or newer.")
+public class UnsupportedInfinityException(public val versionId: VersionId) : IllegalArgumentException("Infinity $versionId is not supported by the SDK. Please upgrade your Infinity deployment to 29 or newer.") {
+
+    /**
+     * A version of Infinity that caused this exception
+     */
+    @Deprecated(
+        message = "Use versionId instead.",
+        replaceWith = ReplaceWith(expression = "versionId.value"),
+    )
+    public val version: String get() = versionId.value
+}
