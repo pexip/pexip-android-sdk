@@ -182,7 +182,7 @@ class RosterImplTest {
 
     @Test
     fun `makeHost() returns`() {
-        table.forAll(::`makeGuest() returns`)
+        table.forAll(::`makeHost() returns`)
     }
 
     @Test
