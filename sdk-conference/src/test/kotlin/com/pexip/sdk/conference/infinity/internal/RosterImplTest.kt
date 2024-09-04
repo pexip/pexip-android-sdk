@@ -63,6 +63,7 @@ import com.pexip.sdk.conference.MuteException
 import com.pexip.sdk.conference.MuteVideoException
 import com.pexip.sdk.conference.Participant
 import com.pexip.sdk.conference.RaiseHandException
+import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.SpotlightException
 import com.pexip.sdk.conference.UnlockException
 import com.pexip.sdk.conference.UnmuteAllGuestsException
@@ -605,18 +606,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.raiseHand(it.id) }
                 .isInstanceOf<RaiseHandException>()
@@ -651,18 +641,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.raiseHand(it.id) }
     }
 
@@ -702,18 +681,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.admit(it.id) }
                 .isInstanceOf<AdmitException>()
@@ -748,18 +716,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.admit(it.id) }
     }
 
@@ -799,18 +756,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.disconnect(it.id) }
                 .isInstanceOf<DisconnectException>()
@@ -845,18 +791,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.disconnect(it.id) }
     }
 
@@ -889,18 +824,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.makeHost(it.id) }
                 .isInstanceOf<MakeHostException>()
@@ -936,18 +860,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.makeHost(it.id) }
     }
 
@@ -980,18 +893,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.makeGuest(it.id) }
                 .isInstanceOf<MakeGuestException>()
@@ -1027,18 +929,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.makeGuest(it.id) }
     }
 
@@ -1083,18 +974,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         assertFailure { roster.clientMute() }
             .isInstanceOf<ClientMuteException>()
             .hasCause(cause)
@@ -1140,18 +1020,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         roster.clientMute()
     }
 
@@ -1196,18 +1065,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         assertFailure { roster.clientUnmute() }
             .isInstanceOf<ClientUnmuteException>()
             .hasCause(cause)
@@ -1253,18 +1111,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         roster.clientUnmute()
     }
 
@@ -1304,18 +1151,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.mute(it.id) }
                 .isInstanceOf<MuteException>()
@@ -1350,18 +1186,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.mute(it.id) }
     }
 
@@ -1401,18 +1226,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.unmute(it.id) }
                 .isInstanceOf<UnmuteException>()
@@ -1447,18 +1261,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.unmute(it.id) }
     }
 
@@ -1498,18 +1301,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.muteVideo(it.id) }
                 .isInstanceOf<MuteVideoException>()
@@ -1544,18 +1336,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.muteVideo(it.id) }
     }
 
@@ -1595,18 +1376,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.unmuteVideo(it.id) }
                 .isInstanceOf<UnmuteVideoException>()
@@ -1641,18 +1411,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.unmuteVideo(it.id) }
     }
 
@@ -1692,18 +1451,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.spotlight(it.id) }
                 .isInstanceOf<SpotlightException>()
@@ -1738,18 +1486,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.spotlight(it.id) }
     }
 
@@ -1789,18 +1526,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.unspotlight(it.id) }
                 .isInstanceOf<UnspotlightException>()
@@ -1835,18 +1561,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.unspotlight(it.id) }
     }
 
@@ -1886,18 +1601,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach {
             assertFailure { roster.lowerHand(it.id) }
                 .isInstanceOf<LowerHandException>()
@@ -1932,18 +1636,7 @@ class RosterImplTest {
                 }
             },
         )
-        roster.participants.test {
-            event.subscriptionCount.first { it > 0 }
-            assertThat(awaitItem(), "participants").isEmpty()
-            participants.forEachIndexed { index, participant ->
-                val response = participant.toParticipantResponse()
-                val e = ParticipantCreateEvent(response)
-                event.emit(e)
-                assertThat(awaitItem(), "participants")
-                    .index(index)
-                    .isEqualTo(participant)
-            }
-        }
+        roster.populate(participants)
         participants.forEach { roster.lowerHand(it.id) }
     }
 
@@ -2268,6 +1961,19 @@ class RosterImplTest {
     private fun List<Participant>.toParticipantIdSet(participantId: ParticipantId) = buildSet {
         add(participantId)
         for (participant in this@toParticipantIdSet) add(participant.id)
+    }
+
+    private suspend fun Roster.populate(participants: List<Participant>) = this.participants.test {
+        event.subscriptionCount.first { it > 0 }
+        assertThat(awaitItem(), "participants").isEmpty()
+        participants.forEachIndexed { index, participant ->
+            val response = participant.toParticipantResponse()
+            val e = ParticipantCreateEvent(response)
+            event.emit(e)
+            assertThat(awaitItem(), "participants")
+                .index(index)
+                .isEqualTo(participant)
+        }
     }
 
     private fun Participant.toParticipantResponse() = ParticipantResponse(
