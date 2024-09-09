@@ -34,6 +34,7 @@ public value class VersionId(public val value: String) : Comparable<VersionId> {
 
         public val V29: VersionId = VersionId("29")
         public val V35: VersionId = VersionId("35")
+        public val V35_1: VersionId = VersionId("35.1")
 
         /**
          * New APIs:

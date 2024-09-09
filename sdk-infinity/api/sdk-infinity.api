@@ -252,6 +252,7 @@ public synthetic class com/pexip/sdk/infinity/VersionId$$serializer : kotlinx/se
 public final class com/pexip/sdk/infinity/VersionId$Companion {
 	public final fun getV29-WvCEiEU ()Ljava/lang/String;
 	public final fun getV35-WvCEiEU ()Ljava/lang/String;
+	public final fun getV35_1-WvCEiEU ()Ljava/lang/String;
 	public final fun getV36-WvCEiEU ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
