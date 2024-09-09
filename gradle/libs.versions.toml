@@ -29,7 +29,7 @@ workflow = "1.7.1"
 
 [libraries]
 android = { module = "com.android.tools.build:gradle", version.ref = "android" }
-android-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.1" }
+android-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.2" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
