@@ -16,12 +16,14 @@
 package com.pexip.sdk.conference
 
 import com.pexip.sdk.infinity.ServiceType
+import com.pexip.sdk.infinity.VersionId
 import com.pexip.sdk.media.MediaConnection
 import com.pexip.sdk.media.MediaConnectionSignaling
 
 /**
  * Represents a conference.
  *
+ * @property versionId a version ID of this [Conference]
  * @property name a display name of this [Conference]
  * @property theme an instance of [Theme] attached to this [Conference]
  * @property roster an instance of [Roster] attached to this [Conference]
@@ -30,6 +32,9 @@ import com.pexip.sdk.media.MediaConnectionSignaling
  * @property signaling an instance of [MediaConnectionSignaling] to be used with [MediaConnection]
  */
 public interface Conference {
+
+    public val versionId: VersionId
+        get() = throw NotImplementedError()
 
     public val name: String
 

@@ -24,6 +24,7 @@ public abstract interface class com/pexip/sdk/conference/Conference {
 	public abstract fun getServiceType ()Lcom/pexip/sdk/infinity/ServiceType;
 	public abstract fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public abstract fun getTheme ()Lcom/pexip/sdk/conference/Theme;
+	public fun getVersionId-WvCEiEU ()Ljava/lang/String;
 	public abstract fun leave ()V
 	public abstract fun registerConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
 	public abstract fun unregisterConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
@@ -447,6 +448,7 @@ public final class com/pexip/sdk/conference/infinity/InfinityConference : com/pe
 	public fun getServiceType ()Lcom/pexip/sdk/infinity/ServiceType;
 	public fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public fun getTheme ()Lcom/pexip/sdk/conference/Theme;
+	public fun getVersionId-WvCEiEU ()Ljava/lang/String;
 	public fun leave ()V
 	public fun registerConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V
 	public fun unregisterConferenceEventListener (Lcom/pexip/sdk/conference/ConferenceEventListener;)V

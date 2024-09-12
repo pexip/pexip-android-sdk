@@ -77,6 +77,8 @@ public class InfinityConference private constructor(
     private val listeners = CopyOnWriteArraySet<ConferenceEventListener>()
     private val mutableConferenceEvent = MutableSharedFlow<ConferenceEvent>()
 
+    override val versionId: VersionId = response.version.versionId
+
     override val name: String = response.conferenceName
 
     override val serviceType: ServiceType = response.serviceType
