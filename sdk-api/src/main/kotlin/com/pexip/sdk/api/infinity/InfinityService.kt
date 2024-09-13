@@ -288,6 +288,21 @@ public interface InfinityService {
         public fun unmuteGuests(token: Token): Call<Boolean> = throw NotImplementedError()
 
         /**
+         * Configure whether or not guests can unmute themselves when they have been muted by a host
+         * (either directly muted or via [muteGuests]).
+         *
+         * See [documentation](https://docs.pexip.com/beta/api_client/api_rest.htm#set_guests_can_unmute)
+         *
+         * @param request a request body
+         * @param token a valid token
+         * @return true if operation was successful, false otherwise
+         */
+        public fun setGuestsCanUnmute(
+            request: SetGuestCanUnmuteRequest,
+            token: Token,
+        ): Call<Boolean> = throw NotImplementedError()
+
+        /**
          * Lowers all raised hands.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#clearallbuzz).
