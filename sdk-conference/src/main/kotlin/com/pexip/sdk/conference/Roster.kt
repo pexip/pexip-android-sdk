@@ -62,6 +62,18 @@ public interface Roster {
         get() = throw NotImplementedError()
 
     /**
+     * A [StateFlow] that represents whether guests in the conference can unmute themselves, or null.
+     *
+     * Null signals whether that particular instance of Infinity supports modifying this property
+     * and can be used to hide/show the appropriate UI controls without additional version checks.
+     *
+     * When muted, no guest participants can speak unless they are explicitly unmuted.
+     * This setting is only available to conference hosts.
+     */
+    public val guestsCanUnmute: StateFlow<Boolean?>
+        get() = throw NotImplementedError()
+
+    /**
      * Lets a specified participant into the conference from the waiting room of a locked conference.
      *
      * @param participantId an ID of the participant

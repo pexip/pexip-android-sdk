@@ -28,6 +28,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isIn
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.fail
@@ -130,6 +131,11 @@ class RosterImplTest {
     @Test
     fun `allGuestsMuted produces the correct all guests muted state`() {
         table.forAll(::`allGuestsMuted produces the correct all guests muted state`)
+    }
+
+    @Test
+    fun `guestsCanUnmute produces the correct guests can unmute state`() {
+        table.forAll(::`guestsCanUnmute produces the correct guests can unmute state`)
     }
 
     @Test
@@ -703,6 +709,28 @@ class RosterImplTest {
             expectNoEvents()
             event.emit(ConferenceUpdateEvent(guestsMuted = false))
             assertThat(awaitItem(), "guestsMuted").isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun `guestsCanUnmute produces the correct guests can unmute state`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(participantId, parentParticipantId)
+        roster.guestsCanUnmute.test {
+            event.subscriptionCount.first { it > 0 }
+            assertThat(awaitItem(), "guestsMuted").isNull()
+            event.emit(ConferenceUpdateEvent(guestsCanUnmute = true))
+            assertThat(awaitItem(), "guestsMuted")
+                .isNotNull()
+                .isTrue()
+            event.emit(ConferenceUpdateEvent(guestsCanUnmute = true))
+            expectNoEvents()
+            event.emit(ConferenceUpdateEvent(guestsCanUnmute = false))
+            assertThat(awaitItem(), "guestsMuted")
+                .isNotNull()
+                .isFalse()
             cancelAndIgnoreRemainingEvents()
         }
     }

@@ -184,6 +184,11 @@ internal class RosterImpl(
         .map { it.guestsMuted }
         .stateIn(scope, SharingStarted.Eagerly, false)
 
+    override val guestsCanUnmute: StateFlow<Boolean?> = event
+        .filterIsInstance<ConferenceUpdateEvent>()
+        .map { it.guestsCanUnmute }
+        .stateIn(scope, SharingStarted.Eagerly, null)
+
     override suspend fun admit(participantId: ParticipantId) {
         perform(participantId, ParticipantStep::unlock, ::AdmitException)
     }

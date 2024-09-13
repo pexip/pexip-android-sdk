@@ -10,5 +10,6 @@
     "current": null
   },
   "breakout_rooms": false,
+  "guests_can_unmute": false,
   "live_captions_available": true
 }
