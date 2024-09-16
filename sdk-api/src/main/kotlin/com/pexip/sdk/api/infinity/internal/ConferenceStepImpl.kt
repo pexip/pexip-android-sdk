@@ -29,6 +29,7 @@ import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.api.infinity.RequiredPinException
 import com.pexip.sdk.api.infinity.RequiredSsoException
+import com.pexip.sdk.api.infinity.SetGuestCanUnmuteRequest
 import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.SsoRedirectException
 import com.pexip.sdk.api.infinity.Token
@@ -245,6 +246,22 @@ internal class ConferenceStepImpl(
             .url(url) {
                 conference(conferenceAlias)
                 addPathSegment("unmuteguests")
+            }
+            .token(token)
+            .build(),
+        mapper = { parse(it, BooleanSerializer) },
+    )
+
+    override fun setGuestsCanUnmute(
+        request: SetGuestCanUnmuteRequest,
+        token: Token,
+    ): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(json.encodeToRequestBody(request))
+            .url(url) {
+                conference(conferenceAlias)
+                addPathSegment("set_guests_can_unmute")
             }
             .token(token)
             .build(),

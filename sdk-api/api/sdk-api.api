@@ -605,6 +605,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService$Confe
 	public fun releaseToken (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun requestToken (Lcom/pexip/sdk/api/infinity/RequestTokenRequest;)Lcom/pexip/sdk/api/Call;
 	public fun requestToken (Lcom/pexip/sdk/api/infinity/RequestTokenRequest;Ljava/lang/String;)Lcom/pexip/sdk/api/Call;
+	public fun setGuestsCanUnmute (Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun theme (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun theme (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/Token;)Ljava/lang/String;
 	public fun transformLayout (Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
@@ -1478,6 +1479,33 @@ public synthetic class com/pexip/sdk/api/infinity/Screen$$serializer : kotlinx/s
 }
 
 public final class com/pexip/sdk/api/infinity/Screen$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest$Companion;
+	public fun <init> (Z)V
+	public final fun component1 ()Z
+	public final fun copy (Z)Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSetting ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

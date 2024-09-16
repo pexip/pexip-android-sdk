@@ -1023,6 +1023,67 @@ internal class ConferenceStepTest {
     }
 
     @Test
+    fun `setGuestsCanUnmute throws IllegalStateException`() {
+        server.enqueue { setResponseCode(500) }
+        val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
+        assertFailure { step.setGuestsCanUnmute(request, token).execute() }
+            .isInstanceOf<IllegalStateException>()
+        server.verifySetGuestsCanUnmute(request, token)
+    }
+
+    @Test
+    fun `setGuestsCanUnmute throws NoSuchNodeException`() {
+        server.enqueue { setResponseCode(404) }
+        val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
+        assertFailure { step.setGuestsCanUnmute(request, token).execute() }
+            .isInstanceOf<NoSuchNodeException>()
+        server.verifySetGuestsCanUnmute(request, token)
+    }
+
+    @Test
+    fun `setGuestsCanUnmute throws NoSuchConferenceException`() {
+        val message = "Neither conference nor gateway found"
+        server.enqueue {
+            setResponseCode(404)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
+        assertFailure { step.setGuestsCanUnmute(request, token).execute() }
+            .isInstanceOf<NoSuchConferenceException>()
+            .hasMessage(message)
+        server.verifySetGuestsCanUnmute(request, token)
+    }
+
+    @Test
+    fun `setGuestsCanUnmute throws InvalidTokenException`() {
+        val message = "Invalid token"
+        server.enqueue {
+            setResponseCode(403)
+            setBody(json.encodeToString(Box(message)))
+        }
+        val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
+        assertFailure { step.setGuestsCanUnmute(request, token).execute() }
+            .isInstanceOf<InvalidTokenException>()
+            .hasMessage(message)
+        server.verifySetGuestsCanUnmute(request, token)
+    }
+
+    @Test
+    fun `setGuestsCanUnmute returns result on 200`() {
+        val results = listOf(true, false)
+        results.forEach { result ->
+            server.enqueue {
+                setResponseCode(200)
+                setBody(json.encodeToString(Box(result)))
+            }
+            val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
+            assertThat(step.setGuestsCanUnmute(request, token).execute(), "response")
+                .isEqualTo(result)
+            server.verifySetGuestsCanUnmute(request, token)
+        }
+    }
+
+    @Test
     fun `disconnect throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         assertFailure { step.disconnect(token).await() }.isInstanceOf<IllegalStateException>()
@@ -1224,6 +1285,20 @@ internal class ConferenceStepTest {
         }
         assertToken(token)
         assertPostEmptyBody()
+    }
+
+    private fun MockWebServer.verifySetGuestsCanUnmute(
+        request: SetGuestCanUnmuteRequest,
+        token: Token,
+    ) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            addPathSegment("set_guests_can_unmute")
+        }
+        assertToken(token)
+        assertPost(json, request)
     }
 
     private fun MockWebServer.verifyDisconnect(token: Token) = takeRequest {
