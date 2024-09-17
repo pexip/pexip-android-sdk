@@ -165,15 +165,17 @@ public final class com/pexip/sdk/api/infinity/CallsResponse$Companion {
 public final class com/pexip/sdk/api/infinity/ConferenceUpdateEvent : com/pexip/sdk/api/Event {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent$Companion;
 	public fun <init> ()V
-	public fun <init> (ZZZZ)V
-	public synthetic fun <init> (ZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ZZZZLjava/lang/Boolean;)V
+	public synthetic fun <init> (ZZZZLjava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Z
 	public final fun component2 ()Z
 	public final fun component3 ()Z
 	public final fun component4 ()Z
-	public final fun copy (ZZZZ)Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent;
-	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent;ZZZZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent;
+	public final fun component5 ()Ljava/lang/Boolean;
+	public final fun copy (ZZZZLjava/lang/Boolean;)Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent;ZZZZLjava/lang/Boolean;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getGuestsCanUnmute ()Ljava/lang/Boolean;
 	public final fun getGuestsMuted ()Z
 	public final fun getLocked ()Z
 	public final fun getPresentationAllowed ()Z

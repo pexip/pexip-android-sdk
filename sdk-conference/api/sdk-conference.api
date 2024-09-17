@@ -315,6 +315,7 @@ public abstract interface class com/pexip/sdk/conference/Roster {
 	public fun disconnectAll (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun disconnectAll$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getAllGuestsMuted ()Lkotlinx/coroutines/flow/StateFlow;
+	public fun getGuestsCanUnmute ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getLocked ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getMe ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getParticipants ()Lkotlinx/coroutines/flow/StateFlow;

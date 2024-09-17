@@ -323,6 +323,7 @@ internal class EventTest {
                     started = true,
                     guestsMuted = false,
                     presentationAllowed = true,
+                    guestsCanUnmute = false,
                 ),
             )
             .row(

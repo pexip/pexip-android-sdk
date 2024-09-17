@@ -37,6 +37,8 @@ public data class ConferenceUpdateEvent(
     val guestsMuted: Boolean = false,
     @SerialName("presentation_allowed")
     val presentationAllowed: Boolean = false,
+    @SerialName("guests_can_unmute")
+    val guestsCanUnmute: Boolean? = null,
 ) : Event
 
 @Serializable
