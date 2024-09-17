@@ -30,12 +30,15 @@ import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
 import com.pexip.sdk.api.infinity.PresentationStartEvent
 import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.RoleRequest
+import com.pexip.sdk.api.infinity.SetGuestCanUnmuteRequest
 import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
+import com.pexip.sdk.conference.AllowGuestsToUnmuteException
 import com.pexip.sdk.conference.ClientMuteException
 import com.pexip.sdk.conference.ClientUnmuteException
+import com.pexip.sdk.conference.DisallowGuestsToUnmuteException
 import com.pexip.sdk.conference.DisconnectAllException
 import com.pexip.sdk.conference.DisconnectException
 import com.pexip.sdk.conference.LockException
@@ -329,6 +332,20 @@ internal class RosterImpl(
 
     override suspend fun unmuteAllGuests() {
         perform(ConferenceStep::unmuteGuests, ::UnmuteAllGuestsException)
+    }
+
+    override suspend fun allowGuestsToUnmute() {
+        perform(
+            callFactory = { setGuestsCanUnmute(SetGuestCanUnmuteRequest(true), it) },
+            errorFactory = ::AllowGuestsToUnmuteException,
+        )
+    }
+
+    override suspend fun disallowGuestsToUnmute() {
+        perform(
+            callFactory = { setGuestsCanUnmute(SetGuestCanUnmuteRequest(false), it) },
+            errorFactory = ::DisallowGuestsToUnmuteException,
+        )
     }
 
     override suspend fun disconnectAll() {
