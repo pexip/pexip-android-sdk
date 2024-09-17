@@ -45,13 +45,16 @@ import com.pexip.sdk.api.infinity.ParticipantSyncBeginEvent
 import com.pexip.sdk.api.infinity.ParticipantSyncEndEvent
 import com.pexip.sdk.api.infinity.ParticipantUpdateEvent
 import com.pexip.sdk.api.infinity.RoleRequest
+import com.pexip.sdk.api.infinity.SetGuestCanUnmuteRequest
 import com.pexip.sdk.api.infinity.SpeakerResponse
 import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TokenStore
 import com.pexip.sdk.conference.AdmitException
+import com.pexip.sdk.conference.AllowGuestsToUnmuteException
 import com.pexip.sdk.conference.ClientMuteException
 import com.pexip.sdk.conference.ClientUnmuteException
+import com.pexip.sdk.conference.DisallowGuestsToUnmuteException
 import com.pexip.sdk.conference.DisconnectAllException
 import com.pexip.sdk.conference.DisconnectException
 import com.pexip.sdk.conference.LockException
@@ -564,6 +567,26 @@ class RosterImplTest {
     @Test
     fun `unmuteAllGuests() returns`() {
         table.forAll(::`unmuteAllGuests() returns`)
+    }
+
+    @Test
+    fun `allowGuestsToUnmute() throws AllowGuestsToUnmuteException`() {
+        table.forAll(::`allowGuestsToUnmute() throws AllowGuestsToUnmuteException`)
+    }
+
+    @Test
+    fun `allowGuestsToUnmute() returns`() {
+        table.forAll(::`allowGuestsToUnmute() returns`)
+    }
+
+    @Test
+    fun `disallowGuestsToUnmute() throws DisallowGuestsToUnmuteException`() {
+        table.forAll(::`disallowGuestsToUnmute() throws DisallowGuestsToUnmuteException`)
+    }
+
+    @Test
+    fun `disallowGuestsToUnmute() returns`() {
+        table.forAll(::`disallowGuestsToUnmute() returns`)
     }
 
     @Test
@@ -2464,6 +2487,116 @@ class RosterImplTest {
             },
         )
         roster.unmuteAllGuests()
+    }
+
+    private fun `allowGuestsToUnmute() throws AllowGuestsToUnmuteException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun setGuestsCanUnmute(
+                    request: SetGuestCanUnmuteRequest,
+                    token: Token,
+                ): Call<Boolean> {
+                    assertThat(request::setting).isTrue()
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.allowGuestsToUnmute() }
+            .isInstanceOf<AllowGuestsToUnmuteException>()
+            .hasCause(cause)
+    }
+
+    private fun `allowGuestsToUnmute() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun setGuestsCanUnmute(
+                    request: SetGuestCanUnmuteRequest,
+                    token: Token,
+                ): Call<Boolean> {
+                    assertThat(request::setting).isTrue()
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.allowGuestsToUnmute()
+    }
+
+    private fun `disallowGuestsToUnmute() throws DisallowGuestsToUnmuteException`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val cause = Throwable()
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun setGuestsCanUnmute(
+                    request: SetGuestCanUnmuteRequest,
+                    token: Token,
+                ): Call<Boolean> {
+                    assertThat(request::setting).isFalse()
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onFailure(this, cause)
+                    }
+                }
+            },
+        )
+        assertFailure { roster.disallowGuestsToUnmute() }
+            .isInstanceOf<DisallowGuestsToUnmuteException>()
+            .hasCause(cause)
+    }
+
+    private fun `disallowGuestsToUnmute() returns`(
+        participantId: ParticipantId,
+        parentParticipantId: ParticipantId?,
+    ) = runTest {
+        val roster = RosterImpl(
+            participantId = participantId,
+            parentParticipantId = parentParticipantId,
+            step = object : InfinityService.ConferenceStep {
+
+                override fun setGuestsCanUnmute(
+                    request: SetGuestCanUnmuteRequest,
+                    token: Token,
+                ): Call<Boolean> {
+                    assertThat(request::setting).isFalse()
+                    assertThat(token, "token").isEqualTo(store.token.value)
+                    return object : TestCall<Boolean> {
+
+                        override fun enqueue(callback: Callback<Boolean>) =
+                            callback.onSuccess(this, true)
+                    }
+                }
+            },
+        )
+        roster.disallowGuestsToUnmute()
     }
 
     private fun `disconnectAll() throws DisconnectAllException`(

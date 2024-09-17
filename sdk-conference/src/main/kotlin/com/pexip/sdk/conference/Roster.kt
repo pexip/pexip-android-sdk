@@ -234,6 +234,20 @@ public interface Roster {
     public suspend fun unmuteAllGuests(): Unit = throw NotImplementedError()
 
     /**
+     * Allows guests to unmute themselves.
+     *
+     * @throws AllowGuestsToUnmuteException if the operation failed
+     */
+    public suspend fun allowGuestsToUnmute(): Unit = throw NotImplementedError()
+
+    /**
+     * Disallows guests to unmute themselves.
+     *
+     * @throws DisallowGuestsToUnmuteException if the operation failed
+     */
+    public suspend fun disallowGuestsToUnmute(): Unit = throw NotImplementedError()
+
+    /**
      * Disconnects all conference participants.
      *
      * @throws DisconnectAllException if the operation failed
