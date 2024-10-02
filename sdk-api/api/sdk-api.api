@@ -592,7 +592,6 @@ public final class com/pexip/sdk/api/infinity/InfinityService$Companion {
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$ConferenceStep {
 	public fun availableLayouts (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
-	public fun avatar (Lcom/pexip/sdk/api/infinity/Token;)Ljava/lang/String;
 	public fun clearAllBuzz (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun disconnect (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun events (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/EventSourceFactory;

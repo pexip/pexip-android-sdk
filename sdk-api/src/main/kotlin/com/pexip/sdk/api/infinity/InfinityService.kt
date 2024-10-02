@@ -112,14 +112,6 @@ public interface InfinityService {
             get() = throw NotImplementedError()
 
         /**
-         * Creates a URL that points to a VMR-specific JPEG.
-         *
-         * @param token a valid token
-         * @return a URL of the avatar
-         */
-        public fun avatar(token: Token): String = throw NotImplementedError()
-
-        /**
          * Requests a token for the conference alias.
          *
          * See [documentation](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#request_token).

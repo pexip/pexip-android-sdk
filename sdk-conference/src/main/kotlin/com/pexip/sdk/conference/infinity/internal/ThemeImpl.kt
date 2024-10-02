@@ -56,10 +56,6 @@ internal class ThemeImpl(
     private val store: TokenStore,
 ) : Theme {
 
-    override val avatar: StateFlow<String> = store.token
-        .map(step::avatar)
-        .stateIn(scope, SharingStarted.Eagerly, step.avatar(store.token.value))
-
     override val layout: StateFlow<Layout?> = combine(
         flow = flow {
             emit(LayoutEvent(LayoutId("")))
