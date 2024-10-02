@@ -83,18 +83,6 @@ internal class ConferenceStepTest {
     }
 
     @Test
-    fun `avatar returns the correct value`() {
-        val actual = step.avatar(token)
-        val expected = node.newApiClientV2Builder()
-            .addPathSegment("conferences")
-            .addPathSegment(conferenceAlias)
-            .addPathSegment("avatar.jpg")
-            .addQueryParameter("token", token.token)
-            .build()
-        assertThat(actual).isEqualTo(expected.toString())
-    }
-
-    @Test
     fun `requestToken throws IllegalStateException`() {
         server.enqueue { setResponseCode(500) }
         val request = RequestTokenRequest()

@@ -24,12 +24,6 @@ import kotlinx.coroutines.flow.StateFlow
 public interface Theme {
 
     /**
-     * A [StateFlow] of the logo URL
-     */
-    public val avatar: StateFlow<String>
-        get() = throw NotImplementedError()
-
-    /**
      * A [StateFlow] of current [Layout] state.
      */
     public val layout: StateFlow<Layout?>
@@ -58,7 +52,5 @@ public interface Theme {
         layout: LayoutId? = null,
         guestLayout: LayoutId? = null,
         enableOverlayText: Boolean? = null,
-    ) {
-        throw NotImplementedError()
-    }
+    ): Unit = throw NotImplementedError()
 }

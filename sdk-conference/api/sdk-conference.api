@@ -405,7 +405,6 @@ public final class com/pexip/sdk/conference/SpotlightException : java/lang/Runti
 }
 
 public abstract interface class com/pexip/sdk/conference/Theme {
-	public fun getAvatar ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getLayout ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getSplashScreen ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun transformLayout-VlDFPn4 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
