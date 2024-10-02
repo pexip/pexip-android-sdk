@@ -7,10 +7,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.16.0] - 2024-10-02
+
 ### Added
 
 - `Roster.muteVideo(ParticipantId?)` and `Roster.unmuteVideo(ParticipantId?)` to control state of
   participant's video track
+- `Roster.clientMute()` and `Roster.clientUnmute()` to control state of client mute
+- `Roster.allowGuestsToUnmute()` and `Roster.disallowGuestsToUnmute()` to control whether guests
+  can unmute themselves (v36+)
+- A coroutine-friendly `NodeResolver`
+- `call_tag`, `parent_participant_uuid` support
+- `VersionId` API to show what version of Infinity is being used
 
 ### Changed
 
@@ -19,6 +27,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   use `java.util.UUID`
 - **BREAKING**: timestamps and durations previously represented as a `Long` now use `Instant`
   and `Duration` respectively
+- **BREAKING**: `TokenStore` is now an `@InternalSdkApi`
+- Kotlin to 2.0.20
+
+### Fixed
+
+- `okhttp3.internal.*` usages
+- Incorrect handling of nanos and millis
 
 ## [0.15.0] - 2024-03-25
 
@@ -357,7 +372,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.15.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.16.0...HEAD
+[0.16.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.16.0
 [0.15.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.15.0
 [0.14.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.14.1
 [0.14.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.14.0
