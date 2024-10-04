@@ -17,12 +17,13 @@ package com.pexip.sdk
 
 import com.android.build.api.dsl.LibraryExtension
 import com.pexip.sdk.internal.Android
+import com.pexip.sdk.internal.Jvm
+import com.pexip.sdk.internal.languageVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 
@@ -41,8 +42,7 @@ class AndroidLibraryPlugin : Plugin<Project> {
                 buildConfig = false
             }
             compileOptions {
-                sourceCompatibility = Android.sourceCompatibility
-                targetCompatibility = Android.targetCompatibility
+                languageVersion(Jvm.languageVersion)
             }
             testOptions {
                 unitTests {
@@ -52,7 +52,7 @@ class AndroidLibraryPlugin : Plugin<Project> {
         }
         configure<JavaPluginExtension> {
             toolchain {
-                languageVersion.set(JavaLanguageVersion.of(11))
+                languageVersion.set(Jvm.languageVersion)
             }
         }
         tasks.withType<Test>().configureEach {
