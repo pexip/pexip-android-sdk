@@ -13,6 +13,8 @@ module:sdk-core
 com.pexip.sdk.core
 module:sdk-infinity
 com.pexip.sdk.infinity
+module:sdk-infinity-test
+com.pexip.sdk.infinity.test
 module:sdk-media
 com.pexip.sdk.media
 com.pexip.sdk.media.coroutines
