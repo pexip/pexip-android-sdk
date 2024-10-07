@@ -8,6 +8,6 @@ A set of common classes and interfaces to build APIs.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-api:0.15.0")
+    implementation("com.pexip.sdk:sdk-api:0.16.0")
 }
 ```

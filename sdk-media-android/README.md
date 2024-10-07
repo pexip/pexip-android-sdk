@@ -8,6 +8,6 @@ Android-specific extensions for sdk-media.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-media-android:0.15.0")
+    implementation("com.pexip.sdk:sdk-media-android:0.16.0")
 }
 ```
