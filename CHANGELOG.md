@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- A `disconnect` signal to let Infinity know that the `MediaConnection` is going away
+
 ### Changed
 
 - Required JDK to 17

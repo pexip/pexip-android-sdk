@@ -468,6 +468,7 @@ internal class WebRtcMediaConnection(
                 mainRemoteVideoTrackListeners.clear()
                 presentationRemoteVideoTrackListeners.clear()
                 wrapper.dispose()
+                runCatching { config.signaling.onDisconnect() }
             }
         }
     }

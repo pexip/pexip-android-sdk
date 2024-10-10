@@ -720,6 +720,16 @@ public interface InfinityService {
          */
         public fun dtmf(request: DtmfRequest, token: Token): Call<Boolean> =
             throw NotImplementedError()
+
+        /**
+         * Disconnects the call.
+         *
+         * See [documentation](https://docs.pexip.com/api_client/api_rest.htm#call_disconnect).
+         *
+         * @param token a valid token
+         * @return true if successful, false otherwise
+         */
+        public fun disconnect(token: Token): Call<Boolean> = throw NotImplementedError()
     }
 
     public companion object {
