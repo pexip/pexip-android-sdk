@@ -21,6 +21,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -33,20 +34,42 @@ internal class RealCall<T>(
     private val call = client.newCall(request)
 
     override suspend fun await(): T = suspendCancellableCoroutine {
-        it.invokeOnCancellation { cancel() }
-        val callback = object : Callback<T> {
+        it.invokeOnCancellation { call.cancel() }
+        val callback = object : okhttp3.Callback {
 
-            override fun onSuccess(call: Call<T>, response: T) = it.resume(response)
+            override fun onResponse(call: okhttp3.Call, response: Response) = try {
+                it.resume(response.use(mapper))
+            } catch (t: Throwable) {
+                it.resumeWithException(t)
+            }
 
-            override fun onFailure(call: Call<T>, t: Throwable) = it.resumeWithException(t)
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                it.resumeWithException(e)
+            }
         }
-        enqueue(callback)
+        call.enqueue(callback)
     }
 
+    @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
     override fun execute(): T = call.execute().use(mapper)
 
-    override fun enqueue(callback: Callback<T>) =
-        call.enqueue(RealCallback(this, callback, mapper))
+    @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
+    override fun enqueue(callback: Callback<T>) {
+        val c = object : okhttp3.Callback {
 
+            override fun onResponse(call: okhttp3.Call, response: Response) = try {
+                callback.onSuccess(this@RealCall, response.use(mapper))
+            } catch (t: Throwable) {
+                callback.onFailure(this@RealCall, t)
+            }
+
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                callback.onFailure(this@RealCall, e)
+            }
+        }
+        call.enqueue(c)
+    }
+
+    @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
     override fun cancel() = call.cancel()
 }

@@ -21,7 +21,6 @@ import assertk.assertions.hasCause
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequestTokenResponse
@@ -71,11 +70,7 @@ class RefererTest {
             override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
                 assertThat(request::incomingToken).isEqualTo(event.token)
                 assertThat(request::directMedia).isEqualTo(directMedia)
-                return object : TestCall<RequestTokenResponse> {
-
-                    override fun enqueue(callback: Callback<RequestTokenResponse>) =
-                        callback.onFailure(this, t)
-                }
+                return call { throw t }
             }
         }
         val builder = object : InfinityService.RequestBuilder {
@@ -112,11 +107,7 @@ class RefererTest {
                 assertThat(request::incomingToken).isEqualTo(event.token)
                 assertThat(request::directMedia).isEqualTo(response.directMediaRequested)
                 assertThat(request::callTag).isEqualTo(response.callTag)
-                return object : TestCall<RequestTokenResponse> {
-
-                    override fun enqueue(callback: Callback<RequestTokenResponse>) =
-                        callback.onSuccess(this, response)
-                }
+                return call { response }
             }
         }
         val builder = object : InfinityService.RequestBuilder {

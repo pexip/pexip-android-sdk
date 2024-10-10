@@ -34,7 +34,6 @@ import assertk.assertions.isTrue
 import assertk.fail
 import assertk.tableOf
 import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.ConferenceUpdateEvent
 import com.pexip.sdk.api.infinity.InfinityService
@@ -784,11 +783,7 @@ class RosterImplTest {
 
                         override fun buzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -819,11 +814,7 @@ class RosterImplTest {
 
                         override fun buzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
+                            return call { true }
                         }
                     }
                 }
@@ -851,12 +842,9 @@ class RosterImplTest {
 
                         override fun buzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, true)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                true
                             }
                         }
                     }
@@ -897,11 +885,7 @@ class RosterImplTest {
 
                         override fun unlock(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -932,11 +916,7 @@ class RosterImplTest {
 
                         override fun unlock(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
+                            return call { true }
                         }
                     }
                 }
@@ -972,11 +952,7 @@ class RosterImplTest {
 
                         override fun disconnect(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -1007,11 +983,7 @@ class RosterImplTest {
 
                         override fun disconnect(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
+                            return call { true }
                         }
                     }
                 }
@@ -1039,12 +1011,9 @@ class RosterImplTest {
 
                         override fun disconnect(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, true)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                true
                             }
                         }
                     }
@@ -1078,11 +1047,7 @@ class RosterImplTest {
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role, "request").isEqualTo(Role.HOST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -1114,11 +1079,7 @@ class RosterImplTest {
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role).isEqualTo(Role.HOST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
+                            return call { true }
                         }
                     }
                 }
@@ -1147,12 +1108,9 @@ class RosterImplTest {
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role).isEqualTo(Role.HOST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, true)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                true
                             }
                         }
                     }
@@ -1186,11 +1144,7 @@ class RosterImplTest {
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role, "request").isEqualTo(Role.GUEST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -1222,11 +1176,7 @@ class RosterImplTest {
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role).isEqualTo(Role.GUEST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
+                            return call { true }
                         }
                     }
                 }
@@ -1255,12 +1205,9 @@ class RosterImplTest {
                         override fun role(request: RoleRequest, token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
                             assertThat(request::role).isEqualTo(Role.GUEST)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, true)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                true
                             }
                         }
                     }
@@ -1295,24 +1242,18 @@ class RosterImplTest {
                         override fun mute(token: Token): Call<Unit> {
                             if (versionId >= VersionId.V36) fail("Should not be called.")
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onFailure(this, cause)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                throw cause
                             }
                         }
 
                         override fun clientMute(token: Token): Call<Unit> {
                             if (versionId < VersionId.V35) fail("Should not be called.")
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onFailure(this, cause)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                throw cause
                             }
                         }
                     }
@@ -1345,25 +1286,13 @@ class RosterImplTest {
                         override fun mute(token: Token): Call<Unit> {
                             if (versionId >= VersionId.V36) fail("Should not be called.")
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, Unit)
-                                }
-                            }
+                            return call { deferredParticipantId.complete(participantId) }
                         }
 
                         override fun clientMute(token: Token): Call<Unit> {
                             if (versionId < VersionId.V36) fail("Should not be called.")
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, Unit)
-                                }
-                            }
+                            return call { deferredParticipantId.complete(participantId) }
                         }
                     }
             },
@@ -1394,24 +1323,18 @@ class RosterImplTest {
                         override fun unmute(token: Token): Call<Unit> {
                             if (versionId >= VersionId.V36) fail("Should not be called.")
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onFailure(this, cause)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                throw cause
                             }
                         }
 
                         override fun clientUnmute(token: Token): Call<Unit> {
                             if (versionId < VersionId.V36) fail("Should not be called.")
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onFailure(this, cause)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                throw cause
                             }
                         }
                     }
@@ -1444,25 +1367,13 @@ class RosterImplTest {
                         override fun unmute(token: Token): Call<Unit> {
                             if (versionId >= VersionId.V36) fail("Should not be called.")
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, Unit)
-                                }
-                            }
+                            return call { deferredParticipantId.complete(participantId) }
                         }
 
                         override fun clientUnmute(token: Token): Call<Unit> {
                             if (versionId < VersionId.V36) fail("Should not be called.")
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, Unit)
-                                }
-                            }
+                            return call { deferredParticipantId.complete(participantId) }
                         }
                     }
             },
@@ -1499,11 +1410,7 @@ class RosterImplTest {
 
                         override fun mute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -1534,11 +1441,7 @@ class RosterImplTest {
 
                         override fun mute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onSuccess(this, Unit)
-                            }
+                            return call { }
                         }
                     }
                 }
@@ -1564,13 +1467,7 @@ class RosterImplTest {
 
                         override fun mute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, Unit)
-                                }
-                            }
+                            return call { deferredParticipantId.complete(participantId) }
                         }
                     }
             },
@@ -1607,11 +1504,7 @@ class RosterImplTest {
 
                         override fun unmute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -1642,11 +1535,7 @@ class RosterImplTest {
 
                         override fun unmute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onSuccess(this, Unit)
-                            }
+                            return call { }
                         }
                     }
                 }
@@ -1672,13 +1561,7 @@ class RosterImplTest {
 
                         override fun unmute(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, Unit)
-                                }
-                            }
+                            return call { deferredParticipantId.complete(participantId) }
                         }
                     }
             },
@@ -1715,11 +1598,7 @@ class RosterImplTest {
 
                         override fun videoMuted(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -1750,11 +1629,7 @@ class RosterImplTest {
 
                         override fun videoMuted(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onSuccess(this, Unit)
-                            }
+                            return call { }
                         }
                     }
                 }
@@ -1782,13 +1657,7 @@ class RosterImplTest {
 
                         override fun videoMuted(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, Unit)
-                                }
-                            }
+                            return call { deferredParticipantId.complete(participantId) }
                         }
                     }
             },
@@ -1828,11 +1697,7 @@ class RosterImplTest {
 
                         override fun videoUnmuted(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -1863,11 +1728,7 @@ class RosterImplTest {
 
                         override fun videoUnmuted(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) =
-                                    callback.onSuccess(this, Unit)
-                            }
+                            return call { }
                         }
                     }
                 }
@@ -1895,13 +1756,7 @@ class RosterImplTest {
 
                         override fun videoUnmuted(token: Token): Call<Unit> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Unit> {
-
-                                override fun enqueue(callback: Callback<Unit>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, Unit)
-                                }
-                            }
+                            return call { deferredParticipantId.complete(participantId) }
                         }
                     }
             },
@@ -1941,11 +1796,7 @@ class RosterImplTest {
 
                         override fun spotlightOn(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -1976,11 +1827,7 @@ class RosterImplTest {
 
                         override fun spotlightOn(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
+                            return call { true }
                         }
                     }
                 }
@@ -2008,12 +1855,9 @@ class RosterImplTest {
 
                         override fun spotlightOn(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, true)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                true
                             }
                         }
                     }
@@ -2054,11 +1898,7 @@ class RosterImplTest {
 
                         override fun spotlightOff(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -2089,11 +1929,7 @@ class RosterImplTest {
 
                         override fun spotlightOff(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
+                            return call { true }
                         }
                     }
                 }
@@ -2121,12 +1957,9 @@ class RosterImplTest {
 
                         override fun spotlightOff(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, true)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                true
                             }
                         }
                     }
@@ -2167,11 +2000,7 @@ class RosterImplTest {
 
                         override fun clearBuzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onFailure(this, causes.getValue(participantId))
-                            }
+                            return call { throw causes.getValue(participantId) }
                         }
                     }
                 }
@@ -2202,11 +2031,7 @@ class RosterImplTest {
 
                         override fun clearBuzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) =
-                                    callback.onSuccess(this, true)
-                            }
+                            return call { true }
                         }
                     }
                 }
@@ -2234,12 +2059,9 @@ class RosterImplTest {
 
                         override fun clearBuzz(token: Token): Call<Boolean> {
                             assertThat(token, "token").isEqualTo(store.token.value)
-                            return object : TestCall<Boolean> {
-
-                                override fun enqueue(callback: Callback<Boolean>) {
-                                    deferredParticipantId.complete(participantId)
-                                    callback.onSuccess(this, true)
-                                }
+                            return call {
+                                deferredParticipantId.complete(participantId)
+                                true
                             }
                         }
                     }
@@ -2266,11 +2088,7 @@ class RosterImplTest {
 
                 override fun clearAllBuzz(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
+                    return call { throw cause }
                 }
             },
         )
@@ -2290,11 +2108,7 @@ class RosterImplTest {
 
                 override fun clearAllBuzz(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
+                    return call { true }
                 }
             },
         )
@@ -2313,11 +2127,7 @@ class RosterImplTest {
 
                 override fun lock(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
+                    return call { throw cause }
                 }
             },
         )
@@ -2337,11 +2147,7 @@ class RosterImplTest {
 
                 override fun lock(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
+                    return call { true }
                 }
             },
         )
@@ -2360,11 +2166,7 @@ class RosterImplTest {
 
                 override fun unlock(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
+                    return call { throw cause }
                 }
             },
         )
@@ -2384,11 +2186,7 @@ class RosterImplTest {
 
                 override fun unlock(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
+                    return call { true }
                 }
             },
         )
@@ -2407,11 +2205,7 @@ class RosterImplTest {
 
                 override fun muteGuests(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
+                    return call { throw cause }
                 }
             },
         )
@@ -2431,11 +2225,7 @@ class RosterImplTest {
 
                 override fun muteGuests(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
+                    return call { true }
                 }
             },
         )
@@ -2454,11 +2244,7 @@ class RosterImplTest {
 
                 override fun unmuteGuests(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
+                    return call { throw cause }
                 }
             },
         )
@@ -2478,11 +2264,7 @@ class RosterImplTest {
 
                 override fun unmuteGuests(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
+                    return call { true }
                 }
             },
         )
@@ -2505,11 +2287,7 @@ class RosterImplTest {
                 ): Call<Boolean> {
                     assertThat(request::setting).isTrue()
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
+                    return call { throw cause }
                 }
             },
         )
@@ -2533,11 +2311,7 @@ class RosterImplTest {
                 ): Call<Boolean> {
                     assertThat(request::setting).isTrue()
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
+                    return call { true }
                 }
             },
         )
@@ -2560,11 +2334,7 @@ class RosterImplTest {
                 ): Call<Boolean> {
                     assertThat(request::setting).isFalse()
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
+                    return call { throw cause }
                 }
             },
         )
@@ -2588,11 +2358,7 @@ class RosterImplTest {
                 ): Call<Boolean> {
                     assertThat(request::setting).isFalse()
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
+                    return call { true }
                 }
             },
         )
@@ -2611,11 +2377,7 @@ class RosterImplTest {
 
                 override fun disconnect(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onFailure(this, cause)
-                    }
+                    return call { throw cause }
                 }
             },
         )
@@ -2635,11 +2397,7 @@ class RosterImplTest {
 
                 override fun disconnect(token: Token): Call<Boolean> {
                     assertThat(token, "token").isEqualTo(store.token.value)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
+                    return call { true }
                 }
             },
         )
