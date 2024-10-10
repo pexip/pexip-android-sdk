@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,32 @@
 package com.pexip.sdk.sample.settings
 
 import androidx.datastore.core.CorruptionException
-import androidx.datastore.core.Serializer
-import kotlinx.coroutines.runInterruptible
+import androidx.datastore.core.okio.OkioSerializer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.okio.decodeFromBufferedSource
+import kotlinx.serialization.json.okio.encodeToBufferedSink
+import okio.BufferedSink
+import okio.BufferedSource
 import okio.IOException
-import java.io.InputStream
-import java.io.OutputStream
 
-object SettingsSerializer : Serializer<Settings> {
+@OptIn(ExperimentalSerializationApi::class)
+object SettingsSerializer : OkioSerializer<Settings> {
 
     override val defaultValue: Settings
         get() = Settings()
 
-    override suspend fun readFrom(input: InputStream): Settings = try {
-        runInterruptible { Settings.ADAPTER.decode(input) }
-    } catch (e: IOException) {
-        throw CorruptionException("Cannot read proto.", e)
+    override suspend fun readFrom(source: BufferedSource): Settings = withContext(Dispatchers.IO) {
+        try {
+            Json.Default.decodeFromBufferedSource(source)
+        } catch (e: IOException) {
+            throw CorruptionException("Cannot read json.", e)
+        }
     }
 
-    override suspend fun writeTo(t: Settings, output: OutputStream) {
-        runInterruptible { Settings.ADAPTER.encode(output, t) }
+    override suspend fun writeTo(t: Settings, sink: BufferedSink) = withContext(Dispatchers.IO) {
+        Json.Default.encodeToBufferedSink(t, sink)
     }
 }

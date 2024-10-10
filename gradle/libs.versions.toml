@@ -24,7 +24,6 @@ okio = "3.9.1"
 spotless = "6.25.0"
 turbine = "1.1.0"
 webrtc = "129.0.0"
-wire = "5.1.0"
 workflow = "1.7.1"
 
 [libraries]
@@ -81,8 +80,7 @@ dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "da
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-binarycompatibilityvalidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.16.3" }
+ksp = { id = "com.google.devtools.ksp", version = "2.0.20-1.0.25" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-wire = { id = "com.squareup.wire", version.ref = "wire" }

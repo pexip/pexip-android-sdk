@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,37 @@
  */
 package com.pexip.sdk.sample.settings
 
-import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.okio.OkioStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import okio.FileSystem
+import okio.Path
 import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Provider
+import javax.inject.Singleton
 
-class SettingsStore @Inject constructor(private val store: DataStore<Settings>) {
+@Singleton
+class SettingsStore(path: () -> Path) {
+
+    @Inject
+    constructor(@Named("settings") path: Provider<Path>) : this(path::get)
+
+    private val store = DataStoreFactory.create(
+        storage = OkioStorage(
+            fileSystem = FileSystem.SYSTEM,
+            serializer = SettingsSerializer,
+            producePath = path,
+        ),
+    )
 
     fun getDisplayName(): Flow<String> = store.data
-        .map { it.display_name }
+        .map { it.displayName }
         .distinctUntilChanged()
 
     suspend fun setDisplayName(displayName: String) {
-        store.updateData { it.copy(display_name = displayName.trim()) }
+        store.updateData { it.copy(displayName = displayName.trim()) }
     }
 }
