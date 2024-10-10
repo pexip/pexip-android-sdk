@@ -24,7 +24,7 @@ val uri = "george@example.com"
 val (_, host) = uri.split("@")
 
 val nodeResolver = NodeResolver.create(dnssec = false)
-val nodes: List<URL> = nodeResolver.resolve(host).execute()
+val nodes: List<URL> = nodeResolver.resolve(host).await()
 ```
 
 Next, you must pick a node addresses that is available. This can be achieved via `InfinityService`:
