@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Required JDK to 17
+
 ## [0.16.0] - 2024-10-02
 
 ### Added

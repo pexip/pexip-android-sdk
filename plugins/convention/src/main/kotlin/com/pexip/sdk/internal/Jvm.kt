@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,9 @@
  */
 package com.pexip.sdk.internal
 
-internal object Android {
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 
-    const val MIN_SDK = 21
-    const val TARGET_SDK = 34
-    const val COMPILE_SDK = 34
+internal object Jvm {
 
-    const val TEST_INSTRUMENTATION_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
+    val languageVersion = JavaLanguageVersion.of(17)
 }

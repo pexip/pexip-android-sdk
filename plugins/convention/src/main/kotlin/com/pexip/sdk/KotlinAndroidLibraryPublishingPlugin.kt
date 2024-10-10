@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
@@ -40,16 +41,20 @@ class KotlinAndroidLibraryPublishingPlugin : Plugin<Project> {
         configure<LibraryExtension> {
             publishing {
                 singleVariant("release") {
-                    withJavadocJar()
                     withSourcesJar()
                 }
             }
+        }
+        val javadocJar = tasks.register<Jar>("dokkaJavadocJar") {
+            from(tasks.named("dokkaJavadoc"))
+            archiveClassifier.set("javadoc")
         }
         configure<PublishingExtension> {
             publications {
                 register<MavenPublication>("release") {
                     afterEvaluate {
                         from(components["release"])
+                        artifact(javadocJar)
                     }
                 }
             }

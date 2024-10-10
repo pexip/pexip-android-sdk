@@ -15,7 +15,9 @@
  */
 package com.pexip.sdk
 
+import com.pexip.sdk.internal.Jvm
 import com.pexip.sdk.internal.assertk
+import com.pexip.sdk.internal.jvmToolchain
 import com.pexip.sdk.internal.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -34,7 +36,7 @@ class KotlinMultiplatformPlugin : Plugin<Project> {
         }
         with(kotlinExtension) {
             explicitApi()
-            jvmToolchain(11)
+            jvmToolchain(Jvm.languageVersion)
             sourceSets.named("commonTest") {
                 dependencies {
                     implementation(kotlin("test"))
