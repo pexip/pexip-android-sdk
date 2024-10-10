@@ -41,10 +41,18 @@ public interface Call<T> {
      *
      * @param callback a callback to invoke on completion
      */
+    @Deprecated(
+        message = "Use suspending await() instead.",
+        level = DeprecationLevel.WARNING,
+    )
     public fun enqueue(callback: Callback<T>)
 
     /**
      * Cancels the request, if possible.
      */
+    @Deprecated(
+        message = "Use suspending await() instead.",
+        level = DeprecationLevel.WARNING,
+    )
     public fun cancel()
 }
