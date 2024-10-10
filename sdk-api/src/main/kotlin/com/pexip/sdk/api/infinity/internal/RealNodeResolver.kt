@@ -49,6 +49,7 @@ internal class RealNodeResolver(private val api: ResolverApi) : NodeResolver {
         @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
         override fun execute(): List<URL> = maybeExecute { resolve(host) }
 
+        @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
         override fun enqueue(callback: Callback<List<URL>>) = maybeExecute {
             val f = Dispatcher.submit {
                 try {
@@ -60,6 +61,7 @@ internal class RealNodeResolver(private val api: ResolverApi) : NodeResolver {
             future.set(f)
         }
 
+        @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
         override fun cancel() {
             future.getAndSet(null)?.cancel(true)
         }

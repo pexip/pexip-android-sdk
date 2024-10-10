@@ -27,7 +27,6 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.BackgroundResponse
 import com.pexip.sdk.api.infinity.ElementResponse
@@ -93,22 +92,12 @@ class ThemeImplTest {
 
             override fun availableLayouts(token: Token): Call<Set<LayoutId>> {
                 assertThat(token).isEqualTo(store.token.value)
-                return object : TestCall<Set<LayoutId>> {
-
-                    override fun enqueue(callback: Callback<Set<LayoutId>>) {
-                        callback.onSuccess(this, layouts)
-                    }
-                }
+                return call { layouts }
             }
 
             override fun layoutSvgs(token: Token): Call<Map<LayoutId, String>> {
                 assertThat(token).isEqualTo(store.token.value)
-                return object : TestCall<Map<LayoutId, String>> {
-
-                    override fun enqueue(callback: Callback<Map<LayoutId, String>>) {
-                        callback.onSuccess(this, layoutSvgs)
-                    }
-                }
+                return call { layoutSvgs }
             }
         }
         val theme = ThemeImpl(
@@ -182,12 +171,7 @@ class ThemeImplTest {
 
             override fun theme(token: Token): Call<Map<String, SplashScreenResponse>> {
                 assertThat(token).isEqualTo(store.token.value)
-                return object : TestCall<Map<String, SplashScreenResponse>> {
-
-                    override fun enqueue(callback: Callback<Map<String, SplashScreenResponse>>) {
-                        callback.onSuccess(this, response)
-                    }
-                }
+                return call { response }
             }
 
             override fun theme(path: String, token: Token): String {
@@ -242,11 +226,7 @@ class ThemeImplTest {
                         assertThat(request::layout).isEqualTo(layout)
                         assertThat(request::guestLayout).isEqualTo(guestLayout)
                         assertThat(request::enableOverlayText).isEqualTo(enableOverlayText)
-                        return object : TestCall<Boolean> {
-
-                            override fun enqueue(callback: Callback<Boolean>) =
-                                callback.onFailure(this, t[i])
-                        }
+                        return call { throw t[i] }
                     }
                 }
                 val theme = ThemeImpl(
@@ -273,11 +253,7 @@ class ThemeImplTest {
                     assertThat(request::layout).isEqualTo(layout)
                     assertThat(request::guestLayout).isEqualTo(guestLayout)
                     assertThat(request::enableOverlayText).isEqualTo(enableOverlayText)
-                    return object : TestCall<Boolean> {
-
-                        override fun enqueue(callback: Callback<Boolean>) =
-                            callback.onSuccess(this, true)
-                    }
+                    return call { true }
                 }
             }
             val theme = ThemeImpl(

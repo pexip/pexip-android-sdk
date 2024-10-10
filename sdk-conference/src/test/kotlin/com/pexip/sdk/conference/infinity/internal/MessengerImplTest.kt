@@ -24,7 +24,6 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
@@ -62,11 +61,7 @@ class MessengerImplTest {
             override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                 assertThat(request::type).isEqualTo(expected.type)
                 assertThat(request::payload).isEqualTo(expected.payload)
-                return object : TestCall<Boolean> {
-
-                    override fun enqueue(callback: Callback<Boolean>) =
-                        callback.onSuccess(this, true)
-                }
+                return call { true }
             }
         }
         val messenger = MessengerImpl(
@@ -90,11 +85,7 @@ class MessengerImplTest {
             override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                 assertThat(request::type).isEqualTo(expected.type)
                 assertThat(request::payload).isEqualTo(expected.payload)
-                return object : TestCall<Boolean> {
-
-                    override fun enqueue(callback: Callback<Boolean>) =
-                        callback.onSuccess(this, false)
-                }
+                return call { false }
             }
         }
         val messenger = MessengerImpl(
@@ -123,11 +114,7 @@ class MessengerImplTest {
             override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                 assertThat(request::type).isEqualTo(expected.type)
                 assertThat(request::payload).isEqualTo(expected.payload)
-                return object : TestCall<Boolean> {
-
-                    override fun enqueue(callback: Callback<Boolean>) =
-                        callback.onFailure(this, expectedThrowable)
-                }
+                return call { throw expectedThrowable }
             }
         }
         val messenger = MessengerImpl(
@@ -160,11 +147,7 @@ class MessengerImplTest {
                     override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                         assertThat(request::type).isEqualTo(expected.type)
                         assertThat(request::payload).isEqualTo(expected.payload)
-                        return object : TestCall<Boolean> {
-
-                            override fun enqueue(callback: Callback<Boolean>) =
-                                callback.onSuccess(this, true)
-                        }
+                        return call { true }
                     }
                 }
             }
@@ -195,11 +178,7 @@ class MessengerImplTest {
                     override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                         assertThat(request::type).isEqualTo(expected.type)
                         assertThat(request::payload).isEqualTo(expected.payload)
-                        return object : TestCall<Boolean> {
-
-                            override fun enqueue(callback: Callback<Boolean>) =
-                                callback.onSuccess(this, false)
-                        }
+                        return call { false }
                     }
                 }
             }
@@ -235,11 +214,7 @@ class MessengerImplTest {
                     override fun message(request: MessageRequest, token: Token): Call<Boolean> {
                         assertThat(request::type).isEqualTo(expected.type)
                         assertThat(request::payload).isEqualTo(expected.payload)
-                        return object : TestCall<Boolean> {
-
-                            override fun enqueue(callback: Callback<Boolean>) =
-                                callback.onFailure(this, expectedThrowable)
-                        }
+                        return call { throw expectedThrowable }
                     }
                 }
             }
