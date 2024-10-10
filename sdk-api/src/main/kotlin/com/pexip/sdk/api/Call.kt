@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,13 @@ package com.pexip.sdk.api
  * Represents an API call.
  */
 public interface Call<T> {
+
+    /**
+     * Suspends until the [Call] completes with either success or failure.
+     *
+     * @return successful response body
+     */
+    public suspend fun await(): T
 
     /**
      * Executes the call on the caller thread.

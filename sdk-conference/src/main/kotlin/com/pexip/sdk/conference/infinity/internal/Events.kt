@@ -15,7 +15,6 @@
  */
 package com.pexip.sdk.conference.infinity.internal
 
-import com.pexip.sdk.api.coroutines.asFlow
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.TokenStore
 import kotlinx.coroutines.ExperimentalCoroutinesApi

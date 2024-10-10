@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 package com.pexip.sdk.api
 
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+
 public fun interface EventSourceFactory {
 
     /**
@@ -23,4 +27,28 @@ public fun interface EventSourceFactory {
      * notified. The caller must cancel the returned event source when it is no longer in use.
      */
     public fun create(listener: EventSourceListener): EventSource
+
+    /**
+     * Converts this [EventSourceFactory] to a [Flow].
+     *
+     * @return a [Flow] of [Event]s
+     */
+    public fun asFlow(): Flow<Event> = callbackFlow {
+        val listener = object : EventSourceListener {
+
+            override fun onOpen(eventSource: EventSource) {
+                // noop
+            }
+
+            override fun onEvent(eventSource: EventSource, event: Event) {
+                trySend(event)
+            }
+
+            override fun onClosed(eventSource: EventSource, t: Throwable?) {
+                close(t)
+            }
+        }
+        val source = create(listener)
+        awaitClose { source.cancel() }
+    }
 }

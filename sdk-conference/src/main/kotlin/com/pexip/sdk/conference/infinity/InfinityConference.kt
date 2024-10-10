@@ -15,7 +15,6 @@
  */
 package com.pexip.sdk.conference.infinity
 
-import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.api.infinity.TokenStore

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+
 package com.pexip.sdk.api.coroutines
 
 import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.Event
-import com.pexip.sdk.api.EventSource
 import com.pexip.sdk.api.EventSourceFactory
-import com.pexip.sdk.api.EventSourceListener
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * Suspends until the [Call] completes with either success or failure.
@@ -34,37 +28,13 @@ import kotlin.coroutines.resumeWithException
  * @param T successful response body type
  * @return successful response body
  */
-public suspend fun <T> Call<T>.await(): T = suspendCancellableCoroutine {
-    it.invokeOnCancellation { cancel() }
-    val callback = object : Callback<T> {
-
-        override fun onSuccess(call: Call<T>, response: T) = it.resume(response)
-
-        override fun onFailure(call: Call<T>, t: Throwable) = it.resumeWithException(t)
-    }
-    enqueue(callback)
-}
+@Deprecated("Moved to Call", level = DeprecationLevel.ERROR)
+public suspend fun <T> Call<T>.await(): T = await()
 
 /**
  * Converts this [EventSourceFactory] to a [Flow].
  *
  * @return a [Flow] of [Event]s
  */
-public fun EventSourceFactory.asFlow(): Flow<Event> = callbackFlow {
-    val listener = object : EventSourceListener {
-
-        override fun onOpen(eventSource: EventSource) {
-            // noop
-        }
-
-        override fun onEvent(eventSource: EventSource, event: Event) {
-            trySend(event)
-        }
-
-        override fun onClosed(eventSource: EventSource, t: Throwable?) {
-            close(t)
-        }
-    }
-    val source = create(listener)
-    awaitClose { source.cancel() }
-}
+@Deprecated("Moved to EventSourceFactory", level = DeprecationLevel.ERROR)
+public fun EventSourceFactory.asFlow(): Flow<Event> = asFlow()

@@ -21,7 +21,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
-import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.infinity.Node
 import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl

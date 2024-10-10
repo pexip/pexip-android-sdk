@@ -20,6 +20,8 @@ package com.pexip.sdk.api.infinity.internal
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.infinity.NodeResolver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.minidns.hla.ResolverApi
 import java.net.InetAddress
 import java.net.URL
@@ -39,6 +41,10 @@ internal class RealNodeResolver(private val api: ResolverApi) : NodeResolver {
 
         private val executed = AtomicBoolean()
         private var future = AtomicReference<Future<*>?>()
+
+        override suspend fun await(): List<URL> = maybeExecute {
+            withContext(Dispatchers.IO) { resolve(host) }
+        }
 
         override fun execute(): List<URL> = maybeExecute { resolve(host) }
 

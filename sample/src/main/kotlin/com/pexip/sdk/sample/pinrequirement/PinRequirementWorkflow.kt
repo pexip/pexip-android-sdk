@@ -15,7 +15,6 @@
  */
 package com.pexip.sdk.sample.pinrequirement
 
-import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenRequest
 import com.pexip.sdk.api.infinity.RequiredPinException

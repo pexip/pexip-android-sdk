@@ -16,7 +16,6 @@
 package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Event
-import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.ElementResponse
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.InvalidTokenException

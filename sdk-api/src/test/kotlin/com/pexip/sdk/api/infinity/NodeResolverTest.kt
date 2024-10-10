@@ -19,7 +19,6 @@ package com.pexip.sdk.api.infinity
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.pexip.sdk.api.coroutines.await
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
