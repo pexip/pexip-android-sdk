@@ -30,6 +30,10 @@ public interface Call<T> {
     /**
      * Executes the call on the caller thread.
      */
+    @Deprecated(
+        message = "Use suspending await() instead.",
+        level = DeprecationLevel.WARNING,
+    )
     public fun execute(): T
 
     /**

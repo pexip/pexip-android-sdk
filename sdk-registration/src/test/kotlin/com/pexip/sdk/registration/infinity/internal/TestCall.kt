@@ -34,6 +34,7 @@ internal interface TestCall<T> : Call<T> {
         enqueue(callback)
     }
 
+    @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
     override fun execute(): T = TODO()
 
     override fun enqueue(callback: Callback<T>): Unit = TODO()
