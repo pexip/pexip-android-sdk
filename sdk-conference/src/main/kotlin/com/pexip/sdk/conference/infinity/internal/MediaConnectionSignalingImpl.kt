@@ -129,6 +129,11 @@ internal class MediaConnectionSignalingImpl(
         retry { callStep.newCandidate(request, store.token.value).await() }
     }
 
+    override suspend fun onDisconnect() {
+        val callStep = callStep.await()
+        retry { callStep.disconnect(store.token.value).await() }
+    }
+
     override suspend fun onDtmf(digits: String) {
         val callStep = callStep.await()
         val request = DtmfRequest(digits)

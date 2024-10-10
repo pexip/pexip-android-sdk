@@ -242,6 +242,7 @@ public abstract interface class com/pexip/sdk/media/MediaConnectionSignaling {
 	public abstract fun onAudioUnmuted (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onCandidate (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onData (Lcom/pexip/sdk/media/Data;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun onDisconnect (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onDtmf (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onOffer (Ljava/lang/String;Ljava/lang/String;ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun onOfferIgnored (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

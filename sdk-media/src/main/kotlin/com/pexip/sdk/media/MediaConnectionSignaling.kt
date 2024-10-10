@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,11 @@ public interface MediaConnectionSignaling {
      * @param pwd a password of this ICE candidate
      */
     public suspend fun onCandidate(candidate: String, mid: String, ufrag: String, pwd: String)
+
+    /**
+     * Invoked when the [MediaConnection] is disposed.
+     */
+    public suspend fun onDisconnect()
 
     /**
      * Invoked when a sequence of DTMF digits must be sent.

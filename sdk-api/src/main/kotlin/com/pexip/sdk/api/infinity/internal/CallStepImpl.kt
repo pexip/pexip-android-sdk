@@ -35,7 +35,8 @@ import java.util.concurrent.TimeUnit
 internal class CallStepImpl(
     override val participantStep: ParticipantStepImpl,
     override val callId: CallId,
-) : InfinityService.CallStep, ParticipantStepImplScope by participantStep {
+) : InfinityService.CallStep,
+    ParticipantStepImplScope by participantStep {
 
     override fun newCandidate(request: NewCandidateRequest, token: Token): Call<Unit> = RealCall(
         client = client,
@@ -116,6 +117,21 @@ internal class CallStepImpl(
         mapper = ::parseDtmf,
     )
 
+    override fun disconnect(token: Token): Call<Boolean> = RealCall(
+        client = client,
+        request = Request.Builder()
+            .post(EMPTY_REQUEST)
+            .url(url) {
+                conference(conferenceAlias)
+                participant(participantId)
+                call(callId)
+                addPathSegment("disconnect")
+            }
+            .token(token)
+            .build(),
+        mapper = ::parseDisconnect,
+    )
+
     private fun parseNewCandidate(response: Response) = when (response.code) {
         200 -> Unit
         403 -> response.parse403()
@@ -138,6 +154,13 @@ internal class CallStepImpl(
     }
 
     private fun parseDtmf(response: Response) = when (response.code) {
+        200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
+        403 -> response.parse403()
+        404 -> response.parse404()
+        else -> throw IllegalStateException()
+    }
+
+    private fun parseDisconnect(response: Response) = when (response.code) {
         200 -> json.decodeFromResponseBody(BooleanSerializer, response.body!!)
         403 -> response.parse403()
         404 -> response.parse404()
