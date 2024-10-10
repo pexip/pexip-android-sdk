@@ -17,7 +17,6 @@ package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Event
-import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.ConferenceUpdateEvent
 import com.pexip.sdk.api.infinity.InfinityService.ConferenceStep
 import com.pexip.sdk.api.infinity.InfinityService.ParticipantStep

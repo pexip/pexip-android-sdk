@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@ package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 internal class RealCall<T>(
     client: OkHttpClient,
@@ -28,6 +31,17 @@ internal class RealCall<T>(
 ) : Call<T> {
 
     private val call = client.newCall(request)
+
+    override suspend fun await(): T = suspendCancellableCoroutine {
+        it.invokeOnCancellation { cancel() }
+        val callback = object : Callback<T> {
+
+            override fun onSuccess(call: Call<T>, response: T) = it.resume(response)
+
+            override fun onFailure(call: Call<T>, t: Throwable) = it.resumeWithException(t)
+        }
+        enqueue(callback)
+    }
 
     override fun execute(): T = call.execute().use(mapper)
 

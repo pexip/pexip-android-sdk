@@ -15,7 +15,6 @@
  */
 package com.pexip.sdk.registration.infinity.internal
 
-import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RegistrationResponse
 import com.pexip.sdk.api.infinity.TokenStore
