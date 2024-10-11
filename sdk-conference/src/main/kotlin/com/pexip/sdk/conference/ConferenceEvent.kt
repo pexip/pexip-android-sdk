@@ -25,7 +25,7 @@ public sealed interface ConferenceEvent {
 
 @Deprecated(
     message = "Use Roster.presenter instead to observe presentation state.",
-    level = DeprecationLevel.WARNING,
+    level = DeprecationLevel.ERROR,
 )
 public data class PresentationStartConferenceEvent(
     override val at: Instant,
@@ -35,7 +35,7 @@ public data class PresentationStartConferenceEvent(
 
 @Deprecated(
     message = "Use Roster.presenter instead to observe presentation state.",
-    level = DeprecationLevel.WARNING,
+    level = DeprecationLevel.ERROR,
 )
 public data class PresentationStopConferenceEvent(override val at: Instant) : ConferenceEvent
 

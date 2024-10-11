@@ -21,5 +21,6 @@ package com.pexip.sdk.api.infinity
         expression = "Role",
         imports = ["com.pexip.sdk.infinity.Role"],
     ),
+    level = DeprecationLevel.ERROR,
 )
 public typealias Role = com.pexip.sdk.infinity.Role

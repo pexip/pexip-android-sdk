@@ -122,9 +122,11 @@ public class InfinityRegistration private constructor(
          * @return an instance of [InfinityRegistration]
          * @throws UnsupportedInfinityException if the version of Infinity is not supported
          */
+        @Suppress("UNUSED_PARAMETER")
         @Deprecated(
             message = "Use a version of this method that accepts RegistrationStep",
             replaceWith = ReplaceWith("create(service.newRequest(node).registration(deviceAlias)), response)"),
+            level = DeprecationLevel.ERROR,
         )
         @JvmStatic
         public fun create(
@@ -132,10 +134,7 @@ public class InfinityRegistration private constructor(
             node: URL,
             deviceAlias: String,
             response: RequestRegistrationTokenResponse,
-        ): InfinityRegistration = create(
-            step = service.newRequest(node).registration(deviceAlias),
-            response = response,
-        )
+        ): InfinityRegistration = throw NotImplementedError()
 
         /**
          * Creates a new instance of [InfinityRegistration].
