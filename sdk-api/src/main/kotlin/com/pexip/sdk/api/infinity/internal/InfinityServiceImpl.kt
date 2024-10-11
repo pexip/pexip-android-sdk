@@ -20,16 +20,12 @@ import com.pexip.sdk.api.infinity.InfinityService.RequestBuilder
 import com.pexip.sdk.infinity.Node
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
-import java.net.URL
 
 internal class InfinityServiceImpl(
     override val client: OkHttpClient,
     override val json: Json,
-) : InfinityService, InfinityServiceImplScope {
+) : InfinityService,
+    InfinityServiceImplScope {
 
     override fun newRequest(node: Node): RequestBuilder = RequestBuilderImpl(this, node)
-
-    @Deprecated("Superseded by a variant that accepts an instance of Node.")
-    override fun newRequest(node: URL): RequestBuilder =
-        RequestBuilderImpl(this, Node(node.host, node.port))
 }

@@ -1734,16 +1734,9 @@ public abstract interface class com/pexip/sdk/api/infinity/Token {
 }
 
 public final class com/pexip/sdk/api/infinity/TokenStore {
-	public static final field Companion Lcom/pexip/sdk/api/infinity/TokenStore$Companion;
 	public fun <init> (Lcom/pexip/sdk/api/infinity/Token;)V
-	public static final fun create (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/infinity/TokenStore;
 	public final fun getToken ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun refreshTokenIn (Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;)Lkotlinx/coroutines/Job;
-}
-
-public final class com/pexip/sdk/api/infinity/TokenStore$Companion {
-	public final fun create (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/infinity/TokenStore;
-	public final fun refreshTokenIn (Lcom/pexip/sdk/api/infinity/TokenStore;Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;)Lkotlinx/coroutines/Job;
 }
 
 public final class com/pexip/sdk/api/infinity/TransformLayoutRequest {

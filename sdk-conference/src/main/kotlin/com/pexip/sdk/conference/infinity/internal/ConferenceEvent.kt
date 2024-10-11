@@ -17,13 +17,9 @@ package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.DisconnectEvent
-import com.pexip.sdk.api.infinity.PresentationStartEvent
-import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.ReferEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
-import com.pexip.sdk.conference.PresentationStartConferenceEvent
-import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -33,12 +29,6 @@ internal inline fun ConferenceEvent(
     event: Event,
     at: () -> Instant = Clock.System::now,
 ) = when (event) {
-    is PresentationStartEvent -> PresentationStartConferenceEvent(
-        at = at(),
-        presenterId = event.presenterId,
-        presenterName = event.presenterName,
-    )
-    is PresentationStopEvent -> PresentationStopConferenceEvent(at())
     is ReferEvent -> ReferConferenceEvent(
         at = at(),
         conferenceAlias = event.conferenceAlias,

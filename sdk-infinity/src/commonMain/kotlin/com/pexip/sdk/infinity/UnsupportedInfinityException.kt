@@ -28,6 +28,7 @@ public class UnsupportedInfinityException(public val versionId: VersionId) : Ill
     @Deprecated(
         message = "Use versionId instead.",
         replaceWith = ReplaceWith(expression = "versionId.value"),
+        level = DeprecationLevel.ERROR,
     )
     public val version: String get() = versionId.value
 }

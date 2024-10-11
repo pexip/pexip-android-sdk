@@ -189,9 +189,11 @@ public class InfinityConference private constructor(
          * @return an instance of [InfinityConference]
          * @throws UnsupportedInfinityException if the version of Infinity is not supported
          */
+        @Suppress("UNUSED_PARAMETER")
         @Deprecated(
             message = "Use a version of this method that accepts ConferenceStep",
             replaceWith = ReplaceWith("create(service.newRequest(node).conference(conferenceAlias)), response)"),
+            level = DeprecationLevel.ERROR,
         )
         @JvmStatic
         public fun create(
@@ -199,10 +201,7 @@ public class InfinityConference private constructor(
             node: URL,
             conferenceAlias: String,
             response: RequestTokenResponse,
-        ): InfinityConference = create(
-            step = service.newRequest(node).conference(conferenceAlias),
-            response = response,
-        )
+        ): InfinityConference = throw NotImplementedError()
 
         /**
          * Creates a new instance of [InfinityConference].

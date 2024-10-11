@@ -176,10 +176,6 @@ public final class com/pexip/sdk/conference/Message {
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class com/pexip/sdk/conference/MessageListener {
-	public abstract fun onMessage (Lcom/pexip/sdk/conference/Message;)V
-}
-
 public final class com/pexip/sdk/conference/MessageNotSentException : java/lang/RuntimeException {
 	public fun <init> (Lcom/pexip/sdk/conference/Message;)V
 	public fun <init> (Lcom/pexip/sdk/conference/Message;Ljava/lang/Throwable;)V

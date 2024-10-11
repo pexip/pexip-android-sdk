@@ -17,15 +17,10 @@ package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.DisconnectEvent
-import com.pexip.sdk.api.infinity.PresentationStartEvent
-import com.pexip.sdk.api.infinity.PresentationStopEvent
 import com.pexip.sdk.api.infinity.ReferEvent
 import com.pexip.sdk.conference.DisconnectConferenceEvent
 import com.pexip.sdk.conference.FailureConferenceEvent
-import com.pexip.sdk.conference.PresentationStartConferenceEvent
-import com.pexip.sdk.conference.PresentationStopConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
-import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString
 import kotlinx.datetime.Clock
 import kotlin.random.Random
@@ -39,16 +34,6 @@ class ConferenceEventTest {
     fun `returns ConferenceEvent if type is registered`() {
         val at = Clock.System.now()
         val testCases = buildMap {
-            val presentationStartEvent = PresentationStartEvent(
-                presenterId = Random.nextParticipantId(),
-                presenterName = Random.nextString(),
-            )
-            this[presentationStartEvent] = PresentationStartConferenceEvent(
-                at = at,
-                presenterId = presentationStartEvent.presenterId,
-                presenterName = presentationStartEvent.presenterName,
-            )
-            this[PresentationStopEvent] = PresentationStopConferenceEvent(at)
             val referEvent = ReferEvent(
                 conferenceAlias = Random.nextString(),
                 token = Random.nextString(),
