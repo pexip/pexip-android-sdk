@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,21 @@
 package com.pexip.sdk.sample.di
 
 import android.content.Context
-import androidx.datastore.core.DataStoreFactory
-import androidx.datastore.dataStoreFile
-import com.pexip.sdk.sample.settings.SettingsSerializer
-import com.pexip.sdk.sample.settings.SettingsStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import okio.Path
+import okio.Path.Companion.toOkioPath
+import javax.inject.Named
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SettingsStoreModule {
+object SettingsPathModule {
 
     @Provides
-    @Singleton
-    fun provideSettingsStore(@ApplicationContext context: Context): SettingsStore {
-        val store = DataStoreFactory.create(
-            serializer = SettingsSerializer,
-            produceFile = { context.dataStoreFile("settings.pb") },
-        )
-        return SettingsStore(store)
-    }
+    @Named("settings")
+    fun provideSettingsPath(@ApplicationContext context: Context): Path =
+        context.filesDir.toOkioPath() / "datastore" / "settings.json"
 }
