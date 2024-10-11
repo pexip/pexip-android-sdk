@@ -576,6 +576,11 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService {
 	public fun newRequest (Ljava/net/URL;)Lcom/pexip/sdk/api/infinity/InfinityService$RequestBuilder;
 }
 
+public abstract interface class com/pexip/sdk/api/infinity/InfinityService$BreakoutStep {
+	public fun getBreakoutId-Yx3DcQY ()Ljava/lang/String;
+	public fun getConferenceStep ()Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;
+}
+
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$CallStep {
 	public fun ack (Lcom/pexip/sdk/api/infinity/AckRequest;Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun ack (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
@@ -595,6 +600,7 @@ public final class com/pexip/sdk/api/infinity/InfinityService$Companion {
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$ConferenceStep {
 	public fun availableLayouts (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
+	public fun breakout-CBrjPA4 (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/InfinityService$BreakoutStep;
 	public fun clearAllBuzz (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun disconnect (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/Call;
 	public fun events (Lcom/pexip/sdk/api/infinity/Token;)Lcom/pexip/sdk/api/EventSourceFactory;

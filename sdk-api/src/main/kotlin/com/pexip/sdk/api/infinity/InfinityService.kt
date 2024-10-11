@@ -20,6 +20,7 @@ package com.pexip.sdk.api.infinity
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.EventSourceFactory
 import com.pexip.sdk.api.infinity.internal.InfinityServiceImpl
+import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.CallId
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.Node
@@ -324,12 +325,37 @@ public interface InfinityService {
         public fun events(token: Token): EventSourceFactory = throw NotImplementedError()
 
         /**
+         * Sets the breakout ID.
+         *
+         * @param breakoutId an ID of the breakout
+         */
+        public fun breakout(breakoutId: BreakoutId): BreakoutStep = throw NotImplementedError()
+
+        /**
          * Sets the participant ID.
          *
          * @param participantId an ID of the participant
          */
         public fun participant(participantId: ParticipantId): ParticipantStep =
             throw NotImplementedError()
+    }
+
+    /**
+     * Represents the [Breakout room functions](https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#breakout_functions) section.
+     */
+    public interface BreakoutStep {
+
+        /**
+         * The conference step that produced this breakout step.
+         */
+        public val conferenceStep: ConferenceStep
+            get() = throw NotImplementedError()
+
+        /**
+         * A breakout ID that this breakout step will use.
+         */
+        public val breakoutId: BreakoutId
+            get() = throw NotImplementedError()
     }
 
     /**

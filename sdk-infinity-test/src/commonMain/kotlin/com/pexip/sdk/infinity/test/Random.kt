@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.infinity.test
 
+import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.CallId
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.ParticipantId
@@ -47,6 +48,11 @@ public fun Random.nextLayoutId(): LayoutId = LayoutId(nextString())
  * Gets the next random [ParticipantId] from the random number generator.
  */
 public fun Random.nextParticipantId(): ParticipantId = ParticipantId(nextString())
+
+/**
+ * Gets the next random [BreakoutId] from the random number generator.
+ */
+public fun Random.nextBreakoutId(): BreakoutId = BreakoutId(nextString())
 
 /**
  * Gets the next random [RegistrationId] from the random number generator.

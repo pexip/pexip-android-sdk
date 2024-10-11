@@ -34,6 +34,7 @@ import com.pexip.sdk.api.infinity.SplashScreenResponse
 import com.pexip.sdk.api.infinity.SsoRedirectException
 import com.pexip.sdk.api.infinity.Token
 import com.pexip.sdk.api.infinity.TransformLayoutRequest
+import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.DeserializationStrategy
@@ -287,6 +288,9 @@ internal class ConferenceStepImpl(
             .build(),
         json = json,
     )
+
+    override fun breakout(breakoutId: BreakoutId): InfinityService.BreakoutStep =
+        BreakoutStepImpl(this, breakoutId)
 
     override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
         ParticipantStepImpl(this, participantId)
