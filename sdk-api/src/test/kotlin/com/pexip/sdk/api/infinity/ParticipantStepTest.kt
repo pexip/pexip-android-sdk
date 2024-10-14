@@ -20,7 +20,6 @@ import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.internal.addPathSegment
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.infinity.test.nextCallId
