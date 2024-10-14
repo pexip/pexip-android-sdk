@@ -20,6 +20,8 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import assertk.tableOf
 import com.pexip.sdk.api.Event
+import com.pexip.sdk.api.infinity.BreakoutBeginEvent
+import com.pexip.sdk.api.infinity.BreakoutEndEvent
 import com.pexip.sdk.api.infinity.ByeEvent
 import com.pexip.sdk.api.infinity.ConferenceUpdateEvent
 import com.pexip.sdk.api.infinity.DisconnectEvent
@@ -51,6 +53,7 @@ import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.StageEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.api.infinity.readUtf8
+import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.infinity.Role
@@ -195,6 +198,22 @@ internal class EventTest {
                 val1 = "splash_screen",
                 val2 = "splash_screen_null.json",
                 val3 = SplashScreenEvent(),
+            )
+            .row(
+                val1 = "breakout_begin",
+                val2 = "breakout_begin.json",
+                val3 = BreakoutBeginEvent(
+                    id = BreakoutId("6feed192-5dc0-4c42-abb8-e82558516112"),
+                    participantId = ParticipantId("682e9fb0-b1c9-48de-9eea-05cfff875915"),
+                ),
+            )
+            .row(
+                val1 = "breakout_end",
+                val2 = "breakout_end.json",
+                val3 = BreakoutEndEvent(
+                    id = BreakoutId("6feed192-5dc0-4c42-abb8-e82558516112"),
+                    participantId = ParticipantId("682e9fb0-b1c9-48de-9eea-05cfff875915"),
+                ),
             )
             .row(
                 val1 = "participant_sync_begin",

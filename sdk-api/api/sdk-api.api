@@ -91,6 +91,64 @@ public final class com/pexip/sdk/api/infinity/BackgroundResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/pexip/sdk/api/infinity/BreakoutBeginEvent : com/pexip/sdk/api/Event {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-Yx3DcQY ()Ljava/lang/String;
+	public final fun component2-UyOe1Tk ()Ljava/lang/String;
+	public final fun copy-0_Mgz1M (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent;
+	public static synthetic fun copy-0_Mgz1M$default (Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId-Yx3DcQY ()Ljava/lang/String;
+	public final fun getParticipantId-UyOe1Tk ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/pexip/sdk/api/infinity/BreakoutBeginEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/BreakoutBeginEvent$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/BreakoutEndEvent : com/pexip/sdk/api/Event {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/BreakoutEndEvent$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-Yx3DcQY ()Ljava/lang/String;
+	public final fun component2-UyOe1Tk ()Ljava/lang/String;
+	public final fun copy-0_Mgz1M (Ljava/lang/String;Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/BreakoutEndEvent;
+	public static synthetic fun copy-0_Mgz1M$default (Lcom/pexip/sdk/api/infinity/BreakoutEndEvent;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/BreakoutEndEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId-Yx3DcQY ()Ljava/lang/String;
+	public final fun getParticipantId-UyOe1Tk ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/pexip/sdk/api/infinity/BreakoutEndEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/BreakoutEndEvent$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/BreakoutEndEvent;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/BreakoutEndEvent;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/pexip/sdk/api/infinity/BreakoutEndEvent$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/pexip/sdk/api/infinity/ByeEvent : com/pexip/sdk/api/Event {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ByeEvent;
 	public fun equals (Ljava/lang/Object;)Z

@@ -20,6 +20,7 @@ package com.pexip.sdk.api.infinity
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.internal.DurationAsMillisecondsSerializer
 import com.pexip.sdk.api.infinity.internal.ParticipantResponseSerializer
+import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.SerialName
@@ -130,6 +131,18 @@ public data class ReferEvent(
 public data class SplashScreenEvent(@SerialName("screen_key") val screenKey: String? = null) : Event
 
 @Serializable
+public data class BreakoutBeginEvent(
+    @SerialName("breakout_uuid") val id: BreakoutId,
+    @SerialName("participant_uuid") val participantId: ParticipantId,
+) : Event
+
+@Serializable
+public data class BreakoutEndEvent(
+    @SerialName("breakout_uuid") val id: BreakoutId,
+    @SerialName("participant_uuid") val participantId: ParticipantId,
+) : Event
+
+@Serializable
 public data class DisconnectEvent(val reason: String) : Event
 
 public data object ByeEvent : Event
@@ -170,6 +183,8 @@ internal fun Event(json: Json, id: String?, type: String?, data: String): Event?
     } catch (e: SerializationException) {
         SplashScreenEvent()
     }
+    "breakout_begin" -> json.decodeFromString<BreakoutBeginEvent>(data)
+    "breakout_end" -> json.decodeFromString<BreakoutEndEvent>(data)
     "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
     "bye" -> ByeEvent
     "incoming" -> json.decodeFromString<IncomingEvent>(data)
