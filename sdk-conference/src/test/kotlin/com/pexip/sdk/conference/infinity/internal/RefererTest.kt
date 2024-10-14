@@ -67,20 +67,18 @@ class RefererTest {
         val directMedia = Random.nextBoolean()
         val step = object : InfinityService.ConferenceStep {
 
+            override fun conference(conferenceAlias: String): InfinityService.ConferenceStep {
+                assertThat(conferenceAlias, "conferenceAlias").isEqualTo(event.conferenceAlias)
+                return this
+            }
+
             override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
                 assertThat(request::incomingToken).isEqualTo(event.token)
                 assertThat(request::directMedia).isEqualTo(directMedia)
                 return call { throw t }
             }
         }
-        val builder = object : InfinityService.RequestBuilder {
-
-            override fun conference(conferenceAlias: String): InfinityService.ConferenceStep {
-                assertThat(conferenceAlias, "conferenceAlias").isEqualTo(event.conferenceAlias)
-                return step
-            }
-        }
-        val referer = RefererImpl(builder, callTag, directMedia, ::TestConference)
+        val referer = RefererImpl(step, callTag, directMedia, ::TestConference)
         assertFailure { referer.refer(event) }
             .isInstanceOf<ReferException>()
             .hasCause(t)
@@ -103,6 +101,11 @@ class RefererTest {
         )
         val step = object : InfinityService.ConferenceStep {
 
+            override fun conference(conferenceAlias: String): InfinityService.ConferenceStep {
+                assertThat(conferenceAlias, "conferenceAlias").isEqualTo(event.conferenceAlias)
+                return this
+            }
+
             override fun requestToken(request: RequestTokenRequest): Call<RequestTokenResponse> {
                 assertThat(request::incomingToken).isEqualTo(event.token)
                 assertThat(request::directMedia).isEqualTo(response.directMediaRequested)
@@ -110,14 +113,7 @@ class RefererTest {
                 return call { response }
             }
         }
-        val builder = object : InfinityService.RequestBuilder {
-
-            override fun conference(conferenceAlias: String): InfinityService.ConferenceStep {
-                assertThat(conferenceAlias, "conferenceAlias").isEqualTo(event.conferenceAlias)
-                return step
-            }
-        }
-        val referer = RefererImpl(builder, callTag, response.directMediaRequested, ::TestConference)
+        val referer = RefererImpl(step, callTag, response.directMediaRequested, ::TestConference)
         assertThat(referer.refer(event), "conference").isEqualTo(TestConference(step, response))
     }
 
