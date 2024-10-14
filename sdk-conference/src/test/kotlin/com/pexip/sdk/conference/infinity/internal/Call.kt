@@ -13,31 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.registration.infinity.internal
+package com.pexip.sdk.conference.infinity.internal
 
 import com.pexip.sdk.api.Call
 import com.pexip.sdk.api.Callback
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
-internal interface TestCall<T> : Call<T> {
+internal fun <T> call(block: suspend () -> T): Call<T> = object : Call<T> {
 
-    override suspend fun await(): T = suspendCancellableCoroutine {
-        it.invokeOnCancellation { cancel() }
-        val callback = object : Callback<T> {
-
-            override fun onSuccess(call: Call<T>, response: T) = it.resume(response)
-
-            override fun onFailure(call: Call<T>, t: Throwable) = it.resumeWithException(t)
-        }
-        enqueue(callback)
-    }
+    override suspend fun await(): T = block()
 
     @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
-    override fun execute(): T = TODO()
+    override fun execute(): T = throw NotImplementedError()
 
-    override fun enqueue(callback: Callback<T>): Unit = TODO()
+    @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
+    override fun enqueue(callback: Callback<T>) = throw NotImplementedError()
 
-    override fun cancel(): Unit = TODO()
+    @Deprecated("Use suspending await() instead.", level = DeprecationLevel.WARNING)
+    override fun cancel() = throw NotImplementedError()
 }

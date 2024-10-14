@@ -16,7 +16,6 @@
 package com.pexip.sdk.registration.infinity.internal
 
 import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.Callback
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RegistrationResponse
 import com.pexip.sdk.api.infinity.Token
@@ -48,13 +47,10 @@ internal class RegisteredDevicesFetcherTest {
             override fun registrations(
                 token: Token,
                 query: String,
-            ): Call<List<RegistrationResponse>> = object : TestCall<List<RegistrationResponse>> {
-
-                override fun enqueue(callback: Callback<List<RegistrationResponse>>) {
-                    assertEquals(store.token.value, token)
-                    assertEquals(q, query)
-                    callback.onFailure(this, throwable)
-                }
+            ): Call<List<RegistrationResponse>> = call {
+                assertEquals(store.token.value, token)
+                assertEquals(q, query)
+                throw throwable
             }
         }
         val fetcher = RegisteredDevicesFetcher(step, store)
@@ -77,13 +73,10 @@ internal class RegisteredDevicesFetcherTest {
             override fun registrations(
                 token: Token,
                 query: String,
-            ): Call<List<RegistrationResponse>> = object : TestCall<List<RegistrationResponse>> {
-
-                override fun enqueue(callback: Callback<List<RegistrationResponse>>) {
-                    assertEquals(store.token.value, token)
-                    assertEquals(q, query)
-                    callback.onSuccess(this, responses)
-                }
+            ): Call<List<RegistrationResponse>> = call {
+                assertEquals(store.token.value, token)
+                assertEquals(q, query)
+                responses
             }
         }
         val fetcher = RegisteredDevicesFetcher(step, store)
