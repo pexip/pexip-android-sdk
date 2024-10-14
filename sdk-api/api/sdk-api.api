@@ -578,7 +578,6 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService {
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$BreakoutStep {
 	public fun getBreakoutId-Yx3DcQY ()Ljava/lang/String;
-	public fun getConferenceStep ()Lcom/pexip/sdk/api/infinity/InfinityService$ConferenceStep;
 }
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$CallStep {

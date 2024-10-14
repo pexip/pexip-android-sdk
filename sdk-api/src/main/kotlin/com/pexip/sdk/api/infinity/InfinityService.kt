@@ -346,12 +346,6 @@ public interface InfinityService {
     public interface BreakoutStep {
 
         /**
-         * The conference step that produced this breakout step.
-         */
-        public val conferenceStep: ConferenceStep
-            get() = throw NotImplementedError()
-
-        /**
          * A breakout ID that this breakout step will use.
          */
         public val breakoutId: BreakoutId

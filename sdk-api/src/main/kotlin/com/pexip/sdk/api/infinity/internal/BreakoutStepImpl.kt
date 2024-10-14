@@ -19,8 +19,8 @@ import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.infinity.BreakoutId
 
 internal class BreakoutStepImpl(
-    override val conferenceStep: ConferenceStepImpl,
     override val breakoutId: BreakoutId,
+    private val conferenceStep: ConferenceStepImpl,
 ) : InfinityService.BreakoutStep,
     BreakoutStepImplScope,
     ConferenceStepImplScope by conferenceStep

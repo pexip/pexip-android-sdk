@@ -290,7 +290,7 @@ internal class ConferenceStepImpl(
     )
 
     override fun breakout(breakoutId: BreakoutId): InfinityService.BreakoutStep =
-        BreakoutStepImpl(this, breakoutId)
+        BreakoutStepImpl(breakoutId, this)
 
     override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
         ParticipantStepImpl(this, participantId)
