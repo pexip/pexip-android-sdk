@@ -25,7 +25,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import assertk.tableOf
-import com.pexip.sdk.api.coroutines.await
 import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
 import com.pexip.sdk.api.infinity.internal.RequiredSsoResponse
 import com.pexip.sdk.api.infinity.internal.SsoRedirectResponse
@@ -83,37 +82,37 @@ internal class ConferenceStepTest {
     }
 
     @Test
-    fun `requestToken throws IllegalStateException`() {
+    fun `requestToken throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         val request = RequestTokenRequest()
-        assertFailure { step.requestToken(request).execute() }.isInstanceOf<IllegalStateException>()
+        assertFailure { step.requestToken(request).await() }.isInstanceOf<IllegalStateException>()
         server.verifyRequestToken(request)
     }
 
     @Test
-    fun `requestToken throws NoSuchNodeException`() {
+    fun `requestToken throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
         val request = RequestTokenRequest()
-        assertFailure { step.requestToken(request).execute() }.isInstanceOf<NoSuchNodeException>()
+        assertFailure { step.requestToken(request).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyRequestToken(request)
     }
 
     @Test
-    fun `requestToken throws NoSuchConferenceException`() {
+    fun `requestToken throws NoSuchConferenceException`() = runTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
         val request = RequestTokenRequest(displayName = Random.nextString(16))
-        assertFailure { step.requestToken(request).execute() }
+        assertFailure { step.requestToken(request).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
         server.verifyRequestToken(request)
     }
 
     @Test
-    fun `requestToken throws RequiredPinException`() {
+    fun `requestToken throws RequiredPinException`() = runTest {
         val responses = listOf(
             RequiredPinResponse("required"),
             RequiredPinResponse("none"),
@@ -124,7 +123,7 @@ internal class ConferenceStepTest {
                 setBody(json.encodeToString(Box(response)))
             }
             val request = RequestTokenRequest()
-            assertFailure { step.requestToken(request).execute() }
+            assertFailure { step.requestToken(request).await() }
                 .isInstanceOf<RequiredPinException>()
                 .prop(RequiredPinException::guestPin)
                 .isEqualTo(response.guest_pin == "required")
@@ -133,7 +132,7 @@ internal class ConferenceStepTest {
     }
 
     @Test
-    fun `requestToken throws InvalidPinException`() {
+    fun `requestToken throws InvalidPinException`() = runTest {
         val message = "Invalid PIN"
         server.enqueue {
             setResponseCode(403)
@@ -141,14 +140,14 @@ internal class ConferenceStepTest {
         }
         val request = RequestTokenRequest()
         val pin = Random.nextPin()
-        assertFailure { step.requestToken(request, pin).execute() }
+        assertFailure { step.requestToken(request, pin).await() }
             .isInstanceOf<InvalidPinException>()
             .hasMessage(message)
         server.verifyRequestToken(request, pin)
     }
 
     @Test
-    fun `requestToken throws RequiredSsoException`() {
+    fun `requestToken throws RequiredSsoException`() = runTest {
         val idps = List(10) {
             IdentityProvider(
                 name = "IdP #$it",
@@ -161,7 +160,7 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(response)))
         }
         val request = RequestTokenRequest()
-        assertFailure { step.requestToken(request).execute() }
+        assertFailure { step.requestToken(request).await() }
             .isInstanceOf<RequiredSsoException>()
             .prop(RequiredSsoException::idps)
             .isEqualTo(idps)
@@ -169,7 +168,7 @@ internal class ConferenceStepTest {
     }
 
     @Test
-    fun `requestToken throws SsoRedirectException`() {
+    fun `requestToken throws SsoRedirectException`() = runTest {
         val idp = IdentityProvider(
             name = "IdP #0",
             id = Random.nextIdentityProviderId(),
@@ -183,7 +182,7 @@ internal class ConferenceStepTest {
             setBody(json.encodeToString(Box(response)))
         }
         val request = RequestTokenRequest(chosenIdp = idp.id)
-        assertFailure { step.requestToken(request).execute() }
+        assertFailure { step.requestToken(request).await() }
             .isInstanceOf<SsoRedirectException>()
             .all {
                 prop(SsoRedirectException::url).isEqualTo(response.redirect_url)
@@ -282,160 +281,160 @@ internal class ConferenceStepTest {
                     null -> step.requestToken(request)
                     else -> step.requestToken(request, pin)
                 }
-                assertThat(call.execute(), "response").isEqualTo(response)
+                runTest { assertThat(call.await(), "response").isEqualTo(response) }
                 server.verifyRequestToken(request, pin)
             }
     }
 
     @Test
-    fun `refreshToken throws IllegalStateException`() {
+    fun `refreshToken throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        assertFailure { step.refreshToken(token).execute() }.isInstanceOf<IllegalStateException>()
+        assertFailure { step.refreshToken(token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken throws NoSuchNodeException`() {
+    fun `refreshToken throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        assertFailure { step.refreshToken(token).execute() }.isInstanceOf<NoSuchNodeException>()
+        assertFailure { step.refreshToken(token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken throws NoSuchConferenceException`() {
+    fun `refreshToken throws NoSuchConferenceException`() = runTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.refreshToken(token).execute() }
+        assertFailure { step.refreshToken(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken throws InvalidTokenException`() {
+    fun `refreshToken throws InvalidTokenException`() = runTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.refreshToken(token).execute() }
+        assertFailure { step.refreshToken(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `refreshToken returns`() {
+    fun `refreshToken returns`() = runTest {
         val response = RefreshTokenResponse(
             token = Random.nextString(),
             expires = Random.nextInt(10..120).seconds,
         )
         server.enqueue { setBody(json.encodeToString(Box(response))) }
-        assertThat(step.refreshToken(token).execute(), "response").isEqualTo(response)
+        assertThat(step.refreshToken(token).await(), "response").isEqualTo(response)
         server.verifyRefreshToken(token)
     }
 
     @Test
-    fun `releaseToken throws IllegalStateException`() {
+    fun `releaseToken throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        assertFailure { step.releaseToken(token).execute() }.isInstanceOf<IllegalStateException>()
+        assertFailure { step.releaseToken(token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `releaseToken throws NoSuchNodeException`() {
+    fun `releaseToken throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        assertFailure { step.releaseToken(token).execute() }.isInstanceOf<NoSuchNodeException>()
+        assertFailure { step.releaseToken(token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `releaseToken throws NoSuchConferenceException`() {
+    fun `releaseToken throws NoSuchConferenceException`() = runTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.releaseToken(token).execute() }
+        assertFailure { step.releaseToken(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `releaseToken throws InvalidTokenException`() {
+    fun `releaseToken throws InvalidTokenException`() = runTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.releaseToken(token).execute() }
+        assertFailure { step.releaseToken(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `releaseToken returns on 200`() {
+    fun `releaseToken returns on 200`() = runTest {
         val result = Random.nextBoolean()
         server.enqueue {
             setResponseCode(200)
             setBody(json.encodeToString(Box(result)))
         }
-        assertThat(step.releaseToken(token).execute(), "response").isEqualTo(result)
+        assertThat(step.releaseToken(token).await(), "response").isEqualTo(result)
         server.verifyReleaseToken(token)
     }
 
     @Test
-    fun `message throws IllegalStateException`() {
+    fun `message throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         val request = Random.nextMessageRequest()
-        assertFailure { step.message(request, token).execute() }
+        assertFailure { step.message(request, token).await() }
             .isInstanceOf<IllegalStateException>()
         server.verifyMessage(request, token)
     }
 
     @Test
-    fun `message throws NoSuchNodeException`() {
+    fun `message throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
         val request = Random.nextMessageRequest()
-        assertFailure { step.message(request, token).execute() }.isInstanceOf<NoSuchNodeException>()
+        assertFailure { step.message(request, token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyMessage(request, token)
     }
 
     @Test
-    fun `message throws NoSuchConferenceException`() {
+    fun `message throws NoSuchConferenceException`() = runTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
         val request = Random.nextMessageRequest()
-        assertFailure { step.message(request, token).execute() }
+        assertFailure { step.message(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
         server.verifyMessage(request, token)
     }
 
     @Test
-    fun `message throws InvalidTokenException`() {
+    fun `message throws InvalidTokenException`() = runTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
         val request = Random.nextMessageRequest()
-        assertFailure { step.message(request, token).execute() }
+        assertFailure { step.message(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
         server.verifyMessage(request, token)
     }
 
     @Test
-    fun `message returns result on 200`() {
+    fun `message returns result on 200`() = runTest {
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -443,7 +442,7 @@ internal class ConferenceStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             val request = Random.nextMessageRequest()
-            assertThat(step.message(request, token).execute(), "response").isEqualTo(result)
+            assertThat(step.message(request, token).await(), "response").isEqualTo(result)
             server.verifyMessage(request, token)
         }
     }
@@ -664,54 +663,54 @@ internal class ConferenceStepTest {
     }
 
     @Test
-    fun `theme throws IllegalStateException`() {
+    fun `theme throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
-        assertFailure { step.theme(token).execute() }.isInstanceOf<IllegalStateException>()
+        assertFailure { step.theme(token).await() }.isInstanceOf<IllegalStateException>()
         server.verifyTheme(token)
     }
 
     @Test
-    fun `theme throws NoSuchNodeException`() {
+    fun `theme throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
-        assertFailure { step.theme(token).execute() }.isInstanceOf<NoSuchNodeException>()
+        assertFailure { step.theme(token).await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyTheme(token)
     }
 
     @Test
-    fun `theme throws NoSuchConferenceException`() {
+    fun `theme throws NoSuchConferenceException`() = runTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.theme(token).execute() }
+        assertFailure { step.theme(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
         server.verifyTheme(token)
     }
 
     @Test
-    fun `theme throws InvalidTokenException`() {
+    fun `theme throws InvalidTokenException`() = runTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
-        assertFailure { step.theme(token).execute() }
+        assertFailure { step.theme(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
         server.verifyTheme(token)
     }
 
     @Test
-    fun `theme returns empty map on 204`() {
+    fun `theme returns empty map on 204`() = runTest {
         server.enqueue { setResponseCode(204) }
-        assertThat(step.theme(token).execute(), "response").isEmpty()
+        assertThat(step.theme(token).await(), "response").isEmpty()
         server.verifyTheme(token)
     }
 
     @Test
-    fun `theme returns a map on 200`() {
+    fun `theme returns a map on 200`() = runTest {
         val map = mapOf(
             Random.nextString() to SplashScreenResponse(
                 background = BackgroundResponse("background.jpg"),
@@ -727,7 +726,7 @@ internal class ConferenceStepTest {
             setResponseCode(200)
             setBody(json.encodeToString(Box(map)))
         }
-        assertThat(step.theme(token).execute(), "response").isEqualTo(map)
+        assertThat(step.theme(token).await(), "response").isEqualTo(map)
         server.verifyTheme(token)
     }
 
@@ -1011,53 +1010,53 @@ internal class ConferenceStepTest {
     }
 
     @Test
-    fun `setGuestsCanUnmute throws IllegalStateException`() {
+    fun `setGuestsCanUnmute throws IllegalStateException`() = runTest {
         server.enqueue { setResponseCode(500) }
         val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
-        assertFailure { step.setGuestsCanUnmute(request, token).execute() }
+        assertFailure { step.setGuestsCanUnmute(request, token).await() }
             .isInstanceOf<IllegalStateException>()
         server.verifySetGuestsCanUnmute(request, token)
     }
 
     @Test
-    fun `setGuestsCanUnmute throws NoSuchNodeException`() {
+    fun `setGuestsCanUnmute throws NoSuchNodeException`() = runTest {
         server.enqueue { setResponseCode(404) }
         val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
-        assertFailure { step.setGuestsCanUnmute(request, token).execute() }
+        assertFailure { step.setGuestsCanUnmute(request, token).await() }
             .isInstanceOf<NoSuchNodeException>()
         server.verifySetGuestsCanUnmute(request, token)
     }
 
     @Test
-    fun `setGuestsCanUnmute throws NoSuchConferenceException`() {
+    fun `setGuestsCanUnmute throws NoSuchConferenceException`() = runTest {
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
             setBody(json.encodeToString(Box(message)))
         }
         val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
-        assertFailure { step.setGuestsCanUnmute(request, token).execute() }
+        assertFailure { step.setGuestsCanUnmute(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
         server.verifySetGuestsCanUnmute(request, token)
     }
 
     @Test
-    fun `setGuestsCanUnmute throws InvalidTokenException`() {
+    fun `setGuestsCanUnmute throws InvalidTokenException`() = runTest {
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
             setBody(json.encodeToString(Box(message)))
         }
         val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
-        assertFailure { step.setGuestsCanUnmute(request, token).execute() }
+        assertFailure { step.setGuestsCanUnmute(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
         server.verifySetGuestsCanUnmute(request, token)
     }
 
     @Test
-    fun `setGuestsCanUnmute returns result on 200`() {
+    fun `setGuestsCanUnmute returns result on 200`() = runTest {
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -1065,7 +1064,7 @@ internal class ConferenceStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             val request = SetGuestCanUnmuteRequest(Random.nextBoolean())
-            assertThat(step.setGuestsCanUnmute(request, token).execute(), "response")
+            assertThat(step.setGuestsCanUnmute(request, token).await(), "response")
                 .isEqualTo(result)
             server.verifySetGuestsCanUnmute(request, token)
         }
