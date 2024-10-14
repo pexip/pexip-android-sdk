@@ -543,6 +543,31 @@ internal class MediaConnectionSignalingImplTest {
     }
 
     @Test
+    fun `onDisconnect() returns`() = runTest {
+        val called = Job()
+        val result = Random.nextBoolean()
+        val signaling = MediaConnectionSignalingImpl(
+            scope = backgroundScope,
+            event = event,
+            store = store,
+            participantStep = object : InfinityService.ParticipantStep {},
+            versionId = versionId,
+            directMedia = Random.nextBoolean(),
+            iceServers = iceServers,
+            callStep = object : InfinityService.CallStep {
+                override fun disconnect(token: Token): Call<Boolean> = call {
+                    called.complete()
+                    result
+                }
+            },
+            iceTransportsRelayOnly = Random.nextBoolean(),
+            dataChannel = null,
+        )
+        signaling.onDisconnect()
+        called.join()
+    }
+
+    @Test
     fun `onAudioMuted() returns`() = runTest {
         val called = Job()
         val signaling = MediaConnectionSignalingImpl(
