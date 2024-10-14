@@ -328,6 +328,13 @@ public interface InfinityService {
         public fun events(token: Token): EventSourceFactory = throw NotImplementedError()
 
         /**
+         * Sets the conference alias.
+         *
+         * @param conferenceAlias a conference alias
+         */
+        public fun conference(conferenceAlias: String): ConferenceStep = throw NotImplementedError()
+
+        /**
          * Sets the breakout ID.
          *
          * @param breakoutId an ID of the breakout

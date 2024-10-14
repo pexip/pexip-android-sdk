@@ -27,25 +27,25 @@ import com.pexip.sdk.core.retry
 import kotlinx.coroutines.CancellationException
 
 internal class RefererImpl(
-    private val builder: InfinityService.RequestBuilder,
+    private val step: InfinityService.ConferenceStep,
     private val callTag: String,
     private val directMedia: Boolean,
     private val createConference: (InfinityService.ConferenceStep, RequestTokenResponse) -> Conference,
 ) : Referer {
 
     constructor(
-        builder: InfinityService.RequestBuilder,
+        step: InfinityService.ConferenceStep,
         callTag: String,
         directMedia: Boolean,
     ) : this(
-        builder = builder,
+        step = step,
         callTag = callTag,
         directMedia = directMedia,
         createConference = InfinityConference::create,
     )
 
     override suspend fun refer(event: ReferConferenceEvent): Conference = try {
-        val step = builder.conference(event.conferenceAlias)
+        val step = step.conference(event.conferenceAlias)
         val request = RequestTokenRequest(
             incomingToken = event.token,
             directMedia = directMedia,

@@ -23,6 +23,7 @@ import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEqualTo
 import assertk.assertions.prop
 import assertk.tableOf
 import com.pexip.sdk.api.infinity.internal.RequiredPinResponse
@@ -79,6 +80,15 @@ internal class ConferenceStepTest {
     @Test
     fun `conferenceAlias returns the correct value`() {
         assertThat(step::conferenceAlias).isEqualTo(conferenceAlias)
+    }
+
+    @Test
+    fun `conference returns a new ConferenceStep`() {
+        val conferenceAlias = Random.nextString()
+        assertThat(step.conference(conferenceAlias)).all {
+            isNotEqualTo(step)
+            prop(InfinityService.ConferenceStep::conferenceAlias).isEqualTo(conferenceAlias)
+        }
     }
 
     @Test
