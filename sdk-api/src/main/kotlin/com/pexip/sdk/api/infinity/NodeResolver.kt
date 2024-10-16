@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("DEPRECATION")
-
 package com.pexip.sdk.api.infinity
 
 import com.pexip.sdk.api.Call
-import com.pexip.sdk.api.infinity.internal.RealNodeResolver
-import org.minidns.hla.DnssecResolverApi
 import org.minidns.hla.ResolverApi
 import java.net.URL
 
@@ -44,6 +40,7 @@ public fun interface NodeResolver {
 
     public companion object {
 
+        @Suppress("UNUSED_PARAMETER")
         @JvmStatic
         @JvmOverloads
         @Deprecated(
@@ -52,10 +49,11 @@ public fun interface NodeResolver {
                 expression = "NodeResolver.Companion.create(dnssec)",
                 imports = ["com.pexip.sdk.infinity.NodeResolver", "com.pexip.sdk.infinity.create"],
             ),
+            level = DeprecationLevel.ERROR,
         )
-        public fun create(dnssec: Boolean = false): NodeResolver =
-            create(if (dnssec) DnssecResolverApi.INSTANCE else ResolverApi.INSTANCE)
+        public fun create(dnssec: Boolean = false): NodeResolver = throw NotImplementedError()
 
+        @Suppress("UNUSED_PARAMETER")
         @JvmStatic
         @Deprecated(
             message = "Superseded by a suspending variant.",
@@ -63,7 +61,8 @@ public fun interface NodeResolver {
                 expression = "NodeResolver.Companion.create(api)",
                 imports = ["com.pexip.sdk.infinity.NodeResolver", "com.pexip.sdk.infinity.create"],
             ),
+            level = DeprecationLevel.ERROR,
         )
-        public fun create(api: ResolverApi): NodeResolver = RealNodeResolver(api)
+        public fun create(api: ResolverApi): NodeResolver = throw NotImplementedError()
     }
 }

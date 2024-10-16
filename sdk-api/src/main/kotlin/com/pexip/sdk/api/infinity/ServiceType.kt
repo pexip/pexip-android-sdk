@@ -21,5 +21,6 @@ package com.pexip.sdk.api.infinity
         expression = "ServiceType",
         imports = ["com.pexip.sdk.infinity.ServiceType"],
     ),
+    level = DeprecationLevel.ERROR,
 )
 public typealias ServiceType = com.pexip.sdk.infinity.ServiceType

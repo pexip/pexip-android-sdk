@@ -50,7 +50,10 @@ public interface InfinityService {
      * @param node a conferencing node against which to perform requests
      * @throws IllegalArgumentException if the [node] is invalid
      */
-    @Deprecated("Superseded by a variant that accepts an instance of Node.")
+    @Deprecated(
+        message = "Superseded by a variant that accepts an instance of Node.",
+        level = DeprecationLevel.ERROR,
+    )
     public fun newRequest(node: URL): RequestBuilder = throw NotImplementedError()
 
     /**
