@@ -100,7 +100,7 @@ public class InfinityConference private constructor(
     )
 
     override val referer: Referer = RefererImpl(
-        builder = step.requestBuilder,
+        step = step,
         callTag = response.callTag,
         directMedia = response.directMediaRequested,
     )

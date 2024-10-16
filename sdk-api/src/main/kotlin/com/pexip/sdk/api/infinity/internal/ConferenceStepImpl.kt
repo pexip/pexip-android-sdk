@@ -289,6 +289,11 @@ internal class ConferenceStepImpl(
         json = json,
     )
 
+    override fun conference(conferenceAlias: String): InfinityService.ConferenceStep {
+        require(conferenceAlias.isNotBlank()) { "conferenceAlias is blank." }
+        return ConferenceStepImpl(requestBuilder, conferenceAlias)
+    }
+
     override fun breakout(breakoutId: BreakoutId): InfinityService.BreakoutStep =
         BreakoutStepImpl(breakoutId, this)
 
