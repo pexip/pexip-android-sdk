@@ -64,6 +64,7 @@ public interface InfinityService {
         /**
          * The Infinity service that produced this request builder.
          */
+        @Deprecated("Deprecated without a replacement.")
         public val infinityService: InfinityService
             get() = throw NotImplementedError()
 
@@ -106,6 +107,7 @@ public interface InfinityService {
         /**
          * The request builder that produced this conference step.
          */
+        @Deprecated("Deprecated without a replacement.")
         public val requestBuilder: RequestBuilder
             get() = throw NotImplementedError()
 
@@ -370,6 +372,7 @@ public interface InfinityService {
         /**
          * The request builder that produced this registration step.
          */
+        @Deprecated("Deprecated without a replacement.")
         public val requestBuilder: RequestBuilder
             get() = throw NotImplementedError()
 
@@ -455,6 +458,7 @@ public interface InfinityService {
         /**
          * The conference step that produced this participant step.
          */
+        @Deprecated("Deprecated without a replacement.")
         public val conferenceStep: ConferenceStep
             get() = throw NotImplementedError()
 
@@ -674,6 +678,7 @@ public interface InfinityService {
         /**
          * The participant step that produced this call step.
          */
+        @Deprecated("Deprecated without a replacement.")
         public val participantStep: ParticipantStep
             get() = throw NotImplementedError()
 
