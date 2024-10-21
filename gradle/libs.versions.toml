@@ -1,8 +1,8 @@
 [versions]
 android = "8.7.0"
-androidx-activity = "1.9.2"
+androidx-activity = "1.9.3"
 androidx-appcompat = "1.7.0"
-androidx-compose-bom = "2024.09.03"
+androidx-compose-bom = "2024.10.00"
 androidx-core = "1.13.1"
 androidx-datastore = "1.1.1"
 androidx-media = "1.7.0"
