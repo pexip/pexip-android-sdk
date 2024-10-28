@@ -34,6 +34,7 @@ import com.pexip.sdk.media.MediaConnectionConfig
 import com.pexip.sdk.media.MediaConnectionFactory
 import com.pexip.sdk.media.QualityProfile
 import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
+import com.pexip.sdk.media.webrtc.internal.AudioDeviceModuleWrapper
 import com.pexip.sdk.media.webrtc.internal.DataChannelInit
 import com.pexip.sdk.media.webrtc.internal.PeerConnectionWrapper
 import com.pexip.sdk.media.webrtc.internal.SimpleCameraEventsHandler
@@ -78,7 +79,7 @@ public class WebRtcMediaConnectionFactory private constructor(
     private val applicationContext: Context,
     private val eglBase: EglBase?,
     private val cameraEnumerator: CameraEnumerator,
-    private val audioDeviceModule: AudioDeviceModule,
+    audioDeviceModule: AudioDeviceModule,
     videoDecoderFactory: VideoDecoderFactory,
     videoEncoderFactory: VideoEncoderFactory,
 ) : MediaConnectionFactory,
@@ -86,6 +87,7 @@ public class WebRtcMediaConnectionFactory private constructor(
     CameraVideoTrackFactory,
     MediaProjectionVideoTrackFactory {
 
+    private val audioDeviceModule = AudioDeviceModuleWrapper(audioDeviceModule)
     private val factory = PeerConnectionFactory.builder()
         .setAudioDeviceModule(audioDeviceModule)
         .setVideoDecoderFactory(videoDecoderFactory)
@@ -119,7 +121,7 @@ public class WebRtcMediaConnectionFactory private constructor(
         val audioSource = factory.createAudioSource(MediaConstraints())
         val audioTrack = factory.createAudioTrack(createMediaTrackId(), audioSource)
         return WebRtcLocalAudioTrack(
-            context = applicationContext,
+            audioDeviceModule = audioDeviceModule,
             audioSource = audioSource,
             audioTrack = audioTrack,
             coroutineContext = CoroutineContext(),

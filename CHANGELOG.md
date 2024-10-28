@@ -15,6 +15,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Required JDK to 17
+- Microphone mute to rely on `AudioDeviceModule.setMicrophoneMute(Boolean)` instead of
+  `AudioManager.setMicrophoneMute(Boolean)`
 
 ## [0.16.0] - 2024-10-02
 

@@ -15,20 +15,17 @@
  */
 package com.pexip.sdk.media.webrtc.internal
 
-import android.content.Context
 import com.pexip.sdk.media.LocalAudioTrack
 import com.pexip.sdk.media.LocalMediaTrack
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import org.webrtc.AudioSource
 import org.webrtc.AudioTrack
@@ -36,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.coroutines.CoroutineContext
 
 internal class WebRtcLocalAudioTrack(
-    context: Context,
+    private val audioDeviceModule: AudioDeviceModuleWrapper,
     private val audioSource: AudioSource,
     internal val audioTrack: AudioTrack,
     private val scope: CoroutineScope,
@@ -44,13 +41,13 @@ internal class WebRtcLocalAudioTrack(
 ) : LocalAudioTrack {
 
     internal constructor(
-        context: Context,
+        audioDeviceModule: AudioDeviceModuleWrapper,
         audioSource: AudioSource,
         audioTrack: AudioTrack,
         coroutineContext: CoroutineContext,
         signalingDispatcher: CoroutineDispatcher,
     ) : this(
-        context = context,
+        audioDeviceModule = audioDeviceModule,
         audioSource = audioSource,
         audioTrack = audioTrack,
         scope = CoroutineScope(coroutineContext),
@@ -58,23 +55,20 @@ internal class WebRtcLocalAudioTrack(
     )
 
     private val listeners = CopyOnWriteArraySet<LocalMediaTrack.CapturingListener>()
-    private val microphoneMuteObserver =
-        context.microphoneMuteObserverIn(scope + signalingDispatcher)
 
     override val capturing: Boolean
-        get() = !microphoneMuteObserver.microphoneMute.value
+        get() = !audioDeviceModule.microphoneMute.value
 
     init {
         scope.launch {
             try {
-                microphoneMuteObserver.microphoneMute
+                audioDeviceModule.microphoneMute
                     .drop(1)
                     .onEach { microphoneMute ->
                         listeners.forEach { it.safeOnCapturing(!microphoneMute) }
                     }
                     .flowOn(signalingDispatcher)
-                    .launchIn(this)
-                awaitCancellation()
+                    .collect()
             } finally {
                 withContext(NonCancellable) {
                     listeners.clear()
@@ -86,11 +80,11 @@ internal class WebRtcLocalAudioTrack(
     }
 
     override fun startCapture() {
-        microphoneMuteObserver.setMicrophoneMute(false)
+        audioDeviceModule.setMicrophoneMute(false)
     }
 
     override fun stopCapture() {
-        microphoneMuteObserver.setMicrophoneMute(true)
+        audioDeviceModule.setMicrophoneMute(true)
     }
 
     override fun registerCapturingListener(listener: LocalMediaTrack.CapturingListener) {
