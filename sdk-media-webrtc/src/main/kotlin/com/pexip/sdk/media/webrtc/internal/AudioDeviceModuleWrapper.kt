@@ -21,9 +21,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.webrtc.audio.AudioDeviceModule
 
-internal class AudioDeviceModuleWrapper(
-    private val module: AudioDeviceModule,
-) : AudioDeviceModule by module {
+internal class AudioDeviceModuleWrapper(private val module: AudioDeviceModule) :
+    AudioDeviceModule by module {
 
     private val _microphoneMute = MutableStateFlow(false)
 
