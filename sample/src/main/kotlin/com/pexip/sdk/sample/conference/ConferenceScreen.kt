@@ -51,7 +51,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,9 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
-import androidx.core.view.WindowInsetsControllerCompat
 import coil.compose.AsyncImage
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.pexip.sdk.conference.Element
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.AudioDevice
@@ -77,6 +74,7 @@ import com.pexip.sdk.sample.IconButton
 import com.pexip.sdk.sample.IconButtonDefaults
 import com.pexip.sdk.sample.IconToggleButton
 import com.pexip.sdk.sample.MicrophoneIconButton
+import com.pexip.sdk.sample.SampleTheme
 import com.pexip.sdk.sample.audio.AudioDeviceIcon
 import com.squareup.workflow1.ui.ViewEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
@@ -89,126 +87,118 @@ fun ConferenceScreen(
     modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = rendering.onBackClick)
-    val systemUiController = rememberSystemUiController()
-    DisposableEffect(systemUiController) {
-        val systemBarsBehavior = systemUiController.systemBarsBehavior
-        systemUiController.systemBarsBehavior =
-            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        systemUiController.isSystemBarsVisible = false
-        onDispose {
-            systemUiController.systemBarsBehavior = systemBarsBehavior
-            systemUiController.isSystemBarsVisible = true
-        }
-    }
-    Surface(color = Color.Black, modifier = modifier) {
-        BoxWithConstraints {
-            if (rendering.splashScreen != null) {
-                SplashScreen(
-                    splashScreen = rendering.splashScreen,
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
-            val landscape = remember(maxWidth, maxHeight) { maxWidth > maxHeight }
-            if (landscape) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.align(Alignment.Center),
-                ) {
-                    MainVideoTrackRenderer(
-                        rendering = rendering,
-                        modifier = Modifier.weight(1f, false),
-                    )
-                    PresentationVideoTrackRenderer(
-                        rendering = rendering,
-                        modifier = Modifier.weight(1f, false),
+    SampleTheme(darkTheme = true, systemBars = true) {
+        Surface(modifier = modifier) {
+            BoxWithConstraints {
+                if (rendering.splashScreen != null) {
+                    SplashScreen(
+                        splashScreen = rendering.splashScreen,
+                        modifier = Modifier.align(Alignment.Center),
                     )
                 }
-            } else {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.align(Alignment.Center),
-                ) {
-                    MainVideoTrackRenderer(
-                        rendering = rendering,
-                        modifier = Modifier.weight(1f, false),
-                    )
-                    PresentationVideoTrackRenderer(
-                        rendering = rendering,
-                        modifier = Modifier.weight(1f, false),
-                    )
+                val landscape = remember(maxWidth, maxHeight) { maxWidth > maxHeight }
+                if (landscape) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.align(Alignment.Center),
+                    ) {
+                        MainVideoTrackRenderer(
+                            rendering = rendering,
+                            modifier = Modifier.weight(1f, false),
+                        )
+                        PresentationVideoTrackRenderer(
+                            rendering = rendering,
+                            modifier = Modifier.weight(1f, false),
+                        )
+                    }
+                } else {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.align(Alignment.Center),
+                    ) {
+                        MainVideoTrackRenderer(
+                            rendering = rendering,
+                            modifier = Modifier.weight(1f, false),
+                        )
+                        PresentationVideoTrackRenderer(
+                            rendering = rendering,
+                            modifier = Modifier.weight(1f, false),
+                        )
+                    }
                 }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .safeContentPadding(),
-            ) {
-                val (frameResolution, onFrameResolutionChange) = remember {
-                    mutableStateOf<FrameResolution?>(null)
-                }
-                val aspectRatioModifier = when (frameResolution) {
-                    null -> Modifier
-                    else -> Modifier.aspectRatio(frameResolution.rotatedAspectRatio)
-                }
-                AnimatedVisibility(
-                    visible = rendering.cameraVideoTrackRendering?.capturing == true,
-                    enter = slideInHorizontally { it * 2 },
-                    exit = slideOutHorizontally { it * 2 },
+                Box(
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxWidth(0.25f)
-                        .then(aspectRatioModifier),
+                        .fillMaxSize()
+                        .safeContentPadding(),
                 ) {
-                    VideoTrackRenderer(
-                        videoTrack = rendering.cameraVideoTrack,
-                        mirror = true,
-                        zOrderMediaOverlay = true,
-                        onFrameResolutionChange = onFrameResolutionChange,
-                        scalingTypeMatchOrientation = RendererCommon.ScalingType.SCALE_ASPECT_FIT,
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(
-                        space = 8.dp,
-                        alignment = Alignment.CenterHorizontally,
-                    ),
-                    modifier = Modifier.align(Alignment.TopStart),
-                ) {
-                    MoreIconButton(rendering = rendering)
-                    ScreenShareIconButton(rendering = rendering)
-                    BandwidthIconButton(rendering = rendering)
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(
-                        space = 8.dp,
-                        alignment = Alignment.CenterHorizontally,
-                    ),
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                ) {
-                    CameraIconButton(rendering = rendering.cameraVideoTrackRendering)
-                    MicrophoneIconButton(rendering = rendering.microphoneAudioTrackRendering)
-                    AudioDevicesIconButton(rendering)
-                    Spacer(Modifier.weight(1f))
-                    EndCallIconButton(rendering)
+                    val (frameResolution, onFrameResolutionChange) = remember {
+                        mutableStateOf<FrameResolution?>(null)
+                    }
+                    val aspectRatioModifier = when (frameResolution) {
+                        null -> Modifier
+                        else -> Modifier.aspectRatio(frameResolution.rotatedAspectRatio)
+                    }
+                    AnimatedVisibility(
+                        visible = rendering.cameraVideoTrackRendering?.capturing == true,
+                        enter = slideInHorizontally { it * 2 },
+                        exit = slideOutHorizontally { it * 2 },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .fillMaxWidth(0.25f)
+                            .then(aspectRatioModifier),
+                    ) {
+                        val scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT
+                        VideoTrackRenderer(
+                            videoTrack = rendering.cameraVideoTrack,
+                            mirror = true,
+                            zOrderMediaOverlay = true,
+                            onFrameResolutionChange = onFrameResolutionChange,
+                            scalingTypeMatchOrientation = scalingType,
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            space = 8.dp,
+                            alignment = Alignment.CenterHorizontally,
+                        ),
+                        modifier = Modifier.align(Alignment.TopStart),
+                    ) {
+                        MoreIconButton(rendering = rendering)
+                        ScreenShareIconButton(rendering = rendering)
+                        BandwidthIconButton(rendering = rendering)
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            space = 8.dp,
+                            alignment = Alignment.CenterHorizontally,
+                        ),
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                    ) {
+                        CameraIconButton(rendering = rendering.cameraVideoTrackRendering)
+                        MicrophoneIconButton(rendering = rendering.microphoneAudioTrackRendering)
+                        AudioDevicesIconButton(rendering)
+                        Spacer(Modifier.weight(1f))
+                        EndCallIconButton(rendering)
+                    }
                 }
             }
+            WorkflowRendering(
+                rendering = rendering.dtmfRendering,
+                viewEnvironment = environment,
+            )
+            WorkflowRendering(
+                rendering = rendering.audioDeviceRendering,
+                viewEnvironment = environment,
+            )
+            WorkflowRendering(
+                rendering = rendering.bandwidthRendering,
+                viewEnvironment = environment,
+            )
         }
-        WorkflowRendering(
-            rendering = rendering.dtmfRendering,
-            viewEnvironment = environment,
-        )
-        WorkflowRendering(
-            rendering = rendering.audioDeviceRendering,
-            viewEnvironment = environment,
-        )
-        WorkflowRendering(
-            rendering = rendering.bandwidthRendering,
-            viewEnvironment = environment,
-        )
     }
 }
 

@@ -49,7 +49,6 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.startup.runtime)
-    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.coil.compose)
     implementation(libs.dagger.hilt.android.runtime)
     ksp(libs.dagger.hilt.compiler)
