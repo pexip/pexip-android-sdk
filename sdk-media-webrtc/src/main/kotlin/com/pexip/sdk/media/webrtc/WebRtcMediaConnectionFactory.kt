@@ -388,6 +388,8 @@ public class WebRtcMediaConnectionFactory private constructor(
                 .setAudioAttributes(audioAttributes)
                 .setAudioTrackStateCallback(audioTrackStateCallback)
                 .setAudioRecordStateCallback(audioRecordStateCallback)
+                .setUseHardwareNoiseSuppressor(false)
+                .setUseHardwareAcousticEchoCanceler(false)
                 .createAudioDeviceModule()
         }
 
