@@ -23,7 +23,15 @@ spotless {
         target("**/*.kt")
         targetExclude("**/build/**")
         val customRuleSets = listOf(libs.ktlint.compose.map { "${it.module}:${it.version}" }.get())
-        ktlint(ktlintVersion).customRuleSets(customRuleSets)
+        // Spotless doesn't always seem to pick up changes in .editorconfig, so mirror them here
+        val override = buildMap {
+            this["max_line_length"] = 100
+            this["ktlint_code_style"] = "intellij_idea"
+            this["ktlint_function_naming_ignore_when_annotated_with"] = "Composable"
+        }
+        ktlint(ktlintVersion)
+            .customRuleSets(customRuleSets)
+            .editorConfigOverride(override)
         licenseHeaderFile("LICENSE_HEADER")
     }
     kotlinGradle {
