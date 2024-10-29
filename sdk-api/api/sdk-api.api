@@ -636,6 +636,7 @@ public abstract interface class com/pexip/sdk/api/infinity/InfinityService {
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$BreakoutStep {
 	public fun getBreakoutId-Yx3DcQY ()Ljava/lang/String;
+	public fun participant-hvPPU4g (Ljava/lang/String;)Lcom/pexip/sdk/api/infinity/InfinityService$ParticipantStep;
 }
 
 public abstract interface class com/pexip/sdk/api/infinity/InfinityService$CallStep {

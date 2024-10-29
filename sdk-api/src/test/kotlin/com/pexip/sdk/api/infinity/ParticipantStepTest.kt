@@ -15,16 +15,21 @@
  */
 package com.pexip.sdk.api.infinity
 
+import assertk.Table2
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.tableOf
 import com.pexip.sdk.api.infinity.internal.addPathSegment
+import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextBreakoutId
 import com.pexip.sdk.infinity.test.nextCallId
 import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -48,46 +53,58 @@ internal class ParticipantStepTest {
     private lateinit var conferenceAlias: String
     private lateinit var json: Json
     private lateinit var token: Token
-    private lateinit var step: InfinityService.ParticipantStep
+    private lateinit var steps: Table2<BreakoutId?, InfinityService.ParticipantStep>
 
+    private var breakoutId: BreakoutId by Delegates.notNull()
     private var participantId: ParticipantId by Delegates.notNull()
 
     @BeforeTest
     fun setUp() {
         node = server.url("/")
         conferenceAlias = Random.nextString()
+        breakoutId = Random.nextBreakoutId()
         participantId = Random.nextParticipantId()
         json = InfinityService.Json
         token = Random.nextFakeToken()
-        step = InfinityService.create(client, json)
+        val step = InfinityService.create(client, json)
             .newRequest(node)
             .conference(conferenceAlias)
-            .participant(participantId)
+        steps = tableOf("breakoutId", "step")
+            .row<BreakoutId?, InfinityService.ParticipantStep>(
+                val1 = null,
+                val2 = step.participant(participantId),
+            )
+            .row(
+                val1 = breakoutId,
+                val2 = step
+                    .breakout(breakoutId)
+                    .participant(participantId),
+            )
     }
 
     @Test
-    fun `participantId returns the correct value`() {
+    fun `participantId returns the correct value`() = runTestForAll { _, step ->
         assertThat(step::participantId).isEqualTo(participantId)
     }
 
     @Test
-    fun `calls throws IllegalStateException`() = runTest {
+    fun `calls throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         val request = Random.nextCallsRequest()
         assertFailure { step.calls(request, token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyCalls(request, token)
+        server.verifyCalls(request, token, breakoutId)
     }
 
     @Test
-    fun `calls throws NoSuchNodeException`() = runTest {
+    fun `calls throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         val request = Random.nextCallsRequest()
         assertFailure { step.calls(request, token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyCalls(request, token)
+        server.verifyCalls(request, token, breakoutId)
     }
 
     @Test
-    fun `calls throws NoSuchConferenceException`() = runTest {
+    fun `calls throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -97,11 +114,11 @@ internal class ParticipantStepTest {
         assertFailure { step.calls(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyCalls(request, token)
+        server.verifyCalls(request, token, breakoutId)
     }
 
     @Test
-    fun `calls throws InvalidTokenException`() = runTest {
+    fun `calls throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -111,11 +128,11 @@ internal class ParticipantStepTest {
         assertFailure { step.calls(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyCalls(request, token)
+        server.verifyCalls(request, token, breakoutId)
     }
 
     @Test
-    fun `calls returns CallsResponse`() = runTest {
+    fun `calls returns CallsResponse`() = runTestForAll { breakoutId, step ->
         val response = CallsResponse(
             callId = Random.nextCallId(),
             sdp = Random.nextString(),
@@ -126,27 +143,27 @@ internal class ParticipantStepTest {
         }
         val request = Random.nextCallsRequest()
         assertThat(step.calls(request, token).await(), "response").isEqualTo(response)
-        server.verifyCalls(request, token)
+        server.verifyCalls(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf throws IllegalStateException`() = runTest {
+    fun `dtmf throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         val request = DtmfRequest(Random.nextDigits())
         assertFailure { step.dtmf(request, token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf throws NoSuchNodeException`() = runTest {
+    fun `dtmf throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         val request = DtmfRequest(Random.nextDigits())
         assertFailure { step.dtmf(request, token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf throws NoSuchConferenceException`() = runTest {
+    fun `dtmf throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -156,11 +173,11 @@ internal class ParticipantStepTest {
         assertFailure { step.dtmf(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf throws InvalidTokenException`() = runTest {
+    fun `dtmf throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -170,11 +187,11 @@ internal class ParticipantStepTest {
         assertFailure { step.dtmf(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf returns`() = runTest {
+    fun `dtmf returns`() = runTestForAll { breakoutId, step ->
         val response = Random.nextBoolean()
         server.enqueue {
             setResponseCode(200)
@@ -182,25 +199,25 @@ internal class ParticipantStepTest {
         }
         val request = DtmfRequest(Random.nextDigits())
         assertThat(step.dtmf(request, token).await(), "response").isEqualTo(response)
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `mute throws IllegalStateException`() = runTest {
+    fun `mute throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.mute(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyMute(token)
+        server.verifyMute(token, breakoutId)
     }
 
     @Test
-    fun `mute throws NoSuchNodeException`() = runTest {
+    fun `mute throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.mute(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyMute(token)
+        server.verifyMute(token, breakoutId)
     }
 
     @Test
-    fun `mute throws NoSuchConferenceException`() = runTest {
+    fun `mute throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -209,11 +226,11 @@ internal class ParticipantStepTest {
         assertFailure { step.mute(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyMute(token)
+        server.verifyMute(token, breakoutId)
     }
 
     @Test
-    fun `mute throws InvalidTokenException`() = runTest {
+    fun `mute throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -222,32 +239,32 @@ internal class ParticipantStepTest {
         assertFailure { step.mute(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyMute(token)
+        server.verifyMute(token, breakoutId)
     }
 
     @Test
-    fun `mute returns`() = runTest {
+    fun `mute returns`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         step.mute(token).await()
-        server.verifyMute(token)
+        server.verifyMute(token, breakoutId)
     }
 
     @Test
-    fun `unmute throws IllegalStateException`() = runTest {
+    fun `unmute throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.unmute(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyUnmute(token)
+        server.verifyUnmute(token, breakoutId)
     }
 
     @Test
-    fun `unmute throws NoSuchNodeException`() = runTest {
+    fun `unmute throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.unmute(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyUnmute(token)
+        server.verifyUnmute(token, breakoutId)
     }
 
     @Test
-    fun `unmute throws NoSuchConferenceException`() = runTest {
+    fun `unmute throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -256,11 +273,11 @@ internal class ParticipantStepTest {
         assertFailure { step.unmute(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyUnmute(token)
+        server.verifyUnmute(token, breakoutId)
     }
 
     @Test
-    fun `unmute throws InvalidTokenException`() = runTest {
+    fun `unmute throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -269,32 +286,32 @@ internal class ParticipantStepTest {
         assertFailure { step.unmute(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyUnmute(token)
+        server.verifyUnmute(token, breakoutId)
     }
 
     @Test
-    fun `unmute returns`() = runTest {
+    fun `unmute returns`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         step.unmute(token).await()
-        server.verifyUnmute(token)
+        server.verifyUnmute(token, breakoutId)
     }
 
     @Test
-    fun `clientMute throws IllegalStateException`() = runTest {
+    fun `clientMute throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.clientMute(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyClientMute(token)
+        server.verifyClientMute(token, breakoutId)
     }
 
     @Test
-    fun `clientMute throws NoSuchNodeException`() = runTest {
+    fun `clientMute throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.clientMute(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyClientMute(token)
+        server.verifyClientMute(token, breakoutId)
     }
 
     @Test
-    fun `clientMute throws NoSuchConferenceException`() = runTest {
+    fun `clientMute throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -303,11 +320,11 @@ internal class ParticipantStepTest {
         assertFailure { step.clientMute(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyClientMute(token)
+        server.verifyClientMute(token, breakoutId)
     }
 
     @Test
-    fun `clientMute throws InvalidTokenException`() = runTest {
+    fun `clientMute throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -316,32 +333,32 @@ internal class ParticipantStepTest {
         assertFailure { step.clientMute(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyClientMute(token)
+        server.verifyClientMute(token, breakoutId)
     }
 
     @Test
-    fun `clientMute returns`() = runTest {
+    fun `clientMute returns`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         step.clientMute(token).await()
-        server.verifyClientMute(token)
+        server.verifyClientMute(token, breakoutId)
     }
 
     @Test
-    fun `clientUnmute throws IllegalStateException`() = runTest {
+    fun `clientUnmute throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.clientUnmute(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyClientUnmute(token)
+        server.verifyClientUnmute(token, breakoutId)
     }
 
     @Test
-    fun `clientUnmute throws NoSuchNodeException`() = runTest {
+    fun `clientUnmute throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.clientUnmute(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyClientUnmute(token)
+        server.verifyClientUnmute(token, breakoutId)
     }
 
     @Test
-    fun `clientUnmute throws NoSuchConferenceException`() = runTest {
+    fun `clientUnmute throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -350,11 +367,11 @@ internal class ParticipantStepTest {
         assertFailure { step.clientUnmute(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyClientUnmute(token)
+        server.verifyClientUnmute(token, breakoutId)
     }
 
     @Test
-    fun `clientUnmute throws InvalidTokenException`() = runTest {
+    fun `clientUnmute throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -363,32 +380,32 @@ internal class ParticipantStepTest {
         assertFailure { step.clientUnmute(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyClientUnmute(token)
+        server.verifyClientUnmute(token, breakoutId)
     }
 
     @Test
-    fun `clientUnmute returns`() = runTest {
+    fun `clientUnmute returns`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         step.clientUnmute(token).await()
-        server.verifyClientUnmute(token)
+        server.verifyClientUnmute(token, breakoutId)
     }
 
     @Test
-    fun `videoMuted throws IllegalStateException`() = runTest {
+    fun `videoMuted throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.videoMuted(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyVideoMuted(token)
+        server.verifyVideoMuted(token, breakoutId)
     }
 
     @Test
-    fun `videoMuted throws NoSuchNodeException`() = runTest {
+    fun `videoMuted throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.videoMuted(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyVideoMuted(token)
+        server.verifyVideoMuted(token, breakoutId)
     }
 
     @Test
-    fun `videoMuted throws NoSuchConferenceException`() = runTest {
+    fun `videoMuted throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -397,11 +414,11 @@ internal class ParticipantStepTest {
         assertFailure { step.videoMuted(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyVideoMuted(token)
+        server.verifyVideoMuted(token, breakoutId)
     }
 
     @Test
-    fun `videoMuted throws InvalidTokenException`() = runTest {
+    fun `videoMuted throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -410,32 +427,32 @@ internal class ParticipantStepTest {
         assertFailure { step.videoMuted(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyVideoMuted(token)
+        server.verifyVideoMuted(token, breakoutId)
     }
 
     @Test
-    fun `videoMuted returns`() = runTest {
+    fun `videoMuted returns`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         step.videoMuted(token).await()
-        server.verifyVideoMuted(token)
+        server.verifyVideoMuted(token, breakoutId)
     }
 
     @Test
-    fun `videoUnmuted throws IllegalStateException`() = runTest {
+    fun `videoUnmuted throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.videoUnmuted(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyVideoUnMuted(token)
+        server.verifyVideoUnMuted(token, breakoutId)
     }
 
     @Test
-    fun `videoUnmuted throws NoSuchNodeException`() = runTest {
+    fun `videoUnmuted throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.videoUnmuted(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyVideoUnMuted(token)
+        server.verifyVideoUnMuted(token, breakoutId)
     }
 
     @Test
-    fun `videoUnmuted throws NoSuchConferenceException`() = runTest {
+    fun `videoUnmuted throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -444,11 +461,11 @@ internal class ParticipantStepTest {
         assertFailure { step.videoUnmuted(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyVideoUnMuted(token)
+        server.verifyVideoUnMuted(token, breakoutId)
     }
 
     @Test
-    fun `videoUnmuted throws InvalidTokenException`() = runTest {
+    fun `videoUnmuted throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -457,32 +474,32 @@ internal class ParticipantStepTest {
         assertFailure { step.videoUnmuted(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyVideoUnMuted(token)
+        server.verifyVideoUnMuted(token, breakoutId)
     }
 
     @Test
-    fun `videoUnmuted returns`() = runTest {
+    fun `videoUnmuted returns`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         step.videoUnmuted(token).await()
-        server.verifyVideoUnMuted(token)
+        server.verifyVideoUnMuted(token, breakoutId)
     }
 
     @Test
-    fun `takeFloor throws IllegalStateException`() = runTest {
+    fun `takeFloor throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.takeFloor(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyTakeFloor(token)
+        server.verifyTakeFloor(token, breakoutId)
     }
 
     @Test
-    fun `takeFloor throws NoSuchNodeException`() = runTest {
+    fun `takeFloor throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.takeFloor(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyTakeFloor(token)
+        server.verifyTakeFloor(token, breakoutId)
     }
 
     @Test
-    fun `takeFloor throws NoSuchConferenceException`() = runTest {
+    fun `takeFloor throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -491,11 +508,11 @@ internal class ParticipantStepTest {
         assertFailure { step.takeFloor(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyTakeFloor(token)
+        server.verifyTakeFloor(token, breakoutId)
     }
 
     @Test
-    fun `takeFloor throws InvalidTokenException`() = runTest {
+    fun `takeFloor throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -504,32 +521,32 @@ internal class ParticipantStepTest {
         assertFailure { step.takeFloor(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyTakeFloor(token)
+        server.verifyTakeFloor(token, breakoutId)
     }
 
     @Test
-    fun `takeFloor returns`() = runTest {
+    fun `takeFloor returns`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         step.takeFloor(token).await()
-        server.verifyTakeFloor(token)
+        server.verifyTakeFloor(token, breakoutId)
     }
 
     @Test
-    fun `releaseFloor throws IllegalStateException`() = runTest {
+    fun `releaseFloor throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.releaseFloor(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyReleaseFloor(token)
+        server.verifyReleaseFloor(token, breakoutId)
     }
 
     @Test
-    fun `releaseFloor throws NoSuchNodeException`() = runTest {
+    fun `releaseFloor throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.releaseFloor(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyReleaseFloor(token)
+        server.verifyReleaseFloor(token, breakoutId)
     }
 
     @Test
-    fun `releaseFloor throws NoSuchConferenceException`() = runTest {
+    fun `releaseFloor throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -538,11 +555,11 @@ internal class ParticipantStepTest {
         assertFailure { step.releaseFloor(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyReleaseFloor(token)
+        server.verifyReleaseFloor(token, breakoutId)
     }
 
     @Test
-    fun `releaseFloor throws InvalidTokenException`() = runTest {
+    fun `releaseFloor throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -551,32 +568,32 @@ internal class ParticipantStepTest {
         assertFailure { step.releaseFloor(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyReleaseFloor(token)
+        server.verifyReleaseFloor(token, breakoutId)
     }
 
     @Test
-    fun `releaseFloor returns`() = runTest {
+    fun `releaseFloor returns`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         step.releaseFloor(token).await()
-        server.verifyReleaseFloor(token)
+        server.verifyReleaseFloor(token, breakoutId)
     }
 
     @Test
-    fun `buzz throws IllegalStateException`() = runTest {
+    fun `buzz throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.buzz(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyBuzz(token)
+        server.verifyBuzz(token, breakoutId)
     }
 
     @Test
-    fun `buzz throws NoSuchNodeException`() = runTest {
+    fun `buzz throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.buzz(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyBuzz(token)
+        server.verifyBuzz(token, breakoutId)
     }
 
     @Test
-    fun `buzz throws NoSuchConferenceException`() = runTest {
+    fun `buzz throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -585,11 +602,11 @@ internal class ParticipantStepTest {
         assertFailure { step.buzz(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyBuzz(token)
+        server.verifyBuzz(token, breakoutId)
     }
 
     @Test
-    fun `buzz throws InvalidTokenException`() = runTest {
+    fun `buzz throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -598,11 +615,11 @@ internal class ParticipantStepTest {
         assertFailure { step.buzz(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyBuzz(token)
+        server.verifyBuzz(token, breakoutId)
     }
 
     @Test
-    fun `buzz returns result on 200`() = runTest {
+    fun `buzz returns result on 200`() = runTestForAll { breakoutId, step ->
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -610,26 +627,26 @@ internal class ParticipantStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             assertThat(step.buzz(token).await(), "response").isEqualTo(result)
-            server.verifyBuzz(token)
+            server.verifyBuzz(token, breakoutId)
         }
     }
 
     @Test
-    fun `clearBuzz throws IllegalStateException`() = runTest {
+    fun `clearBuzz throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.clearBuzz(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyClearBuzz(token)
+        server.verifyClearBuzz(token, breakoutId)
     }
 
     @Test
-    fun `clearBuzz throws NoSuchNodeException`() = runTest {
+    fun `clearBuzz throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.clearBuzz(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyClearBuzz(token)
+        server.verifyClearBuzz(token, breakoutId)
     }
 
     @Test
-    fun `clearBuzz throws NoSuchConferenceException`() = runTest {
+    fun `clearBuzz throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -638,11 +655,11 @@ internal class ParticipantStepTest {
         assertFailure { step.clearBuzz(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyClearBuzz(token)
+        server.verifyClearBuzz(token, breakoutId)
     }
 
     @Test
-    fun `clearBuzz throws InvalidTokenException`() = runTest {
+    fun `clearBuzz throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -651,11 +668,11 @@ internal class ParticipantStepTest {
         assertFailure { step.clearBuzz(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyClearBuzz(token)
+        server.verifyClearBuzz(token, breakoutId)
     }
 
     @Test
-    fun `clearBuzz returns result on 200`() = runTest {
+    fun `clearBuzz returns result on 200`() = runTestForAll { breakoutId, step ->
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -663,44 +680,45 @@ internal class ParticipantStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             assertThat(step.clearBuzz(token).await(), "response").isEqualTo(result)
-            server.verifyClearBuzz(token)
+            server.verifyClearBuzz(token, breakoutId)
         }
     }
 
     @Test
-    fun `preferredAspectRatio throws IllegalStateException`() = runTest {
+    fun `preferredAspectRatio throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         val request = Random.nextPreferredAspectRatioRequest()
         assertFailure { step.preferredAspectRatio(request, token).await() }
             .isInstanceOf<IllegalStateException>()
-        server.verifyPreferredAspectRatio(request, token)
+        server.verifyPreferredAspectRatio(request, token, breakoutId)
     }
 
     @Test
-    fun `preferredAspectRatio throws NoSuchNodeException`() = runTest {
+    fun `preferredAspectRatio throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         val request = Random.nextPreferredAspectRatioRequest()
         assertFailure { step.preferredAspectRatio(request, token).await() }
             .isInstanceOf<NoSuchNodeException>()
-        server.verifyPreferredAspectRatio(request, token)
+        server.verifyPreferredAspectRatio(request, token, breakoutId)
     }
 
     @Test
-    fun `preferredAspectRatio throws NoSuchConferenceException`() = runTest {
-        val message = "Neither conference nor gateway found"
-        server.enqueue {
-            setResponseCode(404)
-            setBody(json.encodeToString(Box(message)))
+    fun `preferredAspectRatio throws NoSuchConferenceException`() =
+        runTestForAll { breakoutId, step ->
+            val message = "Neither conference nor gateway found"
+            server.enqueue {
+                setResponseCode(404)
+                setBody(json.encodeToString(Box(message)))
+            }
+            val request = Random.nextPreferredAspectRatioRequest()
+            assertFailure { step.preferredAspectRatio(request, token).await() }
+                .isInstanceOf<NoSuchConferenceException>()
+                .hasMessage(message)
+            server.verifyPreferredAspectRatio(request, token, breakoutId)
         }
-        val request = Random.nextPreferredAspectRatioRequest()
-        assertFailure { step.preferredAspectRatio(request, token).await() }
-            .isInstanceOf<NoSuchConferenceException>()
-            .hasMessage(message)
-        server.verifyPreferredAspectRatio(request, token)
-    }
 
     @Test
-    fun `preferredAspectRatio throws InvalidTokenException`() = runTest {
+    fun `preferredAspectRatio throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -710,11 +728,11 @@ internal class ParticipantStepTest {
         assertFailure { step.preferredAspectRatio(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyPreferredAspectRatio(request, token)
+        server.verifyPreferredAspectRatio(request, token, breakoutId)
     }
 
     @Test
-    fun `preferredAspectRatio returns result on 200`() = runTest {
+    fun `preferredAspectRatio returns result on 200`() = runTestForAll { breakoutId, step ->
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -724,28 +742,28 @@ internal class ParticipantStepTest {
             val request = Random.nextPreferredAspectRatioRequest()
             assertThat(step.preferredAspectRatio(request, token).await(), "response")
                 .isEqualTo(result)
-            server.verifyPreferredAspectRatio(request, token)
+            server.verifyPreferredAspectRatio(request, token, breakoutId)
         }
     }
 
     @Test
-    fun `message throws IllegalStateException`() = runTest {
+    fun `message throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         val request = Random.nextMessageRequest()
         assertFailure { step.message(request, token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyMessage(request, token)
+        server.verifyMessage(request, token, breakoutId)
     }
 
     @Test
-    fun `message throws NoSuchNodeException`() = runTest {
+    fun `message throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         val request = Random.nextMessageRequest()
         assertFailure { step.message(request, token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyMessage(request, token)
+        server.verifyMessage(request, token, breakoutId)
     }
 
     @Test
-    fun `message throws NoSuchConferenceException`() = runTest {
+    fun `message throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -755,11 +773,11 @@ internal class ParticipantStepTest {
         assertFailure { step.message(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyMessage(request, token)
+        server.verifyMessage(request, token, breakoutId)
     }
 
     @Test
-    fun `message throws InvalidTokenException`() = runTest {
+    fun `message throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -769,11 +787,11 @@ internal class ParticipantStepTest {
         assertFailure { step.message(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyMessage(request, token)
+        server.verifyMessage(request, token, breakoutId)
     }
 
     @Test
-    fun `message returns result on 200`() = runTest {
+    fun `message returns result on 200`() = runTestForAll { breakoutId, step ->
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -782,26 +800,26 @@ internal class ParticipantStepTest {
             }
             val request = Random.nextMessageRequest()
             assertThat(step.message(request, token).await(), "response").isEqualTo(result)
-            server.verifyMessage(request, token)
+            server.verifyMessage(request, token, breakoutId)
         }
     }
 
     @Test
-    fun `unlock throws IllegalStateException`() = runTest {
+    fun `unlock throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.unlock(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyUnlock(token)
+        server.verifyUnlock(token, breakoutId)
     }
 
     @Test
-    fun `unlock throws NoSuchNodeException`() = runTest {
+    fun `unlock throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.unlock(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyUnlock(token)
+        server.verifyUnlock(token, breakoutId)
     }
 
     @Test
-    fun `unlock throws NoSuchConferenceException`() = runTest {
+    fun `unlock throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -810,11 +828,11 @@ internal class ParticipantStepTest {
         assertFailure { step.unlock(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyUnlock(token)
+        server.verifyUnlock(token, breakoutId)
     }
 
     @Test
-    fun `unlock throws InvalidTokenException`() = runTest {
+    fun `unlock throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -823,11 +841,11 @@ internal class ParticipantStepTest {
         assertFailure { step.unlock(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyUnlock(token)
+        server.verifyUnlock(token, breakoutId)
     }
 
     @Test
-    fun `unlock returns result on 200`() = runTest {
+    fun `unlock returns result on 200`() = runTestForAll { breakoutId, step ->
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -835,26 +853,26 @@ internal class ParticipantStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             assertThat(step.unlock(token).await(), "result").isEqualTo(result)
-            server.verifyUnlock(token)
+            server.verifyUnlock(token, breakoutId)
         }
     }
 
     @Test
-    fun `spotlightOn throws IllegalStateException`() = runTest {
+    fun `spotlightOn throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.spotlightOn(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifySpotlightOn(token)
+        server.verifySpotlightOn(token, breakoutId)
     }
 
     @Test
-    fun `spotlightOn throws NoSuchNodeException`() = runTest {
+    fun `spotlightOn throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.spotlightOn(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifySpotlightOn(token)
+        server.verifySpotlightOn(token, breakoutId)
     }
 
     @Test
-    fun `spotlightOn throws NoSuchConferenceException`() = runTest {
+    fun `spotlightOn throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -863,11 +881,11 @@ internal class ParticipantStepTest {
         assertFailure { step.spotlightOn(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifySpotlightOn(token)
+        server.verifySpotlightOn(token, breakoutId)
     }
 
     @Test
-    fun `spotlightOn throws InvalidTokenException`() = runTest {
+    fun `spotlightOn throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -876,11 +894,11 @@ internal class ParticipantStepTest {
         assertFailure { step.spotlightOn(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifySpotlightOn(token)
+        server.verifySpotlightOn(token, breakoutId)
     }
 
     @Test
-    fun `spotlightOn returns result on 200`() = runTest {
+    fun `spotlightOn returns result on 200`() = runTestForAll { breakoutId, step ->
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -888,26 +906,26 @@ internal class ParticipantStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             assertThat(step.spotlightOn(token).await(), "result").isEqualTo(result)
-            server.verifySpotlightOn(token)
+            server.verifySpotlightOn(token, breakoutId)
         }
     }
 
     @Test
-    fun `spotlightOff throws IllegalStateException`() = runTest {
+    fun `spotlightOff throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.spotlightOff(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifySpotlightOff(token)
+        server.verifySpotlightOff(token, breakoutId)
     }
 
     @Test
-    fun `spotlightOff throws NoSuchNodeException`() = runTest {
+    fun `spotlightOff throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.spotlightOff(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifySpotlightOff(token)
+        server.verifySpotlightOff(token, breakoutId)
     }
 
     @Test
-    fun `spotlightOff throws NoSuchConferenceException`() = runTest {
+    fun `spotlightOff throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -916,11 +934,11 @@ internal class ParticipantStepTest {
         assertFailure { step.spotlightOff(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifySpotlightOff(token)
+        server.verifySpotlightOff(token, breakoutId)
     }
 
     @Test
-    fun `spotlightOff throws InvalidTokenException`() = runTest {
+    fun `spotlightOff throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -929,11 +947,11 @@ internal class ParticipantStepTest {
         assertFailure { step.spotlightOff(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifySpotlightOff(token)
+        server.verifySpotlightOff(token, breakoutId)
     }
 
     @Test
-    fun `spotlightOff returns result on 200`() = runTest {
+    fun `spotlightOff returns result on 200`() = runTestForAll { breakoutId, step ->
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -941,26 +959,26 @@ internal class ParticipantStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             assertThat(step.spotlightOff(token).await(), "result").isEqualTo(result)
-            server.verifySpotlightOff(token)
+            server.verifySpotlightOff(token, breakoutId)
         }
     }
 
     @Test
-    fun `disconnect throws IllegalStateException`() = runTest {
+    fun `disconnect throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.disconnect(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyDisconnect(token)
+        server.verifyDisconnect(token, breakoutId)
     }
 
     @Test
-    fun `disconnect throws NoSuchNodeException`() = runTest {
+    fun `disconnect throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.disconnect(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyDisconnect(token)
+        server.verifyDisconnect(token, breakoutId)
     }
 
     @Test
-    fun `disconnect throws NoSuchConferenceException`() = runTest {
+    fun `disconnect throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -969,11 +987,11 @@ internal class ParticipantStepTest {
         assertFailure { step.disconnect(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyDisconnect(token)
+        server.verifyDisconnect(token, breakoutId)
     }
 
     @Test
-    fun `disconnect throws InvalidTokenException`() = runTest {
+    fun `disconnect throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -982,11 +1000,11 @@ internal class ParticipantStepTest {
         assertFailure { step.disconnect(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyDisconnect(token)
+        server.verifyDisconnect(token, breakoutId)
     }
 
     @Test
-    fun `disconnect returns result on 200`() = runTest {
+    fun `disconnect returns result on 200`() = runTestForAll { breakoutId, step ->
         val results = listOf(true, false)
         results.forEach { result ->
             server.enqueue {
@@ -994,15 +1012,27 @@ internal class ParticipantStepTest {
                 setBody(json.encodeToString(Box(result)))
             }
             assertThat(step.disconnect(token).await(), "result").isEqualTo(result)
-            server.verifyDisconnect(token)
+            server.verifyDisconnect(token, breakoutId)
         }
     }
 
-    private fun MockWebServer.verifyCalls(request: CallsRequest, token: Token) = takeRequest {
+    private fun runTestForAll(
+        testBody: suspend TestScope.(BreakoutId?, InfinityService.ParticipantStep) -> Unit,
+    ) = steps.forAll { breakoutId, step -> runTest { testBody(breakoutId, step) } }
+
+    private fun MockWebServer.verifyCalls(
+        request: CallsRequest,
+        token: Token,
+        breakoutId: BreakoutId?,
+    ) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("calls")
@@ -1011,11 +1041,19 @@ internal class ParticipantStepTest {
         assertPost(json, request)
     }
 
-    private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: Token) = takeRequest {
+    private fun MockWebServer.verifyDtmf(
+        request: DtmfRequest,
+        token: Token,
+        breakoutId: BreakoutId?,
+    ) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("dtmf")
@@ -1024,11 +1062,15 @@ internal class ParticipantStepTest {
         assertPost(json, request)
     }
 
-    private fun MockWebServer.verifyMute(token: Token) = takeRequest {
+    private fun MockWebServer.verifyMute(token: Token, breakoutId: BreakoutId?) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("mute")
@@ -1037,11 +1079,15 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyUnmute(token: Token) = takeRequest {
+    private fun MockWebServer.verifyUnmute(token: Token, breakoutId: BreakoutId?) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("unmute")
@@ -1050,63 +1096,87 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyClientMute(token: Token) = takeRequest {
-        assertRequestUrl(node) {
-            addPathSegments("api/client/v2")
-            addPathSegment("conferences")
-            addPathSegment(conferenceAlias)
-            addPathSegment("participants")
-            addPathSegment(participantId)
-            addPathSegment("client_mute")
+    private fun MockWebServer.verifyClientMute(token: Token, breakoutId: BreakoutId?) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                if (breakoutId != null) {
+                    addPathSegment("breakouts")
+                    addPathSegment(breakoutId)
+                }
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("client_mute")
+            }
+            assertToken(token)
+            assertPostEmptyBody()
         }
-        assertToken(token)
-        assertPostEmptyBody()
-    }
 
-    private fun MockWebServer.verifyClientUnmute(token: Token) = takeRequest {
-        assertRequestUrl(node) {
-            addPathSegments("api/client/v2")
-            addPathSegment("conferences")
-            addPathSegment(conferenceAlias)
-            addPathSegment("participants")
-            addPathSegment(participantId)
-            addPathSegment("client_unmute")
+    private fun MockWebServer.verifyClientUnmute(token: Token, breakoutId: BreakoutId?) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                if (breakoutId != null) {
+                    addPathSegment("breakouts")
+                    addPathSegment(breakoutId)
+                }
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("client_unmute")
+            }
+            assertToken(token)
+            assertPostEmptyBody()
         }
-        assertToken(token)
-        assertPostEmptyBody()
-    }
 
-    private fun MockWebServer.verifyVideoMuted(token: Token) = takeRequest {
-        assertRequestUrl(node) {
-            addPathSegments("api/client/v2")
-            addPathSegment("conferences")
-            addPathSegment(conferenceAlias)
-            addPathSegment("participants")
-            addPathSegment(participantId)
-            addPathSegment("video_muted")
+    private fun MockWebServer.verifyVideoMuted(token: Token, breakoutId: BreakoutId?) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                if (breakoutId != null) {
+                    addPathSegment("breakouts")
+                    addPathSegment(breakoutId)
+                }
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("video_muted")
+            }
+            assertToken(token)
+            assertPostEmptyBody()
         }
-        assertToken(token)
-        assertPostEmptyBody()
-    }
 
-    private fun MockWebServer.verifyVideoUnMuted(token: Token) = takeRequest {
-        assertRequestUrl(node) {
-            addPathSegments("api/client/v2")
-            addPathSegment("conferences")
-            addPathSegment(conferenceAlias)
-            addPathSegment("participants")
-            addPathSegment(participantId)
-            addPathSegment("video_unmuted")
+    private fun MockWebServer.verifyVideoUnMuted(token: Token, breakoutId: BreakoutId?) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                if (breakoutId != null) {
+                    addPathSegment("breakouts")
+                    addPathSegment(breakoutId)
+                }
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("video_unmuted")
+            }
+            assertToken(token)
+            assertPostEmptyBody()
         }
-        assertToken(token)
-        assertPostEmptyBody()
-    }
 
-    private fun MockWebServer.verifyTakeFloor(token: Token) = takeRequest {
+    private fun MockWebServer.verifyTakeFloor(token: Token, breakoutId: BreakoutId?) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("take_floor")
@@ -1115,41 +1185,58 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyReleaseFloor(token: Token) = takeRequest {
-        assertRequestUrl(node) {
-            addPathSegments("api/client/v2")
-            addPathSegment("conferences")
-            addPathSegment(conferenceAlias)
-            addPathSegment("participants")
-            addPathSegment(participantId)
-            addPathSegment("release_floor")
-        }
-        assertToken(token)
-        assertPostEmptyBody()
-    }
-
-    private fun MockWebServer.verifyMessage(request: MessageRequest, token: Token) =
+    private fun MockWebServer.verifyReleaseFloor(token: Token, breakoutId: BreakoutId?) =
         takeRequest {
             assertRequestUrl(node) {
                 addPathSegments("api/client/v2")
                 addPathSegment("conferences")
                 addPathSegment(conferenceAlias)
+                if (breakoutId != null) {
+                    addPathSegment("breakouts")
+                    addPathSegment(breakoutId)
+                }
                 addPathSegment("participants")
                 addPathSegment(participantId)
-                addPathSegment("message")
+                addPathSegment("release_floor")
             }
             assertToken(token)
-            assertPost(json, request)
+            assertPostEmptyBody()
         }
 
-    private fun MockWebServer.verifyPreferredAspectRatio(
-        request: PreferredAspectRatioRequest,
+    private fun MockWebServer.verifyMessage(
+        request: MessageRequest,
         token: Token,
+        breakoutId: BreakoutId?,
     ) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
+            addPathSegment("participants")
+            addPathSegment(participantId)
+            addPathSegment("message")
+        }
+        assertToken(token)
+        assertPost(json, request)
+    }
+
+    private fun MockWebServer.verifyPreferredAspectRatio(
+        request: PreferredAspectRatioRequest,
+        token: Token,
+        breakoutId: BreakoutId?,
+    ) = takeRequest {
+        assertRequestUrl(node) {
+            addPathSegments("api/client/v2")
+            addPathSegment("conferences")
+            addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("preferred_aspect_ratio")
@@ -1167,11 +1254,15 @@ internal class ParticipantStepTest {
 
     private fun Random.nextPreferredAspectRatioRequest() = PreferredAspectRatioRequest(nextFloat())
 
-    private fun MockWebServer.verifyBuzz(token: Token) = takeRequest {
+    private fun MockWebServer.verifyBuzz(token: Token, breakoutId: BreakoutId?) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("buzz")
@@ -1180,11 +1271,15 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyClearBuzz(token: Token) = takeRequest {
+    private fun MockWebServer.verifyClearBuzz(token: Token, breakoutId: BreakoutId?) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("clearbuzz")
@@ -1193,11 +1288,15 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifyUnlock(token: Token) = takeRequest {
+    private fun MockWebServer.verifyUnlock(token: Token, breakoutId: BreakoutId?) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("unlock")
@@ -1206,42 +1305,57 @@ internal class ParticipantStepTest {
         assertPostEmptyBody()
     }
 
-    private fun MockWebServer.verifySpotlightOn(token: Token) = takeRequest {
-        assertRequestUrl(node) {
-            addPathSegments("api/client/v2")
-            addPathSegment("conferences")
-            addPathSegment(conferenceAlias)
-            addPathSegment("participants")
-            addPathSegment(participantId)
-            addPathSegment("spotlighton")
+    private fun MockWebServer.verifySpotlightOn(token: Token, breakoutId: BreakoutId?) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                if (breakoutId != null) {
+                    addPathSegment("breakouts")
+                    addPathSegment(breakoutId)
+                }
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("spotlighton")
+            }
+            assertToken(token)
+            assertPostEmptyBody()
         }
-        assertToken(token)
-        assertPostEmptyBody()
-    }
 
-    private fun MockWebServer.verifySpotlightOff(token: Token) = takeRequest {
-        assertRequestUrl(node) {
-            addPathSegments("api/client/v2")
-            addPathSegment("conferences")
-            addPathSegment(conferenceAlias)
-            addPathSegment("participants")
-            addPathSegment(participantId)
-            addPathSegment("spotlightoff")
+    private fun MockWebServer.verifySpotlightOff(token: Token, breakoutId: BreakoutId?) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                if (breakoutId != null) {
+                    addPathSegment("breakouts")
+                    addPathSegment(breakoutId)
+                }
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("spotlightoff")
+            }
+            assertToken(token)
+            assertPostEmptyBody()
         }
-        assertToken(token)
-        assertPostEmptyBody()
-    }
 
-    private fun MockWebServer.verifyDisconnect(token: Token) = takeRequest {
-        assertRequestUrl(node) {
-            addPathSegments("api/client/v2")
-            addPathSegment("conferences")
-            addPathSegment(conferenceAlias)
-            addPathSegment("participants")
-            addPathSegment(participantId)
-            addPathSegment("disconnect")
+    private fun MockWebServer.verifyDisconnect(token: Token, breakoutId: BreakoutId?) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                if (breakoutId != null) {
+                    addPathSegment("breakouts")
+                    addPathSegment(breakoutId)
+                }
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegment("disconnect")
+            }
+            assertToken(token)
+            assertPostEmptyBody()
         }
-        assertToken(token)
-        assertPostEmptyBody()
-    }
 }

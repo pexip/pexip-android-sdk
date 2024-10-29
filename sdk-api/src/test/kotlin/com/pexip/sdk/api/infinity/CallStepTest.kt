@@ -15,17 +15,22 @@
  */
 package com.pexip.sdk.api.infinity
 
+import assertk.Table2
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.tableOf
 import com.pexip.sdk.api.infinity.internal.addPathSegment
+import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.CallId
 import com.pexip.sdk.infinity.ParticipantId
+import com.pexip.sdk.infinity.test.nextBreakoutId
 import com.pexip.sdk.infinity.test.nextCallId
 import com.pexip.sdk.infinity.test.nextParticipantId
 import com.pexip.sdk.infinity.test.nextString
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -49,8 +54,9 @@ internal class CallStepTest {
     private lateinit var conferenceAlias: String
     private lateinit var json: Json
     private lateinit var token: Token
-    private lateinit var step: InfinityService.CallStep
+    private lateinit var steps: Table2<BreakoutId?, InfinityService.CallStep>
 
+    private var breakoutId: BreakoutId by Delegates.notNull()
     private var participantId: ParticipantId by Delegates.notNull()
     private var callId: CallId by Delegates.notNull()
 
@@ -58,42 +64,55 @@ internal class CallStepTest {
     fun setUp() {
         node = server.url("/")
         conferenceAlias = Random.nextString()
+        breakoutId = Random.nextBreakoutId()
         participantId = Random.nextParticipantId()
         callId = Random.nextCallId()
         json = InfinityService.Json
         token = Random.nextFakeToken()
-        step = InfinityService.create(client, json)
+        val step = InfinityService.create(client, json)
             .newRequest(node)
             .conference(conferenceAlias)
-            .participant(participantId)
-            .call(callId)
+        steps = tableOf("breakoutId", "step")
+            .row<BreakoutId?, InfinityService.CallStep>(
+                val1 = null,
+                val2 = step
+                    .participant(participantId)
+                    .call(callId),
+            )
+            .row(
+                val1 = breakoutId,
+                val2 = step
+                    .breakout(breakoutId)
+                    .participant(participantId)
+                    .call(callId),
+            )
     }
 
     @Test
-    fun `callId returns the correct value`() {
+    fun `callId returns the correct value`() = runTestForAll { _, step ->
         assertThat(step::callId).isEqualTo(callId)
     }
 
     @Test
-    fun `newCandidate throws IllegalStateException`() = runTest {
+    fun `newCandidate throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         val request = Random.nextNewCandidateRequest()
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<IllegalStateException>()
-        server.verifyNewCandidate(request, token)
+        server.verifyNewCandidate(request, token, breakoutId)
     }
 
     @Test
-    fun `newCandidate throws NoSuchNodeException`() = runTest {
+    fun `newCandidate throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         val request = Random.nextNewCandidateRequest()
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<NoSuchNodeException>()
-        server.verifyNewCandidate(request, token)
+        server.verifyNewCandidate(request, token, breakoutId)
     }
 
     @Test
-    fun `newCandidate throws NoSuchConferenceException`() = runTest {
+    fun `newCandidate throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -103,11 +122,11 @@ internal class CallStepTest {
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyNewCandidate(request, token)
+        server.verifyNewCandidate(request, token, breakoutId)
     }
 
     @Test
-    fun `newCandidate throws InvalidTokenException`() = runTest {
+    fun `newCandidate throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -117,19 +136,19 @@ internal class CallStepTest {
         assertFailure { step.newCandidate(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyNewCandidate(request, token)
+        server.verifyNewCandidate(request, token, breakoutId)
     }
 
     @Test
-    fun `newCandidate returns on 200`() = runTest {
+    fun `newCandidate returns on 200`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         val request = Random.nextNewCandidateRequest()
         step.newCandidate(request, token).await()
-        server.verifyNewCandidate(request, token)
+        server.verifyNewCandidate(request, token, breakoutId)
     }
 
     @Test
-    fun `ack throws IllegalStateException`() = runTest {
+    fun `ack throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         val request = Random.maybe { nextAckRequest() }
         val call = when (request) {
@@ -137,11 +156,11 @@ internal class CallStepTest {
             else -> step.ack(request, token)
         }
         assertFailure { call.await() }.isInstanceOf<IllegalStateException>()
-        server.verifyAck(request, token)
+        server.verifyAck(request, token, breakoutId)
     }
 
     @Test
-    fun `ack throws NoSuchNodeException`() = runTest {
+    fun `ack throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         val request = Random.maybe { nextAckRequest() }
         val call = when (request) {
@@ -149,11 +168,11 @@ internal class CallStepTest {
             else -> step.ack(request, token)
         }
         assertFailure { call.await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyAck(request, token)
+        server.verifyAck(request, token, breakoutId)
     }
 
     @Test
-    fun `ack throws NoSuchConferenceException`() = runTest {
+    fun `ack throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -167,11 +186,11 @@ internal class CallStepTest {
         assertFailure { call.await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyAck(request, token)
+        server.verifyAck(request, token, breakoutId)
     }
 
     @Test
-    fun `ack throws InvalidTokenException`() = runTest {
+    fun `ack throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -185,11 +204,11 @@ internal class CallStepTest {
         assertFailure { call.await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyAck(request, token)
+        server.verifyAck(request, token, breakoutId)
     }
 
     @Test
-    fun `ack returns on 200`() = runTest {
+    fun `ack returns on 200`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(200) }
         val request = Random.maybe { nextAckRequest() }
         val call = when (request) {
@@ -197,27 +216,27 @@ internal class CallStepTest {
             else -> step.ack(request, token)
         }
         call.await()
-        server.verifyAck(request, token)
+        server.verifyAck(request, token, breakoutId)
     }
 
     @Test
-    fun `update throws IllegalStateException`() = runTest {
+    fun `update throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         val request = Random.nextUpdateRequest()
         assertFailure { step.update(request, token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyUpdate(request, token)
+        server.verifyUpdate(request, token, breakoutId)
     }
 
     @Test
-    fun `update throws NoSuchNodeException`() = runTest {
+    fun `update throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         val request = Random.nextUpdateRequest()
         assertFailure { step.update(request, token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyUpdate(request, token)
+        server.verifyUpdate(request, token, breakoutId)
     }
 
     @Test
-    fun `update throws NoSuchConferenceException`() = runTest {
+    fun `update throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -227,11 +246,11 @@ internal class CallStepTest {
         assertFailure { step.update(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyUpdate(request, token)
+        server.verifyUpdate(request, token, breakoutId)
     }
 
     @Test
-    fun `update throws InvalidTokenException`() = runTest {
+    fun `update throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -241,11 +260,11 @@ internal class CallStepTest {
         assertFailure { step.update(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyUpdate(request, token)
+        server.verifyUpdate(request, token, breakoutId)
     }
 
     @Test
-    fun `update returns on 200`() = runTest {
+    fun `update returns on 200`() = runTestForAll { breakoutId, step ->
         val response = UpdateResponse(Random.nextString())
         server.enqueue {
             setResponseCode(200)
@@ -253,27 +272,27 @@ internal class CallStepTest {
         }
         val request = Random.nextUpdateRequest()
         assertThat(step.update(request, token).await()).isEqualTo(response)
-        server.verifyUpdate(request, token)
+        server.verifyUpdate(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf throws IllegalStateException`() = runTest {
+    fun `dtmf throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         val request = DtmfRequest(Random.nextDigits(8))
         assertFailure { step.dtmf(request, token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf throws NoSuchNodeException`() = runTest {
+    fun `dtmf throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         val request = DtmfRequest(Random.nextDigits(8))
         assertFailure { step.dtmf(request, token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf throws NoSuchConferenceException`() = runTest {
+    fun `dtmf throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -283,11 +302,11 @@ internal class CallStepTest {
         assertFailure { step.dtmf(request, token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf throws InvalidTokenException`() = runTest {
+    fun `dtmf throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -297,11 +316,11 @@ internal class CallStepTest {
         assertFailure { step.dtmf(request, token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `dtmf returns`() = runTest {
+    fun `dtmf returns`() = runTestForAll { breakoutId, step ->
         val response = Random.nextBoolean()
         server.enqueue {
             setResponseCode(200)
@@ -309,25 +328,25 @@ internal class CallStepTest {
         }
         val request = DtmfRequest(Random.nextDigits(8))
         assertThat(step.dtmf(request, token).await()).isEqualTo(response)
-        server.verifyDtmf(request, token)
+        server.verifyDtmf(request, token, breakoutId)
     }
 
     @Test
-    fun `disconnect throws IllegalStateException`() = runTest {
+    fun `disconnect throws IllegalStateException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(500) }
         assertFailure { step.disconnect(token).await() }.isInstanceOf<IllegalStateException>()
-        server.verifyDisconnect(token)
+        server.verifyDisconnect(token, breakoutId)
     }
 
     @Test
-    fun `disconnect throws NoSuchNodeException`() = runTest {
+    fun `disconnect throws NoSuchNodeException`() = runTestForAll { breakoutId, step ->
         server.enqueue { setResponseCode(404) }
         assertFailure { step.disconnect(token).await() }.isInstanceOf<NoSuchNodeException>()
-        server.verifyDisconnect(token)
+        server.verifyDisconnect(token, breakoutId)
     }
 
     @Test
-    fun `disconnect throws NoSuchConferenceException`() = runTest {
+    fun `disconnect throws NoSuchConferenceException`() = runTestForAll { breakoutId, step ->
         val message = "Neither conference nor gateway found"
         server.enqueue {
             setResponseCode(404)
@@ -336,11 +355,11 @@ internal class CallStepTest {
         assertFailure { step.disconnect(token).await() }
             .isInstanceOf<NoSuchConferenceException>()
             .hasMessage(message)
-        server.verifyDisconnect(token)
+        server.verifyDisconnect(token, breakoutId)
     }
 
     @Test
-    fun `disconnect throws InvalidTokenException`() = runTest {
+    fun `disconnect throws InvalidTokenException`() = runTestForAll { breakoutId, step ->
         val message = "Invalid token"
         server.enqueue {
             setResponseCode(403)
@@ -349,28 +368,37 @@ internal class CallStepTest {
         assertFailure { step.disconnect(token).await() }
             .isInstanceOf<InvalidTokenException>()
             .hasMessage(message)
-        server.verifyDisconnect(token)
+        server.verifyDisconnect(token, breakoutId)
     }
 
     @Test
-    fun `disconnect returns`() = runTest {
+    fun `disconnect returns`() = runTestForAll { breakoutId, step ->
         val response = Random.nextBoolean()
         server.enqueue {
             setResponseCode(200)
             setBody(json.encodeToString(Box(response)))
         }
         assertThat(step.disconnect(token).await()).isEqualTo(response)
-        server.verifyDisconnect(token)
+        server.verifyDisconnect(token, breakoutId)
     }
+
+    private fun runTestForAll(
+        testBody: suspend TestScope.(BreakoutId?, InfinityService.CallStep) -> Unit,
+    ) = steps.forAll { breakoutId, step -> runTest { testBody(breakoutId, step) } }
 
     private fun MockWebServer.verifyNewCandidate(
         request: NewCandidateRequest,
         token: Token,
+        breakoutId: BreakoutId?,
     ) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("calls")
@@ -381,11 +409,19 @@ internal class CallStepTest {
         assertPost(json, request)
     }
 
-    private fun MockWebServer.verifyAck(request: AckRequest?, token: Token) = takeRequest {
+    private fun MockWebServer.verifyAck(
+        request: AckRequest?,
+        token: Token,
+        breakoutId: BreakoutId?,
+    ) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("calls")
@@ -399,11 +435,19 @@ internal class CallStepTest {
         }
     }
 
-    private fun MockWebServer.verifyUpdate(request: UpdateRequest, token: Token) = takeRequest {
+    private fun MockWebServer.verifyUpdate(
+        request: UpdateRequest,
+        token: Token,
+        breakoutId: BreakoutId?,
+    ) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegment("calls")
@@ -414,11 +458,19 @@ internal class CallStepTest {
         assertPost(json, request)
     }
 
-    private fun MockWebServer.verifyDtmf(request: DtmfRequest, token: Token) = takeRequest {
+    private fun MockWebServer.verifyDtmf(
+        request: DtmfRequest,
+        token: Token,
+        breakoutId: BreakoutId?,
+    ) = takeRequest {
         assertRequestUrl(node) {
             addPathSegments("api/client/v2")
             addPathSegment("conferences")
             addPathSegment(conferenceAlias)
+            if (breakoutId != null) {
+                addPathSegment("breakouts")
+                addPathSegment(breakoutId)
+            }
             addPathSegment("participants")
             addPathSegment(participantId)
             addPathSegments("calls")
@@ -429,20 +481,25 @@ internal class CallStepTest {
         assertPost(json, request)
     }
 
-    private fun MockWebServer.verifyDisconnect(token: Token) = takeRequest {
-        assertRequestUrl(node) {
-            addPathSegments("api/client/v2")
-            addPathSegment("conferences")
-            addPathSegment(conferenceAlias)
-            addPathSegment("participants")
-            addPathSegment(participantId)
-            addPathSegments("calls")
-            addPathSegment(callId)
-            addPathSegment("disconnect")
+    private fun MockWebServer.verifyDisconnect(token: Token, breakoutId: BreakoutId?) =
+        takeRequest {
+            assertRequestUrl(node) {
+                addPathSegments("api/client/v2")
+                addPathSegment("conferences")
+                addPathSegment(conferenceAlias)
+                if (breakoutId != null) {
+                    addPathSegment("breakouts")
+                    addPathSegment(breakoutId)
+                }
+                addPathSegment("participants")
+                addPathSegment(participantId)
+                addPathSegments("calls")
+                addPathSegment(callId)
+                addPathSegment("disconnect")
+            }
+            assertToken(token)
+            assertPostEmptyBody()
         }
-        assertToken(token)
-        assertPostEmptyBody()
-    }
 
     private fun Random.nextNewCandidateRequest() = NewCandidateRequest(
         candidate = nextString(),

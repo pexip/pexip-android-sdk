@@ -362,6 +362,14 @@ public interface InfinityService {
          */
         public val breakoutId: BreakoutId
             get() = throw NotImplementedError()
+
+        /**
+         * Sets the participant ID.
+         *
+         * @param participantId an ID of the participant
+         */
+        public fun participant(participantId: ParticipantId): ParticipantStep =
+            throw NotImplementedError()
     }
 
     /**

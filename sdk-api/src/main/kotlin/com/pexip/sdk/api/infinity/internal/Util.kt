@@ -16,6 +16,7 @@
 package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.infinity.Token
+import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.CallId
 import com.pexip.sdk.infinity.ParticipantId
 import kotlinx.serialization.DeserializationStrategy
@@ -49,6 +50,8 @@ internal inline fun EventSources.createFactory(
     block: OkHttpClient.Builder.() -> Unit,
 ) = createFactory(client.newBuilder().apply(block).build())
 
+internal fun HttpUrl.Builder.addPathSegment(id: BreakoutId) = addPathSegment(id.value)
+
 internal fun HttpUrl.Builder.addPathSegment(id: ParticipantId) = addPathSegment(id.value)
 
 internal fun HttpUrl.Builder.addPathSegment(id: CallId) = addPathSegment(id.value)
@@ -61,11 +64,13 @@ internal fun HttpUrl.Builder.conference(conferenceAlias: String): HttpUrl.Builde
     addPathSegment(conferenceAlias)
 }
 
+internal fun HttpUrl.Builder.breakout(id: BreakoutId) =
+    addPathSegment("breakouts").addPathSegment(id)
+
 internal fun HttpUrl.Builder.participant(id: ParticipantId) =
     addPathSegment("participants").addPathSegment(id)
 
-internal fun HttpUrl.Builder.call(id: CallId) =
-    addPathSegment("calls").addPathSegment(id)
+internal fun HttpUrl.Builder.call(id: CallId) = addPathSegment("calls").addPathSegment(id)
 
 internal fun HttpUrl.Builder.registration(deviceAlias: String? = null): HttpUrl.Builder = apply {
     deviceAlias?.let { require(it.isNotBlank()) { "deviceAlias is blank." } }
