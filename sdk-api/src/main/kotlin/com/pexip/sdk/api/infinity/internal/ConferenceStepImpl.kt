@@ -286,7 +286,6 @@ internal class ConferenceStepImpl(
             }
             .token(token)
             .build(),
-        json = json,
     )
 
     override fun conference(conferenceAlias: String): InfinityService.ConferenceStep {
