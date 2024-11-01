@@ -7,7 +7,6 @@ androidx-core = "1.13.1"
 androidx-datastore = "1.1.1"
 androidx-media = "1.7.0"
 androidx-startup = "1.2.0"
-accompanist = "0.36.0"
 assertk = "0.28.1"
 coil = "2.7.0"
 dagger = "2.52"
@@ -42,7 +41,6 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "androidx-datastore" }
 androidx-media = { module = "androidx.media:media", version.ref = "androidx-media" }
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "androidx-startup" }
-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
