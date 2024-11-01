@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Pexip AS
+ * Copyright 2023-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,9 @@
  */
 package com.pexip.sdk.api.infinity.internal
 
-import com.pexip.sdk.api.infinity.InfinityService
-import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.ParticipantId
 
-internal class BreakoutStepImpl(
-    override val breakoutId: BreakoutId,
-    private val conferenceStep: ConferenceStepImpl,
-) : InfinityService.BreakoutStep,
-    BreakoutStepImplScope,
-    ConferenceStepImplScope by conferenceStep {
+internal sealed interface BreakoutParticipantStepImplScope : BreakoutStepImplScope {
 
-    override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-        BreakoutParticipantStepImpl(this, participantId)
+    val participantId: ParticipantId
 }
