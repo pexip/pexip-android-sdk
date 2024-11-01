@@ -29,6 +29,7 @@ import com.pexip.sdk.media.MediaConnectionSignaling
  * @property roster an instance of [Roster] attached to this [Conference]
  * @property referer an instance of [Referer] attached to this [Conference]
  * @property messenger an instance of [Messenger] attached to this [Conference]
+ * @property breakouts an instance of [Breakouts] attached to this [Conference]
  * @property signaling an instance of [MediaConnectionSignaling] to be used with [MediaConnection]
  */
 public interface Conference {
@@ -45,6 +46,8 @@ public interface Conference {
     public val referer: Referer
 
     public val messenger: Messenger
+
+    public val breakouts: Breakouts get() = throw NotImplementedError()
 
     public val serviceType: ServiceType
 

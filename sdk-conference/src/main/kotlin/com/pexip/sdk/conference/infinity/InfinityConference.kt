@@ -18,6 +18,7 @@ package com.pexip.sdk.conference.infinity
 import com.pexip.sdk.api.infinity.InfinityService
 import com.pexip.sdk.api.infinity.RequestTokenResponse
 import com.pexip.sdk.api.infinity.TokenStore
+import com.pexip.sdk.conference.Breakouts
 import com.pexip.sdk.conference.Conference
 import com.pexip.sdk.conference.ConferenceEvent
 import com.pexip.sdk.conference.ConferenceEventListener
@@ -25,6 +26,7 @@ import com.pexip.sdk.conference.Messenger
 import com.pexip.sdk.conference.Referer
 import com.pexip.sdk.conference.Roster
 import com.pexip.sdk.conference.Theme
+import com.pexip.sdk.conference.infinity.internal.BreakoutsImpl
 import com.pexip.sdk.conference.infinity.internal.ConferenceEvent
 import com.pexip.sdk.conference.infinity.internal.DataChannelImpl
 import com.pexip.sdk.conference.infinity.internal.DataChannelMessengerImpl
@@ -145,6 +147,8 @@ public class InfinityConference private constructor(
         )
     }
 
+    override val breakouts: Breakouts = BreakoutsImpl(scope, event)
+
     init {
         store.refreshTokenIn(
             scope = scope,
@@ -192,7 +196,9 @@ public class InfinityConference private constructor(
         @Suppress("UNUSED_PARAMETER")
         @Deprecated(
             message = "Use a version of this method that accepts ConferenceStep",
-            replaceWith = ReplaceWith("create(service.newRequest(node).conference(conferenceAlias)), response)"),
+            replaceWith = ReplaceWith(
+                "create(service.newRequest(node).conference(conferenceAlias)), response)",
+            ),
             level = DeprecationLevel.ERROR,
         )
         @JvmStatic
