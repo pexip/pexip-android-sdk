@@ -21,6 +21,7 @@ import assertk.tableOf
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.BreakoutBeginEvent
 import com.pexip.sdk.api.infinity.BreakoutEndEvent
+import com.pexip.sdk.api.infinity.BreakoutEvent
 import com.pexip.sdk.api.infinity.ByeEvent
 import com.pexip.sdk.api.infinity.ConferenceUpdateEvent
 import com.pexip.sdk.api.infinity.DisconnectEvent
@@ -355,6 +356,119 @@ class InfinityEventTest {
                     SpeakerResponse(
                         participantId = ParticipantId("25206ea5-5fa6-4bfb-93ff-3c6aa74e03c2"),
                         vad = 0,
+                    ),
+                ),
+            )
+            .row(
+                val1 = "breakout_event",
+                val2 = "breakout_event_conference_update.json",
+                val3 = BreakoutEvent(
+                    id = BreakoutId("04fe9b38-4354-4e87-a4b3-6f589a8dafa3"),
+                    event = ConferenceUpdateEvent(
+                        locked = false,
+                        started = true,
+                        guestsMuted = false,
+                        presentationAllowed = true,
+                        guestsCanUnmute = true,
+                    ),
+                ),
+            )
+            .row(
+                val1 = "breakout_event",
+                val2 = "breakout_event_participant_sync_begin.json",
+                val3 = BreakoutEvent(
+                    id = BreakoutId("04fe9b38-4354-4e87-a4b3-6f589a8dafa3"),
+                    event = ParticipantSyncBeginEvent,
+                ),
+            )
+            .row(
+                val1 = "breakout_event",
+                val2 = "breakout_event_participant_sync_end.json",
+                val3 = BreakoutEvent(
+                    id = BreakoutId("04fe9b38-4354-4e87-a4b3-6f589a8dafa3"),
+                    event = ParticipantSyncEndEvent,
+                ),
+            )
+            .row(
+                val1 = "breakout_event",
+                val2 = "breakout_event_participant_create.json",
+                val3 = BreakoutEvent(
+                    id = BreakoutId("04fe9b38-4354-4e87-a4b3-6f589a8dafa3"),
+                    event = ParticipantCreateEvent(
+                        response = ParticipantResponse(
+                            id = ParticipantId("1e1bdef4-323c-4ed2-8765-1153be63760e"),
+                            startTime = Instant.fromEpochSeconds(
+                                epochSeconds = 1730272988,
+                                nanosecondAdjustment = 677395300,
+                            ),
+                            buzzTime = null,
+                            spotlightTime = null,
+                            displayName = "George",
+                            overlayText = "George",
+                            audioMuted = false,
+                            videoMuted = false,
+                            presenting = false,
+                            muteSupported = true,
+                            transferSupported = true,
+                            disconnectSupported = true,
+                            role = Role.HOST,
+                            serviceType = ServiceType.CONFERENCE,
+                        ),
+                    ),
+                ),
+            )
+            .row(
+                val1 = "breakout_event",
+                val2 = "breakout_event_participant_update.json",
+                val3 = BreakoutEvent(
+                    id = BreakoutId("04fe9b38-4354-4e87-a4b3-6f589a8dafa3"),
+                    event = ParticipantUpdateEvent(
+                        response = ParticipantResponse(
+                            id = ParticipantId("c61828bb-01d6-4531-a415-8d5201e190d6"),
+                            startTime = Instant.fromEpochSeconds(
+                                epochSeconds = 1730272990,
+                                nanosecondAdjustment = 897364100,
+                            ),
+                            buzzTime = null,
+                            spotlightTime = null,
+                            displayName = "George",
+                            overlayText = "George",
+                            audioMuted = false,
+                            videoMuted = false,
+                            presenting = false,
+                            muteSupported = true,
+                            transferSupported = true,
+                            disconnectSupported = true,
+                            role = Role.HOST,
+                            serviceType = ServiceType.CONFERENCE,
+                        ),
+                    ),
+                ),
+            )
+            .row(
+                val1 = "breakout_event",
+                val2 = "breakout_event_participant_delete.json",
+                val3 = BreakoutEvent(
+                    id = BreakoutId("04fe9b38-4354-4e87-a4b3-6f589a8dafa3"),
+                    event = ParticipantDeleteEvent(
+                        id = ParticipantId("c61828bb-01d6-4531-a415-8d5201e190d6"),
+                    ),
+                ),
+            )
+            .row(
+                val1 = "breakout_event",
+                val2 = "breakout_event_stage.json",
+                val3 = BreakoutEvent(
+                    id = BreakoutId("04fe9b38-4354-4e87-a4b3-6f589a8dafa3"),
+                    event = StageEvent(
+                        SpeakerResponse(
+                            participantId = ParticipantId("119895e3-c614-4e92-b906-90fd2afd6dff"),
+                            vad = 100,
+                        ),
+                        SpeakerResponse(
+                            participantId = ParticipantId("25206ea5-5fa6-4bfb-93ff-3c6aa74e03c2"),
+                            vad = 0,
+                        ),
                     ),
                 ),
             )
