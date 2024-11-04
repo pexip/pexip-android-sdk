@@ -18,7 +18,7 @@ package com.pexip.sdk.internal
 internal object Android {
 
     const val MIN_SDK = 21
-    const val TARGET_SDK = 34
+    const val TARGET_SDK = 35
     const val COMPILE_SDK = 35
 
     const val TEST_INSTRUMENTATION_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
