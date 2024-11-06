@@ -29,15 +29,18 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import kotlin.time.Duration
 
 @Serializable
 @OptIn(ExperimentalSerializationApi::class)
-@JsonClassDiscriminator("#event")
+@JsonClassDiscriminator(KEY_EVENT)
 public sealed interface InfinityEvent : Event
 
 @Serializable
@@ -58,7 +61,7 @@ public data class ConferenceUpdateEvent(
 
 @Serializable
 @SerialName("stage")
-public data class StageEvent(@SerialName("data") val speakers: List<SpeakerResponse>) :
+public data class StageEvent(@SerialName(KEY_DATA) val speakers: List<SpeakerResponse>) :
     InfinityEvent {
 
     public constructor(vararg speakers: SpeakerResponse) : this(speakers.asList())
@@ -168,15 +171,28 @@ public data class SplashScreenEvent(@SerialName("screen_key") val screenKey: Str
 @Serializable
 @SerialName("breakout_begin")
 public data class BreakoutBeginEvent(
-    @SerialName("breakout_uuid") val id: BreakoutId,
-    @SerialName("participant_uuid") val participantId: ParticipantId,
+    @SerialName(KEY_BREAKOUT_UUID)
+    val id: BreakoutId,
+    @SerialName("participant_uuid")
+    val participantId: ParticipantId,
 ) : InfinityEvent
 
 @Serializable
 @SerialName("breakout_end")
 public data class BreakoutEndEvent(
-    @SerialName("breakout_uuid") val id: BreakoutId,
-    @SerialName("participant_uuid") val participantId: ParticipantId,
+    @SerialName(KEY_BREAKOUT_UUID)
+    val id: BreakoutId,
+    @SerialName("participant_uuid")
+    val participantId: ParticipantId,
+) : InfinityEvent
+
+@Serializable
+@SerialName(EVENT_BREAKOUT_EVENT)
+public data class BreakoutEvent(
+    @SerialName(KEY_BREAKOUT_UUID)
+    val id: BreakoutId,
+    @SerialName(KEY_DATA)
+    val event: InfinityEvent,
 ) : InfinityEvent
 
 @Serializable
@@ -208,13 +224,31 @@ internal fun InfinityEvent(
     data: String,
 ): InfinityEvent {
     type?.takeIf(String::isNotBlank) ?: return UnknownEvent
-    val d = InfinityService.Json.decodeFromString<JsonElement>(data)
-    val o = buildJsonObject {
-        put("#event", type)
-        when (d) {
-            is JsonObject -> d.forEach { (key, value) -> put(key, value) }
-            else -> put("data", d)
+    val eventData = InfinityService.Json.decodeFromString<JsonElement>(data)
+    val jsonObject = buildJsonObject {
+        put(KEY_EVENT, type)
+        when (type) {
+            EVENT_BREAKOUT_EVENT -> {
+                val breakoutEventData = eventData.jsonObject
+                put(KEY_BREAKOUT_UUID, breakoutEventData.getValue(KEY_BREAKOUT_UUID))
+                putJsonObject(KEY_DATA) {
+                    put(KEY_EVENT, breakoutEventData.getValue("event"))
+                    when (val d = breakoutEventData[KEY_DATA] ?: JsonNull) {
+                        is JsonObject -> d.forEach { (key, value) -> put(key, value) }
+                        else -> put(KEY_DATA, d)
+                    }
+                }
+            }
+            else -> when (eventData) {
+                is JsonObject -> eventData.forEach { (key, value) -> put(key, value) }
+                else -> put(KEY_DATA, eventData)
+            }
         }
     }
-    return InfinityService.Json.decodeFromJsonElement<InfinityEvent>(o)
+    return InfinityService.Json.decodeFromJsonElement<InfinityEvent>(jsonObject)
 }
+
+private const val KEY_EVENT = "#event"
+private const val KEY_DATA = "data"
+private const val KEY_BREAKOUT_UUID = "breakout_uuid"
+private const val EVENT_BREAKOUT_EVENT = "breakout_event"

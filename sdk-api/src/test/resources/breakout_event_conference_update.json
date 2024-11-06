@@ -1,0 +1,32 @@
+{
+  "breakout_uuid": "04fe9b38-4354-4e87-a4b3-6f589a8dafa3",
+  "event": "conference_update",
+  "id": "MjdfNg==",
+  "data": {
+    "locked": false,
+    "direct_media": false,
+    "guests_muted": false,
+    "all_muted": false,
+    "presentation_allowed": true,
+    "started": true,
+    "classification": {
+      "levels": {},
+      "current": null
+    },
+    "message_text": null,
+    "breakout_rooms": false,
+    "pinning_config": "",
+    "guests_can_unmute": true,
+    "live_captions_available": false,
+    "breakout": true,
+    "breakout_name": "Room 1",
+    "breakout_description": "Room 1",
+    "end_action": "transfer",
+    "end_time": 0,
+    "breakoutbuzz": {
+      "value": false,
+      "time": 0
+    },
+    "breakout_guests_allowed_to_leave": false
+  }
+}
