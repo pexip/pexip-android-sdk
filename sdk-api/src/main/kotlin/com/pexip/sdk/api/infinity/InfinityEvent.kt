@@ -23,14 +23,28 @@ import com.pexip.sdk.api.infinity.internal.ParticipantResponseSerializer
 import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.LayoutId
 import com.pexip.sdk.infinity.ParticipantId
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.UseSerializers
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonClassDiscriminator
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.put
 import kotlin.time.Duration
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
+@JsonClassDiscriminator("#event")
+public sealed interface InfinityEvent : Event
+
+@Serializable
+public data object UnknownEvent : InfinityEvent
+
+@Serializable
+@SerialName("conference_update")
 public data class ConferenceUpdateEvent(
     val locked: Boolean = false,
     val started: Boolean = false,
@@ -40,58 +54,74 @@ public data class ConferenceUpdateEvent(
     val presentationAllowed: Boolean = false,
     @SerialName("guests_can_unmute")
     val guestsCanUnmute: Boolean? = null,
-) : Event
+) : InfinityEvent
 
 @Serializable
-@JvmInline
-public value class StageEvent(public val speakers: List<SpeakerResponse>) : Event {
+@SerialName("stage")
+public data class StageEvent(@SerialName("data") val speakers: List<SpeakerResponse>) :
+    InfinityEvent {
 
     public constructor(vararg speakers: SpeakerResponse) : this(speakers.asList())
 }
 
-public data object ParticipantSyncBeginEvent : Event
-
-public data object ParticipantSyncEndEvent : Event
+@Serializable
+@SerialName("participant_sync_begin")
+public data object ParticipantSyncBeginEvent : InfinityEvent
 
 @Serializable
+@SerialName("participant_sync_end")
+public data object ParticipantSyncEndEvent : InfinityEvent
+
 @JvmInline
-public value class ParticipantCreateEvent(public val response: ParticipantResponse) : Event
-
 @Serializable
+@SerialName("participant_create")
+public value class ParticipantCreateEvent(public val response: ParticipantResponse) : InfinityEvent
+
 @JvmInline
-public value class ParticipantUpdateEvent(public val response: ParticipantResponse) : Event
+@Serializable
+@SerialName("participant_update")
+public value class ParticipantUpdateEvent(public val response: ParticipantResponse) : InfinityEvent
 
 @Serializable
-public data class ParticipantDeleteEvent(@SerialName("uuid") val id: ParticipantId) : Event
+@SerialName("participant_delete")
+public data class ParticipantDeleteEvent(@SerialName("uuid") val id: ParticipantId) : InfinityEvent
 
 @Serializable
-public data class NewOfferEvent(val sdp: String) : Event
+@SerialName("new_offer")
+public data class NewOfferEvent(val sdp: String) : InfinityEvent
 
 @Serializable
-public data class UpdateSdpEvent(val sdp: String) : Event
+@SerialName("update_sdp")
+public data class UpdateSdpEvent(val sdp: String) : InfinityEvent
 
 @Serializable
+@SerialName("new_candidate")
 public data class NewCandidateEvent(
     val candidate: String,
     val mid: String,
     val ufrag: String = "",
     val pwd: String = "",
-) : Event
+) : InfinityEvent
 
 @Serializable
-public data object PeerDisconnectEvent : Event
+@SerialName("peer_disconnect")
+public data object PeerDisconnectEvent : InfinityEvent
 
 @Serializable
+@SerialName("presentation_start")
 public data class PresentationStartEvent(
     @SerialName("presenter_name")
     val presenterName: String,
     @SerialName("presenter_uuid")
     val presenterId: ParticipantId,
-) : Event
-
-public data object PresentationStopEvent : Event
+) : InfinityEvent
 
 @Serializable
+@SerialName("presentation_stop")
+public data object PresentationStopEvent : InfinityEvent
+
+@Serializable
+@SerialName("message_received")
 public data class MessageReceivedEvent(
     @SerialName("origin")
     val participantName: String,
@@ -100,9 +130,10 @@ public data class MessageReceivedEvent(
     val type: String,
     val payload: String,
     val direct: Boolean = false,
-) : Event
+) : InfinityEvent
 
 @Serializable
+@SerialName("layout")
 public data class LayoutEvent(
     @SerialName("view")
     val layout: LayoutId,
@@ -110,84 +141,80 @@ public data class LayoutEvent(
     val requestedLayout: RequestedLayout? = null,
     @SerialName("overlay_text_enabled")
     val overlayTextEnabled: Boolean = false,
-) : Event
+) : InfinityEvent
 
 @Serializable
+@SerialName("fecc")
 public data class FeccEvent(
     public val action: FeccAction = FeccAction.UNKNOWN,
     @Serializable(with = DurationAsMillisecondsSerializer::class)
     public val timeout: Duration,
     public val movement: List<FeccMovement>,
-) : Event
+) : InfinityEvent
 
 @Serializable
+@SerialName("refer")
 public data class ReferEvent(
     @SerialName("alias")
     val conferenceAlias: String,
     val token: String,
-) : Event
+) : InfinityEvent
 
 @Serializable
-public data class SplashScreenEvent(@SerialName("screen_key") val screenKey: String? = null) : Event
+@SerialName("splash_screen")
+public data class SplashScreenEvent(@SerialName("screen_key") val screenKey: String? = null) :
+    InfinityEvent
 
 @Serializable
+@SerialName("breakout_begin")
 public data class BreakoutBeginEvent(
     @SerialName("breakout_uuid") val id: BreakoutId,
     @SerialName("participant_uuid") val participantId: ParticipantId,
-) : Event
+) : InfinityEvent
 
 @Serializable
+@SerialName("breakout_end")
 public data class BreakoutEndEvent(
     @SerialName("breakout_uuid") val id: BreakoutId,
     @SerialName("participant_uuid") val participantId: ParticipantId,
-) : Event
+) : InfinityEvent
 
 @Serializable
-public data class DisconnectEvent(val reason: String) : Event
-
-public data object ByeEvent : Event
+@SerialName("disconnect")
+public data class DisconnectEvent(val reason: String) : InfinityEvent
 
 @Serializable
+@SerialName("bye")
+public data object ByeEvent : InfinityEvent
+
+@Serializable
+@SerialName("incoming")
 public data class IncomingEvent(
     @SerialName("conference_alias")
     val conferenceAlias: String,
     @SerialName("remote_display_name")
     val remoteDisplayName: String,
     val token: String,
-) : Event
+) : InfinityEvent
 
 @Serializable
-public data class IncomingCancelledEvent(val token: String) : Event
+@SerialName("incoming_cancelled")
+public data class IncomingCancelledEvent(val token: String) : InfinityEvent
 
 @Suppress("ktlint:standard:function-naming")
-internal fun Event(json: Json, id: String?, type: String?, data: String): Event? = when (type) {
-    "conference_update" -> json.decodeFromString<ConferenceUpdateEvent>(data)
-    "stage" -> json.decodeFromString<StageEvent>(data)
-    "participant_sync_begin" -> ParticipantSyncBeginEvent
-    "participant_sync_end" -> ParticipantSyncEndEvent
-    "participant_create" -> json.decodeFromString<ParticipantCreateEvent>(data)
-    "participant_update" -> json.decodeFromString<ParticipantUpdateEvent>(data)
-    "participant_delete" -> json.decodeFromString<ParticipantDeleteEvent>(data)
-    "new_offer" -> json.decodeFromString<NewOfferEvent>(data)
-    "update_sdp" -> json.decodeFromString<UpdateSdpEvent>(data)
-    "new_candidate" -> json.decodeFromString<NewCandidateEvent>(data)
-    "peer_disconnect" -> PeerDisconnectEvent
-    "presentation_start" -> json.decodeFromString<PresentationStartEvent>(data)
-    "presentation_stop" -> PresentationStopEvent
-    "message_received" -> json.decodeFromString<MessageReceivedEvent>(data)
-    "layout" -> json.decodeFromString<LayoutEvent>(data)
-    "fecc" -> json.decodeFromString<FeccEvent>(data)
-    "refer" -> json.decodeFromString<ReferEvent>(data)
-    "splash_screen" -> try {
-        json.decodeFromString<SplashScreenEvent>(data)
-    } catch (e: SerializationException) {
-        SplashScreenEvent()
+internal fun InfinityEvent(
+    @Suppress("UNUSED_PARAMETER") id: String?,
+    type: String?,
+    data: String,
+): InfinityEvent {
+    type?.takeIf(String::isNotBlank) ?: return UnknownEvent
+    val d = InfinityService.Json.decodeFromString<JsonElement>(data)
+    val o = buildJsonObject {
+        put("#event", type)
+        when (d) {
+            is JsonObject -> d.forEach { (key, value) -> put(key, value) }
+            else -> put("data", d)
+        }
     }
-    "breakout_begin" -> json.decodeFromString<BreakoutBeginEvent>(data)
-    "breakout_end" -> json.decodeFromString<BreakoutEndEvent>(data)
-    "disconnect" -> json.decodeFromString<DisconnectEvent>(data)
-    "bye" -> ByeEvent
-    "incoming" -> json.decodeFromString<IncomingEvent>(data)
-    "incoming_cancelled" -> json.decodeFromString<IncomingCancelledEvent>(data)
-    else -> null
+    return InfinityService.Json.decodeFromJsonElement<InfinityEvent>(o)
 }

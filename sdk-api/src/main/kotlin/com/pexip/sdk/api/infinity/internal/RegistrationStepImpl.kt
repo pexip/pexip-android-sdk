@@ -34,7 +34,8 @@ import okio.ByteString.Companion.encodeUtf8
 internal class RegistrationStepImpl(
     override val requestBuilder: RequestBuilderImpl,
     override val deviceAlias: String,
-) : InfinityService.RegistrationStep, RequestBuilderImplScope by requestBuilder {
+) : InfinityService.RegistrationStep,
+    RequestBuilderImplScope by requestBuilder {
 
     override fun requestToken(
         username: String,
@@ -93,7 +94,6 @@ internal class RegistrationStepImpl(
             }
             .token(token)
             .build(),
-        json = json,
     )
 
     override fun registrations(token: Token, query: String): Call<List<RegistrationResponse>> =
@@ -150,9 +150,7 @@ internal class RegistrationStepImpl(
         else -> throw IllegalStateException()
     }
 
-    private fun Response.parse401(): Nothing {
-        throw NoSuchRegistrationException(body?.string())
-    }
+    private fun Response.parse401(): Nothing = throw NoSuchRegistrationException(body?.string())
 
     private fun Response.parse403(): Nothing {
         val message = json.decodeFromResponseBody(StringSerializer, body!!)

@@ -91,7 +91,7 @@ public final class com/pexip/sdk/api/infinity/BackgroundResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/BreakoutBeginEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/BreakoutBeginEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-Yx3DcQY ()Ljava/lang/String;
@@ -120,7 +120,7 @@ public final class com/pexip/sdk/api/infinity/BreakoutBeginEvent$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/BreakoutEndEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/BreakoutEndEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/BreakoutEndEvent$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-Yx3DcQY ()Ljava/lang/String;
@@ -149,10 +149,11 @@ public final class com/pexip/sdk/api/infinity/BreakoutEndEvent$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/ByeEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/ByeEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ByeEvent;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -222,7 +223,7 @@ public final class com/pexip/sdk/api/infinity/CallsResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/ConferenceUpdateEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/ConferenceUpdateEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent$Companion;
 	public fun <init> ()V
 	public fun <init> (ZZZZLjava/lang/Boolean;)V
@@ -339,7 +340,7 @@ public final class com/pexip/sdk/api/infinity/DataChannelMessage$Unknown : com/p
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/pexip/sdk/api/infinity/DisconnectEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/DisconnectEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/DisconnectEvent$Companion;
 	public fun <init> (Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -454,7 +455,7 @@ public final class com/pexip/sdk/api/infinity/FeccAction$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/FeccEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/FeccEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/FeccEvent$Companion;
 	public synthetic fun <init> (Lcom/pexip/sdk/api/infinity/FeccAction;JLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Lcom/pexip/sdk/api/infinity/FeccAction;JLjava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -568,7 +569,7 @@ public final class com/pexip/sdk/api/infinity/IllegalLayoutTransformException : 
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
-public final class com/pexip/sdk/api/infinity/IncomingCancelledEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/IncomingCancelledEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/IncomingCancelledEvent$Companion;
 	public fun <init> (Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -595,7 +596,7 @@ public final class com/pexip/sdk/api/infinity/IncomingCancelledEvent$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/IncomingEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/IncomingEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/IncomingEvent$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -623,6 +624,14 @@ public synthetic class com/pexip/sdk/api/infinity/IncomingEvent$$serializer : ko
 }
 
 public final class com/pexip/sdk/api/infinity/IncomingEvent$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract interface class com/pexip/sdk/api/infinity/InfinityEvent : com/pexip/sdk/api/Event {
+	public static final field Companion Lcom/pexip/sdk/api/infinity/InfinityEvent$Companion;
+}
+
+public final class com/pexip/sdk/api/infinity/InfinityEvent$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -738,7 +747,7 @@ public final class com/pexip/sdk/api/infinity/InvalidTokenException : java/lang/
 	public synthetic fun <init> (Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
-public final class com/pexip/sdk/api/infinity/LayoutEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/LayoutEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/LayoutEvent$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lcom/pexip/sdk/api/infinity/RequestedLayout;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -770,7 +779,7 @@ public final class com/pexip/sdk/api/infinity/LayoutEvent$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/MessageReceivedEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/MessageReceivedEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/MessageReceivedEvent$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -835,7 +844,7 @@ public final class com/pexip/sdk/api/infinity/MessageRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/NewCandidateEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/NewCandidateEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/NewCandidateEvent$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -903,7 +912,7 @@ public final class com/pexip/sdk/api/infinity/NewCandidateRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/NewOfferEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/NewOfferEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/NewOfferEvent$Companion;
 	public fun <init> (Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -966,7 +975,7 @@ public abstract interface class com/pexip/sdk/api/infinity/OfferResponse {
 	public abstract fun getSdp ()Ljava/lang/String;
 }
 
-public final class com/pexip/sdk/api/infinity/ParticipantCreateEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/ParticipantCreateEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/ParticipantCreateEvent$Companion;
 	public static final synthetic fun box-impl (Lcom/pexip/sdk/api/infinity/ParticipantResponse;)Lcom/pexip/sdk/api/infinity/ParticipantCreateEvent;
 	public static fun constructor-impl (Lcom/pexip/sdk/api/infinity/ParticipantResponse;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
@@ -996,7 +1005,7 @@ public final class com/pexip/sdk/api/infinity/ParticipantCreateEvent$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/ParticipantDeleteEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/ParticipantDeleteEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1-UyOe1Tk ()Ljava/lang/String;
@@ -1081,21 +1090,23 @@ public final class com/pexip/sdk/api/infinity/ParticipantResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/ParticipantSyncBeginEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/ParticipantSyncBeginEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ParticipantSyncBeginEvent;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/pexip/sdk/api/infinity/ParticipantSyncEndEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/ParticipantSyncEndEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ParticipantSyncEndEvent;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/pexip/sdk/api/infinity/ParticipantUpdateEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/ParticipantUpdateEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/ParticipantUpdateEvent$Companion;
 	public static final synthetic fun box-impl (Lcom/pexip/sdk/api/infinity/ParticipantResponse;)Lcom/pexip/sdk/api/infinity/ParticipantUpdateEvent;
 	public static fun constructor-impl (Lcom/pexip/sdk/api/infinity/ParticipantResponse;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
@@ -1125,7 +1136,7 @@ public final class com/pexip/sdk/api/infinity/ParticipantUpdateEvent$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/PeerDisconnectEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/PeerDisconnectEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/PeerDisconnectEvent;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
@@ -1160,7 +1171,7 @@ public final class com/pexip/sdk/api/infinity/PreferredAspectRatioRequest$Compan
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/PresentationStartEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/PresentationStartEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/PresentationStartEvent$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -1189,14 +1200,15 @@ public final class com/pexip/sdk/api/infinity/PresentationStartEvent$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/PresentationStopEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/PresentationStopEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/PresentationStopEvent;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/pexip/sdk/api/infinity/ReferEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/ReferEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/ReferEvent$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
@@ -1608,7 +1620,7 @@ public final class com/pexip/sdk/api/infinity/SpeakerResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/SplashScreenEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/SplashScreenEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/SplashScreenEvent$Companion;
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/String;)V
@@ -1672,30 +1684,27 @@ public final class com/pexip/sdk/api/infinity/SsoRedirectException : java/lang/R
 	public final fun getUrl ()Ljava/lang/String;
 }
 
-public final class com/pexip/sdk/api/infinity/StageEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/StageEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/StageEvent$Companion;
-	public static final synthetic fun box-impl (Ljava/util/List;)Lcom/pexip/sdk/api/infinity/StageEvent;
-	public static fun constructor-impl (Ljava/util/List;)Ljava/util/List;
-	public static fun constructor-impl ([Lcom/pexip/sdk/api/infinity/SpeakerResponse;)Ljava/util/List;
+	public fun <init> (Ljava/util/List;)V
+	public fun <init> ([Lcom/pexip/sdk/api/infinity/SpeakerResponse;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lcom/pexip/sdk/api/infinity/StageEvent;
+	public static synthetic fun copy$default (Lcom/pexip/sdk/api/infinity/StageEvent;Ljava/util/List;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/StageEvent;
 	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Ljava/util/List;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Ljava/util/List;Ljava/util/List;)Z
 	public final fun getSpeakers ()Ljava/util/List;
 	public fun hashCode ()I
-	public static fun hashCode-impl (Ljava/util/List;)I
 	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Ljava/util/List;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Ljava/util/List;
 }
 
 public synthetic class com/pexip/sdk/api/infinity/StageEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/StageEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/StageEvent;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public final fun deserialize-y93Zkrk (Lkotlinx/serialization/encoding/Decoder;)Ljava/util/List;
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/StageEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public final fun serialize-5rI60R0 (Lkotlinx/serialization/encoding/Encoder;Ljava/util/List;)V
 	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
@@ -1804,6 +1813,14 @@ public final class com/pexip/sdk/api/infinity/TurnResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/pexip/sdk/api/infinity/UnknownEvent : com/pexip/sdk/api/infinity/InfinityEvent {
+	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/UnknownEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/pexip/sdk/api/infinity/UpdateRequest {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/UpdateRequest$Companion;
 	public fun <init> (Ljava/lang/String;Z)V
@@ -1865,7 +1882,7 @@ public final class com/pexip/sdk/api/infinity/UpdateResponse$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/pexip/sdk/api/infinity/UpdateSdpEvent : com/pexip/sdk/api/Event {
+public final class com/pexip/sdk/api/infinity/UpdateSdpEvent : com/pexip/sdk/api/infinity/InfinityEvent {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/UpdateSdpEvent$Companion;
 	public fun <init> (Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;

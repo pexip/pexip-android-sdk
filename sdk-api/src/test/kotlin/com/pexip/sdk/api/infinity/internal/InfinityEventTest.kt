@@ -17,7 +17,6 @@ package com.pexip.sdk.api.infinity.internal
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNull
 import assertk.tableOf
 import com.pexip.sdk.api.Event
 import com.pexip.sdk.api.infinity.BreakoutBeginEvent
@@ -25,13 +24,12 @@ import com.pexip.sdk.api.infinity.BreakoutEndEvent
 import com.pexip.sdk.api.infinity.ByeEvent
 import com.pexip.sdk.api.infinity.ConferenceUpdateEvent
 import com.pexip.sdk.api.infinity.DisconnectEvent
-import com.pexip.sdk.api.infinity.Event
 import com.pexip.sdk.api.infinity.FeccAction
 import com.pexip.sdk.api.infinity.FeccEvent
 import com.pexip.sdk.api.infinity.FeccMovement
 import com.pexip.sdk.api.infinity.IncomingCancelledEvent
 import com.pexip.sdk.api.infinity.IncomingEvent
-import com.pexip.sdk.api.infinity.InfinityService
+import com.pexip.sdk.api.infinity.InfinityEvent
 import com.pexip.sdk.api.infinity.LayoutEvent
 import com.pexip.sdk.api.infinity.MessageReceivedEvent
 import com.pexip.sdk.api.infinity.NewCandidateEvent
@@ -51,6 +49,7 @@ import com.pexip.sdk.api.infinity.Screen
 import com.pexip.sdk.api.infinity.SpeakerResponse
 import com.pexip.sdk.api.infinity.SplashScreenEvent
 import com.pexip.sdk.api.infinity.StageEvent
+import com.pexip.sdk.api.infinity.UnknownEvent
 import com.pexip.sdk.api.infinity.UpdateSdpEvent
 import com.pexip.sdk.api.infinity.readUtf8
 import com.pexip.sdk.infinity.BreakoutId
@@ -67,7 +66,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-internal class EventTest {
+class InfinityEventTest {
 
     @Test
     fun `returns Event if the type is registered`() {
@@ -112,13 +111,13 @@ internal class EventTest {
                 val3 = IncomingEvent(
                     conferenceAlias = "george@example.com",
                     remoteDisplayName = "George",
-                    token = "CXU3tuRZbF673lPdVbg9p3ZtOv7iuTOO0BSo2yFF1U9_qxKdlQAMr2wNZBwW1xccPMgFEI_MjF9SpRzu6nxi5zwaXdOsQbblemYYOn8pShCT1bn1QIWx0RC0H-L4heWaGQXY1dpIByDInVK5vLu88Uv0cb_dbxzhrlaIfm9_WP9YLmCVsvmFOhmDKx0bZxRTOP_yziFjl5xNxWAJQ8NL3assEFIfptXGN89Fp6jomreIOSktfVlSnMJe1OG6fqeiKYQS4WP-ie2d3nQ1tVFfxzYeU0fGHh4Wvxqozmbqs_zjpg==",
+                    token = "CXU",
                 ),
             )
             .row(
                 val1 = "incoming_cancelled",
                 val2 = "incoming_cancelled.json",
-                val3 = IncomingCancelledEvent("CXU3tuRZbF673lPdVbg9p3ZtOv7iuTOO0BSo2yFF1U9_qxKdlQAMr2wNZBwW1xccPMgFEI_MjF9SpRzu6nxi5zwaXdOsQbblemYYOn8pShCT1bn1QIWx0RC0H-L4heWaGQXY1dpIByDInVK5vLu88Uv0cb_dbxzhrlaIfm9_WP9YLmCVsvmFOhmDKx0bZxRTOP_yziFjl5xNxWAJQ8NL3assEFIfptXGN89Fp6jomreIOSktfVlSnMJe1OG6fqeiKYQS4WP-ie2d3nQ1tVFfxzYeU0fGHh4Wvxqozmbqs_zjpg=="),
+                val3 = IncomingCancelledEvent("CXU"),
             )
             .row(
                 val1 = "fecc",
@@ -161,7 +160,7 @@ internal class EventTest {
                 val2 = "refer.json",
                 val3 = ReferEvent(
                     conferenceAlias = "toto",
-                    token = "ZqWyw87Yr03g-vH_VCqZBTMemTcmcwwUrHIpq9LWl8Kn8DGc1yBmeMSN-ux5KRsO70QRtOvLfyoasEeioIve4wsUgCAsi6y_GUqc2Af40TcCHRm3RF5fEUqPo0x8P32Nc3BhmaTk5Mz2YP8t8v5YCggcaHDU1d_ddWZszWUwa_sszv-9h3FxmpTzT-zuB67RXfdBQlStbt86paf5S-6E9kzB2QJCKfrB1U9-juF-czmMibaEODEVC88V2Rlf8GIer2w=",
+                    token = "ZqW",
                 ),
             )
             .row(
@@ -361,8 +360,7 @@ internal class EventTest {
             )
             .forAll { type, filename, event ->
                 val data = FileSystem.RESOURCES.readUtf8(filename)
-                val actual = Event(
-                    json = InfinityService.Json,
+                val actual = InfinityEvent(
                     id = Random.nextString(),
                     type = type,
                     data = data.trim(),
@@ -373,12 +371,11 @@ internal class EventTest {
 
     @Test
     fun `returns null if the type is not registered`() {
-        val actual = Event(
-            json = InfinityService.Json,
+        val actual = InfinityEvent(
             id = Random.nextString(),
             type = Random.nextString(),
             data = Random.nextString(),
         )
-        assertThat(actual, "event").isNull()
+        assertThat(actual, "event").isEqualTo(UnknownEvent)
     }
 }

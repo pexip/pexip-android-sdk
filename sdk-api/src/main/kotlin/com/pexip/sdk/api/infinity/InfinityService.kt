@@ -781,6 +781,9 @@ public interface InfinityService {
             ignoreUnknownKeys = true
             coerceInputValues = true
             serializersModule = SerializersModule {
+                polymorphicDefaultDeserializer(InfinityEvent::class) {
+                    UnknownEvent.serializer()
+                }
                 polymorphicDefaultDeserializer(ElementResponse::class) {
                     ElementResponse.Unknown.serializer()
                 }

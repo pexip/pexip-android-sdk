@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2024 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@ package com.pexip.sdk.api.infinity.internal
 
 import com.pexip.sdk.api.EventSource
 import com.pexip.sdk.api.EventSourceListener
-import com.pexip.sdk.api.infinity.Event
-import kotlinx.serialization.json.Json
+import com.pexip.sdk.api.infinity.InfinityEvent
+import com.pexip.sdk.api.infinity.UnknownEvent
 import okhttp3.Response
 
 internal class RealEventSource(
     factory: okhttp3.sse.EventSource.Factory,
     request: okhttp3.Request,
-    json: Json,
     listener: EventSourceListener,
 ) : EventSource {
 
@@ -40,7 +39,8 @@ internal class RealEventSource(
             type: String?,
             data: String,
         ) {
-            val event = Event(json, id, type, data) ?: return
+            val event = InfinityEvent(id, type, data)
+            if (event is UnknownEvent) return
             listener.onEvent(this@RealEventSource, event)
         }
 
@@ -58,7 +58,5 @@ internal class RealEventSource(
     }
     private val source = factory.newEventSource(request, l)
 
-    override fun cancel() {
-        source.cancel()
-    }
+    override fun cancel() = source.cancel()
 }
