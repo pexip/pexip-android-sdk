@@ -22,6 +22,10 @@ public final class com/pexip/sdk/media/webrtc/compose/FrameResolution {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/pexip/sdk/media/webrtc/compose/VideoTrackEmbeddedRendererKt {
+	public static final fun VideoTrackEmbeddedRenderer (Lcom/pexip/sdk/media/VideoTrack;Landroidx/compose/ui/Modifier;ZLandroidx/compose/runtime/Composer;II)V
+}
+
 public final class com/pexip/sdk/media/webrtc/compose/VideoTrackRendererKt {
 	public static final fun VideoTrackRenderer (Lcom/pexip/sdk/media/VideoTrack;Landroidx/compose/ui/Modifier;ZZZZLkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lorg/webrtc/RendererCommon$ScalingType;Lorg/webrtc/RendererCommon$ScalingType;Landroidx/compose/runtime/Composer;II)V
 }
