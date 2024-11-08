@@ -1395,8 +1395,8 @@ public final class com/pexip/sdk/api/infinity/RequestRegistrationTokenResponse$C
 
 public final class com/pexip/sdk/api/infinity/RequestTokenRequest {
 	public static final field Companion Lcom/pexip/sdk/api/infinity/RequestTokenRequest$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;ZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3-BqYgc20 ()Ljava/lang/String;
@@ -1405,9 +1405,11 @@ public final class com/pexip/sdk/api/infinity/RequestTokenRequest {
 	public final fun component6 ()Ljava/lang/String;
 	public final fun component7 ()Z
 	public final fun component8 ()Ljava/lang/String;
-	public final fun copy-0YY_9dw (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;)Lcom/pexip/sdk/api/infinity/RequestTokenRequest;
-	public static synthetic fun copy-0YY_9dw$default (Lcom/pexip/sdk/api/infinity/RequestTokenRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;ILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestTokenRequest;
+	public final fun component9 ()Z
+	public final fun copy-NVC4iYU (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Z)Lcom/pexip/sdk/api/infinity/RequestTokenRequest;
+	public static synthetic fun copy-NVC4iYU$default (Lcom/pexip/sdk/api/infinity/RequestTokenRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;ZILjava/lang/Object;)Lcom/pexip/sdk/api/infinity/RequestTokenRequest;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBreakoutCapable ()Z
 	public final fun getCallTag ()Ljava/lang/String;
 	public final fun getChosenIdp-BqYgc20 ()Ljava/lang/String;
 	public final fun getConferenceExtension ()Ljava/lang/String;

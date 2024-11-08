@@ -18,7 +18,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Microphone mute to rely on `AudioDeviceModule.setMicrophoneMute(Boolean)` instead of
   `AudioManager.setMicrophoneMute(Boolean)`
 - Noise suppressor and acoustic echo canceler to use software implementation
-- Explicitly set `breakout_capable` to `false` to make breakouts opt-in 
+- Explicitly set `breakout_capable` to `false` to make breakouts opt-in
 
 ## [0.16.0] - 2024-10-02
 
