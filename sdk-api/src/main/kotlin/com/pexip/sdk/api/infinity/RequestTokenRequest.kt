@@ -15,9 +15,12 @@
  */
 package com.pexip.sdk.api.infinity
 
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
 public data class RequestTokenRequest(
     @SerialName("conference_extension")
@@ -36,4 +39,7 @@ public data class RequestTokenRequest(
     val directMedia: Boolean = false,
     @SerialName("call_tag")
     val callTag: String = "",
+    @EncodeDefault
+    @SerialName("breakout_capable")
+    val breakoutCapable: Boolean = false,
 )
