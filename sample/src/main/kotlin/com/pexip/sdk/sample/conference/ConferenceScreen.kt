@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
@@ -59,6 +58,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -67,7 +67,7 @@ import coil.compose.AsyncImage
 import com.pexip.sdk.conference.Element
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.AudioDevice
-import com.pexip.sdk.media.webrtc.compose.FrameResolution
+import com.pexip.sdk.media.webrtc.compose.VideoTrackEmbeddedRenderer
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.pexip.sdk.sample.CameraIconButton
 import com.pexip.sdk.sample.IconButton
@@ -133,13 +133,6 @@ fun ConferenceScreen(
                         .fillMaxSize()
                         .safeContentPadding(),
                 ) {
-                    val (frameResolution, onFrameResolutionChange) = remember {
-                        mutableStateOf<FrameResolution?>(null)
-                    }
-                    val aspectRatioModifier = when (frameResolution) {
-                        null -> Modifier
-                        else -> Modifier.aspectRatio(frameResolution.rotatedAspectRatio)
-                    }
                     AnimatedVisibility(
                         visible = rendering.cameraVideoTrackRendering?.capturing == true,
                         enter = slideInHorizontally { it * 2 },
@@ -147,15 +140,11 @@ fun ConferenceScreen(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .fillMaxWidth(0.25f)
-                            .then(aspectRatioModifier),
+                            .shadow(elevation = 8.dp, shape = MaterialTheme.shapes.medium),
                     ) {
-                        val scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT
-                        VideoTrackRenderer(
+                        VideoTrackEmbeddedRenderer(
                             videoTrack = rendering.cameraVideoTrack,
                             mirror = true,
-                            zOrderMediaOverlay = true,
-                            onFrameResolutionChange = onFrameResolutionChange,
-                            scalingTypeMatchOrientation = scalingType,
                         )
                     }
                     Row(
