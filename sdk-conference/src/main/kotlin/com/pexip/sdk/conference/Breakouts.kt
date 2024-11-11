@@ -15,12 +15,14 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.core.ExperimentalSdkApi
 import com.pexip.sdk.infinity.BreakoutId
 import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Handles conference breakouts.
  */
+@ExperimentalSdkApi
 public interface Breakouts {
 
     /**

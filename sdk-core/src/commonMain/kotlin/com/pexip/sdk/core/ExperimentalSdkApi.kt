@@ -16,24 +16,29 @@
 package com.pexip.sdk.core
 
 /**
- * Marks declarations that are **internal** in SDK API, which means that should not be used
- * outside of `com.pexip.sdk`, because their signatures and semantics will change between future
- * releases without any warnings and without providing any migration aids.
+ * Marks declarations that are **experimental** in SDK API, which means their signatures and
+ * semantics will change between future releases without any warnings and without providing any
+ * migration aids.
  */
 @Retention(value = AnnotationRetention.BINARY)
 @Target(
     AnnotationTarget.CLASS,
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.TYPEALIAS,
+    AnnotationTarget.ANNOTATION_CLASS,
     AnnotationTarget.PROPERTY,
+    AnnotationTarget.FIELD,
+    AnnotationTarget.LOCAL_VARIABLE,
+    AnnotationTarget.VALUE_PARAMETER,
+    AnnotationTarget.CONSTRUCTOR,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER,
+    AnnotationTarget.TYPEALIAS,
 )
 @RequiresOptIn(
     level = RequiresOptIn.Level.ERROR,
     message = """
-        This is an internal com.pexip.sdk API that should not be used from outside of com.pexip.sdk. 
-        No compatibilivvty guarantees are provided. It is recommended to report your use-case of 
-        internal API to com.pexip.sdk issue tracker, so stable API could be provided instead.
+        This is an experimental com.pexip.sdk API. No compatibility guarantees are provided. 
     """,
 )
 @MustBeDocumented
-public annotation class InternalSdkApi
+public annotation class ExperimentalSdkApi

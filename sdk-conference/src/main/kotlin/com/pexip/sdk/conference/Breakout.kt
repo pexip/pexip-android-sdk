@@ -15,12 +15,14 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.core.ExperimentalSdkApi
 import com.pexip.sdk.infinity.BreakoutId
 import com.pexip.sdk.infinity.ParticipantId
 
 /**
  * A breakout in a conference.
  */
+@ExperimentalSdkApi
 public interface Breakout {
 
     /**
