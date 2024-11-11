@@ -15,6 +15,7 @@
  */
 package com.pexip.sdk.conference
 
+import com.pexip.sdk.core.ExperimentalSdkApi
 import com.pexip.sdk.infinity.ServiceType
 import com.pexip.sdk.infinity.VersionId
 import com.pexip.sdk.media.MediaConnection
@@ -47,6 +48,7 @@ public interface Conference {
 
     public val messenger: Messenger
 
+    @ExperimentalSdkApi
     public val breakouts: Breakouts get() = throw NotImplementedError()
 
     public val serviceType: ServiceType

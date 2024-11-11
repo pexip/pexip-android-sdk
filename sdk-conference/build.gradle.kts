@@ -4,6 +4,7 @@ plugins {
 
 kotlin.sourceSets.all {
     languageSettings.optIn("com.pexip.sdk.core.InternalSdkApi")
+    languageSettings.optIn("com.pexip.sdk.core.ExperimentalSdkApi")
 }
 
 dependencies {
