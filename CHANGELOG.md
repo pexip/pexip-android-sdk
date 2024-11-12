@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.17.0] - 2024-11-12
+
 ### Added
 
 - A `disconnect` signal to let Infinity know that the `MediaConnection` is going away
@@ -386,7 +388,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.16.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.0...HEAD
+[0.17.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.0
 [0.16.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.16.0
 [0.15.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.15.0
 [0.14.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.14.1
