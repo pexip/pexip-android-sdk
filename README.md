@@ -24,15 +24,15 @@ And add modules that you need:
 ```kotlin
 dependencies {
     // A fluent wrapper for Infinity Client REST API
-    implementation("com.pexip.sdk:sdk-api:0.16.0")
+    implementation("com.pexip.sdk:sdk-api:0.17.0")
     // A set of tools for interacting with an Infinity conference
-    implementation("com.pexip.sdk:sdk-conference:0.16.0")
+    implementation("com.pexip.sdk:sdk-conference:0.17.0")
     // A set of tools for interacting with an Infinity registration
-    implementation("com.pexip.sdk:sdk-registration:0.16.0")
+    implementation("com.pexip.sdk:sdk-registration:0.17.0")
     // A `MediaConnection` implementation build on top of WebRTC
-    implementation("com.pexip.sdk:sdk-media-webrtc:0.16.0")
+    implementation("com.pexip.sdk:sdk-media-webrtc:0.17.0")
     // A composable that wraps SurfaceViewRenderer
-    implementation("com.pexip.sdk:sdk-media-webrtc-compose:0.16.0")
+    implementation("com.pexip.sdk:sdk-media-webrtc-compose:0.17.0")
 }
 ```
 
@@ -50,7 +50,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         register("pexipSdk") {
-            from("com.pexip.sdk:sdk-catalog:0.16.0")
+            from("com.pexip.sdk:sdk-catalog:0.17.0")
         }
     }
 }
@@ -77,7 +77,7 @@ repositories {
 
 ## Requirements
 
-* JDK 11
+* JDK 17
 * Android SDK 21+
 * Pexip Infinity 29+
 
@@ -91,6 +91,7 @@ use [library desugaring](https://developer.android.com/studio/write/java8-suppor
 
 | SDK version | WebRTC Milestone |
 |-------------|------------------|
+| 0.17.0+     | 129              |
 | 0.14.0+     | 119              |
 | 0.13.0+     | 114              |
 | 0.12.0+     | 110              |
