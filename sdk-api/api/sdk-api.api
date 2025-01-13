@@ -113,7 +113,6 @@ public synthetic class com/pexip/sdk/api/infinity/BreakoutBeginEvent$$serializer
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/BreakoutBeginEvent$Companion {
@@ -142,7 +141,6 @@ public synthetic class com/pexip/sdk/api/infinity/BreakoutEndEvent$$serializer :
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/BreakoutEndEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/BreakoutEndEvent$Companion {
@@ -171,7 +169,6 @@ public synthetic class com/pexip/sdk/api/infinity/BreakoutEvent$$serializer : ko
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/BreakoutEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/BreakoutEvent$Companion {
@@ -282,7 +279,6 @@ public synthetic class com/pexip/sdk/api/infinity/ConferenceUpdateEvent$$seriali
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/ConferenceUpdateEvent$Companion {
@@ -319,7 +315,6 @@ public synthetic class com/pexip/sdk/api/infinity/DataChannelMessage$Message$$se
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/DataChannelMessage$Message$Body {
@@ -349,7 +344,6 @@ public synthetic class com/pexip/sdk/api/infinity/DataChannelMessage$Message$Bod
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/DataChannelMessage$Message$Body$Companion {
@@ -389,7 +383,6 @@ public synthetic class com/pexip/sdk/api/infinity/DisconnectEvent$$serializer : 
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/DisconnectEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/DisconnectEvent$Companion {
@@ -509,7 +502,6 @@ public synthetic class com/pexip/sdk/api/infinity/FeccEvent$$serializer : kotlin
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/FeccEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/FeccEvent$Companion {
@@ -618,7 +610,6 @@ public synthetic class com/pexip/sdk/api/infinity/IncomingCancelledEvent$$serial
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/IncomingCancelledEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/IncomingCancelledEvent$Companion {
@@ -649,7 +640,6 @@ public synthetic class com/pexip/sdk/api/infinity/IncomingEvent$$serializer : ko
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/IncomingEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/IncomingEvent$Companion {
@@ -801,7 +791,6 @@ public synthetic class com/pexip/sdk/api/infinity/LayoutEvent$$serializer : kotl
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/LayoutEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/LayoutEvent$Companion {
@@ -837,7 +826,6 @@ public synthetic class com/pexip/sdk/api/infinity/MessageReceivedEvent$$serializ
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/MessageReceivedEvent$Companion {
@@ -900,7 +888,6 @@ public synthetic class com/pexip/sdk/api/infinity/NewCandidateEvent$$serializer 
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/NewCandidateEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/NewCandidateEvent$Companion {
@@ -961,7 +948,6 @@ public synthetic class com/pexip/sdk/api/infinity/NewOfferEvent$$serializer : ko
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/NewOfferEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/NewOfferEvent$Companion {
@@ -1027,7 +1013,6 @@ public synthetic class com/pexip/sdk/api/infinity/ParticipantCreateEvent$$serial
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public final fun serialize-tR699B8 (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/ParticipantResponse;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/ParticipantCreateEvent$Companion {
@@ -1054,7 +1039,6 @@ public synthetic class com/pexip/sdk/api/infinity/ParticipantDeleteEvent$$serial
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/ParticipantDeleteEvent$Companion {
@@ -1112,7 +1096,6 @@ public synthetic class com/pexip/sdk/api/infinity/ParticipantResponse$$serialize
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/ParticipantResponse;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/ParticipantResponse$Companion {
@@ -1158,7 +1141,6 @@ public synthetic class com/pexip/sdk/api/infinity/ParticipantUpdateEvent$$serial
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public final fun serialize-q_o7yGc (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/ParticipantResponse;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/ParticipantUpdateEvent$Companion {
@@ -1222,7 +1204,6 @@ public synthetic class com/pexip/sdk/api/infinity/PresentationStartEvent$$serial
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/PresentationStartEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/PresentationStartEvent$Companion {
@@ -1259,7 +1240,6 @@ public synthetic class com/pexip/sdk/api/infinity/ReferEvent$$serializer : kotli
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/ReferEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/ReferEvent$Companion {
@@ -1288,7 +1268,6 @@ public synthetic class com/pexip/sdk/api/infinity/RefreshRegistrationTokenRespon
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse$Companion {
@@ -1317,7 +1296,6 @@ public synthetic class com/pexip/sdk/api/infinity/RefreshTokenResponse$$serializ
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/RefreshTokenResponse$Companion {
@@ -1386,7 +1364,6 @@ public synthetic class com/pexip/sdk/api/infinity/RequestRegistrationTokenRespon
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/RequestRegistrationTokenResponse$Companion {
@@ -1494,7 +1471,6 @@ public synthetic class com/pexip/sdk/api/infinity/RequestTokenResponse$$serializ
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/RequestTokenResponse;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/RequestTokenResponse$Companion {
@@ -1673,7 +1649,6 @@ public synthetic class com/pexip/sdk/api/infinity/SplashScreenEvent$$serializer 
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/SplashScreenEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/SplashScreenEvent$Companion {
@@ -1736,7 +1711,6 @@ public synthetic class com/pexip/sdk/api/infinity/StageEvent$$serializer : kotli
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/StageEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/StageEvent$Companion {
@@ -1933,7 +1907,6 @@ public synthetic class com/pexip/sdk/api/infinity/UpdateSdpEvent$$serializer : k
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/pexip/sdk/api/infinity/UpdateSdpEvent;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
-	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/api/infinity/UpdateSdpEvent$Companion {
