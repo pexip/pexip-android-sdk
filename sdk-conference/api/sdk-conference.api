@@ -322,20 +322,13 @@ public abstract interface class com/pexip/sdk/conference/Referer {
 
 public abstract interface class com/pexip/sdk/conference/Roster {
 	public fun admit-5K0EZTY (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun admit-5K0EZTY$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun allowGuestsToUnmute (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun allowGuestsToUnmute$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun clientMute (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun clientMute$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun clientUnmute (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun clientUnmute$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun disallowGuestsToUnmute (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun disallowGuestsToUnmute$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun disconnect-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun disconnect-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun disconnect-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun disconnectAll (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun disconnectAll$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getAllGuestsMuted ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getGuestsCanUnmute ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getLocked ()Lkotlinx/coroutines/flow/StateFlow;
@@ -343,45 +336,30 @@ public abstract interface class com/pexip/sdk/conference/Roster {
 	public fun getParticipants ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun getPresenter ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun lock (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun lock$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun lowerAllHands (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun lowerAllHands$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun lowerHand-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun lowerHand-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun lowerHand-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun makeGuest-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun makeGuest-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun makeGuest-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun makeHost-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun makeHost-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun makeHost-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun mute-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun mute-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun mute-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun muteAllGuests (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun muteAllGuests$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun muteVideo-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun muteVideo-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun muteVideo-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun raiseHand-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun raiseHand-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun raiseHand-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun spotlight-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun spotlight-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun spotlight-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unlock (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun unlock$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unmute-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun unmute-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun unmute-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unmuteAllGuests (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun unmuteAllGuests$suspendImpl (Lcom/pexip/sdk/conference/Roster;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unmuteVideo-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun unmuteVideo-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun unmuteVideo-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun unspotlight-mpzmtw0 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun unspotlight-mpzmtw0$default (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun unspotlight-mpzmtw0$suspendImpl (Lcom/pexip/sdk/conference/Roster;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class com/pexip/sdk/conference/SendCallback {
@@ -415,7 +393,6 @@ public abstract interface class com/pexip/sdk/conference/Theme {
 	public fun getSplashScreen ()Lkotlinx/coroutines/flow/StateFlow;
 	public fun transformLayout-VlDFPn4 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun transformLayout-VlDFPn4$default (Lcom/pexip/sdk/conference/Theme;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun transformLayout-VlDFPn4$suspendImpl (Lcom/pexip/sdk/conference/Theme;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/pexip/sdk/conference/TransformLayoutException : java/lang/RuntimeException {
