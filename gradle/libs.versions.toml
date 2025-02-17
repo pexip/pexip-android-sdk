@@ -2,7 +2,7 @@
 android = "8.8.1"
 androidx-activity = "1.10.0"
 androidx-appcompat = "1.7.0"
-androidx-compose-bom = "2025.01.01"
+androidx-compose-bom = "2025.02.00"
 androidx-core = "1.15.0"
 androidx-datastore = "1.1.2"
 androidx-media = "1.7.0"
