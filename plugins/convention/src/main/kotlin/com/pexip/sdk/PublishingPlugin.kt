@@ -59,15 +59,8 @@ class PublishingPlugin : Plugin<Project> {
                     }
                     developers {
                         developer {
-                            name.set("Dzmitry Rymarau")
-                            email.set("dzmitry.rymarau@pexip.com")
-                            organization.set("Pexip")
-                            organizationUrl.set("https://www.pexip.com")
-                        }
-                        developer {
-                            name.set("Thomas Pettersen")
-                            email.set("thomas.pettersen@pexip.com")
-                            organization.set("Pexip")
+                            id.set("pexip")
+                            organization.set("Pexip AS")
                             organizationUrl.set("https://www.pexip.com")
                         }
                     }
