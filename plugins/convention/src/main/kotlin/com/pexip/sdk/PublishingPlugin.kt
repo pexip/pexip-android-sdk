@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,9 @@ class PublishingPlugin : Plugin<Project> {
                     }
                     scm {
                         connection.set("scm:git:git://github.com/pexip/pexip-android-sdk.git")
-                        developerConnection.set("scm:git:ssh://github.com:pexip/pexip-android-sdk.git")
+                        developerConnection.set(
+                            "scm:git:ssh://github.com:pexip/pexip-android-sdk.git",
+                        )
                         url.set("https://github.com/pexip/pexip-android-sdk")
                     }
                 }

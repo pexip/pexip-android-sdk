@@ -43,7 +43,7 @@ spotless {
     format("misc") {
         target(".gitignore", "*.md")
         trimTrailingWhitespace()
-        indentWithSpaces()
+        leadingTabsToSpaces()
         endWithNewline()
     }
 }
