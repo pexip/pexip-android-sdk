@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Pexip AS
+ * Copyright 2024-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 package com.pexip.sdk.internal
 
 import org.gradle.jvm.toolchain.JavaLanguageVersion
-import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 
-fun KotlinTopLevelExtension.jvmToolchain(version: JavaLanguageVersion) {
+fun KotlinBaseExtension.jvmToolchain(version: JavaLanguageVersion) {
     jvmToolchain(version.asInt())
 }
