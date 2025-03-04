@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ internal class WebRtcMediaConnection(
     private var ignoreOffer = false
     private var signalingState = PeerConnection.SignalingState.STABLE
 
-    private val wrapper = factory.createPeerConnection(config)
+    private val wrapper = factory.createPeerConnection(config, *Key.entries.toTypedArray())
 
     private val maxBitrate = MutableStateFlow(0.bps)
     private val mainDegradationPreference = MutableStateFlow(DegradationPreference.BALANCED)
@@ -125,21 +125,13 @@ internal class WebRtcMediaConnection(
     init {
         with(scope) {
             launchDataSender()
-            if (config.signaling.directMedia) {
-                scope.launch {
-                    val init = RtpTransceiverInit(RtpTransceiverDirection.INACTIVE)
-                    wrapper.withRtpTransceiver(MainAudio, init) { }
-                    wrapper.withRtpTransceiver(MainVideo, init) { }
-                    wrapper.withRtpTransceiver(PresentationVideo, init) { }
-                }
-            }
             launchConnectionType()
             launchMaxBitrate()
             launchWrapperEvent()
             launchSignalingEvent()
             launchPreferredAspectRatio()
-            launchDegradationPreference(MainVideo, mainDegradationPreference)
-            launchDegradationPreference(PresentationVideo, presentationDegradationPreference)
+            launchDegradationPreference(Key.MAIN_VIDEO, mainDegradationPreference)
+            launchDegradationPreference(Key.PRESENTATION_VIDEO, presentationDegradationPreference)
             launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
                 if (it) onAudioUnmuted() else onAudioMuted()
             }
@@ -154,19 +146,21 @@ internal class WebRtcMediaConnection(
                 flow = _presentationRemoteVideoTrack,
                 listeners = presentationRemoteVideoTrackListeners,
             )
-            launchRemoteVideoTrack(MainVideo, _mainRemoteVideoTrack)
-            launchRemoteVideoTrack(PresentationVideo, _presentationRemoteVideoTrack)
+            launchRemoteVideoTrack(Key.MAIN_VIDEO, _mainRemoteVideoTrack)
+            launchRemoteVideoTrack(Key.PRESENTATION_VIDEO, _presentationRemoteVideoTrack)
             launchDispose()
         }
     }
 
     override fun setMainAudioTrack(localAudioTrack: LocalAudioTrack?) {
         scope.launchLocalMediaTrack(
-            key = MainAudio,
+            key = Key.MAIN_AUDIO,
             track = when (localAudioTrack) {
                 is WebRtcLocalAudioTrack -> localAudioTrack
                 null -> null
-                else -> throw IllegalArgumentException("localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.")
+                else -> throw IllegalArgumentException(
+                    "localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.",
+                )
             },
             emit = mainLocalAudioTrack::emit,
         )
@@ -174,11 +168,13 @@ internal class WebRtcMediaConnection(
 
     override fun setMainVideoTrack(localVideoTrack: LocalVideoTrack?) {
         scope.launchLocalMediaTrack(
-            key = MainVideo,
+            key = Key.MAIN_VIDEO,
             track = when (localVideoTrack) {
                 is WebRtcLocalVideoTrack -> localVideoTrack
                 null -> null
-                else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
+                else -> throw IllegalArgumentException(
+                    "localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.",
+                )
             },
             preference = mainDegradationPreference::value,
             emit = mainLocalVideoTrack::emit,
@@ -187,11 +183,13 @@ internal class WebRtcMediaConnection(
 
     override fun setPresentationVideoTrack(localVideoTrack: LocalVideoTrack?) {
         scope.launchLocalMediaTrack(
-            key = PresentationVideo,
+            key = Key.PRESENTATION_VIDEO,
             track = when (localVideoTrack) {
                 is WebRtcLocalVideoTrack -> localVideoTrack
                 null -> null
-                else -> throw IllegalArgumentException("localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.")
+                else -> throw IllegalArgumentException(
+                    "localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.",
+                )
             },
             preference = presentationDegradationPreference::value,
             emit = presentationLocalVideoTrack::emit,
@@ -199,16 +197,16 @@ internal class WebRtcMediaConnection(
     }
 
     override fun setMainRemoteAudioTrackEnabled(enabled: Boolean) {
-        scope.launchRemoteVideoTrackEnabled(MainAudio, enabled)
+        scope.launchRemoteVideoTrackEnabled(Key.MAIN_AUDIO, enabled)
     }
 
     override fun setMainRemoteVideoTrackEnabled(enabled: Boolean) {
-        scope.launchRemoteVideoTrackEnabled(MainVideo, enabled)
+        scope.launchRemoteVideoTrackEnabled(Key.MAIN_VIDEO, enabled)
     }
 
     override fun setPresentationRemoteVideoTrackEnabled(enabled: Boolean) {
         if (!config.presentationInMain) {
-            scope.launchRemoteVideoTrackEnabled(PresentationVideo, enabled)
+            scope.launchRemoteVideoTrackEnabled(Key.PRESENTATION_VIDEO, enabled)
         }
     }
 
@@ -240,19 +238,27 @@ internal class WebRtcMediaConnection(
         scope.cancel()
     }
 
-    override fun registerMainRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
+    override fun registerMainRemoteVideoTrackListener(
+        listener: MediaConnection.RemoteVideoTrackListener,
+    ) {
         mainRemoteVideoTrackListeners += listener
     }
 
-    override fun unregisterMainRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
+    override fun unregisterMainRemoteVideoTrackListener(
+        listener: MediaConnection.RemoteVideoTrackListener,
+    ) {
         mainRemoteVideoTrackListeners -= listener
     }
 
-    override fun registerPresentationRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
+    override fun registerPresentationRemoteVideoTrackListener(
+        listener: MediaConnection.RemoteVideoTrackListener,
+    ) {
         presentationRemoteVideoTrackListeners += listener
     }
 
-    override fun unregisterPresentationRemoteVideoTrackListener(listener: MediaConnection.RemoteVideoTrackListener) {
+    override fun unregisterPresentationRemoteVideoTrackListener(
+        listener: MediaConnection.RemoteVideoTrackListener,
+    ) {
         presentationRemoteVideoTrackListeners -= listener
     }
 
@@ -290,9 +296,9 @@ internal class WebRtcMediaConnection(
                         val localDescription = wrapper.setLocalDescription { mids ->
                             mangle(
                                 bitrate = bitrate,
-                                mainAudioMid = mids[MainAudio],
-                                mainVideoMid = mids[MainVideo],
-                                presentationVideoMid = mids[PresentationVideo],
+                                mainAudioMid = mids[Key.MAIN_AUDIO],
+                                mainVideoMid = mids[Key.MAIN_VIDEO],
+                                presentationVideoMid = mids[Key.PRESENTATION_VIDEO],
                             )
                         }
                         config.signaling.onOffer(
@@ -362,9 +368,9 @@ internal class WebRtcMediaConnection(
                     val localDescription = wrapper.setLocalDescription { mids ->
                         mangle(
                             bitrate = maxBitrate.value,
-                            mainAudioMid = mids[MainAudio],
-                            mainVideoMid = mids[MainVideo],
-                            presentationVideoMid = mids[PresentationVideo],
+                            mainAudioMid = mids[Key.MAIN_AUDIO],
+                            mainVideoMid = mids[Key.MAIN_VIDEO],
+                            presentationVideoMid = mids[Key.PRESENTATION_VIDEO],
                         )
                     }
                     runCatching { config.signaling.onAnswer(localDescription.description) }
@@ -482,25 +488,25 @@ internal class WebRtcMediaConnection(
         )
     }
 
-    private data object MainAudio : RtpTransceiverKey {
+    private enum class Key(
+        override val mediaType: MediaType,
+        override val streamIds: List<String> = emptyList(),
+        override val sendEncodings: List<RtpParameters.Encoding> = emptyList(),
+    ) : RtpTransceiverKey {
 
-        override val mediaType: MediaType = MediaType.MEDIA_TYPE_AUDIO
-        override val streamIds: List<String> = listOf("main")
-    }
-
-    private data object MainVideo : RtpTransceiverKey {
-
-        override val mediaType: MediaType = MediaType.MEDIA_TYPE_VIDEO
-        override val streamIds: List<String> = listOf("main")
-        override val sendEncodings: List<RtpParameters.Encoding> =
-            listOf(Encoding { maxFramerate = MAX_FRAMERATE })
-    }
-
-    private data object PresentationVideo : RtpTransceiverKey {
-
-        override val mediaType: MediaType = MediaType.MEDIA_TYPE_VIDEO
-        override val streamIds: List<String> = listOf("slides")
-        override val sendEncodings: List<RtpParameters.Encoding> =
-            listOf(Encoding { maxFramerate = MAX_FRAMERATE })
+        MAIN_AUDIO(
+            mediaType = MediaType.MEDIA_TYPE_AUDIO,
+            streamIds = listOf("main"),
+        ),
+        MAIN_VIDEO(
+            mediaType = MediaType.MEDIA_TYPE_VIDEO,
+            streamIds = listOf("main"),
+            sendEncodings = listOf(Encoding { maxFramerate = MAX_FRAMERATE }),
+        ),
+        PRESENTATION_VIDEO(
+            mediaType = MediaType.MEDIA_TYPE_VIDEO,
+            streamIds = listOf("slides"),
+            sendEncodings = listOf(Encoding { maxFramerate = MAX_FRAMERATE }),
+        ),
     }
 }

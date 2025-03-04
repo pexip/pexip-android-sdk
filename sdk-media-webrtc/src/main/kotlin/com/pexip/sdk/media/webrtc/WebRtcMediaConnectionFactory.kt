@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import com.pexip.sdk.media.android.MediaProjectionVideoTrackFactory
 import com.pexip.sdk.media.webrtc.internal.AudioDeviceModuleWrapper
 import com.pexip.sdk.media.webrtc.internal.DataChannelInit
 import com.pexip.sdk.media.webrtc.internal.PeerConnectionWrapper
+import com.pexip.sdk.media.webrtc.internal.RtpTransceiverKey
 import com.pexip.sdk.media.webrtc.internal.SimpleCameraEventsHandler
 import com.pexip.sdk.media.webrtc.internal.WebRtcCameraVideoTrack
 import com.pexip.sdk.media.webrtc.internal.WebRtcLocalAudioTrack
@@ -216,7 +217,10 @@ public class WebRtcMediaConnectionFactory private constructor(
         workerDispatcher.close()
     }
 
-    internal fun createPeerConnection(config: MediaConnectionConfig): PeerConnectionWrapper {
+    internal fun createPeerConnection(
+        config: MediaConnectionConfig,
+        vararg keys: RtpTransceiverKey,
+    ): PeerConnectionWrapper {
         val iceServers = config.iceServers.map {
             PeerConnection.IceServer.builder(it.urls.toList())
                 .setUsername(it.username)
@@ -239,7 +243,7 @@ public class WebRtcMediaConnectionFactory private constructor(
                 negotiated = true
             }
         }
-        return PeerConnectionWrapper(factory, rtcConfig, init)
+        return PeerConnectionWrapper(factory, rtcConfig, init, *keys)
     }
 
     private fun createMediaTrackId() = UUID.randomUUID().toString()
