@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,6 +95,7 @@ public class InfinityConference private constructor(
         scope = scope,
         event = event,
         versionId = response.version.versionId,
+        serviceType = response.serviceType,
         participantId = response.participantId,
         parentParticipantId = response.parentParticipantId,
         store = store,

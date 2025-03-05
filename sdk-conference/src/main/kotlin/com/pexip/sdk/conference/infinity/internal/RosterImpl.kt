@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2023-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,9 +60,12 @@ import com.pexip.sdk.conference.UnspotlightException
 import com.pexip.sdk.core.retry
 import com.pexip.sdk.infinity.ParticipantId
 import com.pexip.sdk.infinity.Role
+import com.pexip.sdk.infinity.ServiceType
 import com.pexip.sdk.infinity.VersionId
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -79,6 +82,7 @@ internal class RosterImpl(
     scope: CoroutineScope,
     event: Flow<Event>,
     private val versionId: VersionId,
+    private val serviceType: ServiceType,
     private val participantId: ParticipantId,
     private val parentParticipantId: ParticipantId?,
     private val store: TokenStore,
@@ -224,25 +228,39 @@ internal class RosterImpl(
             // `client_mute` can only be performed on self and we should prefer parent participant
             // due to `mute` fallback on versions earlier than 36
             participantId = parentParticipantId ?: participantId,
-            callFactory = when (versionId >= VersionId.V36) {
-                true -> ParticipantStep::clientMute
-                else -> ParticipantStep::mute
+            callFactory = when {
+                serviceType == ServiceType.GATEWAY -> ParticipantStep::mute
+                versionId < VersionId.V36 -> ParticipantStep::mute
+                else -> ParticipantStep::clientMute
             },
             errorFactory = ::ClientMuteException,
         )
     }
 
-    override suspend fun clientUnmute() {
-        perform(
-            // `client_unmute` can only be performed on self and we should prefer parent participant
-            // due to `unmute` fallback on versions earlier than 36
-            participantId = parentParticipantId ?: participantId,
-            callFactory = when (versionId >= VersionId.V36) {
-                true -> ParticipantStep::clientUnmute
-                else -> ParticipantStep::unmute
-            },
-            errorFactory = ::ClientUnmuteException,
-        )
+    override suspend fun clientUnmute(): Unit = coroutineScope {
+        // `client_unmute` can only be performed on self and we should prefer parent participant
+        // due to `unmute` fallback on versions earlier than 36
+        val participantId = parentParticipantId ?: participantId
+        val unmute = async {
+            perform(
+                participantId = participantId,
+                callFactory = ParticipantStep::unmute,
+                errorFactory = ::ClientUnmuteException,
+            )
+        }
+        val clientUnmute = when {
+            serviceType == ServiceType.GATEWAY -> null
+            versionId < VersionId.V36 -> null
+            else -> async {
+                perform(
+                    participantId = participantId,
+                    callFactory = ParticipantStep::clientUnmute,
+                    errorFactory = ::ClientUnmuteException,
+                )
+            }
+        }
+        unmute.await()
+        clientUnmute?.await()
     }
 
     override suspend fun mute(participantId: ParticipantId?) {
