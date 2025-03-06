@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2023-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -266,6 +266,7 @@ class RosterImplTest {
         table.forAll { participantId, parentParticipantId ->
             `clientMute() throws ClientMuteException`(
                 versionId = VersionId.V35,
+                serviceType = ServiceType.CONFERENCE,
                 participantId = participantId,
                 parentParticipantId = parentParticipantId,
             )
@@ -277,6 +278,19 @@ class RosterImplTest {
         table.forAll { participantId, parentParticipantId ->
             `clientMute() throws ClientMuteException`(
                 versionId = VersionId.V36,
+                serviceType = ServiceType.CONFERENCE,
+                participantId = participantId,
+                parentParticipantId = parentParticipantId,
+            )
+        }
+    }
+
+    @Test
+    fun `clientMute() throws ClientMuteException in GATEWAY`() {
+        table.forAll { participantId, parentParticipantId ->
+            `clientMute() throws ClientMuteException`(
+                versionId = VersionId.V36,
+                serviceType = ServiceType.GATEWAY,
                 participantId = participantId,
                 parentParticipantId = parentParticipantId,
             )
@@ -286,14 +300,36 @@ class RosterImplTest {
     @Test
     fun `clientMute() returns`() {
         table.forAll { participantId, parentParticipantId ->
-            `clientMute() returns`(VersionId.V35, participantId, parentParticipantId)
+            `clientMute() returns`(
+                versionId = VersionId.V35,
+                serviceType = ServiceType.CONFERENCE,
+                participantId = participantId,
+                parentParticipantId = parentParticipantId,
+            )
         }
     }
 
     @Test
     fun `clientMute() returns on V36+`() {
         table.forAll { participantId, parentParticipantId ->
-            `clientMute() returns`(VersionId.V36, participantId, parentParticipantId)
+            `clientMute() returns`(
+                versionId = VersionId.V36,
+                serviceType = ServiceType.CONFERENCE,
+                participantId = participantId,
+                parentParticipantId = parentParticipantId,
+            )
+        }
+    }
+
+    @Test
+    fun `clientMute() returns in GATEWAY`() {
+        table.forAll { participantId, parentParticipantId ->
+            `clientMute() returns`(
+                versionId = VersionId.V36,
+                serviceType = ServiceType.GATEWAY,
+                participantId = participantId,
+                parentParticipantId = parentParticipantId,
+            )
         }
     }
 
@@ -302,6 +338,7 @@ class RosterImplTest {
         table.forAll { participantId, parentParticipantId ->
             `clientUnmute() throws ClientUnmuteException`(
                 versionId = VersionId.V35,
+                serviceType = ServiceType.CONFERENCE,
                 participantId = participantId,
                 parentParticipantId = parentParticipantId,
             )
@@ -313,6 +350,19 @@ class RosterImplTest {
         table.forAll { participantId, parentParticipantId ->
             `clientUnmute() throws ClientUnmuteException`(
                 versionId = VersionId.V36,
+                serviceType = ServiceType.CONFERENCE,
+                participantId = participantId,
+                parentParticipantId = parentParticipantId,
+            )
+        }
+    }
+
+    @Test
+    fun `clientUnmute() throws ClientUnmuteException in GATEWAY`() {
+        table.forAll { participantId, parentParticipantId ->
+            `clientUnmute() throws ClientUnmuteException`(
+                versionId = VersionId.V36,
+                serviceType = ServiceType.GATEWAY,
                 participantId = participantId,
                 parentParticipantId = parentParticipantId,
             )
@@ -322,14 +372,36 @@ class RosterImplTest {
     @Test
     fun `clientUnmute() returns`() {
         table.forAll { participantId, parentParticipantId ->
-            `clientUnmute() returns`(VersionId.V35, participantId, parentParticipantId)
+            `clientUnmute() returns`(
+                versionId = VersionId.V35,
+                serviceType = ServiceType.CONFERENCE,
+                participantId = participantId,
+                parentParticipantId = parentParticipantId,
+            )
         }
     }
 
     @Test
     fun `clientUnmute() returns on V36+`() {
         table.forAll { participantId, parentParticipantId ->
-            `clientUnmute() returns`(VersionId.V36, participantId, parentParticipantId)
+            `clientUnmute() returns`(
+                versionId = VersionId.V36,
+                serviceType = ServiceType.CONFERENCE,
+                participantId = participantId,
+                parentParticipantId = parentParticipantId,
+            )
+        }
+    }
+
+    @Test
+    fun `clientUnmute() returns in GATEWAY`() {
+        table.forAll { participantId, parentParticipantId ->
+            `clientUnmute() returns`(
+                versionId = VersionId.V36,
+                serviceType = ServiceType.GATEWAY,
+                participantId = participantId,
+                parentParticipantId = parentParticipantId,
+            )
         }
     }
 
@@ -777,7 +849,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -808,7 +882,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -837,17 +913,18 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun buzz(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                true
-                            }
+                    override fun buzz(token: Token): Call<Boolean> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            true
                         }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -879,7 +956,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -910,7 +989,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -946,7 +1027,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -977,7 +1060,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1006,17 +1091,18 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun disconnect(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                true
-                            }
+                    override fun disconnect(token: Token): Call<Boolean> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            true
                         }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -1040,7 +1126,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1072,7 +1160,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1102,18 +1192,19 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role).isEqualTo(Role.HOST)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                true
-                            }
+                    override fun role(request: RoleRequest, token: Token): Call<Boolean> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        assertThat(request::role).isEqualTo(Role.HOST)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            true
                         }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -1137,7 +1228,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1169,7 +1262,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1199,18 +1294,19 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun role(request: RoleRequest, token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            assertThat(request::role).isEqualTo(Role.GUEST)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                true
-                            }
+                    override fun role(request: RoleRequest, token: Token): Call<Boolean> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        assertThat(request::role).isEqualTo(Role.GUEST)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            true
                         }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -1224,6 +1320,7 @@ class RosterImplTest {
 
     private fun `clientMute() throws ClientMuteException`(
         versionId: VersionId,
+        serviceType: ServiceType,
         participantId: ParticipantId,
         parentParticipantId: ParticipantId?,
     ) = runTest {
@@ -1232,31 +1329,36 @@ class RosterImplTest {
         val cause = Throwable()
         val roster = RosterImpl(
             versionId = versionId,
+            serviceType = serviceType,
             participantId = participantId,
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun mute(token: Token): Call<Unit> {
-                            if (versionId >= VersionId.V36) fail("Should not be called.")
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                throw cause
-                            }
+                    override fun mute(token: Token): Call<Unit> {
+                        if (versionId >= VersionId.V36 && serviceType != ServiceType.GATEWAY) {
+                            fail("Should not be called.")
                         }
-
-                        override fun clientMute(token: Token): Call<Unit> {
-                            if (versionId < VersionId.V35) fail("Should not be called.")
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                throw cause
-                            }
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            throw cause
                         }
                     }
+
+                    override fun clientMute(token: Token): Call<Unit> {
+                        if (serviceType == ServiceType.GATEWAY) fail("Should not be called.")
+                        if (versionId < VersionId.V36) fail("Should not be called.")
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            throw cause
+                        }
+                    }
+                }
             },
         )
         roster.populate(participants)
@@ -1269,6 +1371,7 @@ class RosterImplTest {
 
     private fun `clientMute() returns`(
         versionId: VersionId,
+        serviceType: ServiceType,
         participantId: ParticipantId,
         parentParticipantId: ParticipantId?,
     ) = runTest {
@@ -1276,25 +1379,30 @@ class RosterImplTest {
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
         val roster = RosterImpl(
             versionId = versionId,
+            serviceType = serviceType,
             participantId = participantId,
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun mute(token: Token): Call<Unit> {
-                            if (versionId >= VersionId.V36) fail("Should not be called.")
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call { deferredParticipantId.complete(participantId) }
+                    override fun mute(token: Token): Call<Unit> {
+                        if (versionId >= VersionId.V36 && serviceType != ServiceType.GATEWAY) {
+                            fail("Should not be called.")
                         }
-
-                        override fun clientMute(token: Token): Call<Unit> {
-                            if (versionId < VersionId.V36) fail("Should not be called.")
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call { deferredParticipantId.complete(participantId) }
-                        }
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call { deferredParticipantId.complete(participantId) }
                     }
+
+                    override fun clientMute(token: Token): Call<Unit> {
+                        if (serviceType == ServiceType.GATEWAY) fail("Should not be called.")
+                        if (versionId < VersionId.V36) fail("Should not be called.")
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call { deferredParticipantId.complete(participantId) }
+                    }
+                }
             },
         )
         roster.populate(participants)
@@ -1305,6 +1413,7 @@ class RosterImplTest {
 
     private fun `clientUnmute() throws ClientUnmuteException`(
         versionId: VersionId,
+        serviceType: ServiceType,
         participantId: ParticipantId,
         parentParticipantId: ParticipantId?,
     ) = runTest {
@@ -1313,31 +1422,33 @@ class RosterImplTest {
         val cause = Throwable()
         val roster = RosterImpl(
             versionId = versionId,
+            serviceType = serviceType,
             participantId = participantId,
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun unmute(token: Token): Call<Unit> {
-                            if (versionId >= VersionId.V36) fail("Should not be called.")
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                throw cause
-                            }
-                        }
-
-                        override fun clientUnmute(token: Token): Call<Unit> {
-                            if (versionId < VersionId.V36) fail("Should not be called.")
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                throw cause
-                            }
+                    override fun unmute(token: Token): Call<Unit> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            throw cause
                         }
                     }
+
+                    override fun clientUnmute(token: Token): Call<Unit> {
+                        if (serviceType == ServiceType.GATEWAY) fail("Should not be called.")
+                        if (versionId < VersionId.V36) fail("Should not be called.")
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            throw cause
+                        }
+                    }
+                }
             },
         )
         roster.populate(participants)
@@ -1350,38 +1461,46 @@ class RosterImplTest {
 
     private fun `clientUnmute() returns`(
         versionId: VersionId,
+        serviceType: ServiceType,
         participantId: ParticipantId,
         parentParticipantId: ParticipantId?,
     ) = runTest {
-        val deferredParticipantId = CompletableDeferred<ParticipantId>()
+        val unmuteParticipantId = CompletableDeferred<ParticipantId>()
+        val clientUnmuteParticipantId = CompletableDeferred<ParticipantId>()
         val participants = Random.nextParticipantList(participantId, parentParticipantId)
         val roster = RosterImpl(
             versionId = versionId,
+            serviceType = serviceType,
             participantId = participantId,
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun unmute(token: Token): Call<Unit> {
-                            if (versionId >= VersionId.V36) fail("Should not be called.")
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call { deferredParticipantId.complete(participantId) }
-                        }
-
-                        override fun clientUnmute(token: Token): Call<Unit> {
-                            if (versionId < VersionId.V36) fail("Should not be called.")
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call { deferredParticipantId.complete(participantId) }
-                        }
+                    override fun unmute(token: Token): Call<Unit> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call { unmuteParticipantId.complete(participantId) }
                     }
+
+                    override fun clientUnmute(token: Token): Call<Unit> {
+                        if (serviceType == ServiceType.GATEWAY) fail("Should not be called.")
+                        if (versionId < VersionId.V36) fail("Should not be called.")
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call { clientUnmuteParticipantId.complete(participantId) }
+                    }
+                }
             },
         )
         roster.populate(participants)
         roster.clientUnmute()
-        assertThat(deferredParticipantId.await(), "participantId")
+        assertThat(unmuteParticipantId.await(), "unmuteParticipantId")
             .isEqualTo(parentParticipantId ?: participantId)
+        if (serviceType != ServiceType.GATEWAY && versionId >= VersionId.V36) {
+            assertThat(clientUnmuteParticipantId.await(), "clientUnmuteParticipantId")
+                .isEqualTo(parentParticipantId ?: participantId)
+        }
     }
 
     private fun `mute() returns if participantId does not exist`(
@@ -1404,7 +1523,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1435,7 +1556,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1462,14 +1585,15 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun mute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call { deferredParticipantId.complete(participantId) }
-                        }
+                    override fun mute(token: Token): Call<Unit> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call { deferredParticipantId.complete(participantId) }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -1498,7 +1622,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1529,7 +1655,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1556,14 +1684,15 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun unmute(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call { deferredParticipantId.complete(participantId) }
-                        }
+                    override fun unmute(token: Token): Call<Unit> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call { deferredParticipantId.complete(participantId) }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -1592,7 +1721,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1623,7 +1754,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1652,14 +1785,15 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun videoMuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call { deferredParticipantId.complete(participantId) }
-                        }
+                    override fun videoMuted(token: Token): Call<Unit> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call { deferredParticipantId.complete(participantId) }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -1691,7 +1825,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1722,7 +1858,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1751,14 +1889,15 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun videoUnmuted(token: Token): Call<Unit> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call { deferredParticipantId.complete(participantId) }
-                        }
+                    override fun videoUnmuted(token: Token): Call<Unit> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call { deferredParticipantId.complete(participantId) }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -1790,7 +1929,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1821,7 +1962,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1850,17 +1993,18 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun spotlightOn(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                true
-                            }
+                    override fun spotlightOn(token: Token): Call<Boolean> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            true
                         }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -1892,7 +2036,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1923,7 +2069,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -1952,17 +2100,18 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun spotlightOff(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                true
-                            }
+                    override fun spotlightOff(token: Token): Call<Boolean> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            true
                         }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -1994,7 +2143,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -2025,7 +2176,9 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep {
                     assertThat(participantId, "participantId").isIn(*participantIds.toTypedArray())
                     return object : InfinityService.ParticipantStep {
 
@@ -2054,17 +2207,18 @@ class RosterImplTest {
             parentParticipantId = parentParticipantId,
             step = object : InfinityService.ConferenceStep {
 
-                override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                    object : InfinityService.ParticipantStep {
+                override fun participant(
+                    participantId: ParticipantId,
+                ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {
 
-                        override fun clearBuzz(token: Token): Call<Boolean> {
-                            assertThat(token, "token").isEqualTo(store.token.value)
-                            return call {
-                                deferredParticipantId.complete(participantId)
-                                true
-                            }
+                    override fun clearBuzz(token: Token): Call<Boolean> {
+                        assertThat(token, "token").isEqualTo(store.token.value)
+                        return call {
+                            deferredParticipantId.complete(participantId)
+                            true
                         }
                     }
+                }
             },
         )
         roster.populate(participants)
@@ -2497,14 +2651,17 @@ class RosterImplTest {
         participantId: ParticipantId,
         parentParticipantId: ParticipantId?,
         step: InfinityService.ConferenceStep = object : InfinityService.ConferenceStep {
-            override fun participant(participantId: ParticipantId): InfinityService.ParticipantStep =
-                object : InfinityService.ParticipantStep {}
+            override fun participant(
+                participantId: ParticipantId,
+            ): InfinityService.ParticipantStep = object : InfinityService.ParticipantStep {}
         },
         versionId: VersionId = VersionId.V35,
+        serviceType: ServiceType = ServiceType.CONFERENCE,
     ) = RosterImpl(
         scope = backgroundScope,
         event = event,
         versionId = versionId,
+        serviceType = serviceType,
         participantId = participantId,
         parentParticipantId = parentParticipantId,
         store = store,
