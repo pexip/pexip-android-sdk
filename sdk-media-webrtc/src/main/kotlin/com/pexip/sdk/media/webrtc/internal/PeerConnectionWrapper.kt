@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ internal class PeerConnectionWrapper(
     private val factory: PeerConnectionFactory,
     private val rtcConfig: RTCConfiguration,
     private val init: DataChannel.Init?,
+    vararg keys: RtpTransceiverKey,
 ) {
 
     private val mutex = Mutex()
@@ -82,6 +83,14 @@ internal class PeerConnectionWrapper(
 
     init {
         peerConnection = checkNotNull(factory.createPeerConnection(rtcConfig, observer))
+        keys.forEach {
+            val init = RtpTransceiverInit(
+                direction = RtpTransceiver.RtpTransceiverDirection.INACTIVE,
+                streamIds = it.streamIds,
+                sendEncodings = it.sendEncodings,
+            )
+            rtpTransceivers[it] = peerConnection!!.addTransceiver(it.mediaType, init)
+        }
         dataChannel = when (init) {
             null -> null
             else -> peerConnection!!.createDataChannel("pexChannel", init)
@@ -124,7 +133,9 @@ internal class PeerConnectionWrapper(
     }
 
     fun getRemoteVideoTrack(key: RtpTransceiverKey): Flow<VideoTrack?> {
-        require(key.mediaType == MediaType.MEDIA_TYPE_VIDEO) { "Illegal mediaType: ${key.mediaType}." }
+        require(key.mediaType == MediaType.MEDIA_TYPE_VIDEO) {
+            "Illegal mediaType: ${key.mediaType}."
+        }
         val flow = channelFlow {
             val rtpTransceiver = mutex.withLock { rtpTransceivers[key] }
             val track = when (rtpTransceiver?.direction) {
@@ -166,32 +177,35 @@ internal class PeerConnectionWrapper(
         block(rtpTransceiver)
     }
 
-    suspend fun setLocalDescription(block: SessionDescription.(Map<RtpTransceiverKey, String>) -> SessionDescription = { this }): SessionDescription =
-        mutex.withLock {
-            peerConnection!!.setLocalDescription()
-            iceCredentials.clear()
-            val description = peerConnection!!.localDescription
-            var ufrag: String? = null
-            var pwd: String? = null
-            var mid: String? = null
-            val lines = description.splitToLineSequence()
-            val fingerprints = mutableListOf<String>()
-            for (line in lines) {
-                if (line.startsWith(FINGERPRINT)) fingerprints += line.removePrefix(FINGERPRINT)
-                if (line.startsWith(ICE_UFRAG)) ufrag = line.removePrefix(ICE_UFRAG)
-                if (line.startsWith(ICE_PWD)) pwd = line.removePrefix(ICE_PWD)
-                if (line.startsWith(MID)) mid = line.removePrefix(MID)
-                if (ufrag != null && pwd != null && mid != null) {
-                    iceCredentials[mid] = IceCredentials(ufrag, pwd)
-                    ufrag = null
-                    pwd = null
-                    mid = null
-                }
+    suspend fun setLocalDescription(
+        block: SessionDescription.(Map<RtpTransceiverKey, String>) -> SessionDescription = {
+            this
+        },
+    ): SessionDescription = mutex.withLock {
+        peerConnection!!.setLocalDescription()
+        iceCredentials.clear()
+        val description = peerConnection!!.localDescription
+        var ufrag: String? = null
+        var pwd: String? = null
+        var mid: String? = null
+        val lines = description.splitToLineSequence()
+        val fingerprints = mutableListOf<String>()
+        for (line in lines) {
+            if (line.startsWith(FINGERPRINT)) fingerprints += line.removePrefix(FINGERPRINT)
+            if (line.startsWith(ICE_UFRAG)) ufrag = line.removePrefix(ICE_UFRAG)
+            if (line.startsWith(ICE_PWD)) pwd = line.removePrefix(ICE_PWD)
+            if (line.startsWith(MID)) mid = line.removePrefix(MID)
+            if (ufrag != null && pwd != null && mid != null) {
+                iceCredentials[mid] = IceCredentials(ufrag, pwd)
+                ufrag = null
+                pwd = null
+                mid = null
             }
-            val mids = rtpTransceivers.mapValues { (_, rtpTransceiver) -> rtpTransceiver.mid }
-            localFingerprints.value = fingerprints.toList()
-            description.block(mids)
         }
+        val mids = rtpTransceivers.mapValues { (_, rtpTransceiver) -> rtpTransceiver.mid }
+        localFingerprints.value = fingerprints.toList()
+        description.block(mids)
+    }
 
     suspend fun setRemoteDescription(description: SessionDescription) = mutex.withLock {
         peerConnection!!.setRemoteDescription(description)
