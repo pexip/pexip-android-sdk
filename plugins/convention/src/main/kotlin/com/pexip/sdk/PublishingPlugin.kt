@@ -15,70 +15,41 @@
  */
 package com.pexip.sdk
 
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.repositories.PasswordCredentials
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.credentials
-import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.withType
-import org.gradle.plugins.signing.SigningExtension
 
 class PublishingPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
-        with(pluginManager) {
-            apply("maven-publish")
-            apply("signing")
-        }
+        pluginManager.apply("com.vanniktech.maven.publish")
         group = checkNotNull(property("group")) { "group == null." }
         version = checkNotNull(property("version")) { "version == null." }
-        configure<PublishingExtension> {
-            repositories {
-                maven {
-                    name = "MavenCentral"
-                    val repositoryUrl = when (version.toString().endsWith("SNAPSHOT")) {
-                        true -> "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                        else -> "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+        configure<MavenPublishBaseExtension> {
+            publishToMavenCentral(host = SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+            signAllPublications()
+            pom {
+                name.set(target.name)
+                url.set("https://github.com/pexip/pexip-android-sdk")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                     }
-                    setUrl(repositoryUrl)
-                    credentials(PasswordCredentials::class)
                 }
-            }
-            publications.withType<MavenPublication>().configureEach {
-                pom {
-                    name.set(artifactId)
+                developers {
+                    developer {
+                        id.set("pexip")
+                        organization.set("Pexip AS")
+                        organizationUrl.set("https://www.pexip.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/pexip/pexip-android-sdk.git")
+                    developerConnection.set("scm:git:ssh://github.com:pexip/pexip-android-sdk.git")
                     url.set("https://github.com/pexip/pexip-android-sdk")
-                    licenses {
-                        license {
-                            name.set("The Apache License, Version 2.0")
-                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("pexip")
-                            organization.set("Pexip AS")
-                            organizationUrl.set("https://www.pexip.com")
-                        }
-                    }
-                    scm {
-                        connection.set("scm:git:git://github.com/pexip/pexip-android-sdk.git")
-                        developerConnection.set(
-                            "scm:git:ssh://github.com:pexip/pexip-android-sdk.git",
-                        )
-                        url.set("https://github.com/pexip/pexip-android-sdk")
-                    }
-                }
-            }
-            configure<SigningExtension> {
-                val signingKey: String? by project
-                val signingPassword: String? by project
-                useInMemoryPgpKeys(signingKey, signingPassword)
-                if (providers.environmentVariable("CI").isPresent) {
-                    sign(publications)
                 }
             }
         }

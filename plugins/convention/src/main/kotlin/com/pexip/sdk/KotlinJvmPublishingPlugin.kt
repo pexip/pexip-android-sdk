@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,13 @@
  */
 package com.pexip.sdk
 
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
 
 class KotlinJvmPublishingPlugin : Plugin<Project> {
 
@@ -36,19 +32,8 @@ class KotlinJvmPublishingPlugin : Plugin<Project> {
             apply(LicenseePlugin::class)
             apply(PublishingPlugin::class)
         }
-        configure<JavaPluginExtension> {
-            withJavadocJar()
-            withSourcesJar()
-        }
-        tasks.named<Jar>("javadocJar") {
-            from(tasks.named("dokkaJavadoc"))
-        }
-        configure<PublishingExtension> {
-            publications {
-                register<MavenPublication>("release") {
-                    from(components["java"])
-                }
-            }
+        configure<MavenPublishBaseExtension> {
+            configure(KotlinJvm(javadocJar = JavadocJar.Dokka("dokkaJavadoc")))
         }
     }
 }
