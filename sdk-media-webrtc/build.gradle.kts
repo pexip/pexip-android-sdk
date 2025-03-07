@@ -16,6 +16,6 @@ dependencies {
     implementation(libs.okio)
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
-    pom.description = "WebRTC-based implementation of sdk-media."
+mavenPublishing.pom {
+    description = "WebRTC-based implementation of sdk-media."
 }

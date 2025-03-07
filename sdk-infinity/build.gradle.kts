@@ -19,6 +19,6 @@ kotlin {
     }
 }
 
-publishing.publications.withType<MavenPublication> {
-    pom.description = "Pexip Infinity SDK"
+mavenPublishing.pom {
+    description = "Pexip Infinity SDK"
 }

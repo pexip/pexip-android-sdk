@@ -15,6 +15,6 @@ dependencies {
     testImplementation(libs.turbine)
 }
 
-publishing.publications.withType<MavenPublication> {
-    pom.description = "A set of tools to interact with conferences."
+mavenPublishing.pom {
+    description = "A set of tools to interact with conferences."
 }

@@ -21,6 +21,6 @@ kotlin {
     }
 }
 
-publishing.publications.withType<MavenPublication> {
-    pom.description = "Pexip SDK core"
+mavenPublishing.pom {
+    description = "Pexip SDK core"
 }
