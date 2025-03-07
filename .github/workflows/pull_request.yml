@@ -1,6 +1,6 @@
 name: 'pull request'
 
-on: [pull_request, merge_group]
+on: [ pull_request, merge_group ]
 
 env:
   CI: 'true'
@@ -27,8 +27,8 @@ jobs:
       - run: ./gradlew build
       - run: ./gradlew publishToMavenLocal --no-parallel
         env:
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SONATYPE_GPG_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SONATYPE_GPG_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
 
   snyk_test:
     runs-on: ubuntu-latest

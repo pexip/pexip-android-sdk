@@ -1,6 +1,8 @@
+import com.vanniktech.maven.publish.VersionCatalog
+
 plugins {
-    id("com.pexip.sdk.publishing")
     `version-catalog`
+    id("com.pexip.sdk.publishing")
 }
 
 catalog {
@@ -28,13 +30,14 @@ val sourcesJar by tasks.register<Jar>("sourcesJar") {
     from(file("README.md"))
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            from(components["versionCatalog"])
-            artifact(javadocJar)
-            artifact(sourcesJar)
-            pom.description = "Gradle Version Catalog for Pexip Android SDK"
-        }
+mavenPublishing {
+    configure(VersionCatalog())
+    pom {
+        description = "Gradle Version Catalog for Pexip Android SDK"
     }
+}
+
+publishing.publications.named<MavenPublication>("maven") {
+    artifact(javadocJar)
+    artifact(sourcesJar)
 }

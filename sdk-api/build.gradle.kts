@@ -23,6 +23,6 @@ dependencies {
     testImplementation(libs.turbine)
 }
 
-publishing.publications.withType<MavenPublication> {
-    pom.description = "A set of common classes and interfaces to build APIs."
+mavenPublishing.pom {
+    description = "A set of common classes and interfaces to build APIs."
 }

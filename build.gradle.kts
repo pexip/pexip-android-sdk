@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.dagger.hilt.android) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.ksp) apply false
+    id("com.pexip.sdk.publishing") apply false
 }
 
 group = checkNotNull(property("group")) { "group == null." }
