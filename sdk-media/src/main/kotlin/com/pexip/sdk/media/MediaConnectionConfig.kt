@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ package com.pexip.sdk.media
  * @property dscp true if DSCP is enabled, false otherwise
  * @property presentationInMain true if presentation will be mixed with main video feed, false otherwise; ignored for direct media calls
  * @property farEndCameraControl true if far end camera control is supported, false otherwise
+ * @property syncAudioMute true if audio mute should be synced, false otherwise
+ * @property syncVideoMute true if video mute should be synced, false otherwise
  */
 public class MediaConnectionConfig private constructor(
     public val signaling: MediaConnectionSignaling,
@@ -30,6 +32,8 @@ public class MediaConnectionConfig private constructor(
     public val dscp: Boolean,
     public val presentationInMain: Boolean,
     public val farEndCameraControl: Boolean,
+    public val syncAudioMute: Boolean,
+    public val syncVideoMute: Boolean,
 ) {
 
     /**
@@ -43,6 +47,8 @@ public class MediaConnectionConfig private constructor(
         private var dscp = false
         private var presentationInMain = false
         private var farEndCameraControl = false
+        private var syncAudioMute = true
+        private var syncVideoMute = true
 
         /**
          * Adds an [IceServer] to this builder.
@@ -92,6 +98,26 @@ public class MediaConnectionConfig private constructor(
         }
 
         /**
+         * Sets whether audio mute state should be synced.
+         *
+         * @param syncAudioMute true if audio mute should be synced, false otherwise
+         * @return this builder
+         */
+        public fun syncAudioMute(syncAudioMute: Boolean): Builder = apply {
+            this.syncAudioMute = syncAudioMute
+        }
+
+        /**
+         * Sets whether video mute state should be synced.
+         *
+         * @param syncVideoMute true if video mute should be synced, false otherwise
+         * @return this builder
+         */
+        public fun syncVideoMute(syncVideoMute: Boolean): Builder = apply {
+            this.syncVideoMute = syncVideoMute
+        }
+
+        /**
          * Builds [MediaConnectionConfig].
          *
          * @return an instance of [MediaConnectionConfig]
@@ -102,6 +128,8 @@ public class MediaConnectionConfig private constructor(
             dscp = dscp,
             presentationInMain = presentationInMain && !signaling.directMedia,
             farEndCameraControl = farEndCameraControl,
+            syncAudioMute = syncAudioMute,
+            syncVideoMute = syncVideoMute,
         )
     }
 }
