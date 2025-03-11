@@ -206,12 +206,14 @@ public abstract interface class com/pexip/sdk/media/MediaConnection$RemoteVideoT
 }
 
 public final class com/pexip/sdk/media/MediaConnectionConfig {
-	public synthetic fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/List;ZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/List;ZZZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDscp ()Z
 	public final fun getFarEndCameraControl ()Z
 	public final fun getIceServers ()Ljava/util/List;
 	public final fun getPresentationInMain ()Z
 	public final fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
+	public final fun getSyncAudioMute ()Z
+	public final fun getSyncVideoMute ()Z
 }
 
 public final class com/pexip/sdk/media/MediaConnectionConfig$Builder {
@@ -221,6 +223,8 @@ public final class com/pexip/sdk/media/MediaConnectionConfig$Builder {
 	public final fun dscp (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun farEndCameraControl (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun presentationInMain (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
+	public final fun syncAudioMute (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
+	public final fun syncVideoMute (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 }
 
 public abstract interface class com/pexip/sdk/media/MediaConnectionFactory : com/pexip/sdk/media/CameraVideoTrackFactory, com/pexip/sdk/media/LocalAudioTrackFactory {
