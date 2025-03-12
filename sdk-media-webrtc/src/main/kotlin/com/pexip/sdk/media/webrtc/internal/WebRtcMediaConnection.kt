@@ -132,11 +132,15 @@ internal class WebRtcMediaConnection(
             launchPreferredAspectRatio()
             launchDegradationPreference(Key.MAIN_VIDEO, mainDegradationPreference)
             launchDegradationPreference(Key.PRESENTATION_VIDEO, presentationDegradationPreference)
-            launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
-                if (it) onAudioUnmuted() else onAudioMuted()
+            if (config.syncAudioMute) {
+                launchLocalMediaTrackCapturing(mainLocalAudioTrack) {
+                    if (it) onAudioUnmuted() else onAudioMuted()
+                }
             }
-            launchLocalMediaTrackCapturing(mainLocalVideoTrack) {
-                if (it) onVideoUnmuted() else onVideoMuted()
+            if (config.syncVideoMute) {
+                launchLocalMediaTrackCapturing(mainLocalVideoTrack) {
+                    if (it) onVideoUnmuted() else onVideoMuted()
+                }
             }
             launchLocalMediaTrackCapturing(presentationLocalVideoTrack) {
                 if (it) onTakeFloor() else onReleaseFloor()

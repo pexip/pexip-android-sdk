@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `MediaConnectionConfig.syncAudioMute` and `MediaConnectionConfig.syncVideoMute` to disable the
+  default mute sync behavior
+
 ## [0.17.1] - 2025-03-10
 
 ### Changed
