@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.17.2] - 2025-03-13
+
 ### Added
 
 - `MediaConnectionConfig.syncAudioMute` and `MediaConnectionConfig.syncVideoMute` to disable the
@@ -17,7 +19,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Kotlin to 2.1.10
-- WebRTC to M135
+- WebRTC to M134
 
 ### Fixed
 
@@ -405,7 +407,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.1...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.2...HEAD
+[0.17.2]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.2
 [0.17.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.1
 [0.17.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.0
 [0.16.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.16.0
