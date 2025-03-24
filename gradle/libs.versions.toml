@@ -23,7 +23,7 @@ okio = "3.10.2"
 spotless = "7.0.2"
 turbine = "1.2.0"
 webrtc = "134.0.0"
-workflow = "1.7.1"
+workflow = "1.14.0"
 
 [libraries]
 android = { module = "com.android.tools.build:gradle", version.ref = "android" }
