@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import javax.inject.Singleton
 
 @Singleton
 class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) :
-    StatefulWorkflow<Unit, DisplayNameState, DisplayNameOutput, DisplayNameRendering>() {
+    StatefulWorkflow<Unit, DisplayNameState, DisplayNameOutput, DisplayNameScreen>() {
 
     private val initialDisplayNameWorker = Worker.from(store.getDisplayName()::first)
 
@@ -41,7 +41,7 @@ class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) 
         renderProps: Unit,
         renderState: DisplayNameState,
         context: RenderContext,
-    ): DisplayNameRendering {
+    ): DisplayNameScreen {
         context.runningWorker(
             worker = initialDisplayNameWorker,
             handler = ::onInitialDisplayNameWorkerOutput,
@@ -52,7 +52,7 @@ class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) 
                 handler = ::onSetDisplayNameWorkerOutput,
             )
         }
-        return DisplayNameRendering(
+        return DisplayNameScreen(
             displayName = renderState.displayName,
             onNextClick = context.send(::onNextClick),
             onBackClick = context.send(::onBackClick),
@@ -64,7 +64,7 @@ class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) 
             state.displayName.textValue = displayName
         }
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("unused")
     private fun onSetDisplayNameWorkerOutput(unit: Unit) =
         action({ "onSetDisplayNameWorkerOutput()" }) {
             setOutput(DisplayNameOutput.Next)

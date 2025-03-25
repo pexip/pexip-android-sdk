@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
 import com.squareup.workflow1.renderChild
+import com.squareup.workflow1.ui.Screen
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.SharingStarted
@@ -83,7 +84,7 @@ class ConferenceWorkflow @Inject constructor(
     private val chatWorkflow: ChatWorkflow,
     private val dtmfWorkflow: DtmfWorkflow,
     private val localMediaTrackWorkflow: LocalMediaTrackWorkflow,
-) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, Any>() {
+) : StatefulWorkflow<ConferenceProps, ConferenceState, ConferenceOutput, Screen>() {
 
     private val googleStunUrls = listOf(
         "stun:stun.l.google.com:19302",
@@ -117,7 +118,7 @@ class ConferenceWorkflow @Inject constructor(
         renderProps: ConferenceProps,
         renderState: ConferenceState,
         context: RenderContext,
-    ): Any {
+    ): Screen {
         val audioDeviceRendering = context.renderChild(
             child = audioDeviceWorkflow,
             props = AudioDeviceProps(renderState.audioDevicesVisible),
@@ -140,18 +141,18 @@ class ConferenceWorkflow @Inject constructor(
         context.aspectRatioSideEffect(renderState)
         return when (renderState.showingChat) {
             true -> chatRendering
-            else -> ConferenceRendering(
+            else -> ConferenceScreen(
                 splashScreen = renderState.splashScreen,
                 cameraVideoTrack = renderProps.cameraVideoTrack,
                 mainRemoteVideoTrack = renderState.mainRemoteVideoTrack,
                 presentationRemoteVideoTrack = renderState.presentationRemoteVideoTrack,
-                audioDeviceRendering = audioDeviceRendering,
-                bandwidthRendering = context.renderChild(
+                audioDeviceScreen = audioDeviceRendering,
+                bandwidthScreen = context.renderChild(
                     child = bandwidthWorkflow,
                     props = BandwidthProps(renderState.bandwidthVisible),
                     handler = ::onBandwidthOutput,
                 ),
-                dtmfRendering = context.renderChild(
+                dtmfScreen = context.renderChild(
                     child = dtmfWorkflow,
                     props = DtmfProps(renderState.dtmfVisible),
                     handler = ::onDtmfOutput,

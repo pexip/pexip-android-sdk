@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.dtmf
+package com.pexip.sdk.sample.conference
 
-import com.squareup.workflow1.ui.ViewFactory
-import com.squareup.workflow1.ui.compose.composeViewFactory
+import com.squareup.workflow1.ui.compose.ScreenComposableFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,13 +25,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DtmfViewFactoryModule {
+object ConferenceModule {
 
     @Provides
     @Singleton
     @IntoSet
-    fun provideDtmfViewFactory(): ViewFactory<*> =
-        composeViewFactory<DtmfRendering> { rendering, _ ->
-            DtmfDialog(rendering)
-        }
+    fun provide(): ScreenComposableFactory<*> = ScreenComposableFactory<ConferenceScreen> {
+        ConferenceScreen(screen = it)
+    }
 }

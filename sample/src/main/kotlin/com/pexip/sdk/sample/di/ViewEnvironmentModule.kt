@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 package com.pexip.sdk.sample.di
 
 import com.squareup.workflow1.ui.ViewEnvironment
-import com.squareup.workflow1.ui.ViewFactory
 import com.squareup.workflow1.ui.ViewRegistry
+import com.squareup.workflow1.ui.compose.ScreenComposableFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,8 +30,10 @@ object ViewEnvironmentModule {
 
     @Provides
     @Singleton
-    fun provideViewEnvironment(viewFactories: Set<@JvmSuppressWildcards ViewFactory<*>>): ViewEnvironment {
+    fun provideViewEnvironment(
+        viewFactories: Set<@JvmSuppressWildcards ScreenComposableFactory<*>>,
+    ): ViewEnvironment {
         val viewRegistry = ViewRegistry(*viewFactories.toTypedArray())
-        return ViewEnvironment(mapOf(ViewRegistry to viewRegistry))
+        return ViewEnvironment.EMPTY + (ViewRegistry to viewRegistry)
     }
 }

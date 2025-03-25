@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,20 +31,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.squareup.workflow1.ui.Screen
+
+data class DtmfScreen(
+    val visible: Boolean,
+    val onToneClick: (String) -> Unit,
+    val onBackClick: () -> Unit,
+) : Screen
 
 @Composable
-fun DtmfDialog(rendering: DtmfRendering) {
-    if (rendering.visible) {
-        Dialog(onDismissRequest = rendering.onBackClick) {
+fun DtmfDialog(screen: DtmfScreen) {
+    if (screen.visible) {
+        Dialog(onDismissRequest = screen.onBackClick) {
             Surface(shape = TonePadShape) {
-                TonePad(rendering = rendering)
+                TonePad(rendering = screen)
             }
         }
     }
 }
 
 @Composable
-private fun TonePad(rendering: DtmfRendering, modifier: Modifier = Modifier) {
+private fun TonePad(rendering: DtmfScreen, modifier: Modifier = Modifier) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         contentPadding = PaddingValues(8.dp),

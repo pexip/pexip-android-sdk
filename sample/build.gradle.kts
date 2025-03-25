@@ -17,6 +17,7 @@ android {
         applicationId = checkNotNull(namespace) { "namespace is not set." }
         versionCode = 1
         versionName = version.toString()
+        minSdk = 24
     }
     buildTypes {
         release {

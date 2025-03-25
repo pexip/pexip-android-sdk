@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,9 @@
  */
 package com.pexip.sdk.sample.conference
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -67,6 +69,7 @@ import coil.compose.AsyncImage
 import com.pexip.sdk.conference.Element
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.media.AudioDevice
+import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.webrtc.compose.VideoTrackEmbeddedRenderer
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.pexip.sdk.sample.CameraIconButton
@@ -76,23 +79,45 @@ import com.pexip.sdk.sample.IconToggleButton
 import com.pexip.sdk.sample.MicrophoneIconButton
 import com.pexip.sdk.sample.SampleTheme
 import com.pexip.sdk.sample.audio.AudioDeviceIcon
-import com.squareup.workflow1.ui.ViewEnvironment
+import com.pexip.sdk.sample.audio.AudioDeviceScreen
+import com.pexip.sdk.sample.bandwidth.BandwidthScreen
+import com.pexip.sdk.sample.dtmf.DtmfScreen
+import com.pexip.sdk.sample.media.LocalMediaTrackRendering
+import com.squareup.workflow1.ui.Screen
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 import org.webrtc.RendererCommon
 
+data class ConferenceScreen(
+    val splashScreen: SplashScreen?,
+    val cameraVideoTrack: VideoTrack?,
+    val mainRemoteVideoTrack: VideoTrack?,
+    val presentationRemoteVideoTrack: VideoTrack?,
+    val audioDeviceScreen: AudioDeviceScreen,
+    val bandwidthScreen: BandwidthScreen,
+    val dtmfScreen: DtmfScreen,
+    val cameraVideoTrackRendering: LocalMediaTrackRendering?,
+    val microphoneAudioTrackRendering: LocalMediaTrackRendering?,
+    val screenCapturing: Boolean,
+    val onScreenCapture: (Intent) -> Unit,
+    val onAspectRatioChange: (Float) -> Unit,
+    val onAudioDevicesChange: (Boolean) -> Unit,
+    val onBandwidthChange: (Boolean) -> Unit,
+    val onDtmfChange: (Boolean) -> Unit,
+    val onStopScreenCapture: () -> Unit,
+    val onChatClick: () -> Unit,
+    val onBackClick: () -> Unit,
+) : Screen
+
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun ConferenceScreen(
-    rendering: ConferenceRendering,
-    environment: ViewEnvironment,
-    modifier: Modifier = Modifier,
-) {
-    BackHandler(onBack = rendering.onBackClick)
+fun ConferenceScreen(screen: ConferenceScreen, modifier: Modifier = Modifier) {
+    BackHandler(onBack = screen.onBackClick)
     SampleTheme(darkTheme = true, systemBars = true) {
         Surface(modifier = modifier) {
             BoxWithConstraints {
-                if (rendering.splashScreen != null) {
+                if (screen.splashScreen != null) {
                     SplashScreen(
-                        splashScreen = rendering.splashScreen,
+                        splashScreen = screen.splashScreen,
                         modifier = Modifier.align(Alignment.Center),
                     )
                 }
@@ -104,11 +129,11 @@ fun ConferenceScreen(
                         modifier = Modifier.align(Alignment.Center),
                     ) {
                         MainVideoTrackRenderer(
-                            rendering = rendering,
+                            rendering = screen,
                             modifier = Modifier.weight(1f, false),
                         )
                         PresentationVideoTrackRenderer(
-                            rendering = rendering,
+                            rendering = screen,
                             modifier = Modifier.weight(1f, false),
                         )
                     }
@@ -119,11 +144,11 @@ fun ConferenceScreen(
                         modifier = Modifier.align(Alignment.Center),
                     ) {
                         MainVideoTrackRenderer(
-                            rendering = rendering,
+                            rendering = screen,
                             modifier = Modifier.weight(1f, false),
                         )
                         PresentationVideoTrackRenderer(
-                            rendering = rendering,
+                            rendering = screen,
                             modifier = Modifier.weight(1f, false),
                         )
                     }
@@ -134,7 +159,7 @@ fun ConferenceScreen(
                         .safeContentPadding(),
                 ) {
                     AnimatedVisibility(
-                        visible = rendering.cameraVideoTrackRendering?.capturing == true,
+                        visible = screen.cameraVideoTrackRendering?.capturing == true,
                         enter = slideInHorizontally { it * 2 },
                         exit = slideOutHorizontally { it * 2 },
                         modifier = Modifier
@@ -143,7 +168,7 @@ fun ConferenceScreen(
                             .shadow(elevation = 8.dp, shape = MaterialTheme.shapes.medium),
                     ) {
                         VideoTrackEmbeddedRenderer(
-                            videoTrack = rendering.cameraVideoTrack,
+                            videoTrack = screen.cameraVideoTrack,
                             mirror = true,
                         )
                     }
@@ -155,9 +180,9 @@ fun ConferenceScreen(
                         ),
                         modifier = Modifier.align(Alignment.TopStart),
                     ) {
-                        MoreIconButton(rendering = rendering)
-                        ScreenShareIconButton(rendering = rendering)
-                        BandwidthIconButton(rendering = rendering)
+                        MoreIconButton(rendering = screen)
+                        ScreenShareIconButton(rendering = screen)
+                        BandwidthIconButton(rendering = screen)
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -167,32 +192,24 @@ fun ConferenceScreen(
                         ),
                         modifier = Modifier.align(Alignment.BottomCenter),
                     ) {
-                        CameraIconButton(rendering = rendering.cameraVideoTrackRendering)
-                        MicrophoneIconButton(rendering = rendering.microphoneAudioTrackRendering)
-                        AudioDevicesIconButton(rendering)
+                        CameraIconButton(rendering = screen.cameraVideoTrackRendering)
+                        MicrophoneIconButton(rendering = screen.microphoneAudioTrackRendering)
+                        AudioDevicesIconButton(screen)
                         Spacer(Modifier.weight(1f))
-                        EndCallIconButton(rendering)
+                        EndCallIconButton(screen)
                     }
                 }
             }
-            WorkflowRendering(
-                rendering = rendering.dtmfRendering,
-                viewEnvironment = environment,
-            )
-            WorkflowRendering(
-                rendering = rendering.audioDeviceRendering,
-                viewEnvironment = environment,
-            )
-            WorkflowRendering(
-                rendering = rendering.bandwidthRendering,
-                viewEnvironment = environment,
-            )
+            WorkflowRendering(rendering = screen.dtmfScreen)
+            WorkflowRendering(rendering = screen.audioDeviceScreen)
+            WorkflowRendering(rendering = screen.bandwidthScreen)
         }
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-private fun MainVideoTrackRenderer(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
+private fun MainVideoTrackRenderer(rendering: ConferenceScreen, modifier: Modifier = Modifier) {
     if (rendering.mainRemoteVideoTrack != null) {
         BoxWithConstraints(contentAlignment = Alignment.Center, modifier = modifier) {
             val viewportAspectRatio = remember(maxWidth, maxHeight) { maxWidth / maxHeight }
@@ -211,7 +228,7 @@ private fun MainVideoTrackRenderer(rendering: ConferenceRendering, modifier: Mod
 
 @Composable
 private fun PresentationVideoTrackRenderer(
-    rendering: ConferenceRendering,
+    rendering: ConferenceScreen,
     modifier: Modifier = Modifier,
 ) {
     if (rendering.presentationRemoteVideoTrack != null) {
@@ -224,7 +241,7 @@ private fun PresentationVideoTrackRenderer(
 }
 
 @Composable
-private fun EndCallIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
+private fun EndCallIconButton(rendering: ConferenceScreen, modifier: Modifier = Modifier) {
     IconButton(
         onClick = rendering.onBackClick,
         colors = IconButtonDefaults.iconButtonColors(
@@ -238,22 +255,22 @@ private fun EndCallIconButton(rendering: ConferenceRendering, modifier: Modifier
 }
 
 @Composable
-private fun AudioDevicesIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
+private fun AudioDevicesIconButton(rendering: ConferenceScreen, modifier: Modifier = Modifier) {
     IconToggleButton(
-        checked = rendering.audioDeviceRendering.visible,
+        checked = rendering.audioDeviceScreen.visible,
         onCheckedChange = rendering.onAudioDevicesChange,
         modifier = modifier,
     ) {
-        val type = rendering.audioDeviceRendering.selectedAudioDevice?.type
+        val type = rendering.audioDeviceScreen.selectedAudioDevice?.type
             ?: AudioDevice.Type.BUILTIN_SPEAKER
         AudioDeviceIcon(type = type)
     }
 }
 
 @Composable
-private fun BandwidthIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
+private fun BandwidthIconButton(rendering: ConferenceScreen, modifier: Modifier = Modifier) {
     IconToggleButton(
-        checked = rendering.bandwidthRendering.visible,
+        checked = rendering.bandwidthScreen.visible,
         onCheckedChange = rendering.onBandwidthChange,
         modifier = modifier,
     ) {
@@ -265,7 +282,7 @@ private fun BandwidthIconButton(rendering: ConferenceRendering, modifier: Modifi
 }
 
 @Composable
-private fun ScreenShareIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
+private fun ScreenShareIconButton(rendering: ConferenceScreen, modifier: Modifier = Modifier) {
     val manager = rememberMediaProjectionManager()
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -296,7 +313,7 @@ private fun ScreenShareIconButton(rendering: ConferenceRendering, modifier: Modi
 }
 
 @Composable
-private fun MoreIconButton(rendering: ConferenceRendering, modifier: Modifier = Modifier) {
+private fun MoreIconButton(rendering: ConferenceScreen, modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val onDismissRequest = { expanded = false }
     Box(modifier = modifier) {
@@ -312,7 +329,7 @@ private fun MoreIconButton(rendering: ConferenceRendering, modifier: Modifier = 
 
 @Composable
 private fun DtmfItem(
-    rendering: ConferenceRendering,
+    rendering: ConferenceScreen,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -333,7 +350,7 @@ private fun DtmfItem(
 
 @Composable
 private fun ConferenceEventsItem(
-    rendering: ConferenceRendering,
+    rendering: ConferenceScreen,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

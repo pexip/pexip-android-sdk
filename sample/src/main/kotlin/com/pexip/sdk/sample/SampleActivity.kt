@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import com.pexip.sdk.media.webrtc.compose.LocalEglBase
 import com.pexip.sdk.sample.permissions.LocalPermissionRationaleHelper
 import com.pexip.sdk.sample.permissions.PermissionRationaleHelper
 import com.squareup.workflow1.ui.ViewEnvironment
+import com.squareup.workflow1.ui.compose.LocalWorkflowEnvironment
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -59,14 +60,12 @@ class SampleActivity : AppCompatActivity() {
         setContent {
             CompositionLocalProvider(
                 LocalEglBase provides eglBase,
+                LocalWorkflowEnvironment provides viewEnvironment,
                 LocalPermissionRationaleHelper provides permissionRationaleHelper,
             ) {
                 SampleTheme(systemBars = true) {
                     val rendering by sampleViewModel.rendering.collectAsState()
-                    WorkflowRendering(
-                        rendering = rendering,
-                        viewEnvironment = viewEnvironment,
-                    )
+                    WorkflowRendering(rendering = rendering)
                 }
             }
         }

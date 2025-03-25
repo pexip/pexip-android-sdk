@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,10 +42,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pexip.sdk.sample.asMutableState
+import com.squareup.workflow1.ui.Screen
+import com.squareup.workflow1.ui.TextController
+
+data class AliasScreen(
+    val alias: TextController,
+    val host: TextController,
+    val presentationInMain: Boolean,
+    val resolveEnabled: Boolean,
+    val onPresentationInMainChange: (Boolean) -> Unit,
+    val onResolveClick: () -> Unit,
+    val onBackClick: () -> Unit,
+) : Screen
 
 @Composable
-fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
-    Dialog(onDismissRequest = rendering.onBackClick) {
+fun AliasScreen(screen: AliasScreen, modifier: Modifier = Modifier) {
+    Dialog(onDismissRequest = screen.onBackClick) {
         Surface(shape = MaterialTheme.shapes.large, modifier = modifier) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -57,16 +69,16 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                 )
                 val aliasKeyboardOptions = remember {
                     KeyboardOptions(
-                        autoCorrect = false,
+                        autoCorrectEnabled = false,
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next,
                     )
                 }
-                val focusRequester = remember { FocusRequester() }
+                val focusRequester = remember(::FocusRequester)
                 LaunchedEffect(focusRequester) {
                     focusRequester.requestFocus()
                 }
-                val (alias, onAliasChange) = rendering.alias.asMutableState()
+                val (alias, onAliasChange) = screen.alias.asMutableState()
                 TextField(
                     value = alias,
                     onValueChange = onAliasChange,
@@ -84,16 +96,16 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                 )
                 val hostKeyboardOptions = remember {
                     KeyboardOptions(
-                        autoCorrect = false,
+                        autoCorrectEnabled = false,
                         keyboardType = KeyboardType.Uri,
                         imeAction = ImeAction.Go,
                     )
                 }
-                val currentOnResolveClick by rememberUpdatedState(rendering.onResolveClick)
+                val currentOnResolveClick by rememberUpdatedState(screen.onResolveClick)
                 val hostKeyboardActions = remember {
                     KeyboardActions(onGo = { currentOnResolveClick() })
                 }
-                val (host, onHostChange) = rendering.host.asMutableState()
+                val (host, onHostChange) = screen.host.asMutableState()
                 TextField(
                     value = host,
                     onValueChange = onHostChange,
@@ -115,13 +127,13 @@ fun AliasScreen(rendering: AliasRendering, modifier: Modifier = Modifier) {
                 ) {
                     Text(text = "Presentation in main")
                     Switch(
-                        checked = rendering.presentationInMain,
-                        onCheckedChange = rendering.onPresentationInMainChange,
+                        checked = screen.presentationInMain,
+                        onCheckedChange = screen.onPresentationInMainChange,
                     )
                 }
                 Button(
-                    onClick = rendering.onResolveClick,
-                    enabled = rendering.resolveEnabled,
+                    onClick = screen.onResolveClick,
+                    enabled = screen.resolveEnabled,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(text = "Join")

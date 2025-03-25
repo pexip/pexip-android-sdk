@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import javax.inject.Singleton
 
 @Singleton
 class BandwidthWorkflow @Inject constructor() :
-    StatefulWorkflow<BandwidthProps, BandwidthState, BandwidthOutput, BandwidthRendering>() {
+    StatefulWorkflow<BandwidthProps, BandwidthState, BandwidthOutput, BandwidthScreen>() {
 
     override fun initialState(props: BandwidthProps, snapshot: Snapshot?): BandwidthState =
         BandwidthState()
@@ -35,7 +35,7 @@ class BandwidthWorkflow @Inject constructor() :
         renderProps: BandwidthProps,
         renderState: BandwidthState,
         context: RenderContext,
-    ) = BandwidthRendering(
+    ) = BandwidthScreen(
         visible = renderProps.visible,
         bandwidth = renderState.bandwidth,
         onBandwidthClick = context.send(::onBandwidthClick),
