@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.pexip.sdk.sample.preflight.PreflightWorkflow
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
+import com.squareup.workflow1.ui.Screen
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.awaitCancellation
 import javax.inject.Inject
@@ -47,7 +48,7 @@ class SampleWorkflow @Inject constructor(
     private val conferenceWorkflow: ConferenceWorkflow,
     private val localAudioTrackFactory: LocalAudioTrackFactory,
     private val cameraVideoTrackFactory: CameraVideoTrackFactory,
-) : StatefulWorkflow<Unit, SampleState, SampleOutput, Any>() {
+) : StatefulWorkflow<Unit, SampleState, SampleOutput, Screen>() {
 
     private val permissions = buildSet {
         add(Manifest.permission.RECORD_AUDIO)
@@ -72,7 +73,7 @@ class SampleWorkflow @Inject constructor(
         renderProps: Unit,
         renderState: SampleState,
         context: RenderContext,
-    ): Any {
+    ): Screen {
         context.createCameraVideoTrackSideEffect(renderState.createCameraVideoTrackCount)
         context.createMicrophoneAudioTrackSideEffect(renderState.createMicrophoneAudioTrackCount)
         context.cameraVideoTrackSideEffect(renderState.cameraVideoTrack)
@@ -174,7 +175,9 @@ class SampleWorkflow @Inject constructor(
     private fun onPermissionsOutput(output: PermissionsOutput) =
         action({ "onPermissionsOutput($output)" }) {
             when (output) {
-                is PermissionsOutput.ApplicationDetailsSettings -> setOutput(SampleOutput.ApplicationDetailsSettings)
+                is PermissionsOutput.ApplicationDetailsSettings -> setOutput(
+                    SampleOutput.ApplicationDetailsSettings,
+                )
                 is PermissionsOutput.Next -> {
                     state = state.copy(
                         destination = SampleDestination.Preflight,

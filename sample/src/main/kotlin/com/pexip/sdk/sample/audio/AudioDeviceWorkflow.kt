@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,9 @@ import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
-class AudioDeviceWorkflow @Inject constructor(private val audioDeviceManager: Provider<AudioDeviceManager>) :
-    StatefulWorkflow<AudioDeviceProps, AudioDeviceState, AudioDeviceOutput, AudioDeviceRendering>() {
+class AudioDeviceWorkflow @Inject constructor(
+    private val audioDeviceManager: Provider<AudioDeviceManager>,
+) : StatefulWorkflow<AudioDeviceProps, AudioDeviceState, AudioDeviceOutput, AudioDeviceScreen>() {
 
     override fun initialState(props: AudioDeviceProps, snapshot: Snapshot?): AudioDeviceState =
         AudioDeviceState(audioDeviceManager.get())
@@ -42,11 +43,11 @@ class AudioDeviceWorkflow @Inject constructor(private val audioDeviceManager: Pr
         renderProps: AudioDeviceProps,
         renderState: AudioDeviceState,
         context: RenderContext,
-    ): AudioDeviceRendering {
+    ): AudioDeviceScreen {
         context.availableAudioDevicesSideEffect(renderState)
         context.selectedAudioDeviceSideEffect(renderState)
         context.disposeAudioDeviceManagerSideEffect(renderState)
-        return AudioDeviceRendering(
+        return AudioDeviceScreen(
             visible = renderProps.visible,
             availableAudioDevices = renderState.availableAudioDevices,
             selectedAudioDevice = renderState.selectedAudioDevice,

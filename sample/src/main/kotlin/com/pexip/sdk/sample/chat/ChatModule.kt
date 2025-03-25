@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2023-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.displayname
+package com.pexip.sdk.sample.chat
 
-import com.squareup.workflow1.ui.TextController
+import com.squareup.workflow1.ui.compose.ScreenComposableFactory
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
+import javax.inject.Singleton
 
-data class DisplayNameRendering(
-    val displayName: TextController,
-    val onNextClick: () -> Unit,
-    val onBackClick: () -> Unit,
-)
+@Module
+@InstallIn(SingletonComponent::class)
+object ChatModule {
+
+    @Provides
+    @Singleton
+    @IntoSet
+    fun provide(): ScreenComposableFactory<*> = ScreenComposableFactory<ChatScreen> {
+        ChatScreen(screen = it)
+    }
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class PreflightWorkflow @Inject constructor(
     private val aliasWorkflow: AliasWorkflow,
     private val pinChallengeWorkflow: PinChallengeWorkflow,
     private val localMediaTrackWorkflow: LocalMediaTrackWorkflow,
-) : StatefulWorkflow<PreflightProps, PreflightState, PreflightOutput, PreflightRendering>() {
+) : StatefulWorkflow<PreflightProps, PreflightState, PreflightOutput, PreflightScreen>() {
 
     override fun initialState(props: PreflightProps, snapshot: Snapshot?): PreflightState =
         PreflightState()
@@ -47,7 +47,7 @@ class PreflightWorkflow @Inject constructor(
         renderProps: PreflightProps,
         renderState: PreflightState,
         context: RenderContext,
-    ): PreflightRendering = PreflightRendering(
+    ): PreflightScreen = PreflightScreen(
         childRendering = when (val destination = renderState.destination) {
             is PreflightDestination.DisplayName -> context.renderChild(
                 child = displayNameWorkflow,
@@ -68,7 +68,9 @@ class PreflightWorkflow @Inject constructor(
             null -> null
         },
         cameraVideoTrack = renderProps.cameraVideoTrack,
-        callEnabled = with(renderProps) { cameraVideoTrack != null && microphoneAudioTrack != null },
+        callEnabled = with(renderProps) {
+            cameraVideoTrack != null && microphoneAudioTrack != null
+        },
         onCallClick = context.send(::onCallClick),
         onCreateCameraVideoTrackClick = context.send(::onCreateCameraVideoTrackClick),
         cameraVideoTrackRendering = when (renderProps.cameraVideoTrack) {

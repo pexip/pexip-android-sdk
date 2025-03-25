@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ChatWorkflow @Inject constructor() :
-    StatefulWorkflow<ChatProps, ChatState, ChatOutput, ChatRendering>() {
+    StatefulWorkflow<ChatProps, ChatState, ChatOutput, ChatScreen>() {
 
     override fun initialState(props: ChatProps, snapshot: Snapshot?): ChatState =
         ChatState(messageWorker = MessageWorker(props.messenger))
@@ -45,7 +45,7 @@ class ChatWorkflow @Inject constructor() :
         renderProps: ChatProps,
         renderState: ChatState,
         context: RenderContext,
-    ): ChatRendering {
+    ): ChatScreen {
         context.runningWorker(
             worker = renderState.messageWorker,
             handler = ::onMessageWorkerOutput,
@@ -60,7 +60,7 @@ class ChatWorkflow @Inject constructor() :
                 handler = ::onSendMessageWorkerOutput,
             )
         }
-        return ChatRendering(
+        return ChatScreen(
             payload = renderState.payload,
             messages = renderState.messages,
             submitEnabled = !renderState.blankPayload,
@@ -124,13 +124,15 @@ class ChatWorkflow @Inject constructor() :
                     "" -> null
                     else -> messenger.send(type = "text/plain", payload = payload)
                 }
-            } catch (e: MessageNotSentException) {
+            } catch (_: MessageNotSentException) {
                 null
             }
             emit(message)
         }
 
         override fun doesSameWorkAs(otherWorker: Worker<*>): Boolean =
-            otherWorker is SendMessageWorker && this.messenger == otherWorker.messenger && this.payload == otherWorker.payload
+            otherWorker is SendMessageWorker &&
+                this.messenger == otherWorker.messenger &&
+                this.payload == otherWorker.payload
     }
 }

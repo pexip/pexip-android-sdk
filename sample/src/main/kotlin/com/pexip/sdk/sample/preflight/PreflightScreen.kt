@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,33 +36,42 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.pexip.sdk.media.VideoTrack
 import com.pexip.sdk.media.webrtc.compose.VideoTrackRenderer
 import com.pexip.sdk.sample.CameraIconButton
 import com.pexip.sdk.sample.IconButton
 import com.pexip.sdk.sample.IconButtonDefaults
 import com.pexip.sdk.sample.MicrophoneIconButton
-import com.squareup.workflow1.ui.ViewEnvironment
+import com.pexip.sdk.sample.media.LocalMediaTrackRendering
+import com.squareup.workflow1.ui.Screen
 import com.squareup.workflow1.ui.compose.WorkflowRendering
 import org.webrtc.RendererCommon
 
+data class PreflightScreen(
+    val childRendering: Screen?,
+    val cameraVideoTrack: VideoTrack?,
+    val callEnabled: Boolean,
+    val onCallClick: () -> Unit,
+    val onCreateCameraVideoTrackClick: () -> Unit,
+    val cameraVideoTrackRendering: LocalMediaTrackRendering?,
+    val microphoneAudioTrackRendering: LocalMediaTrackRendering?,
+    val onBackClick: () -> Unit,
+) : Screen
+
 @Composable
-fun PreflightScreen(
-    rendering: PreflightRendering,
-    environment: ViewEnvironment,
-    modifier: Modifier = Modifier,
-) {
-    BackHandler(onBack = rendering.onBackClick)
+fun PreflightScreen(screen: PreflightScreen, modifier: Modifier = Modifier) {
+    BackHandler(onBack = screen.onBackClick)
     Surface(modifier = modifier) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             VideoTrackRenderer(
-                videoTrack = rendering.cameraVideoTrack?.takeIf {
-                    rendering.cameraVideoTrackRendering?.capturing == true
+                videoTrack = screen.cameraVideoTrack?.takeIf {
+                    screen.cameraVideoTrackRendering?.capturing == true
                 },
                 mirror = true,
                 scalingTypeMatchOrientation = RendererCommon.ScalingType.SCALE_ASPECT_FIT,
                 modifier = Modifier.wrapContentSize(),
             )
-            if (rendering.cameraVideoTrack == null) {
+            if (screen.cameraVideoTrack == null) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,7 +81,7 @@ fun PreflightScreen(
                         text = "Camera has been disconnected",
                         color = Color.White,
                     )
-                    Button(onClick = rendering.onCreateCameraVideoTrackClick) {
+                    Button(onClick = screen.onCreateCameraVideoTrackClick) {
                         Text(text = "Try again")
                     }
                 }
@@ -83,12 +92,12 @@ fun PreflightScreen(
                     .safeContentPadding()
                     .align(Alignment.BottomCenter),
             ) {
-                CameraIconButton(rendering = rendering.cameraVideoTrackRendering)
-                MicrophoneIconButton(rendering = rendering.microphoneAudioTrackRendering)
+                CameraIconButton(rendering = screen.cameraVideoTrackRendering)
+                MicrophoneIconButton(rendering = screen.microphoneAudioTrackRendering)
                 Spacer(Modifier.weight(1f))
                 IconButton(
-                    onClick = rendering.onCallClick,
-                    enabled = rendering.callEnabled,
+                    onClick = screen.onCallClick,
+                    enabled = screen.callEnabled,
                     colors = IconButtonDefaults.iconButtonColors(
                         color = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -102,10 +111,7 @@ fun PreflightScreen(
             }
         }
     }
-    if (rendering.childRendering != null) {
-        WorkflowRendering(
-            rendering = rendering.childRendering,
-            viewEnvironment = environment,
-        )
+    if (screen.childRendering != null) {
+        WorkflowRendering(rendering = screen.childRendering)
     }
 }

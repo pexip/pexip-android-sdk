@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,16 +55,26 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.pexip.sdk.conference.Message
 import com.pexip.sdk.sample.asMutableState
+import com.squareup.workflow1.ui.Screen
+import com.squareup.workflow1.ui.TextController
 import kotlinx.datetime.toJavaInstant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+data class ChatScreen(
+    val payload: TextController,
+    val messages: List<Message>,
+    val submitEnabled: Boolean,
+    val onSubmitClick: () -> Unit,
+    val onBackClick: () -> Unit,
+) : Screen
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(rendering: ChatRendering, modifier: Modifier = Modifier) {
-    BackHandler(onBack = rendering.onBackClick)
+fun ChatScreen(screen: ChatScreen, modifier: Modifier = Modifier) {
+    BackHandler(onBack = screen.onBackClick)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -72,7 +82,7 @@ fun ChatScreen(rendering: ChatRendering, modifier: Modifier = Modifier) {
                     Text(text = "Chat")
                 },
                 navigationIcon = {
-                    IconButton(onClick = rendering.onBackClick) {
+                    IconButton(onClick = screen.onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = null,
@@ -86,10 +96,10 @@ fun ChatScreen(rendering: ChatRendering, modifier: Modifier = Modifier) {
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             val state = rememberLazyListState()
-            LaunchedEffect(state, rendering.messages.size) {
+            LaunchedEffect(state, screen.messages.size) {
                 state.animateScrollToItem(0)
             }
-            val reversedMessages = remember(rendering.messages) { rendering.messages.asReversed() }
+            val reversedMessages = remember(screen.messages) { screen.messages.asReversed() }
             LazyColumn(
                 state = state,
                 reverseLayout = true,
@@ -101,12 +111,12 @@ fun ChatScreen(rendering: ChatRendering, modifier: Modifier = Modifier) {
                 }
             }
             HorizontalDivider()
-            val (value, onValueChange) = rendering.payload.asMutableState()
+            val (value, onValueChange) = screen.payload.asMutableState()
             Composer(
                 value = value,
                 onValueChange = onValueChange,
-                submitEnabled = rendering.submitEnabled,
-                onSubmitClick = rendering.onSubmitClick,
+                submitEnabled = screen.submitEnabled,
+                onSubmitClick = screen.onSubmitClick,
             )
         }
     }

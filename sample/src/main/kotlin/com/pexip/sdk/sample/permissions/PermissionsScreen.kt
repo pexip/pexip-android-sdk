@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.pexip.sdk.sample.R
+import com.squareup.workflow1.ui.Screen
+
+data class PermissionsScreen(
+    val permissions: Set<String>,
+    val onPermissionsRequestResult: (PermissionsRequestResult) -> Unit,
+    val onBackClick: () -> Unit,
+) : Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PermissionsScreen(rendering: PermissionsRendering, modifier: Modifier = Modifier) {
-    BackHandler(onBack = rendering.onBackClick)
+fun PermissionsScreen(screen: PermissionsScreen, modifier: Modifier = Modifier) {
+    BackHandler(onBack = screen.onBackClick)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,7 +72,9 @@ fun PermissionsScreen(rendering: PermissionsRendering, modifier: Modifier = Modi
         ) {
             val helper = LocalPermissionRationaleHelper.current
             val contract = ActivityResultContracts.RequestMultiplePermissions()
-            val currentOnPermissionsRequestResult by rememberUpdatedState(rendering.onPermissionsRequestResult)
+            val currentOnPermissionsRequestResult by rememberUpdatedState(
+                screen.onPermissionsRequestResult,
+            )
             val launcher = rememberLauncherForActivityResult(contract) {
                 Log.e("PermissionsScreen", it.toString())
                 val rationales = it.keys.associateWith(helper::shouldShowRequestPermissionRationale)
@@ -76,8 +85,8 @@ fun PermissionsScreen(rendering: PermissionsRendering, modifier: Modifier = Modi
                 )
                 currentOnPermissionsRequestResult(result)
             }
-            val permissions = remember(rendering.permissions) {
-                rendering.permissions.toTypedArray()
+            val permissions = remember(screen.permissions) {
+                screen.permissions.toTypedArray()
             }
             Text(
                 text = stringResource(R.string.permissions_title),

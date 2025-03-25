@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,20 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pexip.sdk.sample.asMutableState
+import com.squareup.workflow1.ui.Screen
+import com.squareup.workflow1.ui.TextController
+
+data class PinChallengeScreen(
+    val pin: TextController,
+    val error: Boolean,
+    val submitEnabled: Boolean,
+    val onSubmitClick: () -> Unit,
+    val onBackClick: () -> Unit,
+) : Screen
 
 @Composable
-fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Modifier) {
-    Dialog(onDismissRequest = rendering.onBackClick) {
+fun PinChallengeScreen(screen: PinChallengeScreen, modifier: Modifier = Modifier) {
+    Dialog(onDismissRequest = screen.onBackClick) {
         Surface(shape = MaterialTheme.shapes.large, modifier = modifier) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -50,18 +60,18 @@ fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Mo
                     text = "Pexip Video SDK",
                     style = MaterialTheme.typography.titleLarge,
                 )
-                val visualTransformation = remember { PasswordVisualTransformation() }
+                val visualTransformation = remember(::PasswordVisualTransformation)
                 val keyboardOptions = remember {
                     KeyboardOptions(
                         keyboardType = KeyboardType.NumberPassword,
                         imeAction = ImeAction.Done,
                     )
                 }
-                val focusRequester = remember { FocusRequester() }
+                val focusRequester = remember(::FocusRequester)
                 LaunchedEffect(focusRequester) {
                     focusRequester.requestFocus()
                 }
-                val (pin, onPinChange) = rendering.pin.asMutableState()
+                val (pin, onPinChange) = screen.pin.asMutableState()
                 TextField(
                     value = pin,
                     onValueChange = onPinChange,
@@ -69,7 +79,7 @@ fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Mo
                         Text(text = "PIN")
                     },
                     maxLines = 1,
-                    isError = rendering.error,
+                    isError = screen.error,
                     visualTransformation = visualTransformation,
                     keyboardOptions = keyboardOptions,
                     modifier = Modifier
@@ -77,8 +87,8 @@ fun PinChallengeScreen(rendering: PinChallengeRendering, modifier: Modifier = Mo
                         .focusRequester(focusRequester),
                 )
                 Button(
-                    onClick = rendering.onSubmitClick,
-                    enabled = rendering.submitEnabled,
+                    onClick = screen.onSubmitClick,
+                    enabled = screen.submitEnabled,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(text = "Join")

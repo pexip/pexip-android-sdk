@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pexip.sdk.sample.asMutableState
+import com.squareup.workflow1.ui.Screen
+import com.squareup.workflow1.ui.TextController
+
+data class DisplayNameScreen(
+    val displayName: TextController,
+    val onNextClick: () -> Unit,
+    val onBackClick: () -> Unit,
+) : Screen
 
 @Composable
-fun DisplayNameScreen(rendering: DisplayNameRendering, modifier: Modifier = Modifier) {
-    Dialog(onDismissRequest = rendering.onBackClick) {
+fun DisplayNameScreen(screen: DisplayNameScreen, modifier: Modifier = Modifier) {
+    Dialog(onDismissRequest = screen.onBackClick) {
         Surface(shape = MaterialTheme.shapes.large, modifier = modifier) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -54,20 +62,20 @@ fun DisplayNameScreen(rendering: DisplayNameRendering, modifier: Modifier = Modi
                 )
                 val keyboardOptions = remember {
                     KeyboardOptions(
-                        autoCorrect = true,
+                        autoCorrectEnabled = true,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Go,
                     )
                 }
-                val currentOnNextClick by rememberUpdatedState(rendering.onNextClick)
+                val currentOnNextClick by rememberUpdatedState(screen.onNextClick)
                 val keyboardActions = remember {
                     KeyboardActions(onGo = { currentOnNextClick() })
                 }
-                val focusRequester = remember { FocusRequester() }
+                val focusRequester = remember(::FocusRequester)
                 LaunchedEffect(focusRequester) {
                     focusRequester.requestFocus()
                 }
-                val (displayName, onDisplayNameChange) = rendering.displayName.asMutableState()
+                val (displayName, onDisplayNameChange) = screen.displayName.asMutableState()
                 TextField(
                     value = displayName,
                     onValueChange = onDisplayNameChange,
@@ -85,7 +93,7 @@ fun DisplayNameScreen(rendering: DisplayNameRendering, modifier: Modifier = Modi
                         .focusRequester(focusRequester),
                 )
                 Button(
-                    onClick = rendering.onNextClick,
+                    onClick = screen.onNextClick,
                     enabled = displayName.text.isNotBlank(),
                     modifier = Modifier.fillMaxWidth(),
                 ) {

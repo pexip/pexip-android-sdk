@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.preflight
+package com.pexip.sdk.sample.dtmf
 
-import com.pexip.sdk.media.VideoTrack
-import com.pexip.sdk.sample.media.LocalMediaTrackRendering
+import com.squareup.workflow1.ui.compose.ScreenComposableFactory
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
+import javax.inject.Singleton
 
-data class PreflightRendering(
-    val childRendering: Any?,
-    val cameraVideoTrack: VideoTrack?,
-    val callEnabled: Boolean,
-    val onCallClick: () -> Unit,
-    val onCreateCameraVideoTrackClick: () -> Unit,
-    val cameraVideoTrackRendering: LocalMediaTrackRendering?,
-    val microphoneAudioTrackRendering: LocalMediaTrackRendering?,
-    val onBackClick: () -> Unit,
-)
+@Module
+@InstallIn(SingletonComponent::class)
+object DtmfModule {
+
+    @Provides
+    @Singleton
+    @IntoSet
+    fun provide(): ScreenComposableFactory<*> = ScreenComposableFactory<DtmfScreen> {
+        DtmfDialog(screen = it)
+    }
+}
