@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@ package com.pexip.sdk.sample.settings
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.okio.OkioSerializer
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runInterruptible
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.okio.decodeFromBufferedSource
@@ -33,7 +32,7 @@ object SettingsSerializer : OkioSerializer<Settings> {
     override val defaultValue: Settings
         get() = Settings()
 
-    override suspend fun readFrom(source: BufferedSource): Settings = withContext(Dispatchers.IO) {
+    override suspend fun readFrom(source: BufferedSource): Settings = runInterruptible {
         try {
             Json.Default.decodeFromBufferedSource(source)
         } catch (e: IOException) {
@@ -41,7 +40,7 @@ object SettingsSerializer : OkioSerializer<Settings> {
         }
     }
 
-    override suspend fun writeTo(t: Settings, sink: BufferedSink) = withContext(Dispatchers.IO) {
+    override suspend fun writeTo(t: Settings, sink: BufferedSink) = runInterruptible {
         Json.Default.encodeToBufferedSink(t, sink)
     }
 }

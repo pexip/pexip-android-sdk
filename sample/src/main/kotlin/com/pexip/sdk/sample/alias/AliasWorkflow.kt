@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AliasWorkflow @Inject constructor(private val pinRequirementWorkflow: PinRequirementWorkflow) :
-    StatefulWorkflow<Unit, AliasState, AliasOutput, AliasRendering>() {
+class AliasWorkflow @Inject constructor(
+    private val pinRequirementWorkflow: PinRequirementWorkflow,
+) : StatefulWorkflow<Unit, AliasState, AliasOutput, AliasScreen>() {
 
     override fun initialState(props: Unit, snapshot: Snapshot?): AliasState = AliasState()
 
@@ -40,10 +41,10 @@ class AliasWorkflow @Inject constructor(private val pinRequirementWorkflow: PinR
         renderProps: Unit,
         renderState: AliasState,
         context: RenderContext,
-    ): AliasRendering {
+    ): AliasScreen {
         context.runningWorker(renderState.blankAliasWorker, handler = ::onBlankAliasWorkerOutput)
         context.renderPinRequirementWorkflow(renderState.pinRequirementProps)
-        return AliasRendering(
+        return AliasScreen(
             alias = renderState.alias,
             host = renderState.host,
             presentationInMain = renderState.presentationInMain,

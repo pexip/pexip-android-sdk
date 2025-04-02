@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.squareup.workflow1.action
 import javax.inject.Inject
 
 class PermissionsWorkflow @Inject constructor() :
-    StatefulWorkflow<PermissionsProps, PermissionsState, PermissionsOutput, PermissionsRendering>() {
+    StatefulWorkflow<PermissionsProps, PermissionsState, PermissionsOutput, PermissionsScreen>() {
 
     override fun initialState(props: PermissionsProps, snapshot: Snapshot?): PermissionsState =
         PermissionsState()
@@ -33,7 +33,7 @@ class PermissionsWorkflow @Inject constructor() :
         renderProps: PermissionsProps,
         renderState: PermissionsState,
         context: RenderContext,
-    ): PermissionsRendering = PermissionsRendering(
+    ): PermissionsScreen = PermissionsScreen(
         permissions = renderProps.permissions,
         onPermissionsRequestResult = context.send(::onPermissionsRequestResult),
         onBackClick = context.send(::onBackClick),
@@ -43,7 +43,10 @@ class PermissionsWorkflow @Inject constructor() :
         action({ "onPermissionsRequestResult($result)" }) {
             val output = when {
                 result.grants.all { it.value } -> PermissionsOutput.Next
-                result.rationales.none { it.value } && state.rationales?.none { it.value } == true -> {
+                result.rationales.none {
+                    it.value
+                } &&
+                    state.rationales?.none { it.value } == true -> {
                     PermissionsOutput.ApplicationDetailsSettings
                 }
                 else -> null

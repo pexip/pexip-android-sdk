@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import javax.inject.Singleton
 
 @Singleton
 class DtmfWorkflow @Inject constructor() :
-    StatefulWorkflow<DtmfProps, DtmfState, DtmfOutput, DtmfRendering>() {
+    StatefulWorkflow<DtmfProps, DtmfState, DtmfOutput, DtmfScreen>() {
 
     override fun initialState(props: DtmfProps, snapshot: Snapshot?): DtmfState =
         DtmfState(ToneGenerator(AudioManager.STREAM_DTMF, 80))
@@ -38,7 +38,7 @@ class DtmfWorkflow @Inject constructor() :
         renderProps: DtmfProps,
         renderState: DtmfState,
         context: RenderContext,
-    ): DtmfRendering {
+    ): DtmfScreen {
         context.runningSideEffect(renderState.toString()) {
             try {
                 awaitCancellation()
@@ -49,7 +49,7 @@ class DtmfWorkflow @Inject constructor() :
                 }
             }
         }
-        return DtmfRendering(
+        return DtmfScreen(
             visible = renderProps.visible,
             onToneClick = context.send(::onToneClick),
             onBackClick = context.send(::onBackClick),

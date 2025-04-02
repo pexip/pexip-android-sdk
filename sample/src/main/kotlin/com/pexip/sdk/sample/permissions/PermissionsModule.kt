@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pexip.sdk.sample.preflight
+package com.pexip.sdk.sample.permissions
 
-import com.squareup.workflow1.ui.ViewFactory
-import com.squareup.workflow1.ui.compose.composeViewFactory
+import com.squareup.workflow1.ui.compose.ScreenComposableFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,13 +25,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object PreflightViewFactoryModule {
+object PermissionsModule {
 
     @Provides
     @Singleton
     @IntoSet
-    fun providePreflightViewFactory(): ViewFactory<*> =
-        composeViewFactory<PreflightRendering> { rendering, environment ->
-            PreflightScreen(rendering, environment)
-        }
+    fun provide(): ScreenComposableFactory<*> = ScreenComposableFactory<PermissionsScreen> {
+        PermissionsScreen(screen = it)
+    }
 }
