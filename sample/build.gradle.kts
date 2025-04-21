@@ -32,9 +32,6 @@ android {
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
     }
-    kotlinOptions {
-        freeCompilerArgs += "-opt-in=com.squareup.workflow1.ui.WorkflowUiExperimentalApi"
-    }
 }
 
 dependencies {
