@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.17.3] - 2025-06-02
+
+### Fixed
+
+- Avoid skipping potential `IceCandidate`'s
+
 ## [0.17.2] - 2025-03-13
 
 ### Added
@@ -407,7 +413,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.2...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.3...HEAD
+[0.17.3]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.3
 [0.17.2]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.2
 [0.17.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.1
 [0.17.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.0
