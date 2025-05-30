@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Pexip AS
+ * Copyright 2023-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,15 @@ import org.webrtc.IceCandidate
 import org.webrtc.IceCandidateErrorEvent
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
-import org.webrtc.PeerConnection.ContinualGatheringPolicy
 import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class Observer(private val continualGatheringPolicy: ContinualGatheringPolicy) :
-    PeerConnection.Observer, DataChannel.Observer {
+internal class Observer :
+    PeerConnection.Observer,
+    DataChannel.Observer {
 
     private val started = AtomicBoolean()
-    private val candidates = mutableMapOf<String, IceCandidate>()
     private val _event = MutableSharedFlow<Event>(extraBufferCapacity = 64)
 
     val event = _event.asSharedFlow()
@@ -69,23 +68,7 @@ internal class Observer(private val continualGatheringPolicy: ContinualGathering
     }
 
     override fun onIceCandidate(candidate: IceCandidate) {
-        if (continualGatheringPolicy == ContinualGatheringPolicy.GATHER_ONCE) {
-            if (candidate.sdpMid in candidates) return
-            candidates[candidate.sdpMid] =
-                IceCandidate(candidate.sdpMid, candidate.sdpMLineIndex, "")
-        }
         _event.tryEmit(Event.OnIceCandidate(candidate))
-    }
-
-    override fun onIceGatheringChange(state: PeerConnection.IceGatheringState) {
-        if (continualGatheringPolicy == ContinualGatheringPolicy.GATHER_ONCE) {
-            if (state == PeerConnection.IceGatheringState.COMPLETE) {
-                candidates.forEach { (_, candidate) ->
-                    _event.tryEmit(Event.OnIceCandidate(candidate))
-                }
-                candidates.clear()
-            }
-        }
     }
 
     override fun onStandardizedIceConnectionChange(newState: PeerConnection.IceConnectionState) {
@@ -108,6 +91,9 @@ internal class Observer(private val continualGatheringPolicy: ContinualGathering
     }
 
     override fun onRemoveStream(stream: MediaStream) {
+    }
+
+    override fun onIceGatheringChange(state: PeerConnection.IceGatheringState) {
     }
 
     override fun onIceCandidateError(event: IceCandidateErrorEvent?) {

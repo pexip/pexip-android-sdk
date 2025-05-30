@@ -58,7 +58,7 @@ internal class PeerConnectionWrapper(
 ) {
 
     private val mutex = Mutex()
-    private val observer = Observer(rtcConfig.continualGatheringPolicy)
+    private val observer = Observer()
     private var peerConnection by Delegates.observable<PeerConnection?>(null) { _, old, _ ->
         old?.dispose()
     }
