@@ -26,6 +26,9 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias DisplayNameRenderContext =
+    StatefulWorkflow.RenderContext<Unit, DisplayNameState, DisplayNameOutput>
+
 @Singleton
 class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) :
     StatefulWorkflow<Unit, DisplayNameState, DisplayNameOutput, DisplayNameScreen>() {
@@ -40,7 +43,7 @@ class DisplayNameWorkflow @Inject constructor(private val store: SettingsStore) 
     override fun render(
         renderProps: Unit,
         renderState: DisplayNameState,
-        context: RenderContext,
+        context: DisplayNameRenderContext,
     ): DisplayNameScreen {
         context.runningWorker(
             worker = initialDisplayNameWorker,

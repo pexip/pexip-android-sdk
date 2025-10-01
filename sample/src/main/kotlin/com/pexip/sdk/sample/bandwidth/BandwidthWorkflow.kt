@@ -22,6 +22,9 @@ import com.squareup.workflow1.action
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias BandwidthRenderContext =
+    StatefulWorkflow.RenderContext<BandwidthProps, BandwidthState, BandwidthOutput>
+
 @Singleton
 class BandwidthWorkflow @Inject constructor() :
     StatefulWorkflow<BandwidthProps, BandwidthState, BandwidthOutput, BandwidthScreen>() {
@@ -34,7 +37,7 @@ class BandwidthWorkflow @Inject constructor() :
     override fun render(
         renderProps: BandwidthProps,
         renderState: BandwidthState,
-        context: RenderContext,
+        context: BandwidthRenderContext,
     ) = BandwidthScreen(
         visible = renderProps.visible,
         bandwidth = renderState.bandwidth,

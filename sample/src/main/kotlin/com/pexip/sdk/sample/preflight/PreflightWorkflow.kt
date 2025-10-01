@@ -31,6 +31,9 @@ import com.squareup.workflow1.action
 import com.squareup.workflow1.renderChild
 import javax.inject.Inject
 
+private typealias PreflightRenderContext =
+    StatefulWorkflow.RenderContext<PreflightProps, PreflightState, PreflightOutput>
+
 class PreflightWorkflow @Inject constructor(
     private val displayNameWorkflow: DisplayNameWorkflow,
     private val aliasWorkflow: AliasWorkflow,
@@ -46,7 +49,7 @@ class PreflightWorkflow @Inject constructor(
     override fun render(
         renderProps: PreflightProps,
         renderState: PreflightState,
-        context: RenderContext,
+        context: PreflightRenderContext,
     ): PreflightScreen = PreflightScreen(
         childRendering = when (val destination = renderState.destination) {
             is PreflightDestination.DisplayName -> context.renderChild(

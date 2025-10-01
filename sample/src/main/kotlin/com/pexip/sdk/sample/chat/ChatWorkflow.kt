@@ -29,6 +29,9 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias ChatRenderContext =
+    StatefulWorkflow.RenderContext<ChatProps, ChatState, ChatOutput>
+
 @Singleton
 class ChatWorkflow @Inject constructor() :
     StatefulWorkflow<ChatProps, ChatState, ChatOutput, ChatScreen>() {
@@ -44,7 +47,7 @@ class ChatWorkflow @Inject constructor() :
     override fun render(
         renderProps: ChatProps,
         renderState: ChatState,
-        context: RenderContext,
+        context: ChatRenderContext,
     ): ChatScreen {
         context.runningWorker(
             worker = renderState.messageWorker,

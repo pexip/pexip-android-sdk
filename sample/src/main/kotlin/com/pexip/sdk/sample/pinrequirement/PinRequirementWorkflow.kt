@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,9 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias PinRequirementRenderContext =
+    StatefulWorkflow.RenderContext<PinRequirementProps, PinRequirementState, PinRequirementOutput>
+
 @Singleton
 class PinRequirementWorkflow @Inject constructor(
     private val store: SettingsStore,
@@ -48,7 +51,7 @@ class PinRequirementWorkflow @Inject constructor(
     override fun render(
         renderProps: PinRequirementProps,
         renderState: PinRequirementState,
-        context: RenderContext,
+        context: PinRequirementRenderContext,
     ) {
         if (renderState is PinRequirementState.ResolvingNode) {
             context.getNodeSideEffect(renderProps)
@@ -57,7 +60,7 @@ class PinRequirementWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.getNodeSideEffect(props: PinRequirementProps) =
+    private fun PinRequirementRenderContext.getNodeSideEffect(props: PinRequirementProps) =
         runningSideEffect(props.toString()) {
             val action = runCatching { resolver.resolve(props.host) }
                 .map { it?.asSequence() ?: emptySequence() }
@@ -67,7 +70,7 @@ class PinRequirementWorkflow @Inject constructor(
             actionSink.send(action)
         }
 
-    private fun RenderContext.getPinRequirementSideEffect(
+    private fun PinRequirementRenderContext.getPinRequirementSideEffect(
         props: PinRequirementProps,
         state: PinRequirementState.ResolvingPinRequirement,
     ) = runningSideEffect("${props.alias}:${state.builder}") {
@@ -100,12 +103,10 @@ class PinRequirementWorkflow @Inject constructor(
         setOutput(PinRequirementOutput.None(conference))
     }
 
-    private fun onRequiredPin(
-        step: InfinityService.ConferenceStep,
-        required: Boolean,
-    ) = action({ "onRequiredPin($step, $required)" }) {
-        setOutput(PinRequirementOutput.Some(step, required))
-    }
+    private fun onRequiredPin(step: InfinityService.ConferenceStep, required: Boolean) =
+        action({ "onRequiredPin($step, $required)" }) {
+            setOutput(PinRequirementOutput.Some(step, required))
+        }
 
     private fun onError(t: Throwable) = action({ "onError($t)" }) {
         setOutput(PinRequirementOutput.Error(t))

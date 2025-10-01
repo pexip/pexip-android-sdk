@@ -29,6 +29,9 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
+private typealias AudioDeviceRenderContext =
+    StatefulWorkflow.RenderContext<AudioDeviceProps, AudioDeviceState, AudioDeviceOutput>
+
 @Singleton
 class AudioDeviceWorkflow @Inject constructor(
     private val audioDeviceManager: Provider<AudioDeviceManager>,
@@ -42,7 +45,7 @@ class AudioDeviceWorkflow @Inject constructor(
     override fun render(
         renderProps: AudioDeviceProps,
         renderState: AudioDeviceState,
-        context: RenderContext,
+        context: AudioDeviceRenderContext,
     ): AudioDeviceScreen {
         context.availableAudioDevicesSideEffect(renderState)
         context.selectedAudioDeviceSideEffect(renderState)
@@ -56,28 +59,31 @@ class AudioDeviceWorkflow @Inject constructor(
         )
     }
 
-    private fun RenderContext.availableAudioDevicesSideEffect(renderState: AudioDeviceState) =
-        runningSideEffect("availableAudioDevices(${renderState.audioDeviceManager})") {
-            renderState.audioDeviceManager.getAvailableAudioDevices()
-                .map(::onAvailableAudioDevicesChange)
-                .collect(actionSink::send)
-        }
+    private fun AudioDeviceRenderContext.availableAudioDevicesSideEffect(
+        renderState: AudioDeviceState,
+    ) = runningSideEffect("availableAudioDevices(${renderState.audioDeviceManager})") {
+        renderState.audioDeviceManager.getAvailableAudioDevices()
+            .map(::onAvailableAudioDevicesChange)
+            .collect(actionSink::send)
+    }
 
-    private fun RenderContext.selectedAudioDeviceSideEffect(renderState: AudioDeviceState) =
-        runningSideEffect("selectedAudioDevice(${renderState.audioDeviceManager})") {
-            renderState.audioDeviceManager.getSelectedAudioDevice()
-                .map(::onSelectedAudioDeviceChange)
-                .collect(actionSink::send)
-        }
+    private fun AudioDeviceRenderContext.selectedAudioDeviceSideEffect(
+        renderState: AudioDeviceState,
+    ) = runningSideEffect("selectedAudioDevice(${renderState.audioDeviceManager})") {
+        renderState.audioDeviceManager.getSelectedAudioDevice()
+            .map(::onSelectedAudioDeviceChange)
+            .collect(actionSink::send)
+    }
 
-    private fun RenderContext.disposeAudioDeviceManagerSideEffect(renderState: AudioDeviceState) =
-        runningSideEffect("disposeAudioDeviceManager(${renderState.audioDeviceManager})") {
-            try {
-                awaitCancellation()
-            } finally {
-                renderState.audioDeviceManager.dispose()
-            }
+    private fun AudioDeviceRenderContext.disposeAudioDeviceManagerSideEffect(
+        renderState: AudioDeviceState,
+    ) = runningSideEffect("disposeAudioDeviceManager(${renderState.audioDeviceManager})") {
+        try {
+            awaitCancellation()
+        } finally {
+            renderState.audioDeviceManager.dispose()
         }
+    }
 
     private fun onAvailableAudioDevicesChange(availableAudioDevices: List<AudioDevice>) =
         action({ "onAvailableAudioDevicesChange($availableAudioDevices)" }) {

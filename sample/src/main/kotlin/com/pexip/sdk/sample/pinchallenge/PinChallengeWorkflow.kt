@@ -34,6 +34,9 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias PinChallengeRenderContext =
+    StatefulWorkflow.RenderContext<PinChallengeProps, PinChallengeState, PinChallengeOutput>
+
 @Suppress("ktlint:standard:max-line-length")
 @Singleton
 class PinChallengeWorkflow @Inject constructor(private val store: SettingsStore) :
@@ -47,7 +50,7 @@ class PinChallengeWorkflow @Inject constructor(private val store: SettingsStore)
     override fun render(
         renderProps: PinChallengeProps,
         renderState: PinChallengeState,
-        context: RenderContext,
+        context: PinChallengeRenderContext,
     ): PinChallengeScreen {
         context.runningWorker(renderState.blankPinWorker, handler = ::onBlankPinWorkerOutput)
         if (renderState.pinChallengeWorker != null) {

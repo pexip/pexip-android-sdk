@@ -74,6 +74,9 @@ import kotlinx.coroutines.flow.shareIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias ConferenceRenderContext =
+    StatefulWorkflow.RenderContext<ConferenceProps, ConferenceState, ConferenceOutput>
+
 @Singleton
 class ConferenceWorkflow @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
@@ -117,7 +120,7 @@ class ConferenceWorkflow @Inject constructor(
     override fun render(
         renderProps: ConferenceProps,
         renderState: ConferenceState,
-        context: RenderContext,
+        context: ConferenceRenderContext,
     ): Screen {
         val audioDeviceRendering = context.renderChild(
             child = audioDeviceWorkflow,
@@ -186,7 +189,7 @@ class ConferenceWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.bindConferenceServiceSideEffect() =
+    private fun ConferenceRenderContext.bindConferenceServiceSideEffect() =
         runningSideEffect("bindConferenceServiceSideEffect()") {
             val connection = object : ServiceConnection {
                 override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -206,7 +209,7 @@ class ConferenceWorkflow @Inject constructor(
             }
         }
 
-    private fun RenderContext.leaveSideEffect(
+    private fun ConferenceRenderContext.leaveSideEffect(
         renderProps: ConferenceProps,
         renderState: ConferenceState,
     ) = runningSideEffect("leaveSideEffect(${renderProps.conference})") {
@@ -224,7 +227,7 @@ class ConferenceWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.splashScreenSideEffect(renderProps: ConferenceProps) {
+    private fun ConferenceRenderContext.splashScreenSideEffect(renderProps: ConferenceProps) {
         val conference = renderProps.conference
         runningSideEffect("splashScreenSideEffect($conference)") {
             conference.theme.splashScreen
@@ -233,7 +236,7 @@ class ConferenceWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.screenCapturingSideEffect(track: LocalVideoTrack?) {
+    private fun ConferenceRenderContext.screenCapturingSideEffect(track: LocalVideoTrack?) {
         if (track != null) {
             runningSideEffect("screenCapturingSideEffect($track)") {
                 val connection = object : ServiceConnection {
@@ -259,7 +262,7 @@ class ConferenceWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.screenCaptureVideoTrackSideEffect(data: Intent?) {
+    private fun ConferenceRenderContext.screenCaptureVideoTrackSideEffect(data: Intent?) {
         if (data != null) {
             runningSideEffect("screenCaptureVideoTrackSideEffect($data)") {
                 val callback = object : MediaProjection.Callback() {
@@ -277,21 +280,23 @@ class ConferenceWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.mainRemoteVideoTrackSideEffect(connection: MediaConnection) =
-        runningSideEffect("mainRemoteVideoTrackSideEffect($connection)") {
-            connection.getMainRemoteVideoTrack()
-                .map(::onMainRemoteVideoTrack)
-                .collectLatest(actionSink::send)
-        }
+    private fun ConferenceRenderContext.mainRemoteVideoTrackSideEffect(
+        connection: MediaConnection,
+    ) = runningSideEffect("mainRemoteVideoTrackSideEffect($connection)") {
+        connection.getMainRemoteVideoTrack()
+            .map(::onMainRemoteVideoTrack)
+            .collectLatest(actionSink::send)
+    }
 
-    private fun RenderContext.presentationRemoteVideoTrackSideEffect(connection: MediaConnection) =
-        runningSideEffect("presentationRemoteVideoTrackSideEffect($connection)") {
-            connection.getPresentationRemoteVideoTrack()
-                .map(::onPresentationRemoteVideoTrack)
-                .collectLatest(actionSink::send)
-        }
+    private fun ConferenceRenderContext.presentationRemoteVideoTrackSideEffect(
+        connection: MediaConnection,
+    ) = runningSideEffect("presentationRemoteVideoTrackSideEffect($connection)") {
+        connection.getPresentationRemoteVideoTrack()
+            .map(::onPresentationRemoteVideoTrack)
+            .collectLatest(actionSink::send)
+    }
 
-    private fun RenderContext.conferenceEventsSideEffect(renderProps: ConferenceProps) {
+    private fun ConferenceRenderContext.conferenceEventsSideEffect(renderProps: ConferenceProps) {
         val conference = renderProps.conference
         runningSideEffect("conferenceEventsSideEffect($conference)") {
             val events = conference.getConferenceEvents().shareIn(this, SharingStarted.Lazily)
@@ -309,7 +314,7 @@ class ConferenceWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.presentationSideEffect(renderProps: ConferenceProps) {
+    private fun ConferenceRenderContext.presentationSideEffect(renderProps: ConferenceProps) {
         val roster = renderProps.conference.roster
         runningSideEffect("presentationSideEffect($roster)") {
             roster.presenter
@@ -326,7 +331,7 @@ class ConferenceWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.aspectRatioSideEffect(renderState: ConferenceState) {
+    private fun ConferenceRenderContext.aspectRatioSideEffect(renderState: ConferenceState) {
         val connection = renderState.connection
         val aspectRatio = renderState.aspectRatio.takeUnless(Float::isNaN) ?: return
         runningSideEffect("aspectRatioSideEffect($connection, $aspectRatio)") {
