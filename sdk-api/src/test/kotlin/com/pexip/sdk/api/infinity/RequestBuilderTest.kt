@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.pexip.sdk.infinity.Node
 import kotlinx.coroutines.test.runTest
+import mockwebserver3.MockWebServer
 import okhttp3.HttpUrl
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.Rule
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -54,28 +54,28 @@ internal class RequestBuilderTest {
 
     @Test
     fun `status throws IllegalStateException`() = runTest {
-        server.enqueue { setResponseCode(500) }
+        server.enqueue { code(500) }
         assertFailure { builder.status().await() }.isInstanceOf<IllegalStateException>()
         server.verifyStatus()
     }
 
     @Test
     fun `status throws NoSuchNodeException`() = runTest {
-        server.enqueue { setResponseCode(404) }
+        server.enqueue { code(404) }
         assertFailure { builder.status().await() }.isInstanceOf<NoSuchNodeException>()
         server.verifyStatus()
     }
 
     @Test
     fun `status returns false`() = runTest {
-        server.enqueue { setResponseCode(503) }
+        server.enqueue { code(503) }
         assertThat(builder.status().await(), "status").isFalse()
         server.verifyStatus()
     }
 
     @Test
     fun `status returns true`() = runTest {
-        server.enqueue { setResponseCode(200) }
+        server.enqueue { code(200) }
         assertThat(builder.status().await()).isTrue()
         server.verifyStatus()
     }

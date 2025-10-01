@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Pexip AS
+ * Copyright 2024-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 package com.pexip.sdk.api.infinity
 
+import mockwebserver3.MockWebServer
 import okhttp3.OkHttpClient
-import okhttp3.mockwebserver.MockWebServer
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import org.junit.rules.ExternalResource
@@ -42,7 +42,6 @@ class SecureMockWebServerRule : ExternalResource() {
             .build()
         server.useHttps(
             sslSocketFactory = serverCertificate.sslSocketFactory(),
-            tunnelProxy = false,
         )
         server.start(inetAddress = localhost, port = 0)
         client = OkHttpClient.Builder()
@@ -51,6 +50,6 @@ class SecureMockWebServerRule : ExternalResource() {
     }
 
     override fun after() {
-        server.shutdown()
+        server.close()
     }
 }
