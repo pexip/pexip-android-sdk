@@ -40,6 +40,9 @@ import kotlinx.coroutines.awaitCancellation
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias SampleRenderContext =
+    StatefulWorkflow.RenderContext<Unit, SampleState, SampleOutput>
+
 @Singleton
 class SampleWorkflow @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -72,7 +75,7 @@ class SampleWorkflow @Inject constructor(
     override fun render(
         renderProps: Unit,
         renderState: SampleState,
-        context: RenderContext,
+        context: SampleRenderContext,
     ): Screen {
         context.createCameraVideoTrackSideEffect(renderState.createCameraVideoTrackCount)
         context.createMicrophoneAudioTrackSideEffect(renderState.createMicrophoneAudioTrackCount)
@@ -105,7 +108,7 @@ class SampleWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.createCameraVideoTrackSideEffect(count: UInt) {
+    private fun SampleRenderContext.createCameraVideoTrackSideEffect(count: UInt) {
         if (count > 0u) {
             runningSideEffect("createCameraVideoTrackSideEffect($count)") {
                 val callback = object : CameraVideoTrack.Callback {
@@ -122,7 +125,7 @@ class SampleWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.createMicrophoneAudioTrackSideEffect(count: UInt) {
+    private fun SampleRenderContext.createMicrophoneAudioTrackSideEffect(count: UInt) {
         if (count > 0u) {
             runningSideEffect("createMicrophoneAudioTrackSideEffect($count)") {
                 val track = localAudioTrackFactory.createLocalAudioTrack()
@@ -132,7 +135,7 @@ class SampleWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.cameraVideoTrackSideEffect(track: CameraVideoTrack?) {
+    private fun SampleRenderContext.cameraVideoTrackSideEffect(track: CameraVideoTrack?) {
         if (track != null) {
             runningSideEffect("cameraVideoTrackSideEffect($track)") {
                 try {
@@ -147,7 +150,7 @@ class SampleWorkflow @Inject constructor(
         }
     }
 
-    private fun RenderContext.microphoneAudioTrackSideEffect(track: LocalAudioTrack?) {
+    private fun SampleRenderContext.microphoneAudioTrackSideEffect(track: LocalAudioTrack?) {
         if (track != null) {
             runningSideEffect("microphoneAudioTrackSideEffect($track)") {
                 try {

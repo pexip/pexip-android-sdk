@@ -28,6 +28,9 @@ import com.squareup.workflow1.runningWorker
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias AliasRenderContext =
+    StatefulWorkflow.RenderContext<Unit, AliasState, AliasOutput>
+
 @Singleton
 class AliasWorkflow @Inject constructor(
     private val pinRequirementWorkflow: PinRequirementWorkflow,
@@ -40,7 +43,7 @@ class AliasWorkflow @Inject constructor(
     override fun render(
         renderProps: Unit,
         renderState: AliasState,
-        context: RenderContext,
+        context: AliasRenderContext,
     ): AliasScreen {
         context.runningWorker(renderState.blankAliasWorker, handler = ::onBlankAliasWorkerOutput)
         context.renderPinRequirementWorkflow(renderState.pinRequirementProps)
@@ -55,7 +58,7 @@ class AliasWorkflow @Inject constructor(
         )
     }
 
-    private fun RenderContext.renderPinRequirementWorkflow(props: PinRequirementProps?) {
+    private fun AliasRenderContext.renderPinRequirementWorkflow(props: PinRequirementProps?) {
         props ?: return
         renderChild(pinRequirementWorkflow, props, handler = ::onPinRequirementOutput)
     }

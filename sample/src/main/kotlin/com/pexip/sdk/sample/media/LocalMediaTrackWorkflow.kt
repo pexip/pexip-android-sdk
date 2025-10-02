@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Pexip AS
+ * Copyright 2022-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,16 @@ import com.squareup.workflow1.asWorker
 import com.squareup.workflow1.runningWorker
 import javax.inject.Inject
 
+private typealias LocalMediaTrackRenderContext =
+    StatefulWorkflow.RenderContext<LocalMediaTrackProps, LocalMediaTrackState, Nothing>
+
 class LocalMediaTrackWorkflow @Inject constructor() :
-    StatefulWorkflow<LocalMediaTrackProps, LocalMediaTrackState, Nothing, LocalMediaTrackRendering>() {
+    StatefulWorkflow<
+        LocalMediaTrackProps,
+        LocalMediaTrackState,
+        Nothing,
+        LocalMediaTrackRendering,
+        >() {
 
     override fun initialState(
         props: LocalMediaTrackProps,
@@ -44,7 +52,7 @@ class LocalMediaTrackWorkflow @Inject constructor() :
     override fun render(
         renderProps: LocalMediaTrackProps,
         renderState: LocalMediaTrackState,
-        context: RenderContext,
+        context: LocalMediaTrackRenderContext,
     ): LocalMediaTrackRendering {
         context.runningWorker(renderState.capturingWorker, handler = ::onCapturingStateChange)
         return LocalMediaTrackRendering(

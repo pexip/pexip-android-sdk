@@ -21,6 +21,9 @@ import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
 import javax.inject.Inject
 
+private typealias PermissionsRenderContext =
+    StatefulWorkflow.RenderContext<PermissionsProps, PermissionsState, PermissionsOutput>
+
 class PermissionsWorkflow @Inject constructor() :
     StatefulWorkflow<PermissionsProps, PermissionsState, PermissionsOutput, PermissionsScreen>() {
 
@@ -32,7 +35,7 @@ class PermissionsWorkflow @Inject constructor() :
     override fun render(
         renderProps: PermissionsProps,
         renderState: PermissionsState,
-        context: RenderContext,
+        context: PermissionsRenderContext,
     ): PermissionsScreen = PermissionsScreen(
         permissions = renderProps.permissions,
         onPermissionsRequestResult = context.send(::onPermissionsRequestResult),

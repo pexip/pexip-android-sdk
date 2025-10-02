@@ -25,6 +25,9 @@ import kotlinx.coroutines.awaitCancellation
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias DtmfRenderContext =
+    StatefulWorkflow.RenderContext<DtmfProps, DtmfState, DtmfOutput>
+
 @Singleton
 class DtmfWorkflow @Inject constructor() :
     StatefulWorkflow<DtmfProps, DtmfState, DtmfOutput, DtmfScreen>() {
@@ -37,7 +40,7 @@ class DtmfWorkflow @Inject constructor() :
     override fun render(
         renderProps: DtmfProps,
         renderState: DtmfState,
-        context: RenderContext,
+        context: DtmfRenderContext,
     ): DtmfScreen {
         context.runningSideEffect(renderState.toString()) {
             try {
