@@ -23,7 +23,7 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
       - run: ./gradlew build
       - run: ./gradlew publishToMavenLocal --no-parallel
         env:
@@ -40,7 +40,7 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
       - run: snyk-linux test --all-sub-projects --severity-threshold=high --configuration-matching='^(jvm|.*[rR]elease)?[rR]untimeClasspath$'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
