@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2023-2025 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,41 +17,39 @@ package com.pexip.sdk
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.dokka.base.DokkaBase
-import org.jetbrains.dokka.base.DokkaBaseConfiguration
-import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.dokka.gradle.engine.plugins.DokkaHtmlPluginParameters
 import java.time.Year
 
 class KotlinDokkaPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
-        pluginManager.apply("org.jetbrains.dokka")
-        val footerMessageProvider = provider {
-            "${Year.now().value} Pexip® AS, All rights reserved."
-        }
-        tasks.withType<DokkaMultiModuleTask>().configureEach {
-            includes.from("README.md")
-            pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-                footerMessage = footerMessageProvider.get()
-                customAssets += file("dokka/pexip.svg")
-                customStyleSheets += file("dokka/logo-styles.css")
-            }
+        with(pluginManager) {
+            apply("org.jetbrains.dokka")
+            apply("org.jetbrains.dokka-javadoc")
         }
         val hasAndroidLibraryPluginProvider = provider {
             pluginManager.hasPlugin("com.android.library")
         }
-        tasks.withType<DokkaTaskPartial>().configureEach {
+        val footerMessageProvider = provider {
+            "${Year.now().value} Pexip® AS, All rights reserved."
+        }
+        extensions.configure(DokkaExtension::class.java) {
             dokkaSourceSets.configureEach {
-                samples.from("src/test/kotlin/Samples.kt")
+                if (name in setOf("main, jvmMain")) {
+                    samples.from("src/test/kotlin/Samples.kt")
+                }
                 includes.from("README.md")
-                externalDocumentationLink("https://kotlin.github.io/kotlinx.coroutines/")
-                noAndroidSdkLink.set(hasAndroidLibraryPluginProvider.map { !it })
+                enableAndroidDocumentationLink.set(hasAndroidLibraryPluginProvider.map { it })
+                sourceLink {
+                    remoteUrl("https://github.com/pexip/pexip-android-sdk/blob/main/")
+                    localDirectory.set(rootDir)
+                }
             }
-            pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-                footerMessage = footerMessageProvider.get()
-                separateInheritedMembers = true
+            pluginsConfiguration.named("html", DokkaHtmlPluginParameters::class.java) {
+                customAssets.from("$rootDir/dokka/pexip.svg")
+                customStyleSheets.from("$rootDir/dokka/logo-styles.css")
+                footerMessage.set(footerMessageProvider)
             }
         }
     }
