@@ -27,6 +27,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.dokka.gradle.tasks.DokkaGeneratePublicationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class KotlinAndroidLibraryPublishingPlugin : Plugin<Project> {
@@ -43,7 +44,12 @@ class KotlinAndroidLibraryPublishingPlugin : Plugin<Project> {
             configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
         }
         val javadocJar = tasks.register<Jar>("dokkaJavadocJar") {
-            from(tasks.named("dokkaJavadoc"))
+            dependsOn(tasks.named("dokkaJavadoc"))
+            from(
+                tasks
+                    .named<DokkaGeneratePublicationTask>("dokkaGeneratePublicationJavadoc")
+                    .flatMap { it.outputDirectory },
+            )
             archiveClassifier.set("javadoc")
         }
         afterEvaluate {

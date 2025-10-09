@@ -36,14 +36,14 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
 
-      - run: ./gradlew dokkaHtmlMultiModule
+      - run: ./gradlew dokkaGenerate
         if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
 
       - uses: peaceiris/actions-gh-pages@v4
         if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/dokka/htmlMultiModule
+          publish_dir: ./build/dokka/html
 
   snyk_monitor:
     runs-on: ubuntu-latest

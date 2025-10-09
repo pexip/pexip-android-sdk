@@ -48,3 +48,23 @@ spotless {
         endWithNewline()
     }
 }
+
+dependencies {
+    dokka(project(":sdk-api"))
+    dokka(project(":sdk-conference"))
+    dokka(project(":sdk-core"))
+    dokka(project(":sdk-infinity"))
+    dokka(project(":sdk-infinity-test"))
+    dokka(project(":sdk-media"))
+    dokka(project(":sdk-media-android"))
+    dokka(project(":sdk-media-webrtc"))
+    dokka(project(":sdk-media-webrtc-compose"))
+    dokka(project(":sdk-registration"))
+}
+
+dokka {
+    moduleName.set(project.name)
+    dokkaPublications.html {
+        includes.from("README.md")
+    }
+}
