@@ -49,7 +49,7 @@ public final class com/pexip/sdk/api/infinity/AckRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/AckRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/AckRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/AckRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/AckRequest;
@@ -75,7 +75,7 @@ public final class com/pexip/sdk/api/infinity/BackgroundResponse {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/BackgroundResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/BackgroundResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/BackgroundResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/BackgroundResponse;
@@ -103,7 +103,7 @@ public final class com/pexip/sdk/api/infinity/BreakoutBeginEvent : com/pexip/sdk
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/BreakoutBeginEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/BreakoutBeginEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/BreakoutBeginEvent;
@@ -131,7 +131,7 @@ public final class com/pexip/sdk/api/infinity/BreakoutEndEvent : com/pexip/sdk/a
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/BreakoutEndEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/BreakoutEndEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/BreakoutEndEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/BreakoutEndEvent;
@@ -159,7 +159,7 @@ public final class com/pexip/sdk/api/infinity/BreakoutEvent : com/pexip/sdk/api/
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/BreakoutEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/BreakoutEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/BreakoutEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/BreakoutEvent;
@@ -200,7 +200,7 @@ public final class com/pexip/sdk/api/infinity/CallsRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/CallsRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/CallsRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/CallsRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/CallsRequest;
@@ -231,7 +231,7 @@ public final class com/pexip/sdk/api/infinity/CallsResponse : com/pexip/sdk/api/
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/CallsResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/CallsResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/CallsResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/CallsResponse;
@@ -267,7 +267,7 @@ public final class com/pexip/sdk/api/infinity/ConferenceUpdateEvent : com/pexip/
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/ConferenceUpdateEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/ConferenceUpdateEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/ConferenceUpdateEvent;
@@ -303,7 +303,7 @@ public final class com/pexip/sdk/api/infinity/DataChannelMessage$Message : com/p
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/DataChannelMessage$Message$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/DataChannelMessage$Message$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message;
@@ -332,7 +332,7 @@ public final class com/pexip/sdk/api/infinity/DataChannelMessage$Message$Body {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/DataChannelMessage$Message$Body$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/DataChannelMessage$Message$Body$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/DataChannelMessage$Message$Body;
@@ -371,7 +371,7 @@ public final class com/pexip/sdk/api/infinity/DisconnectEvent : com/pexip/sdk/ap
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/DisconnectEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/DisconnectEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/DisconnectEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/DisconnectEvent;
@@ -398,7 +398,7 @@ public final class com/pexip/sdk/api/infinity/DtmfRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/DtmfRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/DtmfRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/DtmfRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/DtmfRequest;
@@ -434,7 +434,7 @@ public final class com/pexip/sdk/api/infinity/ElementResponse$Text : com/pexip/s
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/ElementResponse$Text$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/ElementResponse$Text$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ElementResponse$Text$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/ElementResponse$Text;
@@ -488,7 +488,7 @@ public final class com/pexip/sdk/api/infinity/FeccEvent : com/pexip/sdk/api/infi
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/FeccEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/FeccEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/FeccEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/FeccEvent;
@@ -534,7 +534,7 @@ public final class com/pexip/sdk/api/infinity/IdentityProvider {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/IdentityProvider$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/IdentityProvider$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/IdentityProvider$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/IdentityProvider;
@@ -562,7 +562,7 @@ public final class com/pexip/sdk/api/infinity/IdentityProviderId {
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/IdentityProviderId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/IdentityProviderId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/IdentityProviderId$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -594,7 +594,7 @@ public final class com/pexip/sdk/api/infinity/IncomingCancelledEvent : com/pexip
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/IncomingCancelledEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/IncomingCancelledEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/IncomingCancelledEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/IncomingCancelledEvent;
@@ -624,7 +624,7 @@ public final class com/pexip/sdk/api/infinity/IncomingEvent : com/pexip/sdk/api/
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/IncomingEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/IncomingEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/IncomingEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/IncomingEvent;
@@ -775,7 +775,7 @@ public final class com/pexip/sdk/api/infinity/LayoutEvent : com/pexip/sdk/api/in
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/LayoutEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/LayoutEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/LayoutEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/LayoutEvent;
@@ -810,7 +810,7 @@ public final class com/pexip/sdk/api/infinity/MessageReceivedEvent : com/pexip/s
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/MessageReceivedEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/MessageReceivedEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/MessageReceivedEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/MessageReceivedEvent;
@@ -838,7 +838,7 @@ public final class com/pexip/sdk/api/infinity/MessageRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/MessageRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/MessageRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/MessageRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/MessageRequest;
@@ -871,7 +871,7 @@ public final class com/pexip/sdk/api/infinity/NewCandidateEvent : com/pexip/sdk/
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/NewCandidateEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/NewCandidateEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/NewCandidateEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/NewCandidateEvent;
@@ -904,7 +904,7 @@ public final class com/pexip/sdk/api/infinity/NewCandidateRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/NewCandidateRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/NewCandidateRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/NewCandidateRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/NewCandidateRequest;
@@ -930,7 +930,7 @@ public final class com/pexip/sdk/api/infinity/NewOfferEvent : com/pexip/sdk/api/
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/NewOfferEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/NewOfferEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/NewOfferEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/NewOfferEvent;
@@ -995,7 +995,7 @@ public final class com/pexip/sdk/api/infinity/ParticipantCreateEvent : com/pexip
 	public final synthetic fun unbox-impl ()Lcom/pexip/sdk/api/infinity/ParticipantResponse;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/ParticipantCreateEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/ParticipantCreateEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ParticipantCreateEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -1021,7 +1021,7 @@ public final class com/pexip/sdk/api/infinity/ParticipantDeleteEvent : com/pexip
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/ParticipantDeleteEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/ParticipantDeleteEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/ParticipantDeleteEvent;
@@ -1078,7 +1078,7 @@ public final class com/pexip/sdk/api/infinity/ParticipantResponse {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/ParticipantResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/ParticipantResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ParticipantResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/ParticipantResponse;
@@ -1123,7 +1123,7 @@ public final class com/pexip/sdk/api/infinity/ParticipantUpdateEvent : com/pexip
 	public final synthetic fun unbox-impl ()Lcom/pexip/sdk/api/infinity/ParticipantResponse;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/ParticipantUpdateEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/ParticipantUpdateEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ParticipantUpdateEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -1157,7 +1157,7 @@ public final class com/pexip/sdk/api/infinity/PreferredAspectRatioRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/PreferredAspectRatioRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/PreferredAspectRatioRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/PreferredAspectRatioRequest;
@@ -1185,7 +1185,7 @@ public final class com/pexip/sdk/api/infinity/PresentationStartEvent : com/pexip
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/PresentationStartEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/PresentationStartEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/PresentationStartEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/PresentationStartEvent;
@@ -1221,7 +1221,7 @@ public final class com/pexip/sdk/api/infinity/ReferEvent : com/pexip/sdk/api/inf
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/ReferEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/ReferEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/ReferEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/ReferEvent;
@@ -1249,7 +1249,7 @@ public final class com/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse :
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RefreshRegistrationTokenResponse;
@@ -1277,7 +1277,7 @@ public final class com/pexip/sdk/api/infinity/RefreshTokenResponse : com/pexip/s
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/RefreshTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/RefreshTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RefreshTokenResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RefreshTokenResponse;
@@ -1308,7 +1308,7 @@ public final class com/pexip/sdk/api/infinity/RegistrationResponse {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/RegistrationResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/RegistrationResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RegistrationResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RegistrationResponse;
@@ -1344,7 +1344,7 @@ public final class com/pexip/sdk/api/infinity/RequestRegistrationTokenResponse :
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/RequestRegistrationTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/RequestRegistrationTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RequestRegistrationTokenResponse;
@@ -1387,7 +1387,7 @@ public final class com/pexip/sdk/api/infinity/RequestTokenRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/RequestTokenRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/RequestTokenRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RequestTokenRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RequestTokenRequest;
@@ -1450,7 +1450,7 @@ public final class com/pexip/sdk/api/infinity/RequestTokenResponse : com/pexip/s
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/RequestTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/RequestTokenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RequestTokenResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RequestTokenResponse;
@@ -1476,7 +1476,7 @@ public final class com/pexip/sdk/api/infinity/RequestedLayout {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/RequestedLayout$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/RequestedLayout$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RequestedLayout$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RequestedLayout;
@@ -1512,7 +1512,7 @@ public final class com/pexip/sdk/api/infinity/RoleRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/RoleRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/RoleRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/RoleRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/RoleRequest;
@@ -1540,7 +1540,7 @@ public final class com/pexip/sdk/api/infinity/Screen {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/Screen$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/Screen$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/Screen$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/Screen;
@@ -1566,7 +1566,7 @@ public final class com/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/SetGuestCanUnmuteRequest;
@@ -1595,7 +1595,7 @@ public final class com/pexip/sdk/api/infinity/SpeakerResponse {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/SpeakerResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/SpeakerResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/SpeakerResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/SpeakerResponse;
@@ -1623,7 +1623,7 @@ public final class com/pexip/sdk/api/infinity/SplashScreenEvent : com/pexip/sdk/
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/SplashScreenEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/SplashScreenEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/SplashScreenEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/SplashScreenEvent;
@@ -1651,7 +1651,7 @@ public final class com/pexip/sdk/api/infinity/SplashScreenResponse {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/SplashScreenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/SplashScreenResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/SplashScreenResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/SplashScreenResponse;
@@ -1684,7 +1684,7 @@ public final class com/pexip/sdk/api/infinity/StageEvent : com/pexip/sdk/api/inf
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/StageEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/StageEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/StageEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/StageEvent;
@@ -1710,7 +1710,7 @@ public final class com/pexip/sdk/api/infinity/StunResponse {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/StunResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/StunResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/StunResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/StunResponse;
@@ -1752,7 +1752,7 @@ public final class com/pexip/sdk/api/infinity/TransformLayoutRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/TransformLayoutRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/TransformLayoutRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/TransformLayoutRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/TransformLayoutRequest;
@@ -1782,7 +1782,7 @@ public final class com/pexip/sdk/api/infinity/TurnResponse {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/TurnResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/TurnResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/TurnResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/TurnResponse;
@@ -1819,7 +1819,7 @@ public final class com/pexip/sdk/api/infinity/UpdateRequest {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/UpdateRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/UpdateRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/UpdateRequest$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/UpdateRequest;
@@ -1849,7 +1849,7 @@ public final class com/pexip/sdk/api/infinity/UpdateResponse : com/pexip/sdk/api
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/UpdateResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/UpdateResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/UpdateResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/UpdateResponse;
@@ -1875,7 +1875,7 @@ public final class com/pexip/sdk/api/infinity/UpdateSdpEvent : com/pexip/sdk/api
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/UpdateSdpEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/UpdateSdpEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/UpdateSdpEvent$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/UpdateSdpEvent;
@@ -1903,7 +1903,7 @@ public final class com/pexip/sdk/api/infinity/VersionResponse {
 	public fun toString ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/api/infinity/VersionResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/api/infinity/VersionResponse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/api/infinity/VersionResponse$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/pexip/sdk/api/infinity/VersionResponse;

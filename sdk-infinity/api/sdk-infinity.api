@@ -13,7 +13,7 @@ public final class com/pexip/sdk/infinity/BreakoutId {
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/infinity/BreakoutId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/infinity/BreakoutId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/infinity/BreakoutId$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -21,6 +21,7 @@ public synthetic class com/pexip/sdk/infinity/BreakoutId$$serializer : kotlinx/s
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public final fun serialize-Yh9wizA (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/infinity/BreakoutId$Companion {
@@ -42,7 +43,7 @@ public final class com/pexip/sdk/infinity/CallId {
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/infinity/CallId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/infinity/CallId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/infinity/CallId$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -50,6 +51,7 @@ public synthetic class com/pexip/sdk/infinity/CallId$$serializer : kotlinx/seria
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public final fun serialize-ULqpaPA (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/infinity/CallId$Companion {
@@ -71,7 +73,7 @@ public final class com/pexip/sdk/infinity/LayoutId {
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/infinity/LayoutId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/infinity/LayoutId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/infinity/LayoutId$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -79,6 +81,7 @@ public synthetic class com/pexip/sdk/infinity/LayoutId$$serializer : kotlinx/ser
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public final fun serialize-F30QBlQ (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/infinity/LayoutId$Companion {
@@ -163,7 +166,7 @@ public final class com/pexip/sdk/infinity/ParticipantId {
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/infinity/ParticipantId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/infinity/ParticipantId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/infinity/ParticipantId$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -171,6 +174,7 @@ public synthetic class com/pexip/sdk/infinity/ParticipantId$$serializer : kotlin
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public final fun serialize-hv8Mw98 (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/infinity/ParticipantId$Companion {
@@ -192,7 +196,7 @@ public final class com/pexip/sdk/infinity/RegistrationId {
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/infinity/RegistrationId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/infinity/RegistrationId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/infinity/RegistrationId$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -200,6 +204,7 @@ public synthetic class com/pexip/sdk/infinity/RegistrationId$$serializer : kotli
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public final fun serialize-aLbGYW0 (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/infinity/RegistrationId$Companion {
@@ -263,7 +268,7 @@ public final class com/pexip/sdk/infinity/VersionId : java/lang/Comparable {
 	public final synthetic fun unbox-impl ()Ljava/lang/String;
 }
 
-public synthetic class com/pexip/sdk/infinity/VersionId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+public final synthetic class com/pexip/sdk/infinity/VersionId$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
 	public static final field INSTANCE Lcom/pexip/sdk/infinity/VersionId$$serializer;
 	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -271,6 +276,7 @@ public synthetic class com/pexip/sdk/infinity/VersionId$$serializer : kotlinx/se
 	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 	public final fun serialize-AL5BK0g (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/pexip/sdk/infinity/VersionId$Companion {
