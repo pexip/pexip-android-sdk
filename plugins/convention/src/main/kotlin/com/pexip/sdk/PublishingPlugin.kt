@@ -16,7 +16,6 @@
 package com.pexip.sdk
 
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -28,7 +27,7 @@ class PublishingPlugin : Plugin<Project> {
         group = checkNotNull(property("group")) { "group == null." }
         version = checkNotNull(property("version")) { "version == null." }
         configure<MavenPublishBaseExtension> {
-            publishToMavenCentral(host = SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+            publishToMavenCentral(automaticRelease = true)
             signAllPublications()
             pom {
                 name.set(target.name)
