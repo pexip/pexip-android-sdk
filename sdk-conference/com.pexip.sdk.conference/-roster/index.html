@@ -25,136 +25,170 @@
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
-<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script>
+<link href="../../../images/pexip.svg">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet"></head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
 <a class="library-name--link" href="../../../index.html">
-                            pexip-android-sdk
-                    </a>            </div>
-            <div class="library-version">0.17.3
+                    pexip-android-sdk
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">0.17.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-conference/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":sdk-conference/main" data-filter=":sdk-conference/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-conference:dokkaHtmlPartial/main">jvm</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    pexip-android-sdk
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-conference::com.pexip.sdk.conference/Roster///PointingToDeclaration//380217753">
+<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-conference::com.pexip.sdk.conference/Roster///PointingToDeclaration//1520933711">
   <div class="breadcrumbs"><a href="../../index.html">sdk-conference</a><span class="delimiter">/</span><a href="../index.html">com.pexip.sdk.conference</a><span class="delimiter">/</span><span class="current">Roster</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Roster</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">Roster</a></div><p class="paragraph">Handles conference participants.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">Roster</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/pexip/pexip-android-sdk/blob/main//sdk-conference/src/main/kotlin/com/pexip/sdk/conference/Roster.kt#L24">source</a>)</span></span></div><p class="paragraph">Handles conference participants.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="813500504%2FProperties%2F380217753" anchor-label="allGuestsMuted" id="813500504%2FProperties%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="813500504%2FProperties%2F1520933711" anchor-label="allGuestsMuted" id="813500504%2FProperties%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="all-guests-muted.html"><span>all</span><wbr><span>Guests</span><wbr><span><span>Muted</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="813500504%2FProperties%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="813500504%2FProperties%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="all-guests-muted.html">allGuestsMuted</a><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a> that represents whether guests in the conference all muted.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="all-guests-muted.html">allGuestsMuted</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span> that represents whether guests in the conference all muted.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-819911636%2FProperties%2F380217753" anchor-label="guestsCanUnmute" id="-819911636%2FProperties%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-819911636%2FProperties%2F1520933711" anchor-label="guestsCanUnmute" id="-819911636%2FProperties%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="guests-can-unmute.html"><span>guests</span><wbr><span>Can</span><wbr><span><span>Unmute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-819911636%2FProperties%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-819911636%2FProperties%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="guests-can-unmute.html">guestsCanUnmute</a><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a> that represents whether guests in the conference can unmute themselves, or null.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="guests-can-unmute.html">guestsCanUnmute</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span> that represents whether guests in the conference can unmute themselves, or null.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="956598237%2FProperties%2F380217753" anchor-label="locked" id="956598237%2FProperties%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="956598237%2FProperties%2F1520933711" anchor-label="locked" id="956598237%2FProperties%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="locked.html"><span><span>locked</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="956598237%2FProperties%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="956598237%2FProperties%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="locked.html">locked</a><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a> that represents whether the conference is locked.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="locked.html">locked</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span> that represents whether the conference is locked.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1542681073%2FProperties%2F380217753" anchor-label="me" id="-1542681073%2FProperties%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-1542681073%2FProperties%2F1520933711" anchor-label="me" id="-1542681073%2FProperties%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="me.html"><span><span>me</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1542681073%2FProperties%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1542681073%2FProperties%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="me.html">me</a><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a><span class="token operator">&lt;</span><a href="../-participant/index.html">Participant</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a> that represents <i>you</i> as the participant of this conference.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="me.html">me</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="../-participant/index.html">Participant</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span> that represents <i>you</i> as the participant of this conference.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="775086215%2FProperties%2F380217753" anchor-label="participants" id="775086215%2FProperties%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="775086215%2FProperties%2F1520933711" anchor-label="participants" id="775086215%2FProperties%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="participants.html"><span><span>participants</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="775086215%2FProperties%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="775086215%2FProperties%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="participants.html">participants</a><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-participant/index.html">Participant</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a> that represents participants of this conference.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="participants.html">participants</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-participant/index.html">Participant</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span> that represents participants of this conference.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-467356181%2FProperties%2F380217753" anchor-label="presenter" id="-467356181%2FProperties%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-467356181%2FProperties%2F1520933711" anchor-label="presenter" id="-467356181%2FProperties%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="presenter.html"><span><span>presenter</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-467356181%2FProperties%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-467356181%2FProperties%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="presenter.html">presenter</a><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a><span class="token operator">&lt;</span><a href="../-participant/index.html">Participant</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a> that represents the participant that is currently sharing a presentation.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="presenter.html">presenter</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="../-participant/index.html">Participant</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">A <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span> that represents the participant that is currently sharing a presentation.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -163,332 +197,332 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-211824751%2FFunctions%2F380217753" anchor-label="admit" id="-211824751%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="-211824751%2FFunctions%2F1520933711" anchor-label="admit" id="-211824751%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="admit.html"><span><span>admit</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-211824751%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-211824751%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="admit.html"><span class="token function">admit</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Lets a specified participant into the conference from the waiting room of a locked conference.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="admit.html"><span class="token function">admit</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Lets a specified participant into the conference from the waiting room of a locked conference.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2035673022%2FFunctions%2F380217753" anchor-label="allowGuestsToUnmute" id="-2035673022%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-2035673022%2FFunctions%2F1520933711" anchor-label="allowGuestsToUnmute" id="-2035673022%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="allow-guests-to-unmute.html"><span>allow</span><wbr><span>Guests</span><wbr><span>To</span><wbr><span><span>Unmute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2035673022%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2035673022%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="allow-guests-to-unmute.html"><span class="token function">allowGuestsToUnmute</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Allows guests to unmute themselves.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="allow-guests-to-unmute.html"><span class="token function">allowGuestsToUnmute</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Allows guests to unmute themselves.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1247308125%2FFunctions%2F380217753" anchor-label="clientMute" id="-1247308125%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-1247308125%2FFunctions%2F1520933711" anchor-label="clientMute" id="-1247308125%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="client-mute.html"><span>client</span><wbr><span><span>Mute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1247308125%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1247308125%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="client-mute.html"><span class="token function">clientMute</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Signals that the local microphone has been muted.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="client-mute.html"><span class="token function">clientMute</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Signals that the local microphone has been muted.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1130274538%2FFunctions%2F380217753" anchor-label="clientUnmute" id="1130274538%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="1130274538%2FFunctions%2F1520933711" anchor-label="clientUnmute" id="1130274538%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="client-unmute.html"><span>client</span><wbr><span><span>Unmute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1130274538%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1130274538%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="client-unmute.html"><span class="token function">clientUnmute</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Signals that the local microphone has been unmuted.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="client-unmute.html"><span class="token function">clientUnmute</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Signals that the local microphone has been unmuted.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-254693532%2FFunctions%2F380217753" anchor-label="disallowGuestsToUnmute" id="-254693532%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-254693532%2FFunctions%2F1520933711" anchor-label="disallowGuestsToUnmute" id="-254693532%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="disallow-guests-to-unmute.html"><span>disallow</span><wbr><span>Guests</span><wbr><span>To</span><wbr><span><span>Unmute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-254693532%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-254693532%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="disallow-guests-to-unmute.html"><span class="token function">disallowGuestsToUnmute</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disallows guests to unmute themselves.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="disallow-guests-to-unmute.html"><span class="token function">disallowGuestsToUnmute</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disallows guests to unmute themselves.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1023334171%2FFunctions%2F380217753" anchor-label="disconnect" id="-1023334171%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-1023334171%2FFunctions%2F1520933711" anchor-label="disconnect" id="-1023334171%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="disconnect.html"><span><span>disconnect</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1023334171%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1023334171%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="disconnect.html"><span class="token function">disconnect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disconnects the specified participant or self.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="disconnect.html"><span class="token function">disconnect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disconnects the specified participant or self.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1642207026%2FFunctions%2F380217753" anchor-label="disconnectAll" id="-1642207026%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-1642207026%2FFunctions%2F1520933711" anchor-label="disconnectAll" id="-1642207026%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="disconnect-all.html"><span>disconnect</span><wbr><span><span>All</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1642207026%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1642207026%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="disconnect-all.html"><span class="token function">disconnectAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disconnects all conference participants.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="disconnect-all.html"><span class="token function">disconnectAll</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disconnects all conference participants.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="428138332%2FFunctions%2F380217753" anchor-label="lock" id="428138332%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="428138332%2FFunctions%2F1520933711" anchor-label="lock" id="428138332%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="lock.html"><span><span>lock</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="428138332%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="428138332%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="lock.html"><span class="token function">lock</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Locks the conference.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="lock.html"><span class="token function">lock</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Locks the conference.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1271093807%2FFunctions%2F380217753" anchor-label="lowerAllHands" id="1271093807%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="1271093807%2FFunctions%2F1520933711" anchor-label="lowerAllHands" id="1271093807%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="lower-all-hands.html"><span>lower</span><wbr><span>All</span><wbr><span><span>Hands</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1271093807%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1271093807%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="lower-all-hands.html"><span class="token function">lowerAllHands</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Lowers all hands.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="lower-all-hands.html"><span class="token function">lowerAllHands</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Lowers all hands.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-948894995%2FFunctions%2F380217753" anchor-label="lowerHand" id="-948894995%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-948894995%2FFunctions%2F1520933711" anchor-label="lowerHand" id="-948894995%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="lower-hand.html"><span>lower</span><wbr><span><span>Hand</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-948894995%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-948894995%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="lower-hand.html"><span class="token function">lowerHand</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Lowers hand of the specified participant or self.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="lower-hand.html"><span class="token function">lowerHand</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Lowers hand of the specified participant or self.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-415559961%2FFunctions%2F380217753" anchor-label="makeGuest" id="-415559961%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-415559961%2FFunctions%2F1520933711" anchor-label="makeGuest" id="-415559961%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="make-guest.html"><span>make</span><wbr><span><span>Guest</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-415559961%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-415559961%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="make-guest.html"><span class="token function">makeGuest</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Changes the role of the participant to guest.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="make-guest.html"><span class="token function">makeGuest</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Changes the role of the participant to guest.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="580510975%2FFunctions%2F380217753" anchor-label="makeHost" id="580510975%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="580510975%2FFunctions%2F1520933711" anchor-label="makeHost" id="580510975%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="make-host.html"><span>make</span><wbr><span><span>Host</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="580510975%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="580510975%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="make-host.html"><span class="token function">makeHost</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Changes the role of the participant to host.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="make-host.html"><span class="token function">makeHost</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Changes the role of the participant to host.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1747538398%2FFunctions%2F380217753" anchor-label="mute" id="-1747538398%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-1747538398%2FFunctions%2F1520933711" anchor-label="mute" id="-1747538398%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="mute.html"><span><span>mute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1747538398%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1747538398%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="mute.html"><span class="token function">mute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Mutes the specified participant or self.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="mute.html"><span class="token function">mute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Mutes the specified participant or self.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1032472944%2FFunctions%2F380217753" anchor-label="muteAllGuests" id="1032472944%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="1032472944%2FFunctions%2F1520933711" anchor-label="muteAllGuests" id="1032472944%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="mute-all-guests.html"><span>mute</span><wbr><span>All</span><wbr><span><span>Guests</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1032472944%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1032472944%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="mute-all-guests.html"><span class="token function">muteAllGuests</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Mutes all guests in a conference.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="mute-all-guests.html"><span class="token function">muteAllGuests</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Mutes all guests in a conference.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1042202049%2FFunctions%2F380217753" anchor-label="muteVideo" id="-1042202049%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-1042202049%2FFunctions%2F1520933711" anchor-label="muteVideo" id="-1042202049%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="mute-video.html"><span>mute</span><wbr><span><span>Video</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1042202049%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1042202049%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="mute-video.html"><span class="token function">muteVideo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Mutes the video of the specified participant or self.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="mute-video.html"><span class="token function">muteVideo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Mutes the video of the specified participant or self.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="820812056%2FFunctions%2F380217753" anchor-label="raiseHand" id="820812056%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="820812056%2FFunctions%2F1520933711" anchor-label="raiseHand" id="820812056%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="raise-hand.html"><span>raise</span><wbr><span><span>Hand</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="820812056%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="820812056%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="raise-hand.html"><span class="token function">raiseHand</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Raises hand of the specified participant or self.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="raise-hand.html"><span class="token function">raiseHand</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Raises hand of the specified participant or self.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1966029361%2FFunctions%2F380217753" anchor-label="spotlight" id="1966029361%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="1966029361%2FFunctions%2F1520933711" anchor-label="spotlight" id="1966029361%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="spotlight.html"><span><span>spotlight</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1966029361%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1966029361%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="spotlight.html"><span class="token function">spotlight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables the "spotlight" on a participant or self.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="spotlight.html"><span class="token function">spotlight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables the "spotlight" on a participant or self.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-974573341%2FFunctions%2F380217753" anchor-label="unlock" id="-974573341%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-974573341%2FFunctions%2F1520933711" anchor-label="unlock" id="-974573341%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="unlock.html"><span><span>unlock</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-974573341%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-974573341%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unlock.html"><span class="token function">unlock</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unlocks the conference.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unlock.html"><span class="token function">unlock</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unlocks the conference.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="269587707%2FFunctions%2F380217753" anchor-label="unmute" id="269587707%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="269587707%2FFunctions%2F1520933711" anchor-label="unmute" id="269587707%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="unmute.html"><span><span>unmute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="269587707%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="269587707%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unmute.html"><span class="token function">unmute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unmutes the specified participant or self.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unmute.html"><span class="token function">unmute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unmutes the specified participant or self.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1361821641%2FFunctions%2F380217753" anchor-label="unmuteAllGuests" id="1361821641%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="1361821641%2FFunctions%2F1520933711" anchor-label="unmuteAllGuests" id="1361821641%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="unmute-all-guests.html"><span>unmute</span><wbr><span>All</span><wbr><span><span>Guests</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1361821641%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1361821641%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unmute-all-guests.html"><span class="token function">unmuteAllGuests</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unmutes all guests in a conference.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unmute-all-guests.html"><span class="token function">unmuteAllGuests</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unmutes all guests in a conference.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1255258886%2FFunctions%2F380217753" anchor-label="unmuteVideo" id="1255258886%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="1255258886%2FFunctions%2F1520933711" anchor-label="unmuteVideo" id="1255258886%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="unmute-video.html"><span>unmute</span><wbr><span><span>Video</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1255258886%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1255258886%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unmute-video.html"><span class="token function">unmuteVideo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unmutes the video of the specified participant or self.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unmute-video.html"><span class="token function">unmuteVideo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unmutes the video of the specified participant or self.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-31477000%2FFunctions%2F380217753" anchor-label="unspotlight" id="-31477000%2FFunctions%2F380217753" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-conference:dokkaHtmlPartial/main" data-filterable-set=":sdk-conference:dokkaHtmlPartial/main">
+<a data-name="-31477000%2FFunctions%2F1520933711" anchor-label="unspotlight" id="-31477000%2FFunctions%2F1520933711" data-filterable-set=":sdk-conference/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-conference/main" data-filterable-set=":sdk-conference/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="unspotlight.html"><span><span>unspotlight</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-31477000%2FFunctions%2F380217753"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-31477000%2FFunctions%2F1520933711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unspotlight.html"><span class="token function">unspotlight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disables the "spotlight" on a participant or self.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-conference/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="unspotlight.html"><span class="token function">unspotlight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">participantId<span class="token operator">: </span><a href="../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disables the "spotlight" on a participant or self.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -498,12 +532,18 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2025 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>2025 Pexip® AS, All rights reserved.</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

@@ -25,76 +25,110 @@
 <link href="../../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../../../scripts/prism.js" async></script>
-<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<script type="text/javascript" src="../../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script>
+<link href="../../../../images/pexip.svg">
+<link href="../../../../styles/logo-styles.css" rel="Stylesheet"></head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
 <a class="library-name--link" href="../../../../index.html">
-                            pexip-android-sdk
-                    </a>            </div>
-            <div class="library-version">0.17.3
+                    pexip-android-sdk
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">0.17.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-api/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":sdk-api/main" data-filter=":sdk-api/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-api:dokkaHtmlPartial/main">jvm</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    pexip-android-sdk
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-api::com.pexip.sdk.api.infinity/InfinityService.ParticipantStep///PointingToDeclaration//-1866203277">
+<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-api::com.pexip.sdk.api.infinity/InfinityService.ParticipantStep///PointingToDeclaration//-1490768331">
   <div class="breadcrumbs"><a href="../../../index.html">sdk-api</a><span class="delimiter">/</span><a href="../../index.html">com.pexip.sdk.api.infinity</a><span class="delimiter">/</span><a href="../index.html">InfinityService</a><span class="delimiter">/</span><span class="current">ParticipantStep</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Participant</span><wbr><span><span>Step</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ParticipantStep</a></div><p class="paragraph">Represents the <a href="https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#participant">Participant functions</a> section.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ParticipantStep</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/pexip/pexip-android-sdk/blob/main//sdk-api/src/main/kotlin/com/pexip/sdk/api/infinity/InfinityService.kt#L464">source</a>)</span></span></div><p class="paragraph">Represents the <a href="https://docs.pexip.com/api_client/api_rest.htm?Highlight=api#participant">Participant functions</a> section.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="-965666538%2FProperties%2F-1866203277" anchor-label="conferenceStep" id="-965666538%2FProperties%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="-965666538%2FProperties%2F-1490768331" anchor-label="conferenceStep" id="-965666538%2FProperties%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="conference-step.html"><span>conference</span><wbr><span><span>Step</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-965666538%2FProperties%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-965666538%2FProperties%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="conference-step.html"><strike>conferenceStep</strike></a><span class="token operator">: </span><a href="../-conference-step/index.html">InfinityService.ConferenceStep</a></div><div class="brief "><p class="paragraph">The conference step that produced this participant step.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="conference-step.html"><strike>conferenceStep</strike></a><span class="token operator">: </span><a href="../-conference-step/index.html">InfinityService.ConferenceStep</a></div><div class="brief "><p class="paragraph">The conference step that produced this participant step.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="907398478%2FProperties%2F-1866203277" anchor-label="participantId" id="907398478%2FProperties%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="907398478%2FProperties%2F-1490768331" anchor-label="participantId" id="907398478%2FProperties%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="participant-id.html"><span>participant</span><wbr><span><span>Id</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="907398478%2FProperties%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="907398478%2FProperties%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="participant-id.html">participantId</a><span class="token operator">: </span><a href="../../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a></div><div class="brief "><p class="paragraph">A participant ID that this participant step will use.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="participant-id.html">participantId</a><span class="token operator">: </span><a href="../../../../sdk-infinity/com.pexip.sdk.infinity/-participant-id/index.html">ParticipantId</a></div><div class="brief "><p class="paragraph">A participant ID that this participant step will use.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -103,302 +137,302 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="1827861791%2FFunctions%2F-1866203277" anchor-label="buzz" id="1827861791%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="1827861791%2FFunctions%2F-1490768331" anchor-label="buzz" id="1827861791%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="buzz.html"><span><span>buzz</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1827861791%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1827861791%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="buzz.html"><span class="token function">buzz</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Raises a participant's hand.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="buzz.html"><span class="token function">buzz</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Raises a participant's hand.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1242680824%2FFunctions%2F-1866203277" anchor-label="call" id="-1242680824%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-1242680824%2FFunctions%2F-1490768331" anchor-label="call" id="-1242680824%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="call.html"><span><span>call</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1242680824%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1242680824%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="call.html"><span class="token function">call</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callId<span class="token operator">: </span><a href="../../../../sdk-infinity/com.pexip.sdk.infinity/-call-id/index.html">CallId</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-call-step/index.html">InfinityService.CallStep</a></div><div class="brief "><p class="paragraph">Sets the call ID.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="call.html"><span class="token function">call</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callId<span class="token operator">: </span><a href="../../../../sdk-infinity/com.pexip.sdk.infinity/-call-id/index.html">CallId</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-call-step/index.html">InfinityService.CallStep</a></div><div class="brief "><p class="paragraph">Sets the call ID.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1743105791%2FFunctions%2F-1866203277" anchor-label="calls" id="1743105791%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="1743105791%2FFunctions%2F-1490768331" anchor-label="calls" id="1743105791%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="calls.html"><span><span>calls</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1743105791%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1743105791%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="calls.html"><span class="token function">calls</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-calls-request/index.html">CallsRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="../../-calls-response/index.html">CallsResponse</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests an upgrade of the call to include media.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="calls.html"><span class="token function">calls</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-calls-request/index.html">CallsRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="../../-calls-response/index.html">CallsResponse</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests an upgrade of the call to include media.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-508813520%2FFunctions%2F-1866203277" anchor-label="clearBuzz" id="-508813520%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-508813520%2FFunctions%2F-1490768331" anchor-label="clearBuzz" id="-508813520%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="clear-buzz.html"><span>clear</span><wbr><span><span>Buzz</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-508813520%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-508813520%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="clear-buzz.html"><span class="token function">clearBuzz</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Lowers a participant's hand.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="clear-buzz.html"><span class="token function">clearBuzz</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Lowers a participant's hand.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-2142532658%2FFunctions%2F-1866203277" anchor-label="clientMute" id="-2142532658%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-2142532658%2FFunctions%2F-1490768331" anchor-label="clientMute" id="-2142532658%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="client-mute.html"><span>client</span><wbr><span><span>Mute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2142532658%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2142532658%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="client-mute.html"><span class="token function">clientMute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Signals that the participant has muted themselves.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="client-mute.html"><span class="token function">clientMute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Signals that the participant has muted themselves.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1029073323%2FFunctions%2F-1866203277" anchor-label="clientUnmute" id="-1029073323%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-1029073323%2FFunctions%2F-1490768331" anchor-label="clientUnmute" id="-1029073323%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="client-unmute.html"><span>client</span><wbr><span><span>Unmute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1029073323%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1029073323%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="client-unmute.html"><span class="token function">clientUnmute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Signals that the participant has unmuted themselves.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="client-unmute.html"><span class="token function">clientUnmute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Signals that the participant has unmuted themselves.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1930345142%2FFunctions%2F-1866203277" anchor-label="disconnect" id="1930345142%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="1930345142%2FFunctions%2F-1490768331" anchor-label="disconnect" id="1930345142%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="disconnect.html"><span><span>disconnect</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1930345142%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1930345142%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="disconnect.html"><span class="token function">disconnect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Disconnects a participant.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="disconnect.html"><span class="token function">disconnect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Disconnects a participant.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="127711799%2FFunctions%2F-1866203277" anchor-label="dtmf" id="127711799%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="127711799%2FFunctions%2F-1490768331" anchor-label="dtmf" id="127711799%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="dtmf.html"><span><span>dtmf</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="127711799%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="127711799%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="dtmf.html"><span class="token function">dtmf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-dtmf-request/index.html">DtmfRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sends DTMF digits to the participant.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="dtmf.html"><span class="token function">dtmf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-dtmf-request/index.html">DtmfRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sends DTMF digits to the participant.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1677021541%2FFunctions%2F-1866203277" anchor-label="message" id="-1677021541%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-1677021541%2FFunctions%2F-1490768331" anchor-label="message" id="-1677021541%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="message.html"><span><span>message</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1677021541%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1677021541%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="message.html"><span class="token function">message</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-message-request/index.html">MessageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sends a message to this participant.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="message.html"><span class="token function">message</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-message-request/index.html">MessageRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Sends a message to this participant.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="2085300377%2FFunctions%2F-1866203277" anchor-label="mute" id="2085300377%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="2085300377%2FFunctions%2F-1490768331" anchor-label="mute" id="2085300377%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="mute.html"><span><span>mute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2085300377%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2085300377%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="mute.html"><span class="token function">mute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to mute participant's audio.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="mute.html"><span class="token function">mute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to mute participant's audio.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1587003159%2FFunctions%2F-1866203277" anchor-label="preferredAspectRatio" id="1587003159%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="1587003159%2FFunctions%2F-1490768331" anchor-label="preferredAspectRatio" id="1587003159%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="preferred-aspect-ratio.html"><span>preferred</span><wbr><span>Aspect</span><wbr><span><span>Ratio</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1587003159%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1587003159%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="preferred-aspect-ratio.html"><span class="token function">preferredAspectRatio</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-preferred-aspect-ratio-request/index.html">PreferredAspectRatioRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Specifies the aspect ratio the participant would like to receive.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="preferred-aspect-ratio.html"><span class="token function">preferredAspectRatio</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-preferred-aspect-ratio-request/index.html">PreferredAspectRatioRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Specifies the aspect ratio the participant would like to receive.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-960427283%2FFunctions%2F-1866203277" anchor-label="releaseFloor" id="-960427283%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-960427283%2FFunctions%2F-1490768331" anchor-label="releaseFloor" id="-960427283%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="release-floor.html"><span>release</span><wbr><span><span>Floor</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-960427283%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-960427283%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="release-floor.html"><span class="token function">releaseFloor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to release presentation floor.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="release-floor.html"><span class="token function">releaseFloor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to release presentation floor.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1270069097%2FFunctions%2F-1866203277" anchor-label="role" id="-1270069097%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-1270069097%2FFunctions%2F-1490768331" anchor-label="role" id="-1270069097%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="role.html"><span><span>role</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1270069097%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1270069097%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="role.html"><span class="token function">role</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-role-request/index.html">RoleRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Changes the role of the participant.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="role.html"><span class="token function">role</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../-role-request/index.html">RoleRequest</a><span class="token punctuation">, </span></span><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Changes the role of the participant.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="493227127%2FFunctions%2F-1866203277" anchor-label="spotlightOff" id="493227127%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="493227127%2FFunctions%2F-1490768331" anchor-label="spotlightOff" id="493227127%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="spotlight-off.html"><span>spotlight</span><wbr><span><span>Off</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="493227127%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="493227127%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="spotlight-off.html"><span class="token function">spotlightOff</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Disables the "spotlight" on a participant.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="spotlight-off.html"><span class="token function">spotlightOff</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Disables the "spotlight" on a participant.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-331514051%2FFunctions%2F-1866203277" anchor-label="spotlightOn" id="-331514051%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-331514051%2FFunctions%2F-1490768331" anchor-label="spotlightOn" id="-331514051%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="spotlight-on.html"><span>spotlight</span><wbr><span><span>On</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-331514051%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-331514051%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="spotlight-on.html"><span class="token function">spotlightOn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Enables the "spotlight" on a participant.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="spotlight-on.html"><span class="token function">spotlightOn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Enables the "spotlight" on a participant.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="895485387%2FFunctions%2F-1866203277" anchor-label="takeFloor" id="895485387%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="895485387%2FFunctions%2F-1490768331" anchor-label="takeFloor" id="895485387%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="take-floor.html"><span>take</span><wbr><span><span>Floor</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="895485387%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="895485387%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="take-floor.html"><span class="token function">takeFloor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to take presentation floor.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="take-floor.html"><span class="token function">takeFloor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to take presentation floor.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="270842254%2FFunctions%2F-1866203277" anchor-label="unlock" id="270842254%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="270842254%2FFunctions%2F-1490768331" anchor-label="unlock" id="270842254%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="unlock.html"><span><span>unlock</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="270842254%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="270842254%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="unlock.html"><span class="token function">unlock</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Lets a specified participant into the conference from the waiting room of a locked conference.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="unlock.html"><span class="token function">unlock</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Lets a specified participant into the conference from the waiting room of a locked conference.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1120588704%2FFunctions%2F-1866203277" anchor-label="unmute" id="-1120588704%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-1120588704%2FFunctions%2F-1490768331" anchor-label="unmute" id="-1120588704%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="unmute.html"><span><span>unmute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1120588704%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1120588704%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="unmute.html"><span class="token function">unmute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to unmute participant's audio.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="unmute.html"><span class="token function">unmute</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to unmute participant's audio.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-13533150%2FFunctions%2F-1866203277" anchor-label="videoMuted" id="-13533150%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="-13533150%2FFunctions%2F-1490768331" anchor-label="videoMuted" id="-13533150%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="video-muted.html"><span>video</span><wbr><span><span>Muted</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-13533150%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-13533150%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="video-muted.html"><span class="token function">videoMuted</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to mute participant's video.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="video-muted.html"><span class="token function">videoMuted</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to mute participant's video.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="109083131%2FFunctions%2F-1866203277" anchor-label="videoUnmuted" id="109083131%2FFunctions%2F-1866203277" data-filterable-set=":sdk-api:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-api:dokkaHtmlPartial/main" data-filterable-set=":sdk-api:dokkaHtmlPartial/main">
+<a data-name="109083131%2FFunctions%2F-1490768331" anchor-label="videoUnmuted" id="109083131%2FFunctions%2F-1490768331" data-filterable-set=":sdk-api/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-api/main" data-filterable-set=":sdk-api/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="video-unmuted.html"><span>video</span><wbr><span><span>Unmuted</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="109083131%2FFunctions%2F-1866203277"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="109083131%2FFunctions%2F-1490768331"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="video-unmuted.html"><span class="token function">videoUnmuted</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to unmute participant's video.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-api/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="video-unmuted.html"><span class="token function">videoUnmuted</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">token<span class="token operator">: </span><a href="../../-token/index.html">Token</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../com.pexip.sdk.api/-call/index.html">Call</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Requests to unmute participant's video.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -408,12 +442,18 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2025 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>2025 Pexip® AS, All rights reserved.</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

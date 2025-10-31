@@ -25,61 +25,95 @@
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
-<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script>
+<link href="../../../images/pexip.svg">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet"></head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
 <a class="library-name--link" href="../../../index.html">
-                            pexip-android-sdk
-                    </a>            </div>
-            <div class="library-version">0.17.3
+                    pexip-android-sdk
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">0.17.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-media/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":sdk-media/main" data-filter=":sdk-media/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-media:dokkaHtmlPartial/main">jvm</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    pexip-android-sdk
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-media::com.pexip.sdk.media/MediaConnectionConfig///PointingToDeclaration//185842665">
+<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-media::com.pexip.sdk.media/MediaConnectionConfig///PointingToDeclaration//1739022079">
   <div class="breadcrumbs"><a href="../../index.html">sdk-media</a><span class="delimiter">/</span><a href="../index.html">com.pexip.sdk.media</a><span class="delimiter">/</span><span class="current">MediaConnectionConfig</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Media</span><wbr><span>Connection</span><wbr><span><span>Config</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">MediaConnectionConfig</a></div><p class="paragraph"><a href="../-media-connection/index.html">MediaConnection</a> configuration.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">MediaConnectionConfig</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/pexip/pexip-android-sdk/blob/main//sdk-media/src/main/kotlin/com/pexip/sdk/media/MediaConnectionConfig.kt#L29">source</a>)</span></span></div><p class="paragraph"><a href="../-media-connection/index.html">MediaConnection</a> configuration.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="1904456912%2FClasslikes%2F185842665" anchor-label="Builder" id="1904456912%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="1904456912%2FClasslikes%2F1739022079" anchor-label="Builder" id="1904456912%2FClasslikes%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-builder/index.html"><span><span>Builder</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1904456912%2FClasslikes%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1904456912%2FClasslikes%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-builder/index.html">Builder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">signaling<span class="token operator">: </span><a href="../-media-connection-signaling/index.html">MediaConnectionSignaling</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A builder for <a href="index.html">MediaConnectionConfig</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">class </span><a href="-builder/index.html">Builder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">signaling<span class="token operator">: </span><a href="../-media-connection-signaling/index.html">MediaConnectionSignaling</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">A builder for <a href="index.html">MediaConnectionConfig</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -88,107 +122,107 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="1967459878%2FProperties%2F185842665" anchor-label="dscp" id="1967459878%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="1967459878%2FProperties%2F1739022079" anchor-label="dscp" id="1967459878%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="dscp.html"><span><span>dscp</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1967459878%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1967459878%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="dscp.html">dscp</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if DSCP is enabled, false otherwise</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="dscp.html">dscp</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if DSCP is enabled, false otherwise</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-144127772%2FProperties%2F185842665" anchor-label="farEndCameraControl" id="-144127772%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="-144127772%2FProperties%2F1739022079" anchor-label="farEndCameraControl" id="-144127772%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="far-end-camera-control.html"><span>far</span><wbr><span>End</span><wbr><span>Camera</span><wbr><span><span>Control</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-144127772%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-144127772%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="far-end-camera-control.html">farEndCameraControl</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if far end camera control is supported, false otherwise</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="far-end-camera-control.html">farEndCameraControl</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if far end camera control is supported, false otherwise</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="699665213%2FProperties%2F185842665" anchor-label="iceServers" id="699665213%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="699665213%2FProperties%2F1739022079" anchor-label="iceServers" id="699665213%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="ice-servers.html"><span>ice</span><wbr><span><span>Servers</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="699665213%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="699665213%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="ice-servers.html">iceServers</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-ice-server/index.html">IceServer</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">a list of <a href="../-ice-server/index.html">IceServer</a>s that <a href="../-media-connection/index.html">MediaConnection</a> will use</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="ice-servers.html">iceServers</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../-ice-server/index.html">IceServer</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">a list of <a href="../-ice-server/index.html">IceServer</a>s that <a href="../-media-connection/index.html">MediaConnection</a> will use</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="211653098%2FProperties%2F185842665" anchor-label="presentationInMain" id="211653098%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="211653098%2FProperties%2F1739022079" anchor-label="presentationInMain" id="211653098%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="presentation-in-main.html"><span>presentation</span><wbr><span>In</span><wbr><span><span>Main</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="211653098%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="211653098%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="presentation-in-main.html">presentationInMain</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if presentation will be mixed with main video feed, false otherwise; ignored for direct media calls</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="presentation-in-main.html">presentationInMain</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if presentation will be mixed with main video feed, false otherwise; ignored for direct media calls</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1961557950%2FProperties%2F185842665" anchor-label="signaling" id="1961557950%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="1961557950%2FProperties%2F1739022079" anchor-label="signaling" id="1961557950%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="signaling.html"><span><span>signaling</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1961557950%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1961557950%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="signaling.html">signaling</a><span class="token operator">: </span><a href="../-media-connection-signaling/index.html">MediaConnectionSignaling</a></div><div class="brief "><p class="paragraph">an instance of <a href="../-media-connection-signaling/index.html">MediaConnectionSignaling</a> to be used by <a href="../-media-connection/index.html">MediaConnection</a></p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="signaling.html">signaling</a><span class="token operator">: </span><a href="../-media-connection-signaling/index.html">MediaConnectionSignaling</a></div><div class="brief "><p class="paragraph">an instance of <a href="../-media-connection-signaling/index.html">MediaConnectionSignaling</a> to be used by <a href="../-media-connection/index.html">MediaConnection</a></p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1386126076%2FProperties%2F185842665" anchor-label="syncAudioMute" id="-1386126076%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="-1386126076%2FProperties%2F1739022079" anchor-label="syncAudioMute" id="-1386126076%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="sync-audio-mute.html"><span>sync</span><wbr><span>Audio</span><wbr><span><span>Mute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1386126076%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1386126076%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="sync-audio-mute.html">syncAudioMute</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if audio mute should be synced, false otherwise</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="sync-audio-mute.html">syncAudioMute</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if audio mute should be synced, false otherwise</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="2000456319%2FProperties%2F185842665" anchor-label="syncVideoMute" id="2000456319%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="2000456319%2FProperties%2F1739022079" anchor-label="syncVideoMute" id="2000456319%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="sync-video-mute.html"><span>sync</span><wbr><span>Video</span><wbr><span><span>Mute</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2000456319%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2000456319%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="sync-video-mute.html">syncVideoMute</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if video mute should be synced, false otherwise</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="sync-video-mute.html">syncVideoMute</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">true if video mute should be synced, false otherwise</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -198,12 +232,18 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2025 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>2025 Pexip® AS, All rights reserved.</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

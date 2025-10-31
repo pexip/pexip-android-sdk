@@ -25,61 +25,95 @@
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
 <link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
 <script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async></script>
-<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script>
+<link href="../../../images/pexip.svg">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet"></head>
 <body>
     <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
 <a class="library-name--link" href="../../../index.html">
-                            pexip-android-sdk
-                    </a>            </div>
-            <div class="library-version">0.17.3
+                    pexip-android-sdk
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">0.17.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-media/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":sdk-media/main" data-filter=":sdk-media/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
         </div>
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-media:dokkaHtmlPartial/main">jvm</button>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
         </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
+    </nav>
         <div id="container">
             <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    pexip-android-sdk
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-media::com.pexip.sdk.media/MediaConnection///PointingToDeclaration//185842665">
+<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-media::com.pexip.sdk.media/MediaConnection///PointingToDeclaration//1739022079">
   <div class="breadcrumbs"><a href="../../index.html">sdk-media</a><span class="delimiter">/</span><a href="../index.html">com.pexip.sdk.media</a><span class="delimiter">/</span><span class="current">MediaConnection</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Media</span><wbr><span><span>Connection</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">MediaConnection</a></div><p class="paragraph">A media connection.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">MediaConnection</a><span class="clearfix"><span class="floating-right">(<a href="https://github.com/pexip/pexip-android-sdk/blob/main//sdk-media/src/main/kotlin/com/pexip/sdk/media/MediaConnection.kt#L27">source</a>)</span></span></div><p class="paragraph">A media connection.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
     <div class="tabs-section-body">
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="33434667%2FClasslikes%2F185842665" anchor-label="RemoteVideoTrackListener" id="33434667%2FClasslikes%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="33434667%2FClasslikes%2F1739022079" anchor-label="RemoteVideoTrackListener" id="33434667%2FClasslikes%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-remote-video-track-listener/index.html"><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Listener</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="33434667%2FClasslikes%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="33434667%2FClasslikes%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -88,47 +122,47 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="-469249007%2FProperties%2F185842665" anchor-label="mainRemoteVideoTrack" id="-469249007%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="-469249007%2FProperties%2F1739022079" anchor-label="mainRemoteVideoTrack" id="-469249007%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="main-remote-video-track.html"><span>main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-469249007%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-469249007%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="main-remote-video-track.html">mainRemoteVideoTrack</a><span class="token operator">: </span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">current main remote video track or null</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="main-remote-video-track.html">mainRemoteVideoTrack</a><span class="token operator">: </span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">current main remote video track or null</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="118401232%2FProperties%2F185842665" anchor-label="presentationRemoteVideoTrack" id="118401232%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="118401232%2FProperties%2F1739022079" anchor-label="presentationRemoteVideoTrack" id="118401232%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="presentation-remote-video-track.html"><span>presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="118401232%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="118401232%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="presentation-remote-video-track.html">presentationRemoteVideoTrack</a><span class="token operator">: </span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">current presentation remote video track or null</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="presentation-remote-video-track.html">presentationRemoteVideoTrack</a><span class="token operator">: </span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">current presentation remote video track or null</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="519767676%2FProperties%2F185842665" anchor-label="secureCheckCode" id="519767676%2FProperties%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="519767676%2FProperties%2F1739022079" anchor-label="secureCheckCode" id="519767676%2FProperties%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="secure-check-code.html"><span>secure</span><wbr><span>Check</span><wbr><span><span>Code</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="519767676%2FProperties%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="519767676%2FProperties%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="secure-check-code.html">secureCheckCode</a><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a><span class="token operator">&lt;</span><a href="../-secure-check-code/index.html">SecureCheckCode</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">current secure check code, the value may be null</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="secure-check-code.html">secureCheckCode</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="../-secure-check-code/index.html">SecureCheckCode</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">current secure check code, the value may be null</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -137,321 +171,317 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="995112411%2FFunctions%2F185842665" anchor-label="dispose" id="995112411%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+        <div class="table"><a data-name="995112411%2FFunctions%2F1739022079" anchor-label="dispose" id="995112411%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="dispose.html"><span><span>dispose</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="995112411%2FFunctions%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="995112411%2FFunctions%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="dispose.html"><span class="token function">dispose</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disposes this <a href="index.html">MediaConnection</a> and frees all held resources associated with it.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="dispose.html"><span class="token function">dispose</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disposes this <a href="index.html">MediaConnection</a> and frees all held resources associated with it.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1460171027%2FFunctions%2F185842665" anchor-label="dtmf" id="-1460171027%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="-1460171027%2FFunctions%2F1739022079" anchor-label="dtmf" id="-1460171027%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="dtmf.html"><span><span>dtmf</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1460171027%2FFunctions%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1460171027%2FFunctions%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="dtmf.html"><span class="token function">dtmf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">digits<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sends DTMF digits to this <a href="index.html">MediaConnection</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="dtmf.html"><span class="token function">dtmf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">digits<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sends DTMF digits to this <a href="index.html">MediaConnection</a>.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-730330891%2FFunctions%2F185842665" anchor-label="registerMainRemoteVideoTrackListener" id="-730330891%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="register-main-remote-video-track-listener.html"><span>register</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Listener</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-730330891%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="register-main-remote-video-track-listener.html"><span class="token function">registerMainRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Registers a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for main video.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1263861452%2FFunctions%2F185842665" anchor-label="registerPresentationRemoteVideoTrackListener" id="-1263861452%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="register-presentation-remote-video-track-listener.html"><span>register</span><wbr><span>Presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Listener</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1263861452%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="register-presentation-remote-video-track-listener.html"><span class="token function">registerPresentationRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Registers a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for presentation video.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-974649412%2FFunctions%2F185842665" anchor-label="setMainAudioTrack" id="-974649412%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-main-audio-track.html"><span>set</span><wbr><span>Main</span><wbr><span>Audio</span><wbr><span><span>Track</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-974649412%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-audio-track.html"><span class="token function">setMainAudioTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localAudioTrack<span class="token operator">: </span><a href="../-local-audio-track/index.html">LocalAudioTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the main audio track.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-756542026%2FFunctions%2F185842665" anchor-label="setMainDegradationPreference" id="-756542026%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-main-degradation-preference.html"><span>set</span><wbr><span>Main</span><wbr><span>Degradation</span><wbr><span><span>Preference</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-756542026%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-degradation-preference.html"><span class="token function">setMainDegradationPreference</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">preference<span class="token operator">: </span><a href="../-degradation-preference/index.html">DegradationPreference</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the <a href="../-degradation-preference/index.html">DegradationPreference</a> for main video stream.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="634253722%2FFunctions%2F185842665" anchor-label="setMainRemoteAudioTrackEnabled" id="634253722%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-main-remote-audio-track-enabled.html"><span>set</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Audio</span><wbr><span>Track</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="634253722%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-remote-audio-track-enabled.html"><span class="token function">setMainRemoteAudioTrackEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables or disables the receive of remote audio.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="442759381%2FFunctions%2F185842665" anchor-label="setMainRemoteVideoTrackEnabled" id="442759381%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-main-remote-video-track-enabled.html"><span>set</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="442759381%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-remote-video-track-enabled.html"><span class="token function">setMainRemoteVideoTrackEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables or disables the receive of remote video.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1275135560%2FFunctions%2F185842665" anchor-label="setMainRemoteVideoTrackPreferredAspectRatio" id="1275135560%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-main-remote-video-track-preferred-aspect-ratio.html"><span>set</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span>Preferred</span><wbr><span>Aspect</span><wbr><span><span>Ratio</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1275135560%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-remote-video-track-preferred-aspect-ratio.html"><span class="token function">setMainRemoteVideoTrackPreferredAspectRatio</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">aspectRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the preferred aspect ratio for remote video.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="370960540%2FFunctions%2F185842665" anchor-label="setMainVideoTrack" id="370960540%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-main-video-track.html"><span>set</span><wbr><span>Main</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="370960540%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-video-track.html"><span class="token function">setMainVideoTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localVideoTrack<span class="token operator">: </span><a href="../-local-video-track/index.html">LocalVideoTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the main video track.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-552253547%2FFunctions%2F185842665" anchor-label="setMaxBitrate" id="-552253547%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-max-bitrate.html"><span>set</span><wbr><span>Max</span><wbr><span><span>Bitrate</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-552253547%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-max-bitrate.html"><span class="token function">setMaxBitrate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bitrate<span class="token operator">: </span><a href="../-bitrate/index.html">Bitrate</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the maximum bitrate for each video stream.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1723767861%2FFunctions%2F185842665" anchor-label="setPresentationDegradationPreference" id="1723767861%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-presentation-degradation-preference.html"><span>set</span><wbr><span>Presentation</span><wbr><span>Degradation</span><wbr><span><span>Preference</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1723767861%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-presentation-degradation-preference.html"><span class="token function">setPresentationDegradationPreference</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">preference<span class="token operator">: </span><a href="../-degradation-preference/index.html">DegradationPreference</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the <a href="../-degradation-preference/index.html">DegradationPreference</a> for presentation video stream.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1448262006%2FFunctions%2F185842665" anchor-label="setPresentationRemoteVideoTrackEnabled" id="1448262006%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-presentation-remote-video-track-enabled.html"><span>set</span><wbr><span>Presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Enabled</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1448262006%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-presentation-remote-video-track-enabled.html"><span class="token function">setPresentationRemoteVideoTrackEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables or disables the receive of ongoing remote presentation video.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="485870875%2FFunctions%2F185842665" anchor-label="setPresentationVideoTrack" id="485870875%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-presentation-video-track.html"><span>set</span><wbr><span>Presentation</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="485870875%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-presentation-video-track.html"><span class="token function">setPresentationVideoTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localVideoTrack<span class="token operator">: </span><a href="../-local-video-track/index.html">LocalVideoTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the presentation video track.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-2058007496%2FFunctions%2F185842665" anchor-label="start" id="-2058007496%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="start.html"><span><span>start</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2058007496%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="start.html"><span class="token function">start</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Starts the negotiation process.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1563889596%2FFunctions%2F185842665" anchor-label="unregisterMainRemoteVideoTrackListener" id="1563889596%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="unregister-main-remote-video-track-listener.html"><span>unregister</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Listener</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1563889596%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="unregister-main-remote-video-track-listener.html"><span class="token function">unregisterMainRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unregisters a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for main video.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-365539077%2FFunctions%2F185842665" anchor-label="unregisterPresentationRemoteVideoTrackListener" id="-365539077%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="unregister-presentation-remote-video-track-listener.html"><span>unregister</span><wbr><span>Presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Listener</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-365539077%2FFunctions%2F185842665"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="unregister-presentation-remote-video-track-listener.html"><span class="token function">unregisterPresentationRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unregisters a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for presentation video.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div data-togglable="EXTENSION_FUNCTION">
-        <h2 class="">Inherited functions</h2>
-        <div class="table"><a data-name="-543204787%2FFunctions%2F185842665" anchor-label="getMainRemoteVideoTrack" id="-543204787%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="-543204787%2FFunctions%2F1739022079" anchor-label="getMainRemoteVideoTrack" id="-543204787%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="../../com.pexip.sdk.media.coroutines/get-main-remote-video-track.html"><span>get</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-543204787%2FFunctions%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-543204787%2FFunctions%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">MediaConnection</a><span class="token punctuation">.</span><a href="../../com.pexip.sdk.media.coroutines/get-main-remote-video-track.html"><span class="token function">getMainRemoteVideoTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/index.html">Flow</a><span class="token operator">&lt;</span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts this <a href="index.html">MediaConnection</a> to a main remote video track <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/index.html">Flow</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">MediaConnection</a><span class="token punctuation">.</span><a href="../../com.pexip.sdk.media.coroutines/get-main-remote-video-track.html"><span class="token function">getMainRemoteVideoTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts this <a href="index.html">MediaConnection</a> to a main remote video track <span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span>.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-999049682%2FFunctions%2F185842665" anchor-label="getPresentationRemoteVideoTrack" id="-999049682%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="-999049682%2FFunctions%2F1739022079" anchor-label="getPresentationRemoteVideoTrack" id="-999049682%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="../../com.pexip.sdk.media.coroutines/get-presentation-remote-video-track.html"><span>get</span><wbr><span>Presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-999049682%2FFunctions%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-999049682%2FFunctions%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">MediaConnection</a><span class="token punctuation">.</span><a href="../../com.pexip.sdk.media.coroutines/get-presentation-remote-video-track.html"><span class="token function">getPresentationRemoteVideoTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/index.html">Flow</a><span class="token operator">&lt;</span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts this <a href="index.html">MediaConnection</a> to a presentation remote video track <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/index.html">Flow</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">MediaConnection</a><span class="token punctuation">.</span><a href="../../com.pexip.sdk.media.coroutines/get-presentation-remote-video-track.html"><span class="token function">getPresentationRemoteVideoTrack</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts this <a href="index.html">MediaConnection</a> to a presentation remote video track <span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span>.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-858494884%2FFunctions%2F185842665" anchor-label="mainRemoteVideoTrackIn" id="-858494884%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="-858494884%2FFunctions%2F1739022079" anchor-label="mainRemoteVideoTrackIn" id="-858494884%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="../../com.pexip.sdk.media.coroutines/main-remote-video-track-in.html"><span>main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>In</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-858494884%2FFunctions%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-858494884%2FFunctions%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">MediaConnection</a><span class="token punctuation">.</span><a href="../../com.pexip.sdk.media.coroutines/main-remote-video-track-in.html"><span class="token function">mainRemoteVideoTrackIn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scope<span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/index.html">CoroutineScope</a><span class="token punctuation">, </span></span><span class="parameter ">started<span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-sharing-started/index.html">SharingStarted</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a><span class="token operator">&lt;</span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts this <a href="index.html">MediaConnection</a> to a main remote video track <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">MediaConnection</a><span class="token punctuation">.</span><a href="../../com.pexip.sdk.media.coroutines/main-remote-video-track-in.html"><span class="token function">mainRemoteVideoTrackIn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scope<span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines/CoroutineScope///PointingToDeclaration/">CoroutineScope</span><span class="token punctuation">, </span></span><span class="parameter ">started<span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/SharingStarted///PointingToDeclaration/">SharingStarted</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts this <a href="index.html">MediaConnection</a> to a main remote video track <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span>.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-515598083%2FFunctions%2F185842665" anchor-label="presentationRemoteVideoTrackIn" id="-515598083%2FFunctions%2F185842665" data-filterable-set=":sdk-media:dokkaHtmlPartial/main"></a>
-          <div class="table-row" data-filterable-current=":sdk-media:dokkaHtmlPartial/main" data-filterable-set=":sdk-media:dokkaHtmlPartial/main">
+<a data-name="-515598083%2FFunctions%2F1739022079" anchor-label="presentationRemoteVideoTrackIn" id="-515598083%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="../../com.pexip.sdk.media.coroutines/presentation-remote-video-track-in.html"><span>presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>In</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-515598083%2FFunctions%2F185842665"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-515598083%2FFunctions%2F1739022079"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">MediaConnection</a><span class="token punctuation">.</span><a href="../../com.pexip.sdk.media.coroutines/presentation-remote-video-track-in.html"><span class="token function">presentationRemoteVideoTrackIn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scope<span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/index.html">CoroutineScope</a><span class="token punctuation">, </span></span><span class="parameter ">started<span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-sharing-started/index.html">SharingStarted</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a><span class="token operator">&lt;</span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts this <a href="index.html">MediaConnection</a> to a presentation remote video track <a href="https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/index.html">StateFlow</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html">MediaConnection</a><span class="token punctuation">.</span><a href="../../com.pexip.sdk.media.coroutines/presentation-remote-video-track-in.html"><span class="token function">presentationRemoteVideoTrackIn</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scope<span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines/CoroutineScope///PointingToDeclaration/">CoroutineScope</span><span class="token punctuation">, </span></span><span class="parameter ">started<span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/SharingStarted///PointingToDeclaration/">SharingStarted</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><a href="../-video-track/index.html">VideoTrack</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Converts this <a href="index.html">MediaConnection</a> to a presentation remote video track <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-730330891%2FFunctions%2F1739022079" anchor-label="registerMainRemoteVideoTrackListener" id="-730330891%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="register-main-remote-video-track-listener.html"><span>register</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-730330891%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="register-main-remote-video-track-listener.html"><span class="token function">registerMainRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Registers a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for main video.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1263861452%2FFunctions%2F1739022079" anchor-label="registerPresentationRemoteVideoTrackListener" id="-1263861452%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="register-presentation-remote-video-track-listener.html"><span>register</span><wbr><span>Presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1263861452%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="register-presentation-remote-video-track-listener.html"><span class="token function">registerPresentationRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Registers a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for presentation video.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-974649412%2FFunctions%2F1739022079" anchor-label="setMainAudioTrack" id="-974649412%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-main-audio-track.html"><span>set</span><wbr><span>Main</span><wbr><span>Audio</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-974649412%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-audio-track.html"><span class="token function">setMainAudioTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localAudioTrack<span class="token operator">: </span><a href="../-local-audio-track/index.html">LocalAudioTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the main audio track.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-756542026%2FFunctions%2F1739022079" anchor-label="setMainDegradationPreference" id="-756542026%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-main-degradation-preference.html"><span>set</span><wbr><span>Main</span><wbr><span>Degradation</span><wbr><span><span>Preference</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-756542026%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-degradation-preference.html"><span class="token function">setMainDegradationPreference</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">preference<span class="token operator">: </span><a href="../-degradation-preference/index.html">DegradationPreference</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the <a href="../-degradation-preference/index.html">DegradationPreference</a> for main video stream.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="634253722%2FFunctions%2F1739022079" anchor-label="setMainRemoteAudioTrackEnabled" id="634253722%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-main-remote-audio-track-enabled.html"><span>set</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Audio</span><wbr><span>Track</span><wbr><span><span>Enabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="634253722%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-remote-audio-track-enabled.html"><span class="token function">setMainRemoteAudioTrackEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables or disables the receive of remote audio.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="442759381%2FFunctions%2F1739022079" anchor-label="setMainRemoteVideoTrackEnabled" id="442759381%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-main-remote-video-track-enabled.html"><span>set</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Enabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="442759381%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-remote-video-track-enabled.html"><span class="token function">setMainRemoteVideoTrackEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables or disables the receive of remote video.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1275135560%2FFunctions%2F1739022079" anchor-label="setMainRemoteVideoTrackPreferredAspectRatio" id="1275135560%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-main-remote-video-track-preferred-aspect-ratio.html"><span>set</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span>Preferred</span><wbr><span>Aspect</span><wbr><span><span>Ratio</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1275135560%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-remote-video-track-preferred-aspect-ratio.html"><span class="token function">setMainRemoteVideoTrackPreferredAspectRatio</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">aspectRatio<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the preferred aspect ratio for remote video.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="370960540%2FFunctions%2F1739022079" anchor-label="setMainVideoTrack" id="370960540%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-main-video-track.html"><span>set</span><wbr><span>Main</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="370960540%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-main-video-track.html"><span class="token function">setMainVideoTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localVideoTrack<span class="token operator">: </span><a href="../-local-video-track/index.html">LocalVideoTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the main video track.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-552253547%2FFunctions%2F1739022079" anchor-label="setMaxBitrate" id="-552253547%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-max-bitrate.html"><span>set</span><wbr><span>Max</span><wbr><span><span>Bitrate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-552253547%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-max-bitrate.html"><span class="token function">setMaxBitrate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bitrate<span class="token operator">: </span><a href="../-bitrate/index.html">Bitrate</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the maximum bitrate for each video stream.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1723767861%2FFunctions%2F1739022079" anchor-label="setPresentationDegradationPreference" id="1723767861%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-presentation-degradation-preference.html"><span>set</span><wbr><span>Presentation</span><wbr><span>Degradation</span><wbr><span><span>Preference</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1723767861%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-presentation-degradation-preference.html"><span class="token function">setPresentationDegradationPreference</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">preference<span class="token operator">: </span><a href="../-degradation-preference/index.html">DegradationPreference</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the <a href="../-degradation-preference/index.html">DegradationPreference</a> for presentation video stream.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1448262006%2FFunctions%2F1739022079" anchor-label="setPresentationRemoteVideoTrackEnabled" id="1448262006%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-presentation-remote-video-track-enabled.html"><span>set</span><wbr><span>Presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Enabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1448262006%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-presentation-remote-video-track-enabled.html"><span class="token function">setPresentationRemoteVideoTrackEnabled</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enabled<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Enables or disables the receive of ongoing remote presentation video.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="485870875%2FFunctions%2F1739022079" anchor-label="setPresentationVideoTrack" id="485870875%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-presentation-video-track.html"><span>set</span><wbr><span>Presentation</span><wbr><span>Video</span><wbr><span><span>Track</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="485870875%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-presentation-video-track.html"><span class="token function">setPresentationVideoTrack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">localVideoTrack<span class="token operator">: </span><a href="../-local-video-track/index.html">LocalVideoTrack</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the presentation video track.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2058007496%2FFunctions%2F1739022079" anchor-label="start" id="-2058007496%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="start.html"><span><span>start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2058007496%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="start.html"><span class="token function">start</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Starts the negotiation process.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1563889596%2FFunctions%2F1739022079" anchor-label="unregisterMainRemoteVideoTrackListener" id="1563889596%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="unregister-main-remote-video-track-listener.html"><span>unregister</span><wbr><span>Main</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1563889596%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="unregister-main-remote-video-track-listener.html"><span class="token function">unregisterMainRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unregisters a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for main video.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-365539077%2FFunctions%2F1739022079" anchor-label="unregisterPresentationRemoteVideoTrackListener" id="-365539077%2FFunctions%2F1739022079" data-filterable-set=":sdk-media/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-media/main" data-filterable-set=":sdk-media/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="unregister-presentation-remote-video-track-listener.html"><span>unregister</span><wbr><span>Presentation</span><wbr><span>Remote</span><wbr><span>Video</span><wbr><span>Track</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-365539077%2FFunctions%2F1739022079"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-media/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="unregister-presentation-remote-video-track-listener.html"><span class="token function">unregisterPresentationRemoteVideoTrackListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">listener<span class="token operator">: </span><a href="-remote-video-track-listener/index.html">MediaConnection.RemoteVideoTrackListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Unregisters a <a href="-remote-video-track-listener/index.html">RemoteVideoTrackListener</a> for presentation video.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -461,12 +491,18 @@
     </div>
   </div>
 </div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>2025 Pexip® AS, All rights reserved.</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>2025 Pexip® AS, All rights reserved.</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-
