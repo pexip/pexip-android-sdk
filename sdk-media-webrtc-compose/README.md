@@ -8,6 +8,6 @@ Compose support for sdk-media-webrtc.
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-media-webrtc-compose:0.17.3")
+    implementation("com.pexip.sdk:sdk-media-webrtc-compose:0.17.4")
 }
 ```

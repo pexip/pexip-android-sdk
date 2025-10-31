@@ -24,7 +24,7 @@ body:
     attributes:
       label: 'Version'
       description: 'What library version are you using?'
-      placeholder: '0.17.3'
+      placeholder: '0.17.4'
     validations:
       required: true
   - type: textarea
