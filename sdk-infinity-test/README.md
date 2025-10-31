@@ -8,6 +8,6 @@ Pexip Infinity SDK test utilities
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-infinity-test:0.17.3")
+    implementation("com.pexip.sdk:sdk-infinity-test:0.17.4")
 }
 ```

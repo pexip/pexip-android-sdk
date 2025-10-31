@@ -8,6 +8,6 @@ Pexip SDK core
 
 ```kotlin
 dependencies {
-    implementation("com.pexip.sdk:sdk-core:0.17.3")
+    implementation("com.pexip.sdk:sdk-core:0.17.4")
 }
 ```

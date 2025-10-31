@@ -7,6 +7,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.17.4] - 2025-10-31
+
+### Changed
+
+- `targetSdk` to 36
+- `compileSdk` to 36
+- Kotlin to 2.2.21
+- WebRTC to M137
+- OkHttp to 5.2.1
+- Okio to 3.16.2
+
+### Notes
+
+Maintenance release
+
 ## [0.17.3] - 2025-06-02
 
 ### Fixed
@@ -413,7 +428,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.3...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.4...HEAD
+[0.17.4]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.4
 [0.17.3]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.3
 [0.17.2]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.2
 [0.17.1]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.1
