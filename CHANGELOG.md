@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.17.5] - 2025-11-06
+
+### Fixed
+
+- Newer WebRTC versions cause runtime crashes due to a missing dependency in the WebRTC binary.
+  Rolling back to M134 until the dependency issue is resolved.
+
 ## [0.17.4] - 2025-10-31
 
 ### Changed
@@ -428,7 +435,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.4...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.5...HEAD
+[0.17.5]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.5
 [0.17.4]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.4
 [0.17.3]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.3
 [0.17.2]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.2
