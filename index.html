@@ -47,7 +47,7 @@
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
         <div class="library-version" id="library-version">
-0.17.4        </div>
+0.17.5        </div>
         <div class="navigation-controls">
             <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
                     type="button">Switch theme
@@ -93,13 +93,13 @@
         </span></div>
       <p class="paragraph">And add modules that you need:</p>
       <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">dependencies {<br>    // A fluent wrapper for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api:0.17.4&quot;)<br>    // A set of tools for interacting with an Infinity conference<br>    implementation(&quot;com.pexip.sdk:sdk-conference:0.17.4&quot;)<br>    // A set of tools for interacting with an Infinity registration<br>    implementation(&quot;com.pexip.sdk:sdk-registration:0.17.4&quot;)<br>    // A `MediaConnection` implementation build on top of WebRTC<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc:0.17.4&quot;)<br>    // A composable that wraps SurfaceViewRenderer<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc-compose:0.17.4&quot;)<br>}</code></pre>
+        <pre><code class="block lang-kotlin" theme="idea">dependencies {<br>    // A fluent wrapper for Infinity Client REST API<br>    implementation(&quot;com.pexip.sdk:sdk-api:0.17.5&quot;)<br>    // A set of tools for interacting with an Infinity conference<br>    implementation(&quot;com.pexip.sdk:sdk-conference:0.17.5&quot;)<br>    // A set of tools for interacting with an Infinity registration<br>    implementation(&quot;com.pexip.sdk:sdk-registration:0.17.5&quot;)<br>    // A `MediaConnection` implementation build on top of WebRTC<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc:0.17.5&quot;)<br>    // A composable that wraps SurfaceViewRenderer<br>    implementation(&quot;com.pexip.sdk:sdk-media-webrtc-compose:0.17.5&quot;)<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
       <p class="paragraph">We also publish a <a href="https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog">Version Catalog</a> that can be consumed as follows:</p>
       <div class="sample-container">
-        <pre><code class="block lang-kotlin" theme="idea">// settings.gradle.kts<br>enableFeaturePreview(&quot;VERSION_CATALOGS&quot;)<br><br>dependencyResolutionManagement {<br>    repositories {<br>        mavenCentral()<br>    }<br>    versionCatalogs {<br>        register(&quot;pexipSdk&quot;) {<br>            from(&quot;com.pexip.sdk:sdk-catalog:0.17.4&quot;)<br>        }<br>    }<br>}<br>// build.gradle.kts<br>dependencies {<br>    implementation(pexipSdk.api.infinity)<br>}</code></pre>
+        <pre><code class="block lang-kotlin" theme="idea">// settings.gradle.kts<br>enableFeaturePreview(&quot;VERSION_CATALOGS&quot;)<br><br>dependencyResolutionManagement {<br>    repositories {<br>        mavenCentral()<br>    }<br>    versionCatalogs {<br>        register(&quot;pexipSdk&quot;) {<br>            from(&quot;com.pexip.sdk:sdk-catalog:0.17.5&quot;)<br>        }<br>    }<br>}<br>// build.gradle.kts<br>dependencies {<br>    implementation(pexipSdk.api.infinity)<br>}</code></pre>
 <span class="top-right-position"><span class="copy-icon"></span>
           <div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div>
         </span></div>
@@ -132,6 +132,10 @@
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td>0.17.5+</td>
+            <td>134</td>
+          </tr>
           <tr>
             <td>0.17.4+</td>
             <td>137</td>
