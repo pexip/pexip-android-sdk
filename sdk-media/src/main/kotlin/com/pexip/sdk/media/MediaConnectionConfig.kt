@@ -29,6 +29,7 @@ package com.pexip.sdk.media
 public class MediaConnectionConfig private constructor(
     public val signaling: MediaConnectionSignaling,
     public val iceServers: List<IceServer>,
+    public val bundlePolicy: BundlePolicy,
     public val dscp: Boolean,
     public val presentationInMain: Boolean,
     public val farEndCameraControl: Boolean,
@@ -44,6 +45,7 @@ public class MediaConnectionConfig private constructor(
     public class Builder(private val signaling: MediaConnectionSignaling) {
 
         private val iceServers = ArrayList(signaling.iceServers)
+        private var bundlePolicy = BundlePolicy.MAX_BUNDLE
         private var dscp = false
         private var presentationInMain = false
         private var farEndCameraControl = false
@@ -58,6 +60,15 @@ public class MediaConnectionConfig private constructor(
          */
         public fun addIceServer(iceServer: IceServer): Builder = apply {
             this.iceServers += iceServer
+        }
+
+        /**
+         * Sets the [BundlePolicy] which determines whether WebRTC sends all media
+         * streams (audio, video, data) through a single network connection or splits them
+         * across multiple separate connections.
+         */
+        public fun setBundlePolicy(bundlePolicy: BundlePolicy): Builder = apply {
+            this.bundlePolicy = bundlePolicy
         }
 
         /**
@@ -125,6 +136,7 @@ public class MediaConnectionConfig private constructor(
         public fun build(): MediaConnectionConfig = MediaConnectionConfig(
             signaling = signaling,
             iceServers = iceServers,
+            bundlePolicy = bundlePolicy,
             dscp = dscp,
             presentationInMain = presentationInMain && !signaling.directMedia,
             farEndCameraControl = farEndCameraControl,
