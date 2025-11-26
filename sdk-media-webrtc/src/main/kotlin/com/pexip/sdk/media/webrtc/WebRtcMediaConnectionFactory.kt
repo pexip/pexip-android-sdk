@@ -24,6 +24,7 @@ import androidx.core.content.getSystemService
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
+import com.pexip.sdk.media.BundlePolicy
 import com.pexip.sdk.media.CameraVideoTrack
 import com.pexip.sdk.media.CameraVideoTrackFactory
 import com.pexip.sdk.media.LocalAudioTrack
@@ -233,6 +234,11 @@ public class WebRtcMediaConnectionFactory private constructor(
             iceTransportsType = when (config.signaling.iceTransportsRelayOnly) {
                 true -> PeerConnection.IceTransportsType.RELAY
                 else -> PeerConnection.IceTransportsType.ALL
+            }
+            bundlePolicy = when (config.bundlePolicy) {
+                BundlePolicy.BALANCED -> PeerConnection.BundlePolicy.BALANCED
+                BundlePolicy.MAX_BUNDLE -> PeerConnection.BundlePolicy.MAXBUNDLE
+                BundlePolicy.MAX_COMPAT -> PeerConnection.BundlePolicy.MAXCOMPAT
             }
             enableImplicitRollback = true
         }

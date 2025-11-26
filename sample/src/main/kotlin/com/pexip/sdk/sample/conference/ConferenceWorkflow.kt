@@ -28,6 +28,7 @@ import com.pexip.sdk.conference.FailureConferenceEvent
 import com.pexip.sdk.conference.ReferConferenceEvent
 import com.pexip.sdk.conference.SplashScreen
 import com.pexip.sdk.conference.coroutines.getConferenceEvents
+import com.pexip.sdk.media.BundlePolicy
 import com.pexip.sdk.media.IceServer
 import com.pexip.sdk.media.LocalVideoTrack
 import com.pexip.sdk.media.MediaConnection
@@ -101,6 +102,7 @@ class ConferenceWorkflow @Inject constructor(
         val iceServer = IceServer.Builder(googleStunUrls).build()
         val config = MediaConnectionConfig.Builder(props.conference.signaling)
             .addIceServer(iceServer)
+            .setBundlePolicy(BundlePolicy.MAX_BUNDLE)
             .presentationInMain(props.presentationInMain)
             .build()
         return ConferenceState(connection = mediaConnectionFactory.createMediaConnection(config))

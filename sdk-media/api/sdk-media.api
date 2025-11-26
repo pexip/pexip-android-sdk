@@ -71,6 +71,15 @@ public final class com/pexip/sdk/media/BitrateUnit : java/lang/Enum {
 	public static fun values ()[Lcom/pexip/sdk/media/BitrateUnit;
 }
 
+public final class com/pexip/sdk/media/BundlePolicy : java/lang/Enum {
+	public static final field BALANCED Lcom/pexip/sdk/media/BundlePolicy;
+	public static final field MAX_BUNDLE Lcom/pexip/sdk/media/BundlePolicy;
+	public static final field MAX_COMPAT Lcom/pexip/sdk/media/BundlePolicy;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/pexip/sdk/media/BundlePolicy;
+	public static fun values ()[Lcom/pexip/sdk/media/BundlePolicy;
+}
+
 public abstract interface class com/pexip/sdk/media/CameraVideoTrack : com/pexip/sdk/media/LocalVideoTrack {
 	public abstract fun switchCamera (Lcom/pexip/sdk/media/CameraVideoTrack$SwitchCameraCallback;)V
 	public abstract fun switchCamera (Ljava/lang/String;Lcom/pexip/sdk/media/CameraVideoTrack$SwitchCameraCallback;)V
@@ -206,7 +215,8 @@ public abstract interface class com/pexip/sdk/media/MediaConnection$RemoteVideoT
 }
 
 public final class com/pexip/sdk/media/MediaConnectionConfig {
-	public synthetic fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/List;ZZZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/List;Lcom/pexip/sdk/media/BundlePolicy;ZZZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getBundlePolicy ()Lcom/pexip/sdk/media/BundlePolicy;
 	public final fun getDscp ()Z
 	public final fun getFarEndCameraControl ()Z
 	public final fun getIceServers ()Ljava/util/List;
@@ -223,6 +233,7 @@ public final class com/pexip/sdk/media/MediaConnectionConfig$Builder {
 	public final fun dscp (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun farEndCameraControl (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun presentationInMain (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
+	public final fun setBundlePolicy (Lcom/pexip/sdk/media/BundlePolicy;)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun syncAudioMute (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun syncVideoMute (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 }
