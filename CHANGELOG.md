@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.18.0] - 2025-12-01
+
+### Added
+
+- `MediaConnectionConfig.bundlePolicy` to control how media tracks are multiplexed over network
+  connections.
+
 ## [0.17.5] - 2025-11-06
 
 ### Fixed
@@ -435,7 +442,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.17.5...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.18.0...HEAD
+[0.18.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.18.0
 [0.17.5]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.5
 [0.17.4]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.4
 [0.17.3]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.3
