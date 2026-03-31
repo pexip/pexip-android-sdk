@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Pexip AS
+ * Copyright 2023-2026 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 class KotlinAndroidPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
-        pluginManager.apply("org.jetbrains.kotlin.android")
         dependencies {
             "testImplementation"(kotlin("test-junit"))
             "testImplementation"(libs.assertk)

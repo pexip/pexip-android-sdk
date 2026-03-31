@@ -1,8 +1,10 @@
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
     id("com.pexip.sdk.kotlin.android.library.publishing")
 }
 
-android {
+configure<LibraryExtension> {
     namespace = "com.pexip.sdk.media.webrtc"
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
