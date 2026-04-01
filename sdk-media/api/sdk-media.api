@@ -215,11 +215,12 @@ public abstract interface class com/pexip/sdk/media/MediaConnection$RemoteVideoT
 }
 
 public final class com/pexip/sdk/media/MediaConnectionConfig {
-	public synthetic fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/List;Lcom/pexip/sdk/media/BundlePolicy;ZZZZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/pexip/sdk/media/MediaConnectionSignaling;Ljava/util/List;Lcom/pexip/sdk/media/BundlePolicy;ZZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getBundlePolicy ()Lcom/pexip/sdk/media/BundlePolicy;
 	public final fun getDscp ()Z
 	public final fun getFarEndCameraControl ()Z
 	public final fun getIceServers ()Ljava/util/List;
+	public final fun getMaxBitrate-UkSaDH0 ()I
 	public final fun getPresentationInMain ()Z
 	public final fun getSignaling ()Lcom/pexip/sdk/media/MediaConnectionSignaling;
 	public final fun getSyncAudioMute ()Z
@@ -234,6 +235,7 @@ public final class com/pexip/sdk/media/MediaConnectionConfig$Builder {
 	public final fun farEndCameraControl (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun presentationInMain (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun setBundlePolicy (Lcom/pexip/sdk/media/BundlePolicy;)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
+	public final fun setMaxBitrate-8YD4EQA (I)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun syncAudioMute (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 	public final fun syncVideoMute (Z)Lcom/pexip/sdk/media/MediaConnectionConfig$Builder;
 }
