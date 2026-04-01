@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2025 Pexip AS
+ * Copyright 2022-2026 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.pexip.sdk.media.webrtc.internal
 
 import android.util.Log
 import com.pexip.sdk.media.Bitrate
-import com.pexip.sdk.media.Bitrate.Companion.bps
 import com.pexip.sdk.media.CandidateSignalingEvent
 import com.pexip.sdk.media.DataSender
 import com.pexip.sdk.media.DegradationPreference
@@ -46,6 +45,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flatMapLatest
@@ -93,7 +93,7 @@ internal class WebRtcMediaConnection(
 
     private val wrapper = factory.createPeerConnection(config, *Key.entries.toTypedArray())
 
-    private val maxBitrate = MutableStateFlow(0.bps)
+    private val maxBitrate = MutableStateFlow(config.maxBitrate)
     private val mainDegradationPreference = MutableStateFlow(DegradationPreference.BALANCED)
     private val presentationDegradationPreference = MutableStateFlow(DegradationPreference.BALANCED)
 
@@ -161,7 +161,9 @@ internal class WebRtcMediaConnection(
             key = Key.MAIN_AUDIO,
             track = when (localAudioTrack) {
                 is WebRtcLocalAudioTrack -> localAudioTrack
+
                 null -> null
+
                 else -> throw IllegalArgumentException(
                     "localAudioTrack must be null or an instance of WebRtcLocalAudioTrack.",
                 )
@@ -175,7 +177,9 @@ internal class WebRtcMediaConnection(
             key = Key.MAIN_VIDEO,
             track = when (localVideoTrack) {
                 is WebRtcLocalVideoTrack -> localVideoTrack
+
                 null -> null
+
                 else -> throw IllegalArgumentException(
                     "localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.",
                 )
@@ -190,7 +194,9 @@ internal class WebRtcMediaConnection(
             key = Key.PRESENTATION_VIDEO,
             track = when (localVideoTrack) {
                 is WebRtcLocalVideoTrack -> localVideoTrack
+
                 null -> null
+
                 else -> throw IllegalArgumentException(
                     "localVideoTrack must be null or an instance of WebRtcLocalVideoTrack.",
                 )
@@ -278,13 +284,21 @@ internal class WebRtcMediaConnection(
         }
     }
 
-    private fun CoroutineScope.launchMaxBitrate() = maxBitrate.drop(1)
-        .onEach { wrapper.restartIce() }
+    private fun CoroutineScope.launchMaxBitrate() = maxBitrate
+        .drop(1)
+        .distinctUntilChanged()
+        .onEach {
+            wrapper.restartIce()
+        }
         .launchIn(this)
 
     private fun CoroutineScope.launchConnectionType() = NetworkMonitor.getInstance()
         .connectionType()
-        .onEach { wrapper.restartIce() }
+        .drop(1)
+        .distinctUntilChanged()
+        .onEach {
+            wrapper.restartIce()
+        }
         .launchIn(this)
 
     private fun CoroutineScope.launchWrapperEvent() = launch {
@@ -293,6 +307,7 @@ internal class WebRtcMediaConnection(
                 is Event.OnSignalingChange -> mutex.withLock {
                     signalingState = it.state
                 }
+
                 is Event.OnRenegotiationNeeded -> {
                     val bitrate = maxBitrate.value
                     val answer = try {
@@ -326,6 +341,7 @@ internal class WebRtcMediaConnection(
                     }
                     runCatching { config.signaling.onAck() }
                 }
+
                 is Event.OnIceCandidate -> {
                     val sdp = it.candidate.sdp ?: return@collect
                     val mid = it.candidate.sdpMid ?: return@collect
@@ -341,13 +357,16 @@ internal class WebRtcMediaConnection(
                         }
                     }
                 }
+
                 is Event.OnIceConnectionChange -> {
                     if (it.state != PeerConnection.IceConnectionState.FAILED) return@collect
                     wrapper.restartIce()
                 }
+
                 is Event.OnData -> {
                     config.signaling.onData(it.data)
                 }
+
                 else -> Unit
             }
         }
@@ -379,6 +398,7 @@ internal class WebRtcMediaConnection(
                     }
                     runCatching { config.signaling.onAnswer(localDescription.description) }
                 }
+
                 is CandidateSignalingEvent -> try {
                     if (event.candidate.isBlank()) return@collect
                     val candidate = IceCandidate(event.mid, -1, event.candidate)
@@ -390,6 +410,7 @@ internal class WebRtcMediaConnection(
                         throw t
                     }
                 }
+
                 is RestartSignalingEvent -> {
                     wrapper.restart()
                 }
