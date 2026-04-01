@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2025 Pexip AS
+ * Copyright 2022-2026 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.pexip.sdk.media
 
+import com.pexip.sdk.media.Bitrate.Companion.bps
+
 /**
  * [MediaConnection] configuration.
  *
@@ -25,6 +27,7 @@ package com.pexip.sdk.media
  * @property farEndCameraControl true if far end camera control is supported, false otherwise
  * @property syncAudioMute true if audio mute should be synced, false otherwise
  * @property syncVideoMute true if video mute should be synced, false otherwise
+ * @property maxBitrate a maximum bitrate
  */
 public class MediaConnectionConfig private constructor(
     public val signaling: MediaConnectionSignaling,
@@ -35,6 +38,7 @@ public class MediaConnectionConfig private constructor(
     public val farEndCameraControl: Boolean,
     public val syncAudioMute: Boolean,
     public val syncVideoMute: Boolean,
+    public val maxBitrate: Bitrate,
 ) {
 
     /**
@@ -51,6 +55,7 @@ public class MediaConnectionConfig private constructor(
         private var farEndCameraControl = false
         private var syncAudioMute = true
         private var syncVideoMute = true
+        private var maxBitrate = 0.bps
 
         /**
          * Adds an [IceServer] to this builder.
@@ -129,6 +134,16 @@ public class MediaConnectionConfig private constructor(
         }
 
         /**
+         * Sets the maximum bitrate in bits per second.
+         *
+         * @param maxBitrate a maximum bitrate
+         * @return this builder
+         */
+        public fun setMaxBitrate(maxBitrate: Bitrate): Builder = apply {
+            this.maxBitrate = maxBitrate
+        }
+
+        /**
          * Builds [MediaConnectionConfig].
          *
          * @return an instance of [MediaConnectionConfig]
@@ -142,6 +157,7 @@ public class MediaConnectionConfig private constructor(
             farEndCameraControl = farEndCameraControl,
             syncAudioMute = syncAudioMute,
             syncVideoMute = syncVideoMute,
+            maxBitrate = maxBitrate,
         )
     }
 }
