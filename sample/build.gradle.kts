@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ApplicationExtension
+
 plugins {
     id("com.pexip.sdk.android.application")
     id("com.pexip.sdk.kotlin.android")
@@ -11,7 +13,7 @@ plugins {
 group = checkNotNull(property("group")) { "group == null." }
 version = checkNotNull(property("version")) { "version == null." }
 
-android {
+configure<ApplicationExtension> {
     namespace = "com.pexip.sdk.sample"
     defaultConfig {
         applicationId = checkNotNull(namespace) { "namespace is not set." }

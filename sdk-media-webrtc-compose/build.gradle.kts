@@ -1,9 +1,13 @@
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
     id("com.pexip.sdk.kotlin.android.library.publishing")
     alias(libs.plugins.kotlin.compose)
 }
 
-android.namespace = "com.pexip.sdk.media.webrtc.compose"
+configure<LibraryExtension> {
+    namespace = "com.pexip.sdk.media.webrtc.compose"
+}
 
 dependencies {
     api(project(":sdk-media-webrtc"))
