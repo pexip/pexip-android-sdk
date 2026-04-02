@@ -18,12 +18,6 @@ com.pexip.sdk.infinity.test
 module:sdk-media
 com.pexip.sdk.media
 com.pexip.sdk.media.coroutines
-module:sdk-media-android
-com.pexip.sdk.media.android
-module:sdk-media-webrtc
-com.pexip.sdk.media.webrtc
-module:sdk-media-webrtc-compose
-com.pexip.sdk.media.webrtc.compose
 module:sdk-registration
 com.pexip.sdk.registration
 com.pexip.sdk.registration.coroutines
