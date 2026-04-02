@@ -7,6 +7,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+
+## [0.19.0] - 2026-04-02
+
+### Added
+
+- `MediaConnectionConfig.maxBitrate` for configuring the maximum bitrate before the connection starts
+
+### Fixed
+
+- Remove unnecessary ICE restart invocations
+
 ## [0.18.0] - 2025-12-01
 
 ### Added
@@ -442,7 +453,8 @@ path and will be removed at a later point.
 
 - Initial release
 
-[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.18.0...HEAD
+[Unreleased]: https://github.com/pexip/pexip-android-sdk/compare/0.19.0...HEAD
+[0.19.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.19.0
 [0.18.0]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.18.0
 [0.17.5]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.5
 [0.17.4]: https://github.com/pexip/pexip-android-sdk/releases/tag/0.17.4
