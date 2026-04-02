@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Pexip AS
+ * Copyright 2023-2026 Pexip AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,6 +170,7 @@ internal class PeerConnectionWrapper(
     ): T = mutex.withLock {
         val rtpTransceiver = when (init) {
             null -> rtpTransceivers[key]
+
             else -> rtpTransceivers.getOrPut(key) {
                 peerConnection!!.addTransceiver(key.mediaType, init(key))
             }
@@ -227,6 +228,10 @@ internal class PeerConnectionWrapper(
     }
 
     suspend fun restartIce() = mutex.withLock { peerConnection!!.restartIce() }
+
+    fun renegotiate() {
+        observer.renegotiate()
+    }
 
     suspend fun getIceCredentials(mid: String) = mutex.withLock { iceCredentials[mid] }
 
