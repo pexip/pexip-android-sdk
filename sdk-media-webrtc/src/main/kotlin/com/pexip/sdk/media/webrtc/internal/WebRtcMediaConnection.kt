@@ -288,7 +288,7 @@ internal class WebRtcMediaConnection(
         .drop(1)
         .distinctUntilChanged()
         .onEach {
-            wrapper.restartIce()
+            wrapper.renegotiate()
         }
         .launchIn(this)
 
